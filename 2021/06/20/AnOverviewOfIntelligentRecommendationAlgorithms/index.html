@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="霜序廿的个人网站">
+  <link 
+    rel="icon" 
+    href="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
+  <title>智能推荐算法综述</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="智能推荐算法综述">
+    
+    
+      <meta 
+        property="og:url" 
+        content="https://shuangxunian.github.io/2021/06/20/AnOverviewOfIntelligentRecommendationAlgorithms/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2021-06-20">
+      <meta 
+        property="og:article:modified_time" 
+        content="2021-06-22">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="算法">
+        
+      
+    
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+      
+      
+      
+      
+        
+        
+        
+        <script>
+          function prismThemeChange() {
+            if(document.getElementById('theme-color').dataset.mode === 'dark') {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism-tomorrow.min.css', '[data-prism]', 'prism-tomorrow');
+              } else {
+                loadCSS('/js/lib/prism/prism-tomorrow.min.css', 'prism', 'prism-tomorrow');
+              }
+            } else {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism.min.css', '[data-prism]', 'prism');
+              } else {
+                loadCSS('/js/lib/prism/prism.min.css', 'prism', 'prism');
+              }
+            }
+          }
+          prismThemeChange()
+        </script>
+      
+      
+        
+        <link rel="stylesheet" href="/js/lib/prism/prism-line-numbers.min.css">
+      
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+        prismThemeChange();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+        <img 
+          class="navbar-logo-img" 
+          src="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <a 
+      class="navbar-menu-item darknavbar" 
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </a>
+    <a 
+      class="navbar-menu-item searchnavbar" 
+      id="search">
+      <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i>
+    </a>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      智能推荐算法综述
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-06-20T12:55:10.302Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2021-06-20</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%AE%97%E6%B3%95/" 
+            class="post-meta-link">
+            算法
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>毕设有一个要智能推荐的地方，心思整理下来然后再合成好轮子，以后更方便使用</p>
+<h2 id="基于内容的智能推荐：最古老的智能推荐方案"><a href="#基于内容的智能推荐：最古老的智能推荐方案" class="headerlink" title="基于内容的智能推荐：最古老的智能推荐方案"></a>基于内容的智能推荐：最古老的智能推荐方案</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>根据用户历史喜欢的item，为用户推荐与其内容相似的item。</p>
+<h3 id="主要步骤"><a href="#主要步骤" class="headerlink" title="主要步骤"></a>主要步骤</h3><ol>
+<li>从用户每个历史item的内容中抽取出一些特征<ul>
+<li>结构化数据：直接用即可</li>
+<li>非结构化数据：转化为结构化数据后再使用（例如：针对文本数据的向量空间模型、TF-IDF等）</li>
+</ul>
+</li>
+<li>利用用户历史喜欢或不喜欢的item特征集合，学习出用户的兴趣特征表示<ul>
+<li>可以直接选择item的相似度衡量方法：欧几里得距离（适用于结构化数据）、余弦相似性（适用于非结构化数据转化后的向量表示）等</li>
+<li>可以采用机器学习算法进行有监督训练：线性回归、最近邻、朴素贝叶斯、决策树、神经网络等</li>
+</ul>
+</li>
+<li>比较用户的兴趣特征与候选item的特征，选择相关性前Top-n的item进行推荐<ul>
+<li>如果2中直接采用相似度衡量方法：只要把与用户兴趣特征最相关的n个item作为推荐返回给用户即可</li>
+<li>如果2中采用机器学习算法：只要把模型预测的用户最可能感兴趣的n个item作为推荐返回给用户即可</li>
+</ul>
+</li>
+</ol>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>优点<ul>
+<li>不需要其它用户的数据，没有物品冷启动问题和数据稀疏问题</li>
+<li>能推荐新的或不是很流行的项目，没有新项目问题</li>
+<li>能为具有特殊兴趣爱好的用户进行推荐</li>
+<li>可以通过推荐项目的内容特征，解释其推荐理由</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>存在用户冷启动问题</li>
+<li>对item内容的特征抽取并不容易实现</li>
+<li>将各用户独立，只能推荐用户历史感兴趣的item，用户的潜在喜好无法挖掘</li>
+</ul>
+</li>
+</ul>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>对于毕业设计来说足够了，最稳妥最容易实现的推荐算法。</p>
+<h2 id="基于协同过滤的智能推荐：最流行的智能推荐方案"><a href="#基于协同过滤的智能推荐：最流行的智能推荐方案" class="headerlink" title="基于协同过滤的智能推荐：最流行的智能推荐方案"></a>基于协同过滤的智能推荐：最流行的智能推荐方案</h2><h3 id="基于内存的协同过滤方法"><a href="#基于内存的协同过滤方法" class="headerlink" title="基于内存的协同过滤方法"></a>基于内存的协同过滤方法</h3><ol>
+<li>基于用户的推荐：主要考虑用户之间的相似度，将相似用户评分Top-n的物品推荐给用户</li>
+<li>基于物品的推荐：主要考虑物品之间的相似度，将与用户喜好物品相似度Top-n的物品推荐给用户</li>
+</ol>
+<h3 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h3><ul>
+<li>和基于内容的推荐方法相比，该协同过滤具有如下的优点：<ul>
+<li>能够过滤难以进行机器自动内容分析的信息，如艺术品、音乐等</li>
+<li>能够共享其他用户的经验，避免了内容分析的不完全和不精确</li>
+<li>能够有效使用其他相似用户的反馈信息，加快个性化学习的速度</li>
+<li>具有推荐新信息的能力，可以发现用户潜在的但自己尚未发现的兴趣偏好</li>
+</ul>
+</li>
+<li>但该协同过滤仍有许多的问题需要解决：<ul>
+<li>存在冷启动问题和数据稀疏问题</li>
+<li>商品、用户越多，协同过滤越复杂，可扩展问题</li>
+<li>不能为具有特殊兴趣爱好的用户进行推荐（找不到相似用户）</li>
+</ul>
+</li>
+</ul>
+<h3 id="基于模型的协同过滤方法：最主流的智能推荐方案！"><a href="#基于模型的协同过滤方法：最主流的智能推荐方案！" class="headerlink" title="基于模型的协同过滤方法：最主流的智能推荐方案！"></a>基于模型的协同过滤方法：最主流的智能推荐方案！</h3><ol>
+<li>基于关联规则的推荐：主要方法是从 Apriori 和 FP-Growth 两个算法发展演变而来（计算复杂度过大）</li>
+<li>基于矩阵分解的推荐：主要方法包括SVD分解及其变种、分解机、张量分解等（都未解决数据稀疏问题和冷启动问题）</li>
+<li>基于隐语义模型的推荐：主要方法包括隐性语义分析LSA和隐含狄利克雷分布LDA等。（主要是基于用户的nlp语义分析进行相关推荐）</li>
+<li>基于机器学习的推荐（参考数据挖掘项目全流程介绍）<ul>
+<li>基于聚类算法的推荐：k-means、层次聚类等</li>
+<li>基于分类算法的推荐：最近邻、朴素贝叶斯、决策树等</li>
+<li>基于回归算法的推荐：线性回归、逻辑回归等</li>
+<li>基于集成学习的推荐：gbdt、xgboost、lightgbm等</li>
+</ul>
+</li>
+<li>CTR预估模型演变之路（手动划重点）<ul>
+<li>LR/GBDT/xgboost：机器学习算法的直接使用</li>
+<li>FM/FFM：FM在LR的基础上，考虑了特征间的二次交叉；而FFM则是在FM的基础上，考虑了特征交叉的field特点</li>
+<li>GBDT+LR/FM/FFM：GBDT模型能够学习高阶非线性特征组合、LR/FM/FFM易于处理大规模稀疏数据</li>
+<li>MLR：等价于聚类+lr，先聚成m类，然后每个聚类单独训练一个LR，分而治之</li>
+<li>DNN/wide &amp; deep/deepFM/NFM/DCN等（引入深度学习）：都是在高阶特征的提取上下了不少功夫<ul>
+<li>wide &amp; deep：可以看作是 DNN 和特征工程的融合</li>
+<li>deepFM/NFM：可以看作是FM、FFM和DNN的融合</li>
+<li>DCN ：cross网络是FM在高阶特征组合的推广，不需要特征工程</li>
+<li>后续还有引入注意力机制、强化学习等的智能推荐方法</li>
+</ul>
+</li>
+<li>双塔模型DSSM：两侧分别对{用户，上下文} 和 {物品} 进行建模</li>
+</ul>
+</li>
+<li>基于图模型的推荐<ul>
+<li>SimRank系列算法和马尔科夫模型算法：基于用户-物品二分图的拓扑结构信息来衡量任意两个对象间的相似程度</li>
+<li>基于知识图谱的推荐：<ul>
+<li>基于特征的推荐方法：主要是从知识图谱中抽取用户和物品的属性作为特征，放入到传统的模型中（只引入了实体特征，没有引入关系特征）</li>
+<li>基于路径的推荐方法：将知识图谱视为一个异构信息网络（用户-物品），然后构造物品之间的基于meta-path的特征（meta-path是连接两个实体的一条特定的路径）</li>
+<li>知识图谱特征学习：基于距离的翻译模型追求h + r = t（TransE、TransH、TransR等）、基于语义的匹配模型将h/r/t输入网络中学习（SME、NTN、MLP、NAM等）</li>
+<li>结合知识图谱特征学习的推荐系统：依次训练学习（DKN）、联合训练学习（CKE/Ripple Network）、交替训练学习（MKR）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>一些比较新的深度学习推荐模型改进方向：<ul>
+<li>引入用户行为序列建模（例如TDM/TransRec等）<ul>
+<li>将用户历史行为看做一个无序集合，对所有embedding取sum、max和各种attention等</li>
+<li>将用户历史行为看做一个时间序列，采用RNN/LSTN/GRU等建模</li>
+<li>抽取/聚类出用户的多峰兴趣，方法有Capsule等（阿里MIND提出）</li>
+<li>根据业务场景的特殊需求，采用其他方法</li>
+</ul>
+</li>
+<li>引入NLP领域知识建模（例如Transformer/BERT等）</li>
+<li>多目标优化/多任务学习（例如阿里ESMM/Google MMoE等）</li>
+<li>多模态信息融合</li>
+<li>长期/短期兴趣分离（例如SDM等）</li>
+<li>结合深度强化学习（例如YouTube推荐/今日头条广告推荐DEAR等）</li>
+<li>图神经网络的预训练（即引入迁移学习的思路）</li>
+</ul>
+</li>
+</ol>
+<h2 id="混合推荐"><a href="#混合推荐" class="headerlink" title="混合推荐"></a>混合推荐</h2><ol>
+<li>从推荐结果的角度<ul>
+<li>加权型混合推荐：指将多种推荐技术的计算结果加权混合产生推荐</li>
+<li>分支型混合推荐：指根据问题背景和实际情况采用不同的推荐方法</li>
+<li>混杂型混合推荐：指采用多种推荐技术给出的推荐结果，即取并集</li>
+</ul>
+</li>
+<li>从特征的角度<ul>
+<li>特征组合：指组合来自不同推荐数据源的特征被另一种推荐算法所采用</li>
+<li>特征扩充：指一种技术产生附加的特征信息嵌入到另一种推荐技术的特征输入中</li>
+</ul>
+</li>
+<li>从算法的角度<ul>
+<li>增强型混合推荐：指前一个推荐方法的输出作为后一个推荐方法的输入</li>
+<li>层叠型混合推荐：指第一推荐方法输出粗略的推荐列表，该推荐列表又由下一推荐方法改进</li>
+</ul>
+</li>
+<li>从系统的角度<ul>
+<li>离线学习和在线学习：hadoop/storm/spark等大数据环境下的智能推荐</li>
+<li>满足业务上的一些需求：加入人工规则等</li>
+</ul>
+</li>
+</ol>
+<h2 id="智能推荐系统可能存在的问题"><a href="#智能推荐系统可能存在的问题" class="headerlink" title="智能推荐系统可能存在的问题"></a>智能推荐系统可能存在的问题</h2><ol>
+<li>冷启动问题<ul>
+<li>主要包含新用户启动问题、新物品启动问题和新系统启动问题</li>
+<li>可以采用热门物品推荐、根据地域推荐、让用户选择兴趣标签、根据好友推荐、利用交叉领域信息等方法</li>
+</ul>
+</li>
+<li>数据稀疏性问题<ul>
+<li>可以采用简单填值、用户/物品聚类、矩阵分解、降维、混合推荐等方法</li>
+</ul>
+</li>
+<li>马太/长尾效应<ul>
+<li>指的是存在热门物品越来越受关注、其他物品越来越得不到关注的问题</li>
+<li>可以采用混合推荐等方法</li>
+</ul>
+</li>
+<li>模糊问题<ul>
+<li>指的是用户的兴趣爱好不太明显、比较散乱（例如一家人用同一个智能电视）</li>
+<li>可以采用混合推荐等方法</li>
+</ul>
+</li>
+<li>同义问题<ul>
+<li>指的是存在推荐相关性过大、甚至推荐重复的物品给用户（例如一个物品的不同版本）</li>
+<li>可以采用混合推荐等方法</li>
+</ul>
+</li>
+<li>稳定性/可塑性问题<ul>
+<li>指的是用户兴趣会慢慢改变、而推荐系统仍然保留用户的历史兴趣</li>
+<li>可以对用户的兴趣物品进行时间衰减操作</li>
+</ul>
+</li>
+<li>多样性/精确性问题<ul>
+<li>可以采用混合推荐等方法</li>
+</ul>
+</li>
+</ol>
+<h2 id="智能推荐的企业级应用"><a href="#智能推荐的企业级应用" class="headerlink" title="智能推荐的企业级应用"></a>智能推荐的企业级应用</h2><p><strong>采用召回候选集+业务规则过滤+模型打分排序的智能推荐系统思路</strong><br>（1）召回（matching）：一般包括召回和粗排两个部分。粗排部分负责将各路召回的内容进行统一的排序，取出top的内容送入到排序模块中。粗排一般使用一些不那么复杂的模型，例如gbdt、lr、fm等。</p>
+<p>（2）排序（ranking）：一般包括精排和重排等部分。精排部分主要涉及到的技术为点击率预估(CTR预估)，使用point-wise的方法对&lt;user,item,context&gt;三元组打出一个分，然后进行排序。</p>
+<p>两者的主要差别为：Deepmatch中没有目标物料的概念，而排序中可以使用目标物料，同时也可以基于目标物料做一些交叉特征。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhengzhicong/p/12817941.html#_label0">智能推荐算法演变及学习笔记（一）：智能推荐算法综述</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2021/07/04/ImplementThePromiseAllMethod/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">实现promise.all方法 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2021/06/20/What&#39;sTheDifferenceBetweenGETAndPOST/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">都9102年了，还问GET和POST的区别 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AE%B9%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E5%8F%A4%E8%80%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于内容的智能推荐：最古老的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%AD%A5%E9%AA%A4"><span class="toc-text">主要步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E6%B5%81%E8%A1%8C%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于协同过滤的智能推荐：最流行的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95"><span class="toc-text">基于内存的协同过滤方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95%EF%BC%9A%E6%9C%80%E4%B8%BB%E6%B5%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88%EF%BC%81"><span class="toc-text">基于模型的协同过滤方法：最主流的智能推荐方案！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8E%A8%E8%8D%90"><span class="toc-text">混合推荐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">智能推荐系统可能存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%9A%84%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%BA%94%E7%94%A8"><span class="toc-text">智能推荐的企业级应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div></main>
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg" 
+    class="author-img" 
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">无限进步</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>211</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>43</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AE%B9%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E5%8F%A4%E8%80%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于内容的智能推荐：最古老的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%AD%A5%E9%AA%A4"><span class="toc-text">主要步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E6%B5%81%E8%A1%8C%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于协同过滤的智能推荐：最流行的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95"><span class="toc-text">基于内存的协同过滤方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95%EF%BC%9A%E6%9C%80%E4%B8%BB%E6%B5%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88%EF%BC%81"><span class="toc-text">基于模型的协同过滤方法：最主流的智能推荐方案！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8E%A8%E8%8D%90"><span class="toc-text">混合推荐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">智能推荐系统可能存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%9A%84%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%BA%94%E7%94%A8"><span class="toc-text">智能推荐的企业级应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">180</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">15</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AE%B9%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E5%8F%A4%E8%80%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于内容的智能推荐：最古老的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%AD%A5%E9%AA%A4"><span class="toc-text">主要步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%9C%80%E6%B5%81%E8%A1%8C%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88"><span class="toc-text">基于协同过滤的智能推荐：最流行的智能推荐方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AD%98%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95"><span class="toc-text">基于内存的协同过滤方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="toc-text">优缺点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E6%96%B9%E6%B3%95%EF%BC%9A%E6%9C%80%E4%B8%BB%E6%B5%81%E7%9A%84%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E6%96%B9%E6%A1%88%EF%BC%81"><span class="toc-text">基于模型的协同过滤方法：最主流的智能推荐方案！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E6%8E%A8%E8%8D%90"><span class="toc-text">混合推荐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">智能推荐系统可能存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8E%A8%E8%8D%90%E7%9A%84%E4%BC%81%E4%B8%9A%E7%BA%A7%E5%BA%94%E7%94%A8"><span class="toc-text">智能推荐的企业级应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-10-09</div>
+        <a href="/2021/10/09/weeklyHourlyArithmeticProblems/"><div class="recent-posts-item-content">每周整点算法题</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-27</div>
+        <a href="/2021/08/27/resolveTheWatchInfiniteLoop/"><div class="recent-posts-item-content">watch死循环解决方法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-23</div>
+        <a href="/2021/08/23/howDoIListenForChangesInAnObject/"><div class="recent-posts-item-content">vue早期源码学习系列之一：如何监听一个对象的变化</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-23</div>
+        <a href="/2021/08/23/vueSetAndThisSetIntroduced/"><div class="recent-posts-item-content">Vue.set()和this.$set()介绍</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020 -
+          
+          2021
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer> 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton" 
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+     
+    
+    
+  </body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="霜序廿的个人网站">
+  <link 
+    rel="icon" 
+    href="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
+  <title>沈航新生问题汇总</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="沈航新生问题汇总">
+    
+    
+      <meta 
+        property="og:url" 
+        content="https://shuangxunian.github.io/2021/06/13/Orientation/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://api2.mubu.com/v3/document_image/1239d557-d45d-4cc9-aba8-3a4860137b8e-3807603.jpg">
+    
+    
+      <meta 
+        property="og:img" 
+        content="我谨代表Q群128887010全体学长学姐，欢迎新生~">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2021-06-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2021-08-11">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="其他">
+        
+      
+    
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+      
+      
+      
+      
+        
+        
+        
+        <script>
+          function prismThemeChange() {
+            if(document.getElementById('theme-color').dataset.mode === 'dark') {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism-tomorrow.min.css', '[data-prism]', 'prism-tomorrow');
+              } else {
+                loadCSS('/js/lib/prism/prism-tomorrow.min.css', 'prism', 'prism-tomorrow');
+              }
+            } else {
+              if(document.querySelector('[data-prism]')) {
+                changeCSS('/js/lib/prism/prism.min.css', '[data-prism]', 'prism');
+              } else {
+                loadCSS('/js/lib/prism/prism.min.css', 'prism', 'prism');
+              }
+            }
+          }
+          prismThemeChange()
+        </script>
+      
+      
+        
+        <link rel="stylesheet" href="/js/lib/prism/prism-line-numbers.min.css">
+      
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+        prismThemeChange();
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+        prismThemeChange();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+        <img 
+          class="navbar-logo-img" 
+          src="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <a 
+      class="navbar-menu-item darknavbar" 
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </a>
+    <a 
+      class="navbar-menu-item searchnavbar" 
+      id="search">
+      <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i>
+    </a>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <main class="main-column">
+  <div class="image-wrapper">
+    <img 
+      src="https://api2.mubu.com/v3/document_image/1239d557-d45d-4cc9-aba8-3a4860137b8e-3807603.jpg" 
+      data-src="https://api2.mubu.com/v3/document_image/1239d557-d45d-4cc9-aba8-3a4860137b8e-3807603.jpg"
+      srcset="data:image/svg+xml,%3Csvg%20xmlns=&#39;http://www.w3.org/2000/svg&#39;%20viewBox=&#39;0%200%20300%20300&#39;%3E%3C/svg%3E"
+      class="image lozad"
+      alt="沈航新生问题汇总 thumbnail">
+  </div>
+
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      沈航新生问题汇总
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-06-13T13:48:56.206Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2021-06-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%85%B6%E4%BB%96/" 
+          class="post-meta-link">
+          其他
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%85%B6%E4%BB%96/" 
+            class="post-meta-link">
+            其他
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="外校同学必看"><a href="#外校同学必看" class="headerlink" title="外校同学必看"></a>外校同学必看</h2><p>我校很欢迎外校同学来聊天交友，但近期在招生，为萌新答疑，请各位同学不要给我们增加工作难度，不要装萌新，不要做伤害两方学校感情的事，谢谢合作</p>
+<h2 id="作者"><a href="#作者" class="headerlink" title="作者"></a>作者</h2><p>老学长学姐们</p>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>如果坐地铁来学校地铁门口会有人拦着推销的，不要管，直接找咱们学校的学长学姐就行。</p>
+<h2 id="新生必看"><a href="#新生必看" class="headerlink" title="新生必看"></a>新生必看</h2><p>建议大家关注几个微信公众号，搜索沈阳航空航天大学，就业和招生都可以关注，会有一定帮助<br>推荐几篇文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/gqZvIyeagZJdw2FSK8zeqA">权威发布 I 沈阳航空航天大学2021年招生章程</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/KU32XU-VcdvqieLQ1GH3FQ">权威发布 I 沈阳航空航天大学2021年招生计划</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzA4MTU5NTkwMw==&mid=2651376951&idx=1&sn=cbca3c9cb06d63781d0ed404ecd19c03&chksm=846ef1a7b31978b1546dfad2e9596347c2db528d7414dc2bae9f34f12b9d212bee15aa255824&mpshare=1&scene=23&srcid=0806lStoMP8p6c1dFelEDsGB&sharer_sharetime=1628258484499&sharer_shareid=dec3b63abebc2d6c6131c58bb5ca7452#rd">2021级新生团员团组织关系转接工作指引</a></li>
+</ul>
+<p>进群后请自觉按照置顶公告格式修改群名片<br>问问题请有些礼貌，请问……谢谢……等等，学长学姐都在用自己休息的时间帮大家解决问题，请大家有些基本的礼貌<br>对一些新生事先声明，我们有一些关于报考的不是很懂，官网都有详细介绍，别听我们说完就选择报考，自己仔细斟酌后考虑清楚再填志愿。<br>我们现在只能让你了解关于专业的学习情况，培养计划，就业前景怎么样。</p>
+<h2 id="地理位置"><a href="#地理位置" class="headerlink" title="地理位置"></a>地理位置</h2><p>辽宁省沈阳市沈北新区道义南大街37号<br>周边是沈师、辽大、辽传、工程…<br>学校所在的沈北新区不算郊区，交通方便，按照地理位置分为南北区，沈航只有一个校区，南区北区说的是南生活区、北生活区，简称南区北区，步行大概十分钟的距离，南区宿舍楼有高有矮，北区都是六楼无电梯，南区高层有电梯，快递点都在南区，北区的同学也要到南区来取。<br>交通便利，附近能玩的也很多</p>
+<h2 id="宿舍环境"><a href="#宿舍环境" class="headerlink" title="宿舍环境"></a>宿舍环境</h2><p>宿舍是早六点供电，晚十一点准时断电<br>没有独立卫浴，没有空调风扇，可以自己准备小风扇。上下铺，六人寝，可以和室友商量调换上下铺。<br>一个书架，每人两个柜子，来了就知道啦。充电插口大概两个或三个，需要自己接插排。<br>大澡堂没隔断;南方同学来了稍微适应下不是问题，实在是适应不了的可以出去洗<br>寝室楼 南11 12 13栋有电梯<br>寝室内部的问题再说一下，军训期间寝室要比较严，什么多余的东西都不可以有，娃娃、窗帘什么的等军训之后看自己学院的要求。开学不需要带很多东西，因为军训期间也不能用，军训过去之后也会有适当的查寝，东西太多会显得杂乱。<br>现在寝室安排还没有下来，都是随机安排。</p>
+<p><img src="https://api2.mubu.com/v3/document_image/c15263e6-3fb2-4964-9cac-cf41b71e74d7-3807603.jpg" alt="学生宿舍" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/c15263e6-3fb2-4964-9cac-cf41b71e74d7-3807603.jpg" class="lozad post-image"></p>
+<h2 id="食堂"><a href="#食堂" class="headerlink" title="食堂"></a>食堂</h2><p>食堂不贵 吃的挺好</p>
+<h2 id="社团"><a href="#社团" class="headerlink" title="社团"></a>社团</h2><p>社团 活动看个人兴趣 种类很多 到时候有纳新大会<br>具体想要先了解请<a href="https://shuangxunian.github.io/2021/08/11/schoolCommunity/">点此链接</a></p>
+<h2 id="假期安排"><a href="#假期安排" class="headerlink" title="假期安排"></a>假期安排</h2><p>沈航按照国家法定节假日放假，周六周日没课就不上课，没课时间自由，但是必须听学院安排。大一有晚自习，时间大概在六点半到九点半左右，周日到周四，没有老师答疑，但是会有学生会查纪律。晨跑看学院。</p>
+<h2 id="未来发展"><a href="#未来发展" class="headerlink" title="未来发展"></a>未来发展</h2><p>多利用利用自己手里的资源，专业以后就业方向什么的百度里都有，写的也很清楚<br>可以在群成员里搜索自己想要报考的专业，找到专业的学长学姐咨询，他们的解答更能帮助你</p>
+<h2 id="男女比"><a href="#男女比" class="headerlink" title="男女比"></a>男女比</h2><p>沈航男女总体比例7比3，工科学校都这样，个别专业女生较多，大多专业男生多。</p>
+<h2 id="军训"><a href="#军训" class="headerlink" title="军训"></a>军训</h2><p>正常情况下，军训在学校里，开学就开始训，具体地点还不知道，是部队里的教官来军训，军训时长两周左右。四级尽快考，越早过越好。四级不影响你毕业，但是影响你就业，回家继承家产的可以忽略。假期无聊可以背背单词。<br>军训需要剪平头。设艺可能不需要。具体事宜会在开学前统一跟大家讲，有发军训服。</p>
+<h2 id="电脑问题"><a href="#电脑问题" class="headerlink" title="电脑问题"></a>电脑问题</h2><p>电脑的问题，等录取通知书下来之后加入院群，听导员安排，不让带就不要带，没必要以身试法，目前学长学姐说的是计算机和设艺可以，其他学院（包括人工智能）不可以。</p>
+<h2 id="通知书"><a href="#通知书" class="headerlink" title="通知书"></a>通知书</h2><p>通知书大概八月初到，通知书里写有你入学需要的一切事宜和报道时间，也有你的院群，专业群，导员和助导的联系方式。</p>
+<h2 id="校服"><a href="#校服" class="headerlink" title="校服"></a>校服</h2><p>关于校服，为了区分哪届每年校服都有差别，大概是这种风格，校服不需要一直穿，有活动才穿。<br><img src="https://img.mubu.com/document_image/91c8193f-4436-4e30-af38-cf50c852c0df-3807603.jpg" alt="校服" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://img.mubu.com/document_image/91c8193f-4436-4e30-af38-cf50c852c0df-3807603.jpg" class="lozad post-image"></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2021/06/13/principleOfCDN/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">CDN原理详解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2021/06/13/operationDOM/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">超详细的DOM操作 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E6%A0%A1%E5%90%8C%E5%AD%A6%E5%BF%85%E7%9C%8B"><span class="toc-text">外校同学必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E8%80%85"><span class="toc-text">作者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">注意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E5%BF%85%E7%9C%8B"><span class="toc-text">新生必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE"><span class="toc-text">地理位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%BF%E8%88%8D%E7%8E%AF%E5%A2%83"><span class="toc-text">宿舍环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A3%9F%E5%A0%82"><span class="toc-text">食堂</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E5%9B%A2"><span class="toc-text">社团</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E6%9C%9F%E5%AE%89%E6%8E%92"><span class="toc-text">假期安排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AA%E6%9D%A5%E5%8F%91%E5%B1%95"><span class="toc-text">未来发展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B7%E5%A5%B3%E6%AF%94"><span class="toc-text">男女比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%9B%E8%AE%AD"><span class="toc-text">军训</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B5%E8%84%91%E9%97%AE%E9%A2%98"><span class="toc-text">电脑问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E7%9F%A5%E4%B9%A6"><span class="toc-text">通知书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%A1%E6%9C%8D"><span class="toc-text">校服</span></a></li></ol>
+</div></main>
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg" 
+    class="author-img" 
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">无限进步</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>211</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>43</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E6%A0%A1%E5%90%8C%E5%AD%A6%E5%BF%85%E7%9C%8B"><span class="toc-text">外校同学必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E8%80%85"><span class="toc-text">作者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">注意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E5%BF%85%E7%9C%8B"><span class="toc-text">新生必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE"><span class="toc-text">地理位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%BF%E8%88%8D%E7%8E%AF%E5%A2%83"><span class="toc-text">宿舍环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A3%9F%E5%A0%82"><span class="toc-text">食堂</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E5%9B%A2"><span class="toc-text">社团</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E6%9C%9F%E5%AE%89%E6%8E%92"><span class="toc-text">假期安排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AA%E6%9D%A5%E5%8F%91%E5%B1%95"><span class="toc-text">未来发展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B7%E5%A5%B3%E6%AF%94"><span class="toc-text">男女比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%9B%E8%AE%AD"><span class="toc-text">军训</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B5%E8%84%91%E9%97%AE%E9%A2%98"><span class="toc-text">电脑问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E7%9F%A5%E4%B9%A6"><span class="toc-text">通知书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%A1%E6%9C%8D"><span class="toc-text">校服</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">180</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">15</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E6%A0%A1%E5%90%8C%E5%AD%A6%E5%BF%85%E7%9C%8B"><span class="toc-text">外校同学必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E8%80%85"><span class="toc-text">作者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">注意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E5%BF%85%E7%9C%8B"><span class="toc-text">新生必看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E7%90%86%E4%BD%8D%E7%BD%AE"><span class="toc-text">地理位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%BF%E8%88%8D%E7%8E%AF%E5%A2%83"><span class="toc-text">宿舍环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A3%9F%E5%A0%82"><span class="toc-text">食堂</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A4%BE%E5%9B%A2"><span class="toc-text">社团</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E6%9C%9F%E5%AE%89%E6%8E%92"><span class="toc-text">假期安排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AA%E6%9D%A5%E5%8F%91%E5%B1%95"><span class="toc-text">未来发展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B7%E5%A5%B3%E6%AF%94"><span class="toc-text">男女比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%9B%E8%AE%AD"><span class="toc-text">军训</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%B5%E8%84%91%E9%97%AE%E9%A2%98"><span class="toc-text">电脑问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E7%9F%A5%E4%B9%A6"><span class="toc-text">通知书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%A1%E6%9C%8D"><span class="toc-text">校服</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-10-09</div>
+        <a href="/2021/10/09/weeklyHourlyArithmeticProblems/"><div class="recent-posts-item-content">每周整点算法题</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-27</div>
+        <a href="/2021/08/27/resolveTheWatchInfiniteLoop/"><div class="recent-posts-item-content">watch死循环解决方法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-23</div>
+        <a href="/2021/08/23/howDoIListenForChangesInAnObject/"><div class="recent-posts-item-content">vue早期源码学习系列之一：如何监听一个对象的变化</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-08-23</div>
+        <a href="/2021/08/23/vueSetAndThisSetIntroduced/"><div class="recent-posts-item-content">Vue.set()和this.$set()介绍</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020 -
+          
+          2021
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer> 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton" 
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+     
+    
+    
+  </body>
+</html>
