@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
-  <title>霜序廿的个人网站</title>
+  <title>Vue事件总线（EventBus）使用详细介绍</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="Vue事件总线（EventBus）使用详细介绍">
     
     
       <meta 
@@ -35,6 +35,10 @@
         property="og:img" 
         content="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
     
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
     
     
       <meta 
@@ -50,6 +54,14 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -292,7 +304,7 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      Vue事件总线（EventBus）使用详细介绍
     </h1>
   </header>
   <div class="post-meta post-show-meta">
@@ -304,17 +316,54 @@
       <span>2021-10-17</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
       <span>1.4k 字</span>
     
   </div>
   
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
   </header>
   <div 
     id="section" 
     class="post-content">
-    <h1 id="Vue事件总线（EventBus）使用详细介绍"><a href="#Vue事件总线（EventBus）使用详细介绍" class="headerlink" title="Vue事件总线（EventBus）使用详细介绍"></a>Vue事件总线（EventBus）使用详细介绍</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>vue组件非常常见的有父子组件通信，兄弟组件通信。而父子组件通信就很简单，父组件会通过 <code>props</code> 向下传数据给子组件，当子组件有事情要告诉父组件时会通过 <code>$emit</code> 事件告诉父组件。今天就来说说如果两个页面没有任何引入和被引入关系，该如何通信了？</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>vue组件非常常见的有父子组件通信，兄弟组件通信。而父子组件通信就很简单，父组件会通过 <code>props</code> 向下传数据给子组件，当子组件有事情要告诉父组件时会通过 <code>$emit</code> 事件告诉父组件。今天就来说说如果两个页面没有任何引入和被引入关系，该如何通信了？</p>
 <p>如果咱们的应用程序不需要类似Vuex这样的库来处理组件之间的数据通信，就可以考虑Vue中的 <code>事件总线</code> ，即 **<code>EventBus</code>**来通信。</p>
 <h2 id="EventBus的简介"><a href="#EventBus的简介" class="headerlink" title="EventBus的简介"></a>EventBus的简介</h2><p><code>EventBus</code> 又称为事件总线。在Vue中可以使用 <code>EventBus</code> 来作为沟通桥梁的概念，就像是所有组件共用相同的事件中心，可以向该中心注册发送事件或接收事件，所以组件都可以上下平行地通知其他组件，但也就是太方便所以若使用不慎，就会造成难以维护的“灾难”，因此才需要更完善的Vuex作为状态管理中心，将通知的概念上升到共享状态层次。</p>
 <h2 id="如何使用EventBus"><a href="#如何使用EventBus" class="headerlink" title="如何使用EventBus"></a>如何使用EventBus</h2><h3 id="一、初始化"><a href="#一、初始化" class="headerlink" title="一、初始化"></a>一、初始化</h3><p>首先需要创建事件总线并将其导出，以便其它模块可以使用或者监听它。我们可以通过两种方式来处理。先来看第一种，新创建一个 .js 文件，比如 <code>event-bus.js</code></p>
@@ -425,11 +474,13 @@ Object<span class="token punctuation">.</span><span class="token function">defin
   
     <div class="nav-item-prev">
       <a 
-        href="/2021/10/17/watchInfiniteLoopSolution/" 
+        href="/2021/10/17/principleOfMVVM/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">MVVM原理 </div>
           
         </div>
       </a>
@@ -442,6 +493,8 @@ Object<span class="token punctuation">.</span><span class="token function">defin
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Vue provide/inject使用 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -459,7 +512,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%EF%BC%88EventBus%EF%BC%89%E4%BD%BF%E7%94%A8%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D"><span class="toc-text">Vue事件总线（EventBus）使用详细介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div></main>
             <aside class="left-column">
               
@@ -476,7 +529,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
   <a 
     class="author-posts-count" 
     href="/archives">
-    <span>229</span>
+    <span>227</span>
     <span>文章</span>
   </a>
   <a 
@@ -488,7 +541,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
   <a 
     class="author-tags-count" 
     href="/tags">
-    <span>43</span>
+    <span>45</span>
     <span>标签</span>
   </a>
 </div>
@@ -521,7 +574,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%EF%BC%88EventBus%EF%BC%89%E4%BD%BF%E7%94%A8%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D"><span class="toc-text">Vue事件总线（EventBus）使用详细介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -539,7 +592,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">184</span>
+          <span class="categories-list-item-badge">196</span>
         </div>
       </a>
     
@@ -670,15 +723,15 @@ Object<span class="token punctuation">.</span><span class="token function">defin
       </a>
     
       <a 
-        href="/tags/debug/" 
-        title="debug">
-        <div class="tags-list-item">debug</div>
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
       </a>
     
       <a 
-        href="/tags/webpack/" 
-        title="webpack">
-        <div class="tags-list-item">webpack</div>
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
       </a>
     
   </div>
@@ -699,7 +752,7 @@ Object<span class="token punctuation">.</span><span class="token function">defin
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%EF%BC%88EventBus%EF%BC%89%E4%BD%BF%E7%94%A8%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D"><span class="toc-text">Vue事件总线（EventBus）使用详细介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">创建全局EventBus</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -715,22 +768,22 @@ Object<span class="token punctuation">.</span><span class="token function">defin
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/thisArticleThoroughlyUnderstandsDeepAndShallowCopiesOfJavaScript/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content">网上都说操作真实 DOM 慢，但测试结果却比 React 更快，为什么？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content">深入浅出 妙用Javascript中apply、call、bind</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content">如何证明存在 1000 个连续的正整数中恰好有五个素数？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/discussionOnEventBubblingAndEventCapture/"><div class="recent-posts-item-content">浅谈事件冒泡，捕获，Vue2.0中的capture</div></a>
       </div>
     
   </div>

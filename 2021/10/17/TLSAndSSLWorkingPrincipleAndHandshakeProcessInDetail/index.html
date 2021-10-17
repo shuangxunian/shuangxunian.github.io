@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
-  <title>霜序廿的个人网站</title>
+  <title>TLS/SSL 工作原理及握手过程详解</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="TLS/SSL 工作原理及握手过程详解">
     
     
       <meta 
@@ -35,6 +35,10 @@
         property="og:img" 
         content="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
     
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
     
     
       <meta 
@@ -50,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络原理">
         
       
     
@@ -292,7 +300,7 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      TLS/SSL 工作原理及握手过程详解
     </h1>
   </header>
   <div class="post-meta post-show-meta">
@@ -304,17 +312,45 @@
       <span>2021-10-17</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
       <span>3k 字</span>
     
   </div>
   
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+            class="post-meta-link">
+            网络原理
+          </a>
+        
+      </div>
+    </div>
+  
   </header>
   <div 
     id="section" 
     class="post-content">
-    <h1 id="TLS-SSL-工作原理及握手过程详解"><a href="#TLS-SSL-工作原理及握手过程详解" class="headerlink" title="TLS/SSL 工作原理及握手过程详解"></a>TLS/SSL 工作原理及握手过程详解</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是对 HTTPS 安全基础、TLS/SSL 工作原理及握手过程的总结。第一部分介绍为 HTTPS 提供安全基础的 TLS/SSL 的基础概念，及数据传输过程中密钥协商的原因。第二部分介绍密钥协商过程中存在的问题，及解决办法，其中会涉及 PKI、CA 等概念。最后介绍 TLS/SSL 的握手过程。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文是对 HTTPS 安全基础、TLS/SSL 工作原理及握手过程的总结。第一部分介绍为 HTTPS 提供安全基础的 TLS/SSL 的基础概念，及数据传输过程中密钥协商的原因。第二部分介绍密钥协商过程中存在的问题，及解决办法，其中会涉及 PKI、CA 等概念。最后介绍 TLS/SSL 的握手过程。</p>
 <h2 id="TLS-SSL-基础概念"><a href="#TLS-SSL-基础概念" class="headerlink" title="TLS/SSL 基础概念"></a>TLS/SSL 基础概念</h2><p>概念源自百度百科：传输层安全性协议 TLS（Transport Layer Security），及其前身安全套接层 SSL（Secure Sockets Layer）是一种安全协议，目的是为互联网通信提供安全及数据完整性保障。网景公司（Netscape）在 1994 年推出首版网页浏览器，网景导航者时，推出 HTTPS 协议，以 SSL 进行加密，这是 SSL 的起源。IETF 将 SSL 进行标准化，1999 年公布第一版 TLS 标准文件。随后又公布RFC 5246（2008年8月）与RFC 6176（2011年3月）。在浏览器、邮箱、即时通信、VoIP、网络传真等应用程序中，广泛支持这个协议。主要的网站，如 Google、Facebook 等也以这个协议来创建安全连线，发送数据。目前已成为互联网上保密通信的工业标准。</p>
 <p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/0d260140-7c99-4544-ae2b-b276e9f97b03-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/0d260140-7c99-4544-ae2b-b276e9f97b03-3807603.jpg"></p>
 <p>TLS/SSL 的功能实现主要依赖于三类基本算法：散列函数 Hash、对称加密和非对称加密，其利用非对称加密实现身份认证和密钥协商，对称加密算法采用协商的密钥对数据加密，基于散列函数验证信息的完整性。 </p>
@@ -392,6 +428,8 @@
         <div>
           <div class="nav-label">上一篇</div>
           
+            <div class="nav-title">Vue provide/inject使用 </div>
+          
         </div>
       </a>
     </div>
@@ -403,6 +441,8 @@
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">javascript背包问题详解 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -420,7 +460,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TLS-SSL-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">TLS&#x2F;SSL 工作原理及握手过程详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div></main>
             <aside class="left-column">
               
@@ -437,7 +477,7 @@
   <a 
     class="author-posts-count" 
     href="/archives">
-    <span>229</span>
+    <span>227</span>
     <span>文章</span>
   </a>
   <a 
@@ -449,7 +489,7 @@
   <a 
     class="author-tags-count" 
     href="/tags">
-    <span>43</span>
+    <span>45</span>
     <span>标签</span>
   </a>
 </div>
@@ -482,7 +522,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TLS-SSL-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">TLS&#x2F;SSL 工作原理及握手过程详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -500,7 +540,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">184</span>
+          <span class="categories-list-item-badge">196</span>
         </div>
       </a>
     
@@ -631,15 +671,15 @@
       </a>
     
       <a 
-        href="/tags/debug/" 
-        title="debug">
-        <div class="tags-list-item">debug</div>
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
       </a>
     
       <a 
-        href="/tags/webpack/" 
-        title="webpack">
-        <div class="tags-list-item">webpack</div>
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
       </a>
     
   </div>
@@ -660,7 +700,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TLS-SSL-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">TLS&#x2F;SSL 工作原理及握手过程详解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-text">TLS&#x2F;SSL 基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0-Hash"><span class="toc-text">散列函数 Hash</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-text">非对称加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">密钥协商过程中存在的问题及解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-text">解决办法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-SSL-%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B"><span class="toc-text">TLS&#x2F;SSL 握手过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-client-hello"><span class="toc-text">1. client_hello</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-server-hello-server-certificate-sever-hello-done"><span class="toc-text">2. server_hello + server_certificate + sever_hello_done</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%AF%81%E4%B9%A6%E6%A0%A1%E9%AA%8C"><span class="toc-text">3. 证书校验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-client-key-exchange-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">4. client_key_exchange + change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-change-cipher-spec-encrypted-handshake-message"><span class="toc-text">5. change_cipher_spec + encrypted_handshake_message</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%8F%A1%E6%89%8B%E7%BB%93%E6%9D%9F"><span class="toc-text">6. 握手结束</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="toc-text">7. 加密通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%90%8D%E8%BF%87%E7%A8%8B"><span class="toc-text">签名过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -676,22 +716,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/thisArticleThoroughlyUnderstandsDeepAndShallowCopiesOfJavaScript/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content">网上都说操作真实 DOM 慢，但测试结果却比 React 更快，为什么？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content">深入浅出 妙用Javascript中apply、call、bind</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content">如何证明存在 1000 个连续的正整数中恰好有五个素数？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/discussionOnEventBubblingAndEventCapture/"><div class="recent-posts-item-content">浅谈事件冒泡，捕获，Vue2.0中的capture</div></a>
       </div>
     
   </div>

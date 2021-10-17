@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
-  <title>霜序廿的个人网站</title>
+  <title>Vue provide/inject使用</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="Vue provide/inject使用">
     
     
       <meta 
@@ -35,6 +35,10 @@
         property="og:img" 
         content="https://api2.mubu.com/v3/photo/654b368e-b847-4122-982c-86d90b3f5275.jpg">
     
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
     
     
       <meta 
@@ -50,6 +54,14 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -292,7 +304,7 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      Vue provide/inject使用
     </h1>
   </header>
   <div class="post-meta post-show-meta">
@@ -304,17 +316,54 @@
       <span>2021-10-17</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
       <span>1.3k 字</span>
     
   </div>
   
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
   </header>
   <div 
     id="section" 
     class="post-content">
-    <h1 id="Vue-provide-inject使用"><a href="#Vue-provide-inject使用" class="headerlink" title="Vue provide/inject使用"></a>Vue provide/inject使用</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想象一个场景，子组件依赖父组件传递的<code>props</code>，如果有多个这样的<code>props</code>，其实已经很烦了，当有多个子组件，或者孙组件也依赖于由上至下的<code>props</code>时，写那么多<code>props</code>简直是要了亲命了。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想象一个场景，子组件依赖父组件传递的<code>props</code>，如果有多个这样的<code>props</code>，其实已经很烦了，当有多个子组件，或者孙组件也依赖于由上至下的<code>props</code>时，写那么多<code>props</code>简直是要了亲命了。</p>
 <p>为了解决这种麻烦，产生了<code>vuex</code>。但是我们肯定希望组件的高可复用性，不引入<code>vuex</code>就能实现功能，那就要考虑<code>vue</code>本身是否支持这种能力了。熟悉<code>React</code>开发的人应该会想到<code>Context</code>这个高阶组件，它通过<code>Provider</code>和<code>Consumer</code>，可以使得无限嵌套的父子组件共有一个数据源。<code>Vue</code>也有一个类似的，连名字都很相似，就是这篇文章的主人公<code>provide</code>和<code>inject</code>。</p>
 <p><a target="_blank" rel="noopener" href="https://cn.vuejs.org/v2/guide/components-edge-cases.html">依赖注入</a>，官网有个例子，讲述了为何我们需要 <code>provide</code>，它是可以终结复杂数据嵌套的神器，代码：</p>
 <pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// parent组件</span>
@@ -443,6 +492,8 @@
         <div>
           <div class="nav-label">上一篇</div>
           
+            <div class="nav-title">Vue事件总线（EventBus）使用详细介绍 </div>
+          
         </div>
       </a>
     </div>
@@ -454,6 +505,8 @@
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">TLS/SSL 工作原理及握手过程详解 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -471,7 +524,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue-provide-inject%E4%BD%BF%E7%94%A8"><span class="toc-text">Vue provide&#x2F;inject使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div></main>
             <aside class="left-column">
               
@@ -488,7 +541,7 @@
   <a 
     class="author-posts-count" 
     href="/archives">
-    <span>229</span>
+    <span>227</span>
     <span>文章</span>
   </a>
   <a 
@@ -500,7 +553,7 @@
   <a 
     class="author-tags-count" 
     href="/tags">
-    <span>43</span>
+    <span>45</span>
     <span>标签</span>
   </a>
 </div>
@@ -533,7 +586,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue-provide-inject%E4%BD%BF%E7%94%A8"><span class="toc-text">Vue provide&#x2F;inject使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -551,7 +604,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">184</span>
+          <span class="categories-list-item-badge">196</span>
         </div>
       </a>
     
@@ -682,15 +735,15 @@
       </a>
     
       <a 
-        href="/tags/debug/" 
-        title="debug">
-        <div class="tags-list-item">debug</div>
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
       </a>
     
       <a 
-        href="/tags/webpack/" 
-        title="webpack">
-        <div class="tags-list-item">webpack</div>
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
       </a>
     
   </div>
@@ -711,7 +764,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Vue-provide-inject%E4%BD%BF%E7%94%A8"><span class="toc-text">Vue provide&#x2F;inject使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -727,22 +780,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/thisArticleThoroughlyUnderstandsDeepAndShallowCopiesOfJavaScript/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content">网上都说操作真实 DOM 慢，但测试结果却比 React 更快，为什么？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/whyIsItSlowToManipulateTheRealDOMButFasterToTestThanReact/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content">深入浅出 妙用Javascript中apply、call、bind</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/useJavascriptApplyCallAndBind/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content">如何证明存在 1000 个连续的正整数中恰好有五个素数？</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2021-10-17</div>
-        <a href="/2021/10/17/howCanWeProveTheExistenceOf1000ConsecutivePositiveIntegersWithExactlyFivePrimeNumbers/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2021/10/17/discussionOnEventBubblingAndEventCapture/"><div class="recent-posts-item-content">浅谈事件冒泡，捕获，Vue2.0中的capture</div></a>
       </div>
     
   </div>
