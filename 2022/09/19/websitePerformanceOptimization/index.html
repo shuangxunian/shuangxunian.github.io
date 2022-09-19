@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="霜序廿的个人网站">
+  <link 
+    rel="icon" 
+    href="/">
+  <title>网站性能监测与优化策略</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="网站性能监测与优化策略">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/19/websitePerformanceOptimization/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="网站性能优化实战——从12.67s到1.06s的故事">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-19">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-19">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="浏览器">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>168</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>38</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">网络传输性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="toc-text">浏览器缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E6%89%93%E5%8C%85%E5%8E%8B%E7%BC%A9"><span class="toc-text">资源打包压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90%E4%BC%98%E5%8C%96"><span class="toc-text">图片资源优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E8%A6%81%E5%9C%A8HTML%E9%87%8C%E7%BC%A9%E6%94%BE%E5%9B%BE%E5%83%8F"><span class="toc-text">不要在HTML里缩放图像</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9B%AA%E7%A2%A7%E5%9B%BE%EF%BC%88CSS-Sprite%EF%BC%89"><span class="toc-text">使用雪碧图（CSS Sprite）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%97%E4%BD%93%E5%9B%BE%E6%A0%87%EF%BC%88iconfont%EF%BC%89"><span class="toc-text">使用字体图标（iconfont）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8WebP"><span class="toc-text">使用WebP</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94Page-Speed"><span class="toc-text">网络传输性能检测工具——Page Speed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8CDN"><span class="toc-text">使用CDN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">页面渲染性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B%EF%BC%88Webkit%EF%BC%89"><span class="toc-text">浏览器渲染过程（Webkit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DOM%E6%B8%B2%E6%9F%93%E5%B1%82%E4%B8%8EGPU%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F"><span class="toc-text">DOM渲染层与GPU硬件加速</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%8E%92%E4%B8%8E%E9%87%8D%E7%BB%98"><span class="toc-text">重排与重绘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5"><span class="toc-text">优化策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E9%98%BB%E5%A1%9E%E6%80%A7%E8%83%BD"><span class="toc-text">JS阻塞性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Node-js%E5%A4%84%E7%90%86IO%E5%AF%86%E9%9B%86%E5%9E%8B%E8%AF%B7%E6%B1%82"><span class="toc-text">Node.js处理IO密集型请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pm2%E5%AE%9E%E7%8E%B0Node-js%E2%80%9C%E5%A4%9A%E8%BF%9B%E7%A8%8B%E2%80%9D"><span class="toc-text">pm2实现Node.js“多进程”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">nginx搭建反向代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#upstream%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">upstream配置信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#server%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">server配置信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">141</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+      <a 
+        href="/tags/git/" 
+        title="git">
+        <div class="tags-list-item">git</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      网站性能监测与优化策略
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-19T06:05:13.621Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-19</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>9.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+            class="post-meta-link">
+            浏览器
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C/" 
+            class="post-meta-link">
+            网络
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>作为互联网项目，最重要的便是用户体验。在举国“互联网+”的热潮中，用户至上也已经被大多数企业所接收，特别是在如今移动端快速发展的时代，我们的网页不仅只是呈现在用户的PC浏览器里，更多的时候，用户是通过移动产品浏览我们的网页。加之有越来越多的开发者投入到Web APP和Hybrid APP的开发队伍中，性能，又再一次成为了被程序员们重点关注的话题。我曾经看到过这样一句话：一个网站的体验，决定了用户是否愿意去了解网站的功能；而网站的功能，决定了用户是否会一票否决网站的体验。这是改版自网络上的一句流行语，但却把网站性能这件事说的十分透彻，特别是在网站这样的项目中，如果一个用户需要超过5s才能看见页面，他会毫不犹豫地关闭它。</p>
+<p>性能优化，作为工程师界的“上乘武功”，是我们在开发中老生常谈的话题，也是一名开发者从入门向资深进阶的必经阶段，虽然我们看到过很多的标准、军规，但在真正实践中，却常常力不从心，不知道落下了什么，不知道性能是否还有进一步优化的空间。</p>
+<p>对于网站的性能，在行业内有很多既定的指标，但就以我们Front-Enders而言，应该更加关注以下指标：白屏时间、首屏时间、整页时间、DNS时间、CPU占用率。而我之前自己搭建的一个网站完全没做性能优化时，首屏时间是12.67s，最后经过多方面优化，终于将其降低至1.06s，并且还未配置CDN加速。其中过程我踩了很多坑，也翻了许多专业书籍，最后决定将这几日的努力整理成文，帮助前端爱好者们少走弯路。</p>
+<p>今天，我们将从性能优化的三大方面工作逐步展开介绍，其中包括网络传输性能、页面渲染性能以及JS阻塞性能，系统性地带着读者们体验性能优化的实践流程。</p>
+<h2 id="网络传输性能优化"><a href="#网络传输性能优化" class="headerlink" title="网络传输性能优化"></a>网络传输性能优化</h2><p>在开始介绍网络传输性能优化这项工作之前，我们需要了解浏览器处理用户请求的过程，那么就必须奉上这幅神图了：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/64fac220-7f7a-4655-b85e-d983e7319670-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/64fac220-7f7a-4655-b85e-d983e7319670-3807603.jpg"></p>
+<p>这是navigation timing监测指标图，从图中我们可以看出，浏览器在得到用户请求之后，经历了下面这些阶段：重定向→拉取缓存→DNS查询→建立TCP链接→发起请求→接收响应→处理HTML元素→元素加载完成。不着急，我们将对其中的细节一步步展开讨论：</p>
+<h3 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h3><p>我们都知道，浏览器在向服务器发起请求前，会先查询本地是否有相同的文件，如果有，就会直接拉取本地缓存，这和我们在后台部属的Redis、Memcache类似，都是起到了中间缓冲的作用，我们先看看浏览器处理缓存的策略：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d0f68949-23ba-412d-9a04-5977c5f87abd-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/d0f68949-23ba-412d-9a04-5977c5f87abd-3807603.jpg"></p>
+<p>因为网上的图片太笼统了，而且我翻过很多讲缓存的文章，很少有将状态码还有什么时候将缓存存放在内存（memory）中什么时候将缓存在硬盘中（disk）系统地整理出来，所以我自己绘制了一张浏览器缓存机制流程图，结合这张图再更深入地说明浏览器的缓存机制。</p>
+<p>这里我们可以使用chrome devtools里的network面板查看网络传输的相关信息：</p>
+<p>（这里需要特别注意，在我们进行缓存调试时，需要去除network面板顶部的Disable cache 勾选项，否则浏览器将始终不会从缓存中拉取数据）</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/9dfe39ba-ee6d-4363-928a-114b0d3f83a2-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/9dfe39ba-ee6d-4363-928a-114b0d3f83a2-3807603.jpg"></p>
+<p>浏览器默认的缓存是放在内存内的，但我们知道，内存里的缓存会因为进程的结束或者说浏览器的关闭而被清除，而存在硬盘里的缓存才能够被长期保留下去。很多时候，我们在network面板中各请求的size项里，会看到两种不同的状态：from memory cache 和 from disk cache，前者指缓存来自内存，后者指缓存来自硬盘。而控制缓存存放位置的，不是别人，就是我们在服务器上设置的Etag字段。在浏览器接收到服务器响应后，会检测响应头部（Header），如果有Etag字段，那么浏览器就会将本次缓存写入硬盘中。</p>
+<p>之所以拉取缓存会出现200、304两种不同的状态码，取决于浏览器是否有向服务器发起验证请求。 只有向服务器发起验证请求并确认缓存未被更新，才会返回304状态码。</p>
+<p>这里我以nginx为例，谈谈如何配置缓存:</p>
+<p>首先，我们先进入nginx的配置文档</p>
+<pre class="highlight"><code class="hljs vim">$ <span class="hljs-keyword">vim</span> nginxPath/<span class="hljs-keyword">conf</span>/nginx.<span class="hljs-keyword">conf</span><br></code></pre>
+
+<p>在配置文档内插入如下两项：</p>
+<pre class="highlight"><code class="hljs awk">etag on;   <span class="hljs-regexp">//</span>开启etag验证<br>expires <span class="hljs-number">7</span>d;    <span class="hljs-regexp">//</span>设置缓存过期时间为<span class="hljs-number">7</span>天<br></code></pre>
+
+<p>打开我们的网站，在chrome devtools的network面板中观察我们的请求资源，如果在响应头部看见Etag和Expires字段，就说明我们的缓存配置成功了。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/88e4cd32-d8e1-4df4-bf15-a20bdcd8aa5b-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/88e4cd32-d8e1-4df4-bf15-a20bdcd8aa5b-3807603.jpg"></p>
+<p><strong>注意：</strong>在我们配置缓存时一定要切记，浏览器在处理用户请求时，如果命中强缓存，浏览器会直接拉取本地缓存，不会与服务器发生任何通信，也就是说，如果我们在服务器端更新了文件，并不会被浏览器得知，就无法替换失效的缓存。所以我们在构建阶段，需要为我们的静态资源添加md5 hash后缀，避免资源更新而引起的前后端文件无法同步的问题。</p>
+<h3 id="资源打包压缩"><a href="#资源打包压缩" class="headerlink" title="资源打包压缩"></a>资源打包压缩</h3><p>我们之前所作的浏览器缓存工作，只有在用户第二次访问我们的页面才能起到效果，如果要在用户首次打开页面就实现优良的性能，必须对资源进行优化。我们常将网络性能优化措施归结为三大方面：减少请求数、减小请求资源体积、提升网络传输速率。现在，让我们逐个击破：</p>
+<p>结合前端工程化思想，我们在对上线文件进行自动化打包编译时，通常都需要打包工具的协助，这里我推荐webpack，我通常都使用Gulp和Grunt来编译node，Parcel太新，而且webpack也一直在自身的特性上向Parcel靠拢，有余力的同学强烈建议学习webpack打包原理。</p>
+<p>在对webpack进行上线配置时，我们要特别注意以下几点：</p>
+<ol>
+<li>JS压缩：（这点应该算是耳熟能详了，就不多介绍了）</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">UglifyJsPlugin</span>()<br></code></pre>
+
+<ol start="2">
+<li>HTML压缩：</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">new</span> <span class="hljs-title class_">HtmlWebpackPlugin</span>(&#123;<br>    <span class="hljs-attr">template</span>: __dirname + <span class="hljs-string">&#x27;/views/index.html&#x27;</span>, <span class="hljs-comment">// new 一个这个插件的实例，并传入相关的参数</span><br>    <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;../index.html&#x27;</span>,<br>    <span class="hljs-attr">minify</span>: &#123;<br>        <span class="hljs-attr">removeComments</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">collapseWhitespace</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">removeRedundantAttributes</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">useShortDoctype</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">removeEmptyAttributes</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">removeStyleLinkTypeAttributes</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">keepClosingSlash</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">minifyJS</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">minifyCSS</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">minifyURLs</span>: <span class="hljs-literal">true</span>,<br>    &#125;,<br>    <span class="hljs-attr">chunksSortMode</span>: <span class="hljs-string">&#x27;dependency&#x27;</span><br>&#125;)<br></code></pre>
+
+<p>我们在使用html-webpack-plugin 自动化注入JS、CSS打包HTML文件时，很少会为其添加配置项，这里我给出样例，大家直接复制就行。</p>
+<p>PS：这里有一个技巧，在我们书写HTML元素的src 或 href 属性时，可以省略协议部分，这样也能简单起到节省资源的目的。</p>
+<ol start="3">
+<li>提取公共资源：</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">CommonsChunkPlugin</span>(&#123;<br>    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;vendor&#x27;</span>,<br>    <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;scripts/common/vendor-[hash:5].js&#x27;</span><br>&#125;)<br></code></pre>
+
+<p><strong>注意：</strong>这里是webpack3的语法，在webpack4中已作更改。</p>
+<ol start="4">
+<li>提取css并压缩：</li>
+</ol>
+<p>在使用webpack的过程中，我们通常会以模块的形式引入css文件（webpack的思想不就是万物皆模块嘛），但是在上线的时候，我们还需要将这些css提取出来，并且压缩，这些看似复杂的过程只需要简单的几行配置就行：（PS:我们需要用到extract-text-webpack-plugin ，所以还得大家自行npm install）</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title class_">ExtractTextPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;extract-text-webpack-plugin&#x27;</span>)<br><span class="hljs-attr">module</span>: &#123;<br>    <span class="hljs-attr">rules</span>: [..., &#123;<br>        <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,<br>        <span class="hljs-attr">use</span>: <span class="hljs-title class_">ExtractTextPlugin</span>.<span class="hljs-title function_">extract</span>(&#123;<br>            <span class="hljs-attr">fallback</span>: <span class="hljs-string">&#x27;style-loader&#x27;</span>,<br>            <span class="hljs-attr">use</span>: &#123;<br>                <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;css-loader&#x27;</span>,<br>                <span class="hljs-attr">options</span>: &#123;<br>                    <span class="hljs-attr">minimize</span>: <span class="hljs-literal">true</span><br>                &#125;<br>            &#125;<br>        &#125;)<br>    &#125;]<br>&#125;<br></code></pre>
+
+<ol start="5">
+<li>使用webpack3的新特性：ModuleConcatenationPlugin</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">ModuleConcatenationPlugin</span>()<br></code></pre>
+
+<p>如果你能按照上述五点将webpack上线配置完整配置出来，基本能将文件资源体积压缩到极致了，如有疏漏，还希望大家能加以补充。</p>
+<p>给大家上一份我的webpack上线配置文档，欢迎参考：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//webpack.pro.js</span><br><span class="hljs-keyword">const</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;webpack&#x27;</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">HtmlWebpackPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;html-webpack-plugin&#x27;</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">ExtractTextPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;extract-text-webpack-plugin&#x27;</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">CleanWebpackPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;clean-webpack-plugin&#x27;</span>)<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">CopyWebpackPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;copy-webpack-plugin&#x27;</span>)<br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>    <span class="hljs-attr">entry</span>: __dirname + <span class="hljs-string">&#x27;/public/scripts/index.js&#x27;</span>,<br>    <span class="hljs-attr">output</span>: &#123;<br>        <span class="hljs-attr">path</span>: __dirname + <span class="hljs-string">&#x27;/build/static&#x27;</span>, <span class="hljs-comment">// 打包后的文件存放的地方</span><br>        <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;scripts/[name]-[hash:5].js&#x27;</span> <span class="hljs-comment">// 打包后输出文件的文件名,带有md5 hash戳</span><br>    &#125;,<br>    <span class="hljs-attr">resolve</span>: &#123;<br>        <span class="hljs-attr">extensions</span>: [<span class="hljs-string">&#x27;.jsx&#x27;</span>, <span class="hljs-string">&#x27;.js&#x27;</span>]<br>    &#125;,<br>    <span class="hljs-attr">module</span>: &#123;<br>        <span class="hljs-attr">rules</span>: [&#123;<br>            <span class="hljs-attr">test</span>: <span class="hljs-regexp">/(\.jsx|\.js)$/</span>,<br>            <span class="hljs-attr">use</span>: &#123;<br>                <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;babel-loader&#x27;</span><br>            &#125;,<br>            <span class="hljs-attr">exclude</span>: <span class="hljs-regexp">/node_modules/</span> <span class="hljs-comment">// 不进行编译的目录</span><br>        &#125;, &#123;<br>            <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,<br>            <span class="hljs-attr">use</span>: <span class="hljs-title class_">ExtractTextPlugin</span>.<span class="hljs-title function_">extract</span>(&#123;<br>                <span class="hljs-attr">fallback</span>: <span class="hljs-string">&#x27;style-loader&#x27;</span>,<br>                <span class="hljs-attr">use</span>: &#123;<br>                    <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;css-loader&#x27;</span>,<br>                    <span class="hljs-attr">options</span>: &#123;<br>                        <span class="hljs-attr">minimize</span>: <span class="hljs-literal">true</span><br>                    &#125;<br>                &#125;<br>            &#125;)<br>        &#125;]<br>    &#125;,<br>    <span class="hljs-attr">plugins</span>: [<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">HtmlWebpackPlugin</span>(&#123;<br>            <span class="hljs-attr">template</span>: __dirname + <span class="hljs-string">&#x27;/views/index.html&#x27;</span>, <br>            <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;../index.html&#x27;</span>,<br>            <span class="hljs-attr">minify</span>: &#123;<br>                <span class="hljs-attr">removeComments</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">collapseWhitespace</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">removeRedundantAttributes</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">useShortDoctype</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">removeEmptyAttributes</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">removeStyleLinkTypeAttributes</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">keepClosingSlash</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">minifyJS</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">minifyCSS</span>: <span class="hljs-literal">true</span>,<br>                <span class="hljs-attr">minifyURLs</span>: <span class="hljs-literal">true</span>,<br>            &#125;,<br>            <span class="hljs-attr">chunksSortMode</span>: <span class="hljs-string">&#x27;dependency&#x27;</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">ExtractTextPlugin</span>(<span class="hljs-string">&#x27;styles/style-[hash:5].css&#x27;</span>),<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">CleanWebpackPlugin</span>(<span class="hljs-string">&#x27;build/*&#x27;</span>, &#123;<br>            <span class="hljs-attr">root</span>: __dirname,<br>            <span class="hljs-attr">verbose</span>: <span class="hljs-literal">true</span>,<br>            <span class="hljs-attr">dry</span>: <span class="hljs-literal">false</span><br>        &#125;),<br>        <span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">UglifyJsPlugin</span>(),<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">CopyWebpackPlugin</span>([&#123;<br>            <span class="hljs-attr">from</span>: __dirname + <span class="hljs-string">&#x27;/public/images&#x27;</span>,<br>            <span class="hljs-attr">to</span>: __dirname + <span class="hljs-string">&#x27;/build/static/images&#x27;</span><br>        &#125;, &#123;<br>            <span class="hljs-attr">from</span>: __dirname + <span class="hljs-string">&#x27;/public/scripts/vector.js&#x27;</span>,<br>            <span class="hljs-attr">to</span>: __dirname + <span class="hljs-string">&#x27;/build/static/scripts/vector.js&#x27;</span><br>        &#125;]),<br>        <span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">ModuleConcatenationPlugin</span>(),<br>        <span class="hljs-keyword">new</span> webpack.<span class="hljs-property">optimize</span>.<span class="hljs-title class_">CommonsChunkPlugin</span>(&#123;<br>            <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;vendor&#x27;</span>,<br>            <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;scripts/common/vendor-[hash:5].js&#x27;</span><br>        &#125;)<br>    ]<br>&#125;<br></code></pre>
+
+<p>最后，我们还应该在服务器上开启Gzip传输压缩，它能将我们的文本类文件体积压缩至原先的四分之一，效果立竿见影，还是切换到我们的nginx配置文档，添加如下两项配置项目：</p>
+<pre class="highlight"><code class="hljs awk">gzip on;<br>gzip_types text<span class="hljs-regexp">/plain application/</span>javascriptapplication<span class="hljs-regexp">/x-javascripttext/</span>css application<span class="hljs-regexp">/xml text/</span>javascriptapplication<span class="hljs-regexp">/x-httpd-php application/</span>vnd.ms-fontobject font<span class="hljs-regexp">/ttf font/</span>opentype font<span class="hljs-regexp">/x-woff image/</span>svg+xml;<br></code></pre>
+
+<p>如果你在网站请求的响应头里看到这样的字段，那么就说明咱们的Gzip压缩配置成功啦：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d129bd76-758f-4c06-95d6-4b6fa9860e1a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/d129bd76-758f-4c06-95d6-4b6fa9860e1a-3807603.jpg"></p>
+<p><strong>注意：</strong>不要对图片文件进行Gzip压缩！不要对图片文件进行Gzip压缩！不要对图片文件进行Gzip压缩！我只会告诉你效果适得其反，至于具体原因，还得考虑服务器压缩过程中的CPU占用还有压缩率等指标，对图片进行压缩不但会占用后台大量资源，压缩效果其实并不可观，可以说是“弊大于利”，所以请在gzip_types 把图片的相关项去掉。针对图片的相关处理，我们接下来会更加具体地介绍。</p>
+<h3 id="图片资源优化"><a href="#图片资源优化" class="headerlink" title="图片资源优化"></a>图片资源优化</h3><p>刚刚我们介绍了资源打包压缩，只是停留在了代码层面，而在我们实际开发中，真正占用了大量网络传输资源的，并不是这些文件，而是图片，如果你对图片进行了优化工作，你能立刻看见明显的效果。</p>
+<h4 id="不要在HTML里缩放图像"><a href="#不要在HTML里缩放图像" class="headerlink" title="不要在HTML里缩放图像"></a>不要在HTML里缩放图像</h4><p>很多开发者可能会有这样的错觉（其实我曾经也是这样），比如我们会为了方便在一个200✖200的图片容器内直接使用一张400✖400的图片，我们甚至认为这样能让用户觉得图片更加清晰，其实不然，在普通的显示器上，用户并不会感到缩放后的大图更加清晰，但这一切却导致网页加速速度下降，同时照成带宽浪费，你可能不知道，一张200KB的图片和2M的图片的传输时间会是200ms和12s的差距（亲身经历，深受其害(┬＿┬)）。所以，当你需要用多大的图片时，就在服务器上准备好多大的图片，尽量固定图片尺寸。</p>
+<h4 id="使用雪碧图（CSS-Sprite）"><a href="#使用雪碧图（CSS-Sprite）" class="headerlink" title="使用雪碧图（CSS Sprite）"></a>使用雪碧图（CSS Sprite）</h4><p>雪碧图的概念大家一定在开发中经常听见，其实雪碧图是减小请求数的示范性代表。而且很奇妙的是，多张图片拼在一块后，总体积会比之前所有图片的体积之和小（你可以亲自试试）。</p>
+<h4 id="使用字体图标（iconfont）"><a href="#使用字体图标（iconfont）" class="headerlink" title="使用字体图标（iconfont）"></a>使用字体图标（iconfont）</h4><p>不论是压缩后的图片，还是雪碧图，终归还是图片，只要是图片，就还是会占用大量网络传输资源。但是字体图标的出现，却让前端开发者看到了另外一个神奇的世界。</p>
+<p>我最喜欢用的是<a href="www.iconfont.cn">阿里矢量图标库</a>，里面有大量的矢量图资源，而且你只需要像在淘宝采购一样把他们添加至购物车就能把它们带回家，整理完资源后还能自动生成CDN链接，可以说是完美的一条龙服务了。</p>
+<p>图片能做的很多事情，矢量图都能作，而且它只是往HTML里插入字符和CSS样式而已，和图片请求比起来，在网络传输资源的占用上它们完全不在一个数量级，如果你的项目里有大量的小图标，就用矢量图吧。</p>
+<h4 id="使用WebP"><a href="#使用WebP" class="headerlink" title="使用WebP"></a>使用WebP</h4><p>WebP格式，是谷歌公司开发的一种旨在加快图片加载速度的图片格式。图片压缩体积大约只有JPEG的2&#x2F;3，并能节省大量的服务器带宽资源和数据空间。Facebook、Ebay等知名网站已经开始测试并使用WebP格式。</p>
+<p>我们可以使用官网提供的Linux命令行工具对项目中的图片进行WebP编码，也可以使用我们的线上服务，这里我推荐<a href="www.upyun.com/webp">叉拍云</a>。但是在实际的上线工作中，我们还是得编写Shell脚本使用命令行工具进行批量编码，不过测试阶段我们用线上服务就足够了，方便快捷。</p>
+<h3 id="网络传输性能检测工具——Page-Speed"><a href="#网络传输性能检测工具——Page-Speed" class="headerlink" title="网络传输性能检测工具——Page Speed"></a>网络传输性能检测工具——Page Speed</h3><p>除了network版块，其实chrome还为我们准备好了一款监测网络传输性能的插件——Page Speed。我们只需要通过下面步骤安装，就可以在chrome devtools里找到它了：chrome菜单→更多工具→拓展程序→chrome网上应用商店→搜索pagespeed后安转即可。</p>
+<p>我们只需要打开待测试的网页，然后点击Page Speed里的 Start analyzing按钮，它就会自动帮我们测试网络传输性能了。</p>
+<p>Page Speed最人性化的地方，便是它会对测试网站的性能瓶颈提出完整的建议，我们可以根据它的提示进行优化工作。Page Speed Score表示你的性能测试得分，100&#x2F;100表示已经没有需要优化的地方。</p>
+<p>优化完毕后再使用chorme devtools的network版块测量一下我们网页的白屏时间还有首屏时间，是不是得到了很大的提升？</p>
+<h3 id="使用CDN"><a href="#使用CDN" class="headerlink" title="使用CDN"></a>使用CDN</h3><p>再好的性能优化实例，也必须在CDN的支撑下才能到达极致。</p>
+<p>如果我们在Linux下使用命令$ traceroute targetIp 或者在Windows下使用批处理 &gt; tracert targetIp，都可以定位用户与目标计算机之间经过的所有路由器，不言而喻，用户和服务器之间距离越远，经过的路由器越多，延迟也就越高。使用CDN的目的之一便是解决这一问题，当然不仅仅如此，CDN还可以分担IDC压力。</p>
+<p>当然，凭着我们单个人的资金实力（除非你是王思聪）是必定搭建不起来CDN的，不过我们可以使用各大企业提供的服务，诸如腾讯云等，配置也十分简单，这里就请大家自行去推敲啦。</p>
+<p>其实我们的CDN域名一般是和我们的网站主域名不同的，大家可以看看淘宝、腾讯的官方网站，看看他们存放静态资源的CDN域名，都是和主域名不一样的。为什么要这么做？主要有两个原因：</p>
+<ol>
+<li><p>便于CDN业务独立，能够独立配置缓存。为了降低web压力，CDN系统会遵循Cache-Control和Expires HTTP头标准对改请求返回的内容进行缓存，便于后面的请求不在回源，起到加速功能。而传统CDN（Web与CDN共用域名）的方式，需要对不同类型的文件设置相应的Cache规则或者遵循后端的HTTP头，但这样难以发挥CDN的最大优势，因为动态请求回源的概率非常之大，如果访客与源站的线路并不慢，通过CDN的请求未必快于直接请求源站的。 大型网站为了提升web性能到极致，通常缓存头设置比较大，像谷歌JS设置一年缓存，百度首页logo设置十年缓存，如果将静态元素抽取出来，就可以很方便的对所有静态元素部署规则，而不用考虑动态请求。减少规则的条数可以提升CDN的效率。</p>
+</li>
+<li><p>抛开无用cookie，减小带宽占用。我们都知道HTTP协议每次发送请求都会自动带上该域名及父级域名下的cookie，但对于CSS，JS还有图片资源，这些cookie是没用的，反而会浪费访客带宽和服务器入带宽。而我们的主站，为了保持会话或者做其他缓存，都会存放着大量的cookie，所以如果将CDN与主站域名分离，就能解决这一问题。</p>
+</li>
+</ol>
+<p>不过这样一来，新的问题就出现了：CDN域名与主站域名不同，DNS解析CDN域名还需要花费额外的时间，增加网络延迟。不过这难不住我们伟大的程序员前辈，DNS Prefetch闪亮登场。</p>
+<p>如果大家翻看大型网站的HTML源代码，都会在头部发现这样的link链接：（这里以淘宝首页为例）</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/28564ad1-63bd-4f08-abda-7dc6dcaed611-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/28564ad1-63bd-4f08-abda-7dc6dcaed611-3807603.jpg"></p>
+<p>这就是DNS Prefetch。DNS Prefetch是一种DNS预解析技术，当我们浏览网页时，浏览器会在加载网页时对网页中的域名进行预解析并缓存，这样在浏览器加载网页中的链接时，就无需进行DNS解析，减少用户的等待时间，提高用户体验。DNS Prefetch现已被主流浏览器支持，大多数浏览器针对DNS解析都进行了优化，典型的一次DNS解析会耗费20~120ms，减少DNS解析时间和次数是个很好的优化措施。</p>
+<h2 id="页面渲染性能优化"><a href="#页面渲染性能优化" class="headerlink" title="页面渲染性能优化"></a>页面渲染性能优化</h2><h3 id="浏览器渲染过程（Webkit）"><a href="#浏览器渲染过程（Webkit）" class="headerlink" title="浏览器渲染过程（Webkit）"></a>浏览器渲染过程（Webkit）</h3><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/805cfd8a-8ebe-456c-a96a-52d2734d3f0c-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/805cfd8a-8ebe-456c-a96a-52d2734d3f0c-3807603.jpg"></p>
+<p>其实大家应该对浏览器的HTML渲染机制比较熟悉了，基本流程同上图所述，大家在入门的时候，你的导师或者前辈可能会告诉你，在渲染方面我们要减少重排和重绘，因为他们会影响浏览器性能。不过你一定不知道其中原理是什么，对吧。今天我们就结合《Webkit技术内幕》（这本书我还是很推荐大家买来看看，好歹作为一名前端工程师，你得知道我们天天接触的浏览器内核是怎样工作的）的相关知识，给大家普及普及那些深层次的概念。</p>
+<p>PS：这里提到了Webkit内核，我顺带提一下浏览器内部的渲染引擎、解释器等组件的关系，因为经常有师弟或者一些前端爱好者向我问这方面的知识，分不清他们的关系，我就拿一张图来说明：（这部分内容与本文无关，如果你对此不感兴趣，可以直接跳过）</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/44a0ba7d-2469-4bd7-89a7-a4b04a8e8464-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/44a0ba7d-2469-4bd7-89a7-a4b04a8e8464-3807603.jpg"></p>
+<p>浏览器的解释器，是包括在渲染引擎内的，我们常说的Chrome（现在使用的是Blink引擎）和Safari使用的Webkit引擎，Firefox使用的Gecko引擎，指的就是渲染引擎。而在渲染引擎内，还包括着我们的HTML解释器（渲染时用于构造DOM树）、CSS解释器（渲染时用于合成CSS规则）还有我们的JS解释器。不过后来，由于JS的使用越来越重要，工作越来越繁杂，所以JS解释器也渐渐独立出来，成为了单独的JS引擎，就像众所周知的V8引擎，我们经常接触的Node.js也是用的它。</p>
+<h3 id="DOM渲染层与GPU硬件加速"><a href="#DOM渲染层与GPU硬件加速" class="headerlink" title="DOM渲染层与GPU硬件加速"></a>DOM渲染层与GPU硬件加速</h3><p>如果我告诉你，一个页面是由许多许多层级组成的，他们就像千层面那样，你能想象出这个页面实际的样子吗？这里为了便于大家想象，我附上一张之前Firefox提供的3D View插件的页面Layers层级图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ffa81a95-1654-4280-8b3e-d0fb99fb2f1d-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/ffa81a95-1654-4280-8b3e-d0fb99fb2f1d-3807603.jpg"></p>
+<p>对，你没看错，页面的真实样子就是这样，是由多个DOM元素渲染层（Layers）组成的，实际上一个页面在构建完Render Tree之后，是经历了这样的流程才最终呈现在我们面前的：</p>
+<ol>
+<li>浏览器会先获取DOM树并依据样式将其分割成多个独立的渲染层</li>
+<li>CPU将每个层绘制进绘图中</li>
+<li>将位图作为纹理上传至GPU（显卡）绘制</li>
+<li>GPU将所有的渲染层缓存（如果下次上传的渲染层没有发生变化，GPU就不需要对其进行重绘）并复合多个渲染层最终形成我们的图像</li>
+</ol>
+<p>从上面的步骤我们可以知道，布局是由CPU处理的，而绘制则是由GPU完成的。</p>
+<p>其实在chrome中，也为我们提供了相关插件供我们查看页面渲染层的分布情况以及GPU的占用率：（所以说，平时我们得多去尝试尝试chrome的那些莫名其妙的插件，真的会发现好多东西都是神器）</p>
+<p>chrome开发者工具菜单→more tools→Layers（开启渲染层功能模块）<br>chrome开发者工具菜单→more tools→rendering（开启渲染性能监测工具）</p>
+<p>执行上面的操作后，你会在浏览器里看到这样的效果：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2bd7ddaa-2cb0-45c3-bb72-f5f138361b90-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2bd7ddaa-2cb0-45c3-bb72-f5f138361b90-3807603.jpg"></p>
+<p>太多东西了，分模块讲吧：</p>
+<p><strong>（一）</strong>最先是页面右上方的小黑窗：其实提示已经说的很清楚了，它显示的就是我们的GPU占用率，能够让我们清楚地知道页面是否发生了大量的重绘。</p>
+<p><strong>（二）</strong>Layers版块：这就是用于显示我们刚提到的DOM渲染层的工具了，左侧的列表里将会列出页面里存在哪些渲染层，还有这些渲染层的详细信息。</p>
+<p><strong>（三）</strong>Rendering版块：这个版块和我们的控制台在同一个地方，大家可别找不到它。前三个勾选项是我们最常使用的：</p>
+<ol>
+<li>Paint flashing：勾选之后会对页面中发生重绘的元素高亮显示</li>
+<li>Layer borders：和我们的Layer版块功能类似，它会用高亮边界突出我们页面中的各个渲染层</li>
+<li>FPS meter：就是开启我们在（一）中提到的小黑窗，用于观察我们的GPU占用率</li>
+</ol>
+<p>可能大家会问，提到DOM渲染层这么深的概念有什么用啊，好像跟性能优化没一点关系啊？大家应该还记得我刚说到GPU会对我们的渲染层作缓存对吧，那么大家试想一下，如果我们把那些一直发生大量重排重绘的元素提取出来，单独触发一个渲染层，那样这个元素不就不会“连累”其他元素一块重绘了对吧。</p>
+<p>那么问题来了，什么情况下会触发渲染层呢？大家只要记住：</p>
+<p>Video元素、WebGL、Canvas、CSS3 3D、CSS滤镜、z-index大于某个相邻节点的元素都会触发新的Layer，其实我们最常用的方法，就是给某个元素加上下面的样式：</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-attribute">transform</span>: <span class="hljs-built_in">translateZ</span>(<span class="hljs-number">0</span>);<br><span class="hljs-attribute">backface-visibility</span>: hidden;<br></code></pre>
+
+<p>这样就可以触发渲染层啦 。</p>
+<p>我们把容易触发重排重绘的元素单独触发渲染层，让它与那些“静态”元素隔离，让GPU分担更多的渲染工作，我们通常把这样的措施成为硬件加速，或者是GPU加速。大家之前肯定听过这个说法，现在完全清楚它的原理了吧。</p>
+<h3 id="重排与重绘"><a href="#重排与重绘" class="headerlink" title="重排与重绘"></a>重排与重绘</h3><p>现在到我们的重头戏了，重排和重绘。先抛出概念：</p>
+<ol>
+<li><p>重排（reflow）：渲染层内的元素布局发生修改，都会导致页面重新排列，比如窗口的尺寸发生变化、删除或添加DOM元素，修改了影响元素盒子大小的CSS属性（诸如：width、height、padding）。</p>
+</li>
+<li><p>重绘（repaint）：绘制，即渲染上色，所有对元素的视觉表现属性的修改，都会引发重绘。</p>
+</li>
+</ol>
+<p>我们习惯使用chrome devtools中的performance版块来测量页面重排重绘所占据的时间：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/cac6840f-37e0-4948-80e3-53f1d4903da6-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/cac6840f-37e0-4948-80e3-53f1d4903da6-3807603.jpg"></p>
+<ul>
+<li>蓝色部分：HTML解析和网络通信占用的时间</li>
+<li>黄色部分：JavaScript语句执行所占用时间</li>
+<li>紫色部分：重排占用时间</li>
+<li>绿色部分：重绘占用时间</li>
+</ul>
+<p>不论是重排还是重绘，都会阻塞浏览器。要提高网页性能，就要降低重排和重绘的频率和成本，近可能少地触发重新渲染。正如我们在2.3中提到的，重排是由CPU处理的，而重绘是由GPU处理的，CPU的处理效率远不及GPU，并且重排一定会引发重绘，而重绘不一定会引发重排。所以在性能优化工作中，我们更应当着重减少重排的发生。</p>
+<h3 id="优化策略"><a href="#优化策略" class="headerlink" title="优化策略"></a>优化策略</h3><p>谈了那么多理论，最实际不过的，就是解决方案，具体方法如下：</p>
+<ol>
+<li>CSS属性读写分离：浏览器每次对元素样式进行读操作时，都必须进行一次重新渲染（重排 + 重绘），所以我们在使用JS对元素样式进行读写操作时，最好将两者分离开，先读后写，避免出现两者交叉使用的情况。最最最客观的解决方案，就是不用JS去操作元素样式，这也是我最推荐的。</li>
+<li>通过切换class或者使用元素的style.csstext属性去批量操作元素样式。</li>
+<li>DOM元素离线更新：当对DOM进行相关操作时，例、appendChild等都可以使用Document Fragment对象进行离线操作，带元素“组装”完成后再一次插入页面，或者使用display:none 对元素隐藏，在元素“消失”后进行相关操作。</li>
+<li>将没用的元素设为不可见：visibility: hidden，这样可以减小重绘的压力，必要的时候再将元素显示。</li>
+<li>压缩DOM的深度，一个渲染层内不要有过深的子元素，少用DOM完成页面样式，多使用伪元素或者box-shadow取代。</li>
+<li>图片在渲染前指定大小：因为img元素是内联元素，所以在加载图片后会改变宽高，严重的情况会导致整个页面重排，所以最好在渲染前就指定其大小，或者让其脱离文档流。</li>
+<li>对页面中可能发生大量重排重绘的元素单独触发渲染层，使用GPU分担CPU压力。（这项策略需要慎用，得着重考量以牺牲GPU占用率为代价能否换来可期的性能优化，毕竟页面中存在太多的渲染层对于GPU而言也是一种不必要的压力，通常情况下，我们会对动画元素采取硬件加速。）</li>
+</ol>
+<h2 id="JS阻塞性能"><a href="#JS阻塞性能" class="headerlink" title="JS阻塞性能"></a>JS阻塞性能</h2><p>JavaScript在网站开发中几乎已经确定了垄断地位，哪怕是一个再简单不过的静态页面，你都可能看到JS的存在，可以说，没有JS，网站就基本告别用户交互了。然而，脚本带来的问题就是他会阻塞页面的平行下载，还会提高进程的CPU占用率。更有甚者，现在node.js已经在前端开发中普及，稍有不慎，我们引发了内存泄漏，或者在代码中误写了死循环，会直接造成我们的服务器崩溃。在如今这个JS已经遍布前后端的时代，性能的瓶颈不单单只是停留在影响用户体验上，还会有更多更为严重的问题，对JS的性能优化工作不可小觑。</p>
+<p>在编程的过程中，如果我们使用了闭包后未将相关资源加以释放，或者引用了外链后未将其置空（比如给某DOM元素绑定了事件回调，后来却remove了该元素），都会造成内存泄漏的情况发生，进而大量占用用户的CPU，造成卡顿或死机。我们可以使用chrome提供的JavaScript Profile版块，开启方式同Layers等版块，这里我就不再多说了，直接上效果图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d0a33335-b8d4-4932-86be-6749acb7c982-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/d0a33335-b8d4-4932-86be-6749acb7c982-3807603.jpg"></p>
+<p>我们可以清楚看见JS执行时各函数的执行时间以及CPU占用情况，如果我在代码里增加一行while(true){}, 那么它的占用率一定会飙升到一个异常的指标（亲测93.26%）。</p>
+<p>其实浏览器强大的内存回收机制在大多数时候避免了这一情况的发生，即便用户发生了死机，他只要结束相关进程（或关闭浏览器）就可以解决这一问题，但我们要知道，同样的情况还会发生在我们的服务器端，也就是我们的node中，严重的情况，会直接造成我们的服务器宕机，网站崩溃。所以更多时候，我们都使用JavaScript Profile版块来对我们的node服务进行压力测试，搭配node-inspector 插件，我们能更有效地检测JS执行时各函数的CPU占用率，针对性地进行优化。</p>
+<p><strong>所以：</strong>没修炼到一定水平，千万别在服务端使用闭包，一个是真没啥用，我们会有更多优良的解决办法，二是真的很容易内存泄漏，造成的后果是你无法预期的</p>
+<h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><p>如果是你自己搭建的个人网站，或者中小型网站，其实并不需要考虑多大的并发量，但是如果你搭建的是大型网站，负载均衡便是开发过程不可或缺的步骤。</p>
+<h3 id="Node-js处理IO密集型请求"><a href="#Node-js处理IO密集型请求" class="headerlink" title="Node.js处理IO密集型请求"></a>Node.js处理IO密集型请求</h3><p>现在的开发流程都注重前后端分离，也就是软件工程中常提到的“高内聚低耦合”的思想，你也可以用模块化的思想去理解，前后解耦就相当与把一个项目分成了前端和后端两个大模块，中间通过接口联系起来，分别进行开发。这样做有什么好处？我就举最有实际效果的一点：“异步编程”。这是我自己想的名字，因为我觉得前后解耦的形式很像我们JS中的异步队列，传统的开发模式是“同步”的，前端需要等后端封装好接口，知道了能拿什么数据，再去开发，时间短，工程大。而解耦之后，我们只需要提前约定好接口，前后两端就可以同时开发，不仅高效而且省时。</p>
+<p>我们都知道node的核心是事件驱动，通过Event Loop去异步处理用户请求，相比于传统的后端服务，它们都是将用户的每个请求分配一个进程进行处理，推荐大家去看这样一篇<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzAxOTc0NzExNg==&mid=2665513044&idx=1&sn=9b8526e9d641b970ee5ddac02dae3c57&scene=21#wechat_redirect">博文</a>。特别生动地讲解了事件驱动的运行机制，通俗易懂。事件驱动的最大优势是什么？就是在高并发IO时，不会造成堵塞，对于直播类网站，这点是至关重要的，我们有成功的先例——快手，快手强大的IO高并发究其本质一定能追溯到node。</p>
+<p>其实现在的企业级网站，都会搭建一层node作为中间层。大概的网站框架如图所示：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/5b5bff1e-b0b4-4bb8-a2fa-321729bdb156-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/5b5bff1e-b0b4-4bb8-a2fa-321729bdb156-3807603.jpg"></p>
+<h3 id="pm2实现Node-js“多进程”"><a href="#pm2实现Node-js“多进程”" class="headerlink" title="pm2实现Node.js“多进程”"></a>pm2实现Node.js“多进程”</h3><p>我们都知道node的优劣，这里分享一份<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/19653241/answer/15993549">链接</a>，找了挺久写的还算详细。其实很多都是老套路，那些说node不行的都是指着node是单进程这一个软肋开撕，告诉你，我们有解决方案了——pm2。这是它的<a target="_blank" rel="noopener" href="https://pm2.keymetrics.io/">官网</a> 。它是一款node.js进程管理器，具体的功能，就是能在你的计算机里的每一个内核都启动一个node.js服务，也就是说如果你的电脑或者服务器是多核处理器（现在也少见单核了吧），它就能启动多个node.js服务，并且它能够自动控制负载均衡，会自动将用户的请求分发至压力小的服务进程上处理。听起来这东西简直就是神器啊！而且它的功能远远不止这些，这里我就不作过多介绍了，大家知道我们在上线的时候需要用到它就行了，安装的方法也很简单，直接用npm下到全局就可以了。</p>
+<pre class="highlight"><code class="hljs coffeescript">$ <span class="hljs-built_in">npm</span> i pm2 -g<br></code></pre>
+
+<p>具体的使用方法还有相关特性可以参照官网。下面是pm2启动后的效果图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/f331d2d0-5975-4f14-822a-cd51f7ed85d9-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/f331d2d0-5975-4f14-822a-cd51f7ed85d9-3807603.jpg"></p>
+<h3 id="nginx搭建反向代理"><a href="#nginx搭建反向代理" class="headerlink" title="nginx搭建反向代理"></a>nginx搭建反向代理</h3><p>在开始搭建工作之前，首先得知道什么是反向代理。可能大家对这个名词比较陌生，先上一张图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/dd375326-118d-47cc-977c-1a3080f6529a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/dd375326-118d-47cc-977c-1a3080f6529a-3807603.jpg"></p>
+<p>所谓代理就是我们通常所说的中介，网站的反向代理就是指那台介于用户和我们真实服务器之间的服务器（说的我都拗口了），它的作用便是能够将用户的请求分配到压力较小的服务器上，其机制是轮询。听完这句话是不是感觉很耳熟，没错，在我介绍pm2的时候也说过同样的话，反向代理起到的作用同pm2一样也是实现负载均衡，你现在应该也明白了两者之间的差异，反向代理是对服务器实现负载均衡，而pm2是对进程实现负载均衡。大家如果想深入了解反向代理的相关知识，我推荐知乎的一个[贴子]<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/24723688)%E3%80%82%E4%BD%86%E6%98%AF%E5%A4%A7%E5%AE%B6%E4%BC%9A%E6%83%B3%E5%88%B0%EF%BC%8C%E9%85%8D%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%98%AF%E8%BF%90%E7%BB%B4%E7%9A%84%E4%BA%8B%E6%83%85%E5%95%8A%EF%BC%8C%E5%92%8C%E6%88%91%E4%BB%AC%E5%89%8D%E7%AB%AF%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB%E5%91%A2%EF%BC%9F%E7%9A%84%E7%A1%AE%EF%BC%8C%E5%9C%A8%E8%BF%99%E9%83%A8%E5%88%86%EF%BC%8C%E6%88%91%E4%BB%AC%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8F%AA%E6%9C%89%E4%B8%80%E4%BA%9B%EF%BC%8C%E5%8F%AA%E9%9C%80%E8%A6%81%E5%90%91%E8%BF%90%E7%BB%B4%E6%8F%90%E4%BE%9B%E4%B8%80%E4%BB%BD%E9%85%8D%E7%BD%AE%E6%96%87%E6%A1%A3%E5%8D%B3%E5%8F%AF%E3%80%82">https://www.zhihu.com/question/24723688)。但是大家会想到，配服务器是运维的事情啊，和我们前端有什么关系呢？的确，在这部分，我们的工作只有一些，只需要向运维提供一份配置文档即可。</a></p>
+<pre class="highlight"><code class="hljs javascript">http &#123;<br>    upstream video &#123;<br>        ip_hash;<br>        server <span class="hljs-attr">localhost</span>:<span class="hljs-number">3000</span>;<br>    &#125;<br>    server &#123;<br>        <span class="hljs-attr">listen</span>: <span class="hljs-number">8080</span>;<br>        location / &#123;<br>            <span class="hljs-attr">proxy_pass</span>: <span class="hljs-attr">http</span>:<span class="hljs-comment">//video</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>也就是说，在和运维对接的时候，我们只需要将上面这几行代码改为我们配置好的文档发送给他就行了，其他的事情，运维小哥会明白的，不用多说，都在酒里。</p>
+<p>但是，这几行代码该怎么去改呢？首先我们得知道，在nginx中，模块被分为三大类：handler、filter和upstream。而其中的upstream模块，负责完成完成网络数据的接收、处理和转发，也是我们需要在反向代理中用到的模块。接下来我们将介绍配置代码里的内容所表示的含义：</p>
+<h4 id="upstream配置信息"><a href="#upstream配置信息" class="headerlink" title="upstream配置信息"></a>upstream配置信息</h4><p>upstream关键字后紧跟的标识符是我们自定义的项目名称，通过一对花括号在其中增添我们的配置信息。</p>
+<p><strong>ip_hash</strong> 关键字：控制用户再次访问时是否连接到前一次连接的服务器</p>
+<p><strong>server</strong> 关键字：我们真实服务器的地址，这里的内容肯定是需要我们去填写的，不然运维怎么知道你把项目放在那个服务器上了，也不知道你封装了一层node而得去监听3000端口。</p>
+<h4 id="server配置信息"><a href="#server配置信息" class="headerlink" title="server配置信息"></a>server配置信息</h4><p>server是nginx的基本配置，我们需要通过server将我们定义的upstream应用到服务器上。</p>
+<p><strong>listen</strong> 关键字：服务器监听的端口</p>
+<p><strong>location</strong> 关键字：和我们之前在node层说到的路由是起同样的功能，这里是把用户的请求分配到对应的upstream上</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.im/post/6844903613790175240">网站性能优化实战——从12.67s到1.06s的故事</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/19/webpackConfigurationOptimizationWithDetails/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Webpack配置优化与详情 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/19/understandingOfBase64/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">面试官昨天问我对base64的理解，着实被问懵了 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">网络传输性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="toc-text">浏览器缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E6%89%93%E5%8C%85%E5%8E%8B%E7%BC%A9"><span class="toc-text">资源打包压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90%E4%BC%98%E5%8C%96"><span class="toc-text">图片资源优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E8%A6%81%E5%9C%A8HTML%E9%87%8C%E7%BC%A9%E6%94%BE%E5%9B%BE%E5%83%8F"><span class="toc-text">不要在HTML里缩放图像</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9B%AA%E7%A2%A7%E5%9B%BE%EF%BC%88CSS-Sprite%EF%BC%89"><span class="toc-text">使用雪碧图（CSS Sprite）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%97%E4%BD%93%E5%9B%BE%E6%A0%87%EF%BC%88iconfont%EF%BC%89"><span class="toc-text">使用字体图标（iconfont）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8WebP"><span class="toc-text">使用WebP</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94Page-Speed"><span class="toc-text">网络传输性能检测工具——Page Speed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8CDN"><span class="toc-text">使用CDN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">页面渲染性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B%EF%BC%88Webkit%EF%BC%89"><span class="toc-text">浏览器渲染过程（Webkit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DOM%E6%B8%B2%E6%9F%93%E5%B1%82%E4%B8%8EGPU%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F"><span class="toc-text">DOM渲染层与GPU硬件加速</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%8E%92%E4%B8%8E%E9%87%8D%E7%BB%98"><span class="toc-text">重排与重绘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5"><span class="toc-text">优化策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E9%98%BB%E5%A1%9E%E6%80%A7%E8%83%BD"><span class="toc-text">JS阻塞性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Node-js%E5%A4%84%E7%90%86IO%E5%AF%86%E9%9B%86%E5%9E%8B%E8%AF%B7%E6%B1%82"><span class="toc-text">Node.js处理IO密集型请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pm2%E5%AE%9E%E7%8E%B0Node-js%E2%80%9C%E5%A4%9A%E8%BF%9B%E7%A8%8B%E2%80%9D"><span class="toc-text">pm2实现Node.js“多进程”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">nginx搭建反向代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#upstream%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">upstream配置信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#server%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">server配置信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">网络传输性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="toc-text">浏览器缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E6%89%93%E5%8C%85%E5%8E%8B%E7%BC%A9"><span class="toc-text">资源打包压缩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E8%B5%84%E6%BA%90%E4%BC%98%E5%8C%96"><span class="toc-text">图片资源优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E8%A6%81%E5%9C%A8HTML%E9%87%8C%E7%BC%A9%E6%94%BE%E5%9B%BE%E5%83%8F"><span class="toc-text">不要在HTML里缩放图像</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9B%AA%E7%A2%A7%E5%9B%BE%EF%BC%88CSS-Sprite%EF%BC%89"><span class="toc-text">使用雪碧图（CSS Sprite）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%97%E4%BD%93%E5%9B%BE%E6%A0%87%EF%BC%88iconfont%EF%BC%89"><span class="toc-text">使用字体图标（iconfont）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8WebP"><span class="toc-text">使用WebP</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93%E6%80%A7%E8%83%BD%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E2%80%94%E2%80%94Page-Speed"><span class="toc-text">网络传输性能检测工具——Page Speed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8CDN"><span class="toc-text">使用CDN</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="toc-text">页面渲染性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B%EF%BC%88Webkit%EF%BC%89"><span class="toc-text">浏览器渲染过程（Webkit）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DOM%E6%B8%B2%E6%9F%93%E5%B1%82%E4%B8%8EGPU%E7%A1%AC%E4%BB%B6%E5%8A%A0%E9%80%9F"><span class="toc-text">DOM渲染层与GPU硬件加速</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E6%8E%92%E4%B8%8E%E9%87%8D%E7%BB%98"><span class="toc-text">重排与重绘</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5"><span class="toc-text">优化策略</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E9%98%BB%E5%A1%9E%E6%80%A7%E8%83%BD"><span class="toc-text">JS阻塞性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Node-js%E5%A4%84%E7%90%86IO%E5%AF%86%E9%9B%86%E5%9E%8B%E8%AF%B7%E6%B1%82"><span class="toc-text">Node.js处理IO密集型请求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#pm2%E5%AE%9E%E7%8E%B0Node-js%E2%80%9C%E5%A4%9A%E8%BF%9B%E7%A8%8B%E2%80%9D"><span class="toc-text">pm2实现Node.js“多进程”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx%E6%90%AD%E5%BB%BA%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-text">nginx搭建反向代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#upstream%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">upstream配置信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#server%E9%85%8D%E7%BD%AE%E4%BF%A1%E6%81%AF"><span class="toc-text">server配置信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-19</div>
+        <a href="/2022/09/19/whyDoesComputerTimeStartOnJanuary,1,1970/"><div class="recent-posts-item-content">为什么计算机时间要从1970年1月1日开始算起</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-19</div>
+        <a href="/2022/09/19/whyUsecallDetectionObjectTypes/"><div class="recent-posts-item-content">为什么用Object.prototype. toString.call(obj)检测对象类型?</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-19</div>
+        <a href="/2022/09/19/whyIsTCPAReliableConnection/"><div class="recent-posts-item-content">为什么说TCP是可靠连接</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-19</div>
+        <a href="/2022/09/19/webpackProfile/"><div class="recent-posts-item-content">Webpack简介</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
