@@ -7,4 +7,4 @@
 
 有问题只支持付费咨询，可以给我发邮件附上您的联系方式：shuangxunian@gmail.com，我会联系你
 
-这里是文章入口哦~
+[这里](https://shuangxunian.gitee.io/2022/09/19/allIn)是文章入口哦~
