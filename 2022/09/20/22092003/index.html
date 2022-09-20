@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>JavaScript 内存泄漏</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="JavaScript 内存泄漏">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="记录个人成长与生活，前端，算法，nlp">
+        content="如题目">
     
     
       <meta 
@@ -54,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
         
       
     
@@ -338,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">垃圾回收机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95"><span class="toc-text">内存泄漏的识别方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-text">浏览器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="toc-text">命令行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap"><span class="toc-text">WeakMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap-%E7%A4%BA%E4%BE%8B"><span class="toc-text">WeakMap 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -356,7 +360,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">143</span>
+          <span class="categories-list-item-badge">144</span>
         </div>
       </a>
     
@@ -510,14 +514,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      JavaScript 内存泄漏
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092003.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-20T02:42:33.345Z">
+    <time datetime="2022-09-20T03:09:53.771Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -525,17 +529,103 @@
       <span>2022-09-20</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>1.9k 字</span>
     
   </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="什么是内存泄漏？"><a href="#什么是内存泄漏？" class="headerlink" title="什么是内存泄漏？"></a>什么是内存泄漏？</h2><p>程序的运行需要内存。只要程序提出要求，操作系统或者运行时（runtime）就必须供给内存。</p>
+<p>对于持续运行的服务进程（daemon），必须及时释放不再用到的内存。否则，内存占用越来越高，轻则影响系统性能，重则导致进程崩溃。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/73638a3d-54b0-4b11-a0b8-9861b1439e4d-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/73638a3d-54b0-4b11-a0b8-9861b1439e4d-3807603.jpg"></p>
+<p>不再用到的内存，没有及时释放，就叫做内存泄漏（memory leak）。</p>
+<p>有些语言（比如 C 语言）必须手动释放内存，程序员负责内存管理。</p>
+<pre class="highlight"><code class="hljs cpp"><span class="hljs-type">char</span> * buffer;<br>buffer = (<span class="hljs-type">char</span>*) <span class="hljs-built_in">malloc</span>(<span class="hljs-number">42</span>);<br><br><span class="hljs-comment">// Do something with buffer</span><br><br><span class="hljs-built_in">free</span>(buffer);<br></code></pre>
+
+<p>上面是 C 语言代码，<code>malloc</code>方法用来申请内存，使用完毕之后，必须自己用<code>free</code>方法释放内存。</p>
+<p>这很麻烦，所以大多数语言提供自动内存管理，减轻程序员的负担，这被称为”垃圾回收机制”（garbage collector）。</p>
+<h2 id="垃圾回收机制"><a href="#垃圾回收机制" class="headerlink" title="垃圾回收机制"></a>垃圾回收机制</h2><p>垃圾回收机制怎么知道，哪些内存不再需要呢？</p>
+<p>最常使用的方法叫做”引用计数”（reference counting）：语言引擎有一张”引用表”，保存了内存里面所有的资源（通常是各种值）的引用次数。如果一个值的引用次数是0，就表示这个值不再用到了，因此可以将这块内存释放。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/9c80cce0-7a47-4447-b232-cb4354bd2a1d-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/9c80cce0-7a47-4447-b232-cb4354bd2a1d-3807603.jpg"></p>
+<p>上图中，左下角的两个值，没有任何引用，所以可以释放。</p>
+<p>如果一个值不再需要了，引用数却不为0，垃圾回收机制无法释放这块内存，从而导致内存泄漏。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>];<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;hello world&#x27;</span>);<br></code></pre>
+<p>上面代码中，数组[1, 2, 3, 4]是一个值，会占用内存。变量arr是仅有的对这个值的引用，因此引用次数为1。尽管后面的代码没有用到arr，它还是会持续占用内存。</p>
+<p>如果增加一行代码，解除arr对[1, 2, 3, 4]引用，这块内存就可以被垃圾回收机制释放了。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>];<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;hello world&#x27;</span>);<br>arr = <span class="hljs-literal">null</span>;<br></code></pre>
+<p>上面代码中，arr重置为null，就解除了对[1, 2, 3, 4]的引用，引用次数变成了0，内存就可以释放出来了。</p>
+<p>因此，并不是说有了垃圾回收机制，程序员就轻松了。你还是需要关注内存占用：那些很占空间的值，一旦不再用到，你必须检查是否还存在对它们的引用。如果是的话，就必须手动解除引用。</p>
+<h2 id="内存泄漏的识别方法"><a href="#内存泄漏的识别方法" class="headerlink" title="内存泄漏的识别方法"></a>内存泄漏的识别方法</h2><p>怎样可以观察到内存泄漏呢？</p>
+<p>经验法则是，如果连续五次垃圾回收之后，内存占用一次比一次大，就有内存泄漏。这就要求实时查看内存占用。</p>
+<h3 id="浏览器"><a href="#浏览器" class="headerlink" title="浏览器"></a>浏览器</h3><p>Chrome 浏览器查看内存占用，按照以下步骤操作。</p>
+<ol>
+<li>打开开发者工具，选择 Timeline 面板</li>
+<li>在顶部的Capture字段里面勾选 Memory</li>
+<li>点击左上角的录制按钮。</li>
+<li>在页面上进行各种操作，模拟用户的使用情况。</li>
+<li>一段时间后，点击对话框的 stop 按钮，面板上就会显示这段时间的内存占用情况。</li>
+</ol>
+<p>如果内存占用基本平稳，接近水平，就说明不存在内存泄漏。反之，就是内存泄漏了。</p>
+<h3 id="命令行"><a href="#命令行" class="headerlink" title="命令行"></a>命令行</h3><p>命令行可以使用 Node 提供的 <code>process.memoryUsage</code> 方法。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(process.<span class="hljs-title function_">memoryUsage</span>());<br><span class="hljs-comment">// &#123; rss: 27709440,</span><br><span class="hljs-comment">//  heapTotal: 5685248,</span><br><span class="hljs-comment">//  heapUsed: 3449392,</span><br><span class="hljs-comment">//  external: 8772 &#125;</span><br></code></pre>
+<p><code>process.memoryUsage</code>返回一个对象，包含了 Node 进程的内存占用信息。该对象包含四个字段，单位是字节，含义如下。</p>
+<blockquote>
+<p>rss（resident set size）：所有内存占用，包括指令区和堆栈。<br>heapTotal：”堆”占用的内存，包括用到的和没用到的。<br>heapUsed：用到的堆的部分。<br>external： V8 引擎内部的 C++ 对象占用的内存。</p>
+</blockquote>
+<p>判断内存泄漏，以<code>heapUsed</code>字段为准。</p>
+<h2 id="WeakMap"><a href="#WeakMap" class="headerlink" title="WeakMap"></a>WeakMap</h2><p>前面说过，及时清除引用非常重要。但是，你不可能记得那么多，有时候一疏忽就忘了，所以才有那么多内存泄漏。</p>
+<p>最好能有一种方法，在新建引用的时候就声明，哪些引用必须手动清除，哪些引用可以忽略不计，当其他引用消失以后，垃圾回收机制就可以释放内存。这样就能大大减轻程序员的负担，你只要清除主要引用就可以了。</p>
+<p>ES6 考虑到了这一点，推出了两种新的数据结构：WeakSet 和 WeakMap。它们对于值的引用都是不计入垃圾回收机制的，所以名字里面才会有一个”Weak”，表示这是弱引用。</p>
+<p>下面以 WeakMap 为例，看看它是怎么解决内存泄漏的。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> wm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WeakMap</span>();<br><span class="hljs-keyword">const</span> element = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;example&#x27;</span>);<br>wm.<span class="hljs-title function_">set</span>(element, <span class="hljs-string">&#x27;some information&#x27;</span>);<br>wm.<span class="hljs-title function_">get</span>(element) <span class="hljs-comment">// &quot;some information&quot;</span><br></code></pre>
+<p>上面代码中，先新建一个 Weakmap 实例。然后，将一个 DOM 节点作为键名存入该实例，并将一些附加信息作为键值，一起存放在 WeakMap 里面。这时，WeakMap 里面对element的引用就是弱引用，不会被计入垃圾回收机制。</p>
+<p>也就是说，DOM 节点对象的引用计数是1，而不是2。这时，一旦消除对该节点的引用，它占用的内存就会被垃圾回收机制释放。Weakmap 保存的这个键值对，也会自动消失。</p>
+<p>基本上，如果你要往对象上添加数据，又不想干扰垃圾回收机制，就可以使用 WeakMap。</p>
+<h2 id="WeakMap-示例"><a href="#WeakMap-示例" class="headerlink" title="WeakMap 示例"></a>WeakMap 示例</h2><p>WeakMap 的例子很难演示，因为无法观察它里面的引用会自动消失。此时，其他引用都解除了，已经没有引用指向 WeakMap 的键名了，导致无法证实那个键名是不是存在。</p>
+<p>我一直想不出办法，直到有一天贺师俊老师提示，如果引用所指向的值占用特别多的内存，就可以通过<code>process.memoryUsage</code>方法看出来。</p>
+<p>根据这个思路，网友 vtxf 补充了下面的例子。</p>
+<p>首先，打开 Node 命令行。</p>
+<pre class="highlight"><code class="hljs crmsh">$ <span class="hljs-keyword">node</span> <span class="hljs-title">--expose-gc</span><br></code></pre>
+
+<p>上面代码中，–expose-gc参数表示允许手动执行垃圾回收机制。</p>
+<p>然后，执行下面的代码。</p>
+<pre class="highlight"><code class="hljs node-repl">// 手动执行一次垃圾回收，保证获取的内存使用状态准确<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-variable language_">global</span>.<span class="hljs-title function_">gc</span>(); </span><br>undefined<br><br>// 查看内存占用的初始状态，heapUsed 为 4M 左右<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">process.<span class="hljs-title function_">memoryUsage</span>(); </span><br>&#123; rss: 21106688,<br>  heapTotal: 7376896,<br>  heapUsed: 4153936,<br>  external: 9059 &#125;<br><br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-keyword">let</span> wm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WeakMap</span>();</span><br>undefined<br><br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-keyword">let</span> b = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();</span><br>undefined<br><br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-variable language_">global</span>.<span class="hljs-title function_">gc</span>();</span><br>undefined<br><br>// 此时，heapUsed 仍然为 4M 左右<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">process.<span class="hljs-title function_">memoryUsage</span>(); </span><br>&#123; rss: 20537344,<br>  heapTotal: 9474048,<br>  heapUsed: 3967272,<br>  external: 8993 &#125;<br><br>// 在 WeakMap 中添加一个键值对，<br>// 键名为对象 b，键值为一个 5*1024*1024 的数组  <br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">wm.<span class="hljs-title function_">set</span>(b, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Array</span>(<span class="hljs-number">5</span>*<span class="hljs-number">1024</span>*<span class="hljs-number">1024</span>));</span><br>WeakMap &#123;&#125;<br><br>// 手动执行一次垃圾回收<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-variable language_">global</span>.<span class="hljs-title function_">gc</span>();</span><br>undefined<br><br>// 此时，heapUsed 为 45M 左右<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">process.<span class="hljs-title function_">memoryUsage</span>(); </span><br>&#123; rss: 62652416,<br>  heapTotal: 51437568,<br>  heapUsed: 45911664,<br>  external: 8951 &#125;<br><br>// 解除对象 b 的引用  <br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">b = <span class="hljs-literal">null</span>;</span><br>null<br><br>// 再次执行垃圾回收<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript"><span class="hljs-variable language_">global</span>.<span class="hljs-title function_">gc</span>();</span><br>undefined<br><br>// 解除 b 的引用以后，heapUsed 变回 4M 左右<br>// 说明 WeakMap 中的那个长度为 5*1024*1024 的数组被销毁了<br><span class="hljs-meta prompt_">&gt;</span> <span class="language-javascript">process.<span class="hljs-title function_">memoryUsage</span>(); </span><br>&#123; rss: 20639744,<br>  heapTotal: 8425472,<br>  heapUsed: 3979792,<br>  external: 8956<br>&#125;<br></code></pre>
+
+<p>上面代码中，只要外部的引用消失，WeakMap 内部的引用，就会自动被垃圾回收清除。由此可见，有了它的帮助，解决内存泄漏就会简单很多。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://ruanyifeng.com/blog/2017/04/memory-leak.html">JavaScript 内存泄漏教程</a></p>
+
   </div>
   <div>
     
@@ -558,20 +648,6 @@
     </div>
   
   
-    <div class="nav-item-next">
-      <a 
-        href="/2022/09/20/25ThingsAboutJavaScriptAndES/" 
-        class="nav-link">
-        <div>
-          <div class="nav-label">下一篇</div>
-          
-            <div class="nav-title">JavaScript与ES的25个知识点 </div>
-          
-        </div>
-        <i class="iconfont icon-right nav-next-icon"></i>
-      </a>
-    </div>
-  
 </div>
 
 <div 
@@ -583,7 +659,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">垃圾回收机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95"><span class="toc-text">内存泄漏的识别方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-text">浏览器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="toc-text">命令行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap"><span class="toc-text">WeakMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap-%E7%A4%BA%E4%BE%8B"><span class="toc-text">WeakMap 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -597,7 +673,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-text">垃圾回收机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E8%AF%86%E5%88%AB%E6%96%B9%E6%B3%95"><span class="toc-text">内存泄漏的识别方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-text">浏览器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="toc-text">命令行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap"><span class="toc-text">WeakMap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WeakMap-%E7%A4%BA%E4%BE%8B"><span class="toc-text">WeakMap 示例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -613,22 +689,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/whyAwaitCannotBeUsedInForEach/"><div class="recent-posts-item-content">重学 JS：为啥 await 不能用在 forEach 中</div></a>
+        <a href="/2022/09/20/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/whyBinarySearchTreesWhenHashTablesAreSoGood/"><div class="recent-posts-item-content">散列表那么优秀，为什么还要二叉查找树？</div></a>
+        <a href="/2022/09/20/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/whyDoesComputerTimeStartOnJanuary,1,1970/"><div class="recent-posts-item-content">为什么计算机时间要从1970年1月1日开始算起</div></a>
+        <a href="/2022/09/20/understandTheRequireImplementationPrinciple/"><div class="recent-posts-item-content">彻底搞懂 Node.js 中的 Require 机制(源码分析到手写实践)</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/whyIsTCPAReliableConnection/"><div class="recent-posts-item-content">为什么说TCP是可靠连接</div></a>
+        <a href="/2022/09/20/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
       </div>
     
   </div>
