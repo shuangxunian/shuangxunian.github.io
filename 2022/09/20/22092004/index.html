@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>去除div显示的横向滚动条</title>
+  <title>Vue中 Vue.extend() 详解及使用</title>
   
     
       <meta 
         property="og:title" 
-        content="去除div显示的横向滚动条">
+        content="Vue中 Vue.extend() 详解及使用">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/20/removesTheHorizontalScrollBarFromTheDIVDisplay/index.html">
+        content="http://example.com/2022/09/20/22092004/index.html">
     
     
       <meta 
@@ -57,7 +57,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="css">
+            content="vue">
         
       
     
@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8"><span class="toc-text">简单实用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="toc-text">基础用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%86%99%E6%B3%95"><span class="toc-text">第二种写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -514,14 +514,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      去除div显示的横向滚动条
+      Vue中 Vue.extend() 详解及使用
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/removesTheHorizontalScrollBarFromTheDIVDisplay.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092004.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-20T03:14:42.397Z">
+    <time datetime="2022-09-20T03:14:42.389Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -540,7 +540,7 @@
     
     
       <span class="dot"></span>
-      <span>95 字</span>
+      <span>623 字</span>
     
   </div>
   
@@ -555,9 +555,9 @@
         
           
           <a 
-            href="/tags/css/" 
+            href="/tags/vue/" 
             class="post-meta-link">
-            css
+            vue
           </a>
         
       </div>
@@ -567,10 +567,18 @@
   <div 
     id="section" 
     class="post-content">
-    <p>试过很多方法，最简单最暴力的就是给body添加一个overflow-x:hidden的样式。</p>
-<p>该样式的意思就是不显示超出部分，并禁止添加横向滚动条。同理overflow-y：hidden是消除竖向滚动条，对应的还有overflow:hidden。</p>
-<p>在这里做个记录。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_20916555/article/details/54015630">如果去除div显示的横向滚动条</a></p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Vue.extend 属于 Vue 的全局 API，在实际业务开发中我们很少使用，因为相比常用的 Vue.component 写法使用 extend 步骤要更加繁琐一些。但是在一些独立组件开发场景中，Vue.extend + $mount 这对组合是我们需要去关注的。</p>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>在 vue 项目中，初始化的根实例后，所有页面基本上都是通过 router 来管理，组件也是通过 import 来进行局部注册，所以组件的创建不需要去关注，相比 extend 要更省心一点点。但是这样做会有几个缺点：</p>
+<p>组件模板都是事先定义好的，如果我要从接口动态渲染组件怎么办？</p>
+<p>所有内容都是在 #app 下渲染，注册组件都是在当前位置渲染。如果我要实现一个类似于 window.alert() 提示组件要求像调用 JS 函数一样调用它，该怎么办？</p>
+<p>这时候，Vue.extend + vm.$mount 组合就派上用场了。</p>
+<h2 id="简单实用"><a href="#简单实用" class="headerlink" title="简单实用"></a>简单实用</h2><h3 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>( options )<br>  <span class="hljs-comment">// 参数：&#123;Object&#125; options</span><br>  <span class="hljs-comment">// 用法：使用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象；data 选项是特例，需要注意： 在 Vue.extend() 中它必须是函数；</span><br>&lt;div id=<span class="hljs-string">&quot;mount-point&quot;</span>&gt;&lt;/div&gt;<br><span class="hljs-comment">// 创建构造器</span><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(&#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;&lt;p&gt;&#123;&#123;firstName&#125;&#125; &#123;&#123;lastName&#125;&#125; aka &#123;&#123;alias&#125;&#125;&lt;/p&gt;&#x27;</span>,<br>  <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;Walter&#x27;</span>,<br>      <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;White&#x27;</span>,<br>      <span class="hljs-attr">alias</span>: <span class="hljs-string">&#x27;Heisenberg&#x27;</span><br>    &#125;<br>  &#125;<br>&#125;)<br><span class="hljs-comment">// 创建 Profile 实例，并挂载到一个元素上。</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile</span>().$mount(<span class="hljs-string">&#x27;#mount-point&#x27;</span>)<br><br><span class="hljs-comment">// 结果如下：</span><br>&lt;p&gt;<span class="hljs-title class_">Walter</span> <span class="hljs-title class_">White</span> aka <span class="hljs-title class_">Heisenberg</span>&lt;/p&gt;<br></code></pre>
+
+<p>可以看到，extend 创建的是 Vue 构造器，而不是我们平时常写的组件实例，所以不可以通过 new Vue({ components: testExtend }) 来直接使用，需要通过 new Profile().$mount(’#mount-point’) 来挂载到指定的元素上。</p>
+<h3 id="第二种写法"><a href="#第二种写法" class="headerlink" title="第二种写法"></a>第二种写法</h3><p>可以在创建实例的时候传入一个元素，生成的组件将会挂载到这个元素上，跟 $mount 差不多。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 1. 定义一个vue模版 </span><br><span class="hljs-keyword">let</span>  tem =&#123;<br>    <span class="hljs-attr">template</span>:<span class="hljs-string">&#x27;&#123;&#123;firstName&#125;&#125; &#123;&#123;lastName&#125;&#125; aka &#123;&#123;alias&#125;&#125;&#x27;</span>,<br>    <span class="hljs-attr">data</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;    <br>    <span class="hljs-keyword">return</span>&#123;    <br>	    <span class="hljs-attr">firstName</span>:<span class="hljs-string">&#x27;Walter&#x27;</span>,   <br>	    <span class="hljs-attr">lastName</span>:<span class="hljs-string">&#x27;White&#x27;</span>,    <br>	    <span class="hljs-attr">alias</span>:<span class="hljs-string">&#x27;Heisenberg&#x27;</span><br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 2. 调用</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">TemConstructor</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(tem) <br><span class="hljs-keyword">const</span> intance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TemConstructor</span>(&#123;<span class="hljs-attr">el</span>:<span class="hljs-string">&quot;#app&quot;</span>&#125;) <span class="hljs-comment">// 生成一个实例，并且挂载在 #app 上</span><br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ZYS10000/article/details/107477418">Vue中 Vue.extend() 详解及使用</a></p>
 
   </div>
   <div>
@@ -581,13 +589,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/20/removeTheBlackDotInFrontOfLiAndSomeOfTheUlliAttributeMethods/" 
+        href="/2022/09/20/22092003/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">去除li前面的小黑点,和ulli部分属性方法 </div>
+            <div class="nav-title">JavaScript 内存泄漏 </div>
           
         </div>
       </a>
@@ -596,12 +604,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/20/requestImplementation/" 
+        href="/2022/09/20/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">js之Promise封装nodejs的request实现 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -619,7 +627,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8"><span class="toc-text">简单实用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="toc-text">基础用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%86%99%E6%B3%95"><span class="toc-text">第二种写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -633,7 +641,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E5%AE%9E%E7%94%A8"><span class="toc-text">简单实用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="toc-text">基础用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%86%99%E6%B3%95"><span class="toc-text">第二种写法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
