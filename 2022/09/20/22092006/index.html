@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>js实现文字头像的生成</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="js实现文字头像的生成">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="记录个人成长与生活，前端，算法，nlp">
+        content="如题目">
     
     
       <meta 
@@ -54,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -356,7 +360,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">146</span>
+          <span class="categories-list-item-badge">147</span>
         </div>
       </a>
     
@@ -510,14 +514,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      js实现文字头像的生成
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092006.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-20T07:06:59.571Z">
+    <time datetime="2022-09-20T07:07:51.104Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -525,17 +529,46 @@
       <span>2022-09-20</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>128 字</span>
     
   </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    
+    <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">gen_text_img</span>(<span class="hljs-params">size, s</span>) &#123;<br>    <span class="hljs-keyword">let</span> colors = [<br>        <span class="hljs-string">&quot;rgb(239,150,26)&quot;</span>, <span class="hljs-string">&#x27;rgb(255,58,201)&#x27;</span>, <span class="hljs-string">&quot;rgb(111,75,255)&quot;</span>, <span class="hljs-string">&quot;rgb(36,174,34)&quot;</span>, <span class="hljs-string">&quot;rgb(80,80,80)&quot;</span><br>    ];<br>    <span class="hljs-keyword">let</span> cvs = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;canvas&quot;</span>);<br>    cvs.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;width&#x27;</span>, size[<span class="hljs-number">0</span>]);<br>    cvs.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;height&#x27;</span>, size[<span class="hljs-number">1</span>]);<br>    <span class="hljs-keyword">let</span> ctx = cvs.<span class="hljs-title function_">getContext</span>(<span class="hljs-string">&quot;2d&quot;</span>);<br>    ctx.<span class="hljs-property">fillStyle</span> = colors[<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>()*(colors.<span class="hljs-property">length</span>))];<br>    ctx.<span class="hljs-title function_">fillRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, size[<span class="hljs-number">0</span>], size[<span class="hljs-number">1</span>]);<br>    ctx.<span class="hljs-property">fillStyle</span> = <span class="hljs-string">&#x27;rgb(255,255,255)&#x27;</span>;<br>    ctx.<span class="hljs-property">font</span> = size[<span class="hljs-number">0</span>]*<span class="hljs-number">0.6</span>+<span class="hljs-string">&quot;px Arial&quot;</span>;<br>    ctx.<span class="hljs-property">textBaseline</span> = <span class="hljs-string">&quot;middle&quot;</span>;<br>    ctx.<span class="hljs-property">textAlign</span> = <span class="hljs-string">&quot;center&quot;</span>;<br>    ctx.<span class="hljs-title function_">fillText</span>(s,size[<span class="hljs-number">0</span>]/<span class="hljs-number">2</span>,size[<span class="hljs-number">1</span>]/<span class="hljs-number">2</span>);<br><br>    <span class="hljs-keyword">return</span>  cvs.<span class="hljs-title function_">toDataURL</span>(<span class="hljs-string">&#x27;image/jpeg&#x27;</span>, <span class="hljs-number">1</span>);<br>&#125;<br></code></pre>
+
   </div>
   <div>
     
@@ -545,13 +578,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/20/22092004/" 
+        href="/2022/09/20/22092005/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">Vue中 Vue.extend() 详解及使用 </div>
+            <div class="nav-title">JS高阶编程技巧——惰性函数&amp;单例设计模式、柯里化函数思想、compose函数 </div>
           
         </div>
       </a>
@@ -560,12 +593,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/20/22092005/" 
+        href="/2022/09/20/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">JS高阶编程技巧——惰性函数&amp;单例设计模式、柯里化函数思想、compose函数 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -613,22 +646,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
+        <a href="/2022/09/20/theNodeProperties/"><div class="recent-posts-item-content">Node属性</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
+        <a href="/2022/09/20/theOperatingSystem0/"><div class="recent-posts-item-content">操作系统期末考试——0</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
+        <a href="/2022/09/20/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-20</div>
-        <a href="/2022/09/20/webMessaging/"><div class="recent-posts-item-content">网页消息通信</div></a>
+        <a href="/2022/09/20/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
       </div>
     
   </div>
