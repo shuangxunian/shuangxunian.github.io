@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>新的浏览器缓存策略变更：舍弃性能、确保安全</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="新的浏览器缓存策略变更：舍弃性能、确保安全">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/21/theNewBrowserCachingPolicy/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-21">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-21">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="浏览器">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>178</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>39</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%E5%BD%93%E5%89%8D%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="toc-text">Chrome 的 HTTP 缓存当前的工作方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">缓存机制存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%88%86%E5%8C%BA%E5%B0%86%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D-Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%EF%BC%9F"><span class="toc-text">缓存分区将如何影响 Chrome 的 HTTP 缓存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%8E%B0%E6%9C%89%E7%BD%91%E7%AB%99%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-text">对现有网站的影响</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-text">其他浏览器的行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">151</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%A0%91/" 
+        title="树">
+        <div class="tags-list-item">树</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      新的浏览器缓存策略变更：舍弃性能、确保安全
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/theNewBrowserCachingPolicy.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-21T09:06:26.660Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-21</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+            class="post-meta-link">
+            浏览器
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>通常，缓存可以通过存储数据来提高性能，从而可以更快后面相同数据的请求。例如，来自网络的缓存资源可以避免频繁的和服务器交互。缓存计算结果可以省去进行相同计算的时间。<br>在 Chrome 中，缓存机制以多种方式使用，HTTP 缓存就是一个示例。</p>
+<h2 id="Chrome-的-HTTP-缓存当前的工作方式"><a href="#Chrome-的-HTTP-缓存当前的工作方式" class="headerlink" title="Chrome 的 HTTP 缓存当前的工作方式"></a>Chrome 的 HTTP 缓存当前的工作方式</h2><p>从 85 版开始，Chrome 会使用它们各自的资源URL作为缓存键来缓存从网络获取的资源。<br>下面我们来看几个示例：<br>用户访问了页面(<a target="_blank" rel="noopener" href="https://a.example),然后请求了一个图像(https//x.example/doge.png)%E3%80%82%E8%AF%A5%E5%9B%BE%E5%83%8F%E6%98%AF%E4%BB%8E%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%EF%BC%8C%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BC%9A%E4%BD%BF%E7%94%A8">https://a.example)，然后请求了一个图像(https://x.example/doge.png)。该图像是从网络请求的，浏览器会使用</a> <a target="_blank" rel="noopener" href="https://x.example/doge.png">https://x.example/doge.png</a> 用作 key 进行缓存。<br>同一用户访问另一个页面（<a target="_blank" rel="noopener" href="https://b.example),这个页面请求了相同的图像(https//x.example/doge.png%EF%BC%89%E3%80%82%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BD%BF%E7%94%A8%E5%9B%BE%E5%83%8F">https://b.example），这个页面请求了相同的图像（https://x.example/doge.png）。浏览器使用图像</a> URL 作为 key ，检查其 HTTP 缓存是否已经缓存了此资源。浏览器在其缓存中找之前缓存的资源，因此它使用了资源的缓存版本。<br>图像是否从 iframe 中加载都没有关系。如果网站 <a target="_blank" rel="noopener" href="https://c.example/">https://c.example</a> 使用 iframe（<a target="_blank" rel="noopener" href="https://d.example)访问另一个网站,并且/">https://d.example）访问另一个网站，并且</a> iframe 中请求了相同的图片（<a target="_blank" rel="noopener" href="https://x.example/doge.png%EF%BC%89">https://x.example/doge.png）</a> ，则浏览器仍可以从缓存中加载图片，因为所有页面的缓存 key 均相同。</p>
+<h2 id="缓存机制存在的问题"><a href="#缓存机制存在的问题" class="headerlink" title="缓存机制存在的问题"></a>缓存机制存在的问题</h2><p>从性能的角度来看，这种机制已经运行了很长时间了。但是，网站响应 HTTP 请求所花费的时间可以表明浏览器过去曾经访问过相同的资源，这使浏览器容易受到安全和隐私的攻击，比如：</p>
+<ul>
+<li>检测用户是否访问过特定站点：攻击者可以通过检查缓存是否具有特定于特定站点或一组站点的资源来检测用户的浏览历史记录。</li>
+<li>跨站点搜索攻击：攻击者可以通过检查特定网站使用的“无搜索结果”图像是否在浏览器的缓存中来检测用户的搜索结果中是否包含任意字符串。</li>
+<li>跨站点跟踪：缓存可用于存储类似 cookie 的标识符，作为跨站点跟踪机制。</li>
+</ul>
+<p>为了减轻这些风险，Chrome 将从 Chrome 86 开始对 HTTP 缓存进行分区。</p>
+<h2 id="缓存分区将如何影响-Chrome-的-HTTP-缓存？"><a href="#缓存分区将如何影响-Chrome-的-HTTP-缓存？" class="headerlink" title="缓存分区将如何影响 Chrome 的 HTTP 缓存？"></a>缓存分区将如何影响 Chrome 的 HTTP 缓存？</h2><p>通过缓存分区，除了资源 URL 外，还将使用新的 “网络隔离密钥” 来对缓存的资源进行密钥设置。网络隔离密钥由顶级站点和当前 frame 中的站点组成。<br><strong>注意：</strong>“站点”使用 “scheme:&#x2F;&#x2F;eTLD+1 ”识别，因此，如果请求来自不同的页面，但是它们具有相同的 scheme 和有效的 eTLD+1，则它们将使用相同的缓存分区。<br>再次查看前面的示例，以了解缓存分区如何在不同的上下文中工作：<br>用户访问 <a target="_blank" rel="noopener" href="https://a.example/">https://a.example</a> 请求图像（<a target="_blank" rel="noopener" href="https://x.example/doge.png%EF%BC%89%E3%80%82%E5%9C%A8%E8%BF%99%E7%A7%8D%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E5%9B%BE%E5%83%8F%E6%98%AF%E4%BB%8E%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%EF%BC%8C%E5%B9%B6%E4%BD%BF%E7%94%A8%E7%94%B1">https://x.example/doge.png）。在这种情况下，图像是从网络请求的，并使用由</a> <a target="_blank" rel="noopener" href="https://a.example(顶级站点),/">https://a.example（顶级站点），</a> <a target="_blank" rel="noopener" href="https://a.example(当前/">https://a.example（当前</a> frame 中的站点）和 <a target="_blank" rel="noopener" href="https://x.example/doge.png%EF%BC%88%E8%B5%84%E6%BA%90URL%EF%BC%89%E7%BB%84%E6%88%90%E7%9A%84%E5%85%83%E7%BB%84%E4%BD%9C%E4%B8%BA">https://x.example/doge.png（资源URL）组成的元组作为</a> key 进行缓存。（请注意，当资源请求来主页面时，网络隔离密钥中的顶级站点和当前 frame 中的站点是相同的。）<br>同一用户访问了 <a target="_blank" rel="noopener" href="https://b.example/">https://b.example</a> 请求相同图片（<a target="_blank" rel="noopener" href="https://x.example/doge.png%EF%BC%89%E3%80%82%E5%B0%BD%E7%AE%A1%E5%9C%A8%E4%B8%8A%E4%B8%80%E4%B8%AA%E7%A4%BA%E4%BE%8B%E4%B8%AD%E5%8A%A0%E8%BD%BD%E4%BA%86%E7%9B%B8%E5%90%8C%E7%9A%84%E5%9B%BE%E5%83%8F%EF%BC%8C%E4%BD%86%E6%98%AF%E7%94%B1%E4%BA%8E%E5%AF%86%E9%92%A5%E4%B8%8D%E5%8C%B9%E9%85%8D%EF%BC%8C%E5%9B%A0%E6%AD%A4%E4%B8%8D%E4%BC%9A%E8%A2%AB%E7%BC%93%E5%AD%98%E5%91%BD%E4%B8%AD%E3%80%82">https://x.example/doge.png）。尽管在上一个示例中加载了相同的图像，但是由于密钥不匹配，因此不会被缓存命中。</a><br>现在用户回到了 <a target="_blank" rel="noopener" href="https://a.example/">https://a.example</a> ，但是这次图像（<a target="_blank" rel="noopener" href="https://x.example/doge.png%EF%BC%89%E8%A2%AB%E5%B5%8C%E5%85%A5%E5%88%B0%E4%BA%86">https://x.example/doge.png）被嵌入到了</a> iframe 中。在这种情况下，图片缓存的 key 和直接在主页面加载的图片的缓存 key 是相同的，因此可以使用之前缓存的图片资源。<br>这个例子中，图像在 <a target="_blank" rel="noopener" href="https://c.example/">https://c.example</a> 的 iframe 中加载，在这种情况下，图像是从网络上下载的，因为缓存中找不到相同的密钥。<br>如果域包含子域或端口号怎么办？用户访问 <a target="_blank" rel="noopener" href="https://subdomain.a.example/">https://subdomain.a.example</a> ，其中嵌入的 iframe (<a target="_blank" rel="noopener" href="https://c.example:8080/">https://c.example:8080</a>) 请求了图像的。<br>由于密钥是基于 scheme:&#x2F;&#x2F;eTLD+1 创建的，因此将忽略子域和端口号。所以本次发生缓存命中。<br>如果 iframe 多次嵌套该怎么办？用户访问 <a target="_blank" rel="noopener" href="https://a.example,其中嵌入了一个/">https://a.example，其中嵌入了一个</a> iframe（<a target="_blank" rel="noopener" href="https://b.example),它又嵌入了另一个/">https://b.example），它又嵌入了另一个</a> iframe（<a target="_blank" rel="noopener" href="https://c.example),这个/">https://c.example），这个</a> iframe 最终请求了图像。<br>由于密钥是从 <a target="_blank" rel="noopener" href="https://a.example/">https://a.example</a> 加载资源的顶部 frame 和直接frame （<a target="_blank" rel="noopener" href="https://c.example)获取的,因此会发生缓存命中./">https://c.example）获取的，因此会发生缓存命中。</a></p>
+<h2 id="对现有网站的影响"><a href="#对现有网站的影响" class="headerlink" title="对现有网站的影响"></a>对现有网站的影响</h2><p>这不是一个重大变化，但可能会影响某些网页的性能。<br>例如，在许多站点上为大量可高度缓存的资源提供服务的站点（例如字体和流行的脚本）可能会看到其流量增加。同样，使用此类服务的人可能会越来越依赖于它们。<br>下面是一些性能指标的变化：</p>
+<ul>
+<li>整体缓存未命中率增加了约 3.6％</li>
+<li>FCP 增加约 0.3％</li>
+<li>从网络加载的字节的总体比例增加了约 4％</li>
+</ul>
+<h2 id="其他浏览器的行为"><a href="#其他浏览器的行为" class="headerlink" title="其他浏览器的行为"></a>其他浏览器的行为</h2><ul>
+<li>Chrome: 使用顶级 scheme:&#x2F;&#x2F;eTLD+1 加 frame scheme:&#x2F;&#x2F;eTLD+1</li>
+<li>Safari: 使用顶级 eTLD+1</li>
+<li>Firefox: 计划实施顶级 scheme:&#x2F;&#x2F;eTLD+1 然后也考虑像 Chrome 一样增加第二个 key</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/s0E88ClBXEiayU7xSy0XPg">新的浏览器缓存策略变更：舍弃性能、确保安全</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/21/theMeaningOfTheInline/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">行内元素、块级元素和行内块级元素的转换 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/21/theNodeMethod/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Node方法 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%E5%BD%93%E5%89%8D%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="toc-text">Chrome 的 HTTP 缓存当前的工作方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">缓存机制存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%88%86%E5%8C%BA%E5%B0%86%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D-Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%EF%BC%9F"><span class="toc-text">缓存分区将如何影响 Chrome 的 HTTP 缓存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%8E%B0%E6%9C%89%E7%BD%91%E7%AB%99%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-text">对现有网站的影响</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-text">其他浏览器的行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%E5%BD%93%E5%89%8D%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="toc-text">Chrome 的 HTTP 缓存当前的工作方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">缓存机制存在的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%88%86%E5%8C%BA%E5%B0%86%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D-Chrome-%E7%9A%84-HTTP-%E7%BC%93%E5%AD%98%EF%BC%9F"><span class="toc-text">缓存分区将如何影响 Chrome 的 HTTP 缓存？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%8E%B0%E6%9C%89%E7%BD%91%E7%AB%99%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-text">对现有网站的影响</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E8%A1%8C%E4%B8%BA"><span class="toc-text">其他浏览器的行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-21</div>
+        <a href="/2022/09/21/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-21</div>
+        <a href="/2022/09/21/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-21</div>
+        <a href="/2022/09/21/theOperatingSystem3/"><div class="recent-posts-item-content">操作系统期末考试——3</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-21</div>
+        <a href="/2022/09/21/theOperatingSystem4/"><div class="recent-posts-item-content">操作系统期末考试——4</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
