@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>操作系统期末考试——4</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="操作系统期末考试——4">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/22/theOperatingSystem4/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="本文涉及到输入输出系统管理">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-22">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-22">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="考试">
+        
+          <meta 
+            property="og:article:tag" 
+            content="操作系统">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>180</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>39</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E7%BC%93%E5%86%B2%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">引入缓冲的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E6%A6%82%E8%BF%B0"><span class="toc-text">设备驱动程序概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8A%9F%E8%83%BD%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">设备驱动程序的功能是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%88%E4%B8%8E%E8%AE%BE%E5%A4%87%E6%97%A0%E5%85%B3%E6%80%A7%EF%BC%89%E5%AE%9A%E4%B9%89%E3%80%82"><span class="toc-text">设备独立性（与设备无关性）定义。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E5%AE%9E%E7%8E%B0%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%8C%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E9%80%BB%E8%BE%91%E8%AE%BE%E5%A4%87%E8%A1%A8%EF%BC%89"><span class="toc-text">为实现设备独立性，系统设置的数据结构（逻辑设备表）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E6%B6%89%E5%8F%8A%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9F"><span class="toc-text">设备分配涉及哪些数据结构？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-text">设备分配过程示意图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPOOLING"><span class="toc-text">SPOOLING</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E6%88%90"><span class="toc-text">组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-text">特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86"><span class="toc-text">假脱机打印系统原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">磁盘缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8D%B0%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">打印缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E7%AE%A1%E7%90%86%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E8%BF%9B%E7%A8%8B"><span class="toc-text">假脱机管理进程和假脱机打印进程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%94%B1%E9%82%A3%E5%87%A0%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%EF%BC%9F%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="toc-text">磁盘访问时间由那几部分组成？磁盘访问时间的计算公式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E7%94%B1%E4%B8%89%E4%B8%AA%E5%8A%A8%E4%BD%9C%E7%BB%84%E6%88%90%EF%BC%9A"><span class="toc-text">一次磁盘读写由三个动作组成：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%EF%BC%9A"><span class="toc-text">磁盘访问时间：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E7%A3%81%E7%9B%98%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%B9%B3%E5%9D%87%E5%AF%BB%E9%81%93%E9%95%BF%E5%BA%A6"><span class="toc-text">利用磁盘调度算法计算平均寻道长度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E9%A1%BA%E5%BA%8F"><span class="toc-text">开始顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E6%9D%A5%E5%85%88%E6%9C%8D%E5%8A%A1%EF%BC%88FCFS%EF%BC%89"><span class="toc-text">先来先服务（FCFS）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%9F%AD%E5%AF%BB%E9%81%93%E6%97%B6%E9%97%B4%E4%BC%98%E5%85%88"><span class="toc-text">最短寻道时间优先</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E7%AE%97%E6%B3%95"><span class="toc-text">扫描算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E6%89%AB%E6%8F%8F"><span class="toc-text">循环扫描</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">153</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%A0%91/" 
+        title="树">
+        <div class="tags-list-item">树</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      操作系统期末考试——4
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/theOperatingSystem4.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-22T06:58:14.440Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-22</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E8%80%83%E8%AF%95/" 
+          class="post-meta-link">
+          考试
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E8%80%83%E8%AF%95/" 
+            class="post-meta-link">
+            考试
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+            class="post-meta-link">
+            操作系统
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="引入缓冲的原因"><a href="#引入缓冲的原因" class="headerlink" title="引入缓冲的原因"></a>引入缓冲的原因</h2><ul>
+<li>缓和CPU与I&#x2F;O设备速度不匹配的矛盾，提高CPU和外部设备的并行工作能力</li>
+<li>减少对CPU的中断频率， 放宽对CPU中断响应时间的限制</li>
+<li>解决数据粒度不匹配的问题</li>
+<li>提高CPU和I&#x2F;O设备之间的并行性</li>
+</ul>
+<h2 id="设备驱动程序概述"><a href="#设备驱动程序概述" class="headerlink" title="设备驱动程序概述"></a>设备驱动程序概述</h2><p>是I&#x2F;O系统的高层与设备控制器之间的通信程序。由设备服务子程序和中断处理程序组成。</p>
+<h2 id="设备驱动程序的功能是什么？"><a href="#设备驱动程序的功能是什么？" class="headerlink" title="设备驱动程序的功能是什么？"></a>设备驱动程序的功能是什么？</h2><p>接收来自与设备无关的上层软件抽象请求（如write或read命令），将其转换为具体要求后，发送给设备控制器启动设备控制器执行。同时也将由设备控制器发来的信号传送给上层软件</p>
+<ol>
+<li>接收由与设备无关的软件发来的命令和参数，并将命令中的抽象要求转换为与设备相关的底层操作序列</li>
+<li>检查用户I&#x2F;O请求的合法性，了解I／O设备的工作状态，传递与I&#x2F;O设备操作有关的参数，设置设备的工作方式。</li>
+<li>发出I&#x2F;O命令，如果设备空闲，便立即启动I&#x2F;O设备，完成指定的I&#x2F;O操作；如果设备忙碌，则将请求者的请求块挂在设备队列上等待。</li>
+<li>及时响应由设备控制器发来的中断请求，并根据其中断类型，调用相应中断处理程序进行处理。</li>
+</ol>
+<h2 id="设备独立性（与设备无关性）定义。"><a href="#设备独立性（与设备无关性）定义。" class="headerlink" title="设备独立性（与设备无关性）定义。"></a>设备独立性（与设备无关性）定义。</h2><p>应用程序中所用的设备，不局限于使用某个具体的物理设备。<br>为每个设备所配置的设备驱动程序是与硬件紧密相关的软件。<br>为了实现设备独立性，必须再在设备驱动程序之上设置一层软件，称为与设备无关的I&#x2F;O软件，或设备独立性软件。</p>
+<h2 id="为实现设备独立性，系统设置的数据结构（逻辑设备表）"><a href="#为实现设备独立性，系统设置的数据结构（逻辑设备表）" class="headerlink" title="为实现设备独立性，系统设置的数据结构（逻辑设备表）"></a>为实现设备独立性，系统设置的数据结构（逻辑设备表）</h2><p>系统设置一张逻辑设备表（LUT)，将应用程序中所使用的逻辑设备名映射为物理设备名。</p>
+<h2 id="设备分配涉及哪些数据结构？"><a href="#设备分配涉及哪些数据结构？" class="headerlink" title="设备分配涉及哪些数据结构？"></a>设备分配涉及哪些数据结构？</h2><p><strong>设备控制表DCT</strong></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e732db2f-b209-41e8-a914-0febf040073b-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/e732db2f-b209-41e8-a914-0febf040073b-3807603.jpg"></p>
+<p><strong>设备控制器表</strong></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/197beee9-fd1d-4d8c-b831-4cd509da577c-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/197beee9-fd1d-4d8c-b831-4cd509da577c-3807603.jpg"></p>
+<p><strong>通道表</strong></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e7b54b5f-b679-4632-b52f-a79ef235e16b-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/e7b54b5f-b679-4632-b52f-a79ef235e16b-3807603.jpg"></p>
+<p><strong>系统设备表</strong></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/78514f8b-613e-4ea4-bd66-0a45648db3ba-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/78514f8b-613e-4ea4-bd66-0a45648db3ba-3807603.jpg"></p>
+<h2 id="设备分配过程示意图"><a href="#设备分配过程示意图" class="headerlink" title="设备分配过程示意图"></a>设备分配过程示意图</h2><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/4de709cb-5170-47de-8b94-cc1ffe6164f6-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/4de709cb-5170-47de-8b94-cc1ffe6164f6-3807603.jpg"></p>
+<h2 id="SPOOLING"><a href="#SPOOLING" class="headerlink" title="SPOOLING"></a>SPOOLING</h2><p>多道程序系统中共享独占设备的技术。</p>
+<p>通过假脱机技术，则可将一台物理I&#x2F;O设备虚拟为多台逻辑I&#x2F;O设备，这样也就允许多个用户共享一台物理I&#x2F;O设备。当系统引入了多道程序技术后，完全可以利用其中的一道程序，来模拟脱机输入时的外围控制机功能，把低速1&#x2F;0设备上的数据传送到高速磁盘上。再用另一道程序模拟脱机输出时外围控制机的功能，把数据从磁盘传送到低速输出设备上。在主机的直接控制下，实现以前的脱机输入、输出功能。此时的外围操作与CPU对数据的处理同时进行，我们把这种在联机情况下实现的同时外围操作的技术称为SPOOLing(Simultaneous Peripheral Operation On-Line)技术，或称为假脱机技术。</p>
+<h3 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h3><p><strong>输入井和输出井</strong><br>这是在磁盘上开辟出来的两个存储区域。输入井模拟脱机输入时的磁盘，用于收容I&#x2F;O设备输入的数据。输出井模拟脱机输出时的磁盘，用于收容用户程序的输出数据。输入腧出井中的数据一般以文件的形式组织管理，我们把这些文件称为井文件。一个文件仅存放某一个进程的输入（或者输出）数据，所有进程的数据输入（或输出）文件链接成为一个输入（或输出）队列。</p>
+<p><strong>输入缓冲区和输出缓冲区</strong><br>这是在内存中开辟的两个缓冲区，用于缓和CPU和磁盘之间速度不匹配的矛盾。输入缓冲区用于暂存由输入设备传送的数据，之后再传送到输入井。输出缓冲区用于暂存从输出井传送的数据，之后再传送到输出设备。</p>
+<p><strong>输入进程和输出进程</strong><br>输入进程也称为预输入进程，用于模拟脱机输入时的外围控制机，将用户要求的数据从输入设备传送到输入缓冲区，再存放到输入井。当CPU需要输入设备时，直接从输入井读入内存。输出进程也称为缓输出进程，用于模拟脱机输出时的外围控制机，把用户要求输入的数据从内存传送并存放到输出井，待输出设备空闲时，再将输出井中的数据经过输出缓冲区输出至输出设备上。</p>
+<p><strong>井管理程序</strong><br>用于控制作业与磁盘井之间信息交换。当作业执行过程中向某台设备发出启动输入或输出操作请求时，由操作系统调用井管理程序，由其控制从输入井读取信息或将信息输出至输出井。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>以磁盘作转储，排队处理I&#x2F;O（使用I&#x2F;O设备）</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>提高了I&#x2F;O的速度。缓解了外部设备和CPU速度不匹配的矛盾。</li>
+<li>将独占设备改造为共享设备。</li>
+<li>实现了虚拟设备功能。</li>
+</ul>
+<h2 id="假脱机打印系统原理"><a href="#假脱机打印系统原理" class="headerlink" title="假脱机打印系统原理"></a>假脱机打印系统原理</h2><h3 id="磁盘缓冲区"><a href="#磁盘缓冲区" class="headerlink" title="磁盘缓冲区"></a>磁盘缓冲区</h3><p>它是在磁盘上开辟的一个存储空间，用于暂存用户程序的输出数据，在该缓冲区中可以设置几个盘块队列，如空盘块队列、满盘块队列等。</p>
+<h3 id="打印缓冲区"><a href="#打印缓冲区" class="headerlink" title="打印缓冲区"></a>打印缓冲区</h3><p>用于缓和CPU和磁盘之间速度不匹配的矛盾，设置在内存中，暂存从磁盘缓冲区送来的数据，以后再传送给打印设备进行打印。</p>
+<h3 id="假脱机管理进程和假脱机打印进程"><a href="#假脱机管理进程和假脱机打印进程" class="headerlink" title="假脱机管理进程和假脱机打印进程"></a>假脱机管理进程和假脱机打印进程</h3><p>由假脱机管理进程为每个要求打印的用户数据建立一个假脱机文件，并把它放入假脱机文件队列中，由假脱机打印进程依次对队列中的文件进行打印。</p>
+<p>当用户进程请求打印输出时， SPOOLing系统接受打印输出请求， 但并不真正立即把打印机分配给该用户进程，</p>
+<ol>
+<li>由输出进程在输出井中为之申请一个空闲磁盘区， 并将要打印的数据送入其中；</li>
+<li>输出进程再为用户进程申请一张空白的用户请求打印表，并将用户的打印要求填入其中， 将该表挂到请求打印队列上。</li>
+<li>如果打印机空闲，输出进程将从请求打印队列的队首取出一张请求打印表，根据表中的要求将要打印的数据，从输出井传送到内存缓冲区，再由打印机打印。</li>
+</ol>
+<h2 id="磁盘访问时间由那几部分组成？磁盘访问时间的计算公式"><a href="#磁盘访问时间由那几部分组成？磁盘访问时间的计算公式" class="headerlink" title="磁盘访问时间由那几部分组成？磁盘访问时间的计算公式"></a>磁盘访问时间由那几部分组成？磁盘访问时间的计算公式</h2><h3 id="一次磁盘读写由三个动作组成："><a href="#一次磁盘读写由三个动作组成：" class="headerlink" title="一次磁盘读写由三个动作组成："></a>一次磁盘读写由三个动作组成：</h3><ul>
+<li>寻道：磁头移动定位到指定磁道</li>
+<li>旋转延迟：等待指定扇区旋转到磁头下</li>
+<li>数据传输：数据在磁盘与内存之间的实际传输（读&#x2F;写）</li>
+</ul>
+<h3 id="磁盘访问时间："><a href="#磁盘访问时间：" class="headerlink" title="磁盘访问时间："></a>磁盘访问时间：</h3><p><strong>总访问时间Ta表示为</strong></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a863c4b0-ccf8-4d35-a9ac-0197c5f5144c-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a863c4b0-ccf8-4d35-a9ac-0197c5f5144c-3807603.jpg"></p>
+<p><strong>寻道时间</strong><br>启动磁臂的时间s与磁头移动n条磁道所花费的时间之和。<br>公式：Ts&#x3D;m×n+s，m是一常数，与磁盘驱动器的速度有关。 s为启动磁臂的时间。</p>
+<p><strong>旋转延迟时间</strong><br>指定扇区移动到磁头下面所经历的时间。<br>公式 r为磁盘每秒钟的转数</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/f956792b-cc63-4d2f-9b61-c40ee3f2456a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/f956792b-cc63-4d2f-9b61-c40ee3f2456a-3807603.jpg"></p>
+<p><strong>数据传输时间</strong><br>指数据从磁盘读出或向磁盘写入数据所经历的时间。<br>公式 其中，r为磁盘每秒钟的转数；N为一条磁道上的字节数， b为所读&#x2F;写的字节数</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/560c05e4-3908-4bae-a20b-bd3f50784117-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/560c05e4-3908-4bae-a20b-bd3f50784117-3807603.jpg"></p>
+<h2 id="利用磁盘调度算法计算平均寻道长度"><a href="#利用磁盘调度算法计算平均寻道长度" class="headerlink" title="利用磁盘调度算法计算平均寻道长度"></a>利用磁盘调度算法计算平均寻道长度</h2><h3 id="开始顺序"><a href="#开始顺序" class="headerlink" title="开始顺序"></a>开始顺序</h3><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/af1234b5-7fb8-4962-a5d2-d55e53807290-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/af1234b5-7fb8-4962-a5d2-d55e53807290-3807603.jpg"></p>
+<h3 id="先来先服务（FCFS）"><a href="#先来先服务（FCFS）" class="headerlink" title="先来先服务（FCFS）"></a>先来先服务（FCFS）</h3><p>根据进程请求访问磁盘的先后次序调度<br>调度指标：请求次序</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2e3c722a-84ae-43c7-aaeb-8a980744ae3e-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2e3c722a-84ae-43c7-aaeb-8a980744ae3e-3807603.jpg"></p>
+<h3 id="最短寻道时间优先"><a href="#最短寻道时间优先" class="headerlink" title="最短寻道时间优先"></a>最短寻道时间优先</h3><p>选择与当前磁头所在的磁道最近的进程磁盘访问<br>调度指标：寻道距离</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/64b28081-42b3-4da7-a099-6150f0f6f826-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/64b28081-42b3-4da7-a099-6150f0f6f826-3807603.jpg"></p>
+<h3 id="扫描算法"><a href="#扫描算法" class="headerlink" title="扫描算法"></a>扫描算法</h3><p>进程“饥饿”现象<br>最短寻道时间优先算法虽然能获得较好的寻道性能， 但却可能导致某个进程发生“饥饿”(Starvation)现象：<br>老进程出现“饥饿”现象：当不断有新进程的请求到达， 且其所要访问的磁道与磁头当前所在磁道的距离较近，这种新进程的I&#x2F;O请求必须优先满足。<br>SCAN算法可防止老进程出现“饥饿”现象。<br>此算法不仅考虑到欲访问的磁道与当前磁道的距离，更优先考虑磁头当前的移动方向。又称为电梯调度算法。<br>调度指标：磁头移动方向+寻道距离<br>方法：当设备无访问请求时，磁头不动；<br>当有访问请求时，磁头按一个方向移动，在移动过程中对遇到的访问请求进行服务，然后判断该方向上是否还有访问请求，如果有则继续扫描；<br>否则改变移动方向，并为经过的访问请求服务，如此反复</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7a5ce5a4-7979-445d-8276-40b41a64c94b-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/7a5ce5a4-7979-445d-8276-40b41a64c94b-3807603.jpg"></p>
+<h3 id="循环扫描"><a href="#循环扫描" class="headerlink" title="循环扫描"></a>循环扫描</h3><p>规定磁头单向移动。例如，只是自里向外移动。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/62006208-c23c-4354-af94-627f306d6024-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/62006208-c23c-4354-af94-627f306d6024-3807603.jpg"></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/22/theOperatingSystem3/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">操作系统期末考试——3 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/22/theOperatingSystem5/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">操作系统期末考试——5 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E7%BC%93%E5%86%B2%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">引入缓冲的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E6%A6%82%E8%BF%B0"><span class="toc-text">设备驱动程序概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8A%9F%E8%83%BD%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">设备驱动程序的功能是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%88%E4%B8%8E%E8%AE%BE%E5%A4%87%E6%97%A0%E5%85%B3%E6%80%A7%EF%BC%89%E5%AE%9A%E4%B9%89%E3%80%82"><span class="toc-text">设备独立性（与设备无关性）定义。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E5%AE%9E%E7%8E%B0%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%8C%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E9%80%BB%E8%BE%91%E8%AE%BE%E5%A4%87%E8%A1%A8%EF%BC%89"><span class="toc-text">为实现设备独立性，系统设置的数据结构（逻辑设备表）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E6%B6%89%E5%8F%8A%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9F"><span class="toc-text">设备分配涉及哪些数据结构？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-text">设备分配过程示意图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPOOLING"><span class="toc-text">SPOOLING</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E6%88%90"><span class="toc-text">组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-text">特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86"><span class="toc-text">假脱机打印系统原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">磁盘缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8D%B0%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">打印缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E7%AE%A1%E7%90%86%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E8%BF%9B%E7%A8%8B"><span class="toc-text">假脱机管理进程和假脱机打印进程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%94%B1%E9%82%A3%E5%87%A0%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%EF%BC%9F%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="toc-text">磁盘访问时间由那几部分组成？磁盘访问时间的计算公式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E7%94%B1%E4%B8%89%E4%B8%AA%E5%8A%A8%E4%BD%9C%E7%BB%84%E6%88%90%EF%BC%9A"><span class="toc-text">一次磁盘读写由三个动作组成：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%EF%BC%9A"><span class="toc-text">磁盘访问时间：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E7%A3%81%E7%9B%98%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%B9%B3%E5%9D%87%E5%AF%BB%E9%81%93%E9%95%BF%E5%BA%A6"><span class="toc-text">利用磁盘调度算法计算平均寻道长度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E9%A1%BA%E5%BA%8F"><span class="toc-text">开始顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E6%9D%A5%E5%85%88%E6%9C%8D%E5%8A%A1%EF%BC%88FCFS%EF%BC%89"><span class="toc-text">先来先服务（FCFS）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%9F%AD%E5%AF%BB%E9%81%93%E6%97%B6%E9%97%B4%E4%BC%98%E5%85%88"><span class="toc-text">最短寻道时间优先</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E7%AE%97%E6%B3%95"><span class="toc-text">扫描算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E6%89%AB%E6%8F%8F"><span class="toc-text">循环扫描</span></a></li></ol></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E5%85%A5%E7%BC%93%E5%86%B2%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="toc-text">引入缓冲的原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E6%A6%82%E8%BF%B0"><span class="toc-text">设备驱动程序概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8A%9F%E8%83%BD%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">设备驱动程序的功能是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%88%E4%B8%8E%E8%AE%BE%E5%A4%87%E6%97%A0%E5%85%B3%E6%80%A7%EF%BC%89%E5%AE%9A%E4%B9%89%E3%80%82"><span class="toc-text">设备独立性（与设备无关性）定义。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E5%AE%9E%E7%8E%B0%E8%AE%BE%E5%A4%87%E7%8B%AC%E7%AB%8B%E6%80%A7%EF%BC%8C%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%88%E9%80%BB%E8%BE%91%E8%AE%BE%E5%A4%87%E8%A1%A8%EF%BC%89"><span class="toc-text">为实现设备独立性，系统设置的数据结构（逻辑设备表）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E6%B6%89%E5%8F%8A%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%9F"><span class="toc-text">设备分配涉及哪些数据结构？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%88%86%E9%85%8D%E8%BF%87%E7%A8%8B%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-text">设备分配过程示意图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SPOOLING"><span class="toc-text">SPOOLING</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E6%88%90"><span class="toc-text">组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%B9%E7%82%B9"><span class="toc-text">特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86"><span class="toc-text">假脱机打印系统原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">磁盘缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8D%B0%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">打印缓冲区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%84%B1%E6%9C%BA%E7%AE%A1%E7%90%86%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%81%87%E8%84%B1%E6%9C%BA%E6%89%93%E5%8D%B0%E8%BF%9B%E7%A8%8B"><span class="toc-text">假脱机管理进程和假脱机打印进程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%94%B1%E9%82%A3%E5%87%A0%E9%83%A8%E5%88%86%E7%BB%84%E6%88%90%EF%BC%9F%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E7%9A%84%E8%AE%A1%E7%AE%97%E5%85%AC%E5%BC%8F"><span class="toc-text">磁盘访问时间由那几部分组成？磁盘访问时间的计算公式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E7%94%B1%E4%B8%89%E4%B8%AA%E5%8A%A8%E4%BD%9C%E7%BB%84%E6%88%90%EF%BC%9A"><span class="toc-text">一次磁盘读写由三个动作组成：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%EF%BC%9A"><span class="toc-text">磁盘访问时间：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E7%A3%81%E7%9B%98%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E8%AE%A1%E7%AE%97%E5%B9%B3%E5%9D%87%E5%AF%BB%E9%81%93%E9%95%BF%E5%BA%A6"><span class="toc-text">利用磁盘调度算法计算平均寻道长度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E9%A1%BA%E5%BA%8F"><span class="toc-text">开始顺序</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E6%9D%A5%E5%85%88%E6%9C%8D%E5%8A%A1%EF%BC%88FCFS%EF%BC%89"><span class="toc-text">先来先服务（FCFS）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%9F%AD%E5%AF%BB%E9%81%93%E6%97%B6%E9%97%B4%E4%BC%98%E5%85%88"><span class="toc-text">最短寻道时间优先</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%AB%E6%8F%8F%E7%AE%97%E6%B3%95"><span class="toc-text">扫描算法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E6%89%AB%E6%8F%8F"><span class="toc-text">循环扫描</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-22</div>
+        <a href="/2022/09/22/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-22</div>
+        <a href="/2022/09/22/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-22</div>
+        <a href="/2022/09/22/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-22</div>
+        <a href="/2022/09/22/webMessaging/"><div class="recent-posts-item-content">网页消息通信</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
