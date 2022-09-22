@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>Vue中extend,extends,minxin,minxins的用法和区别</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="Vue中extend,extends,minxin,minxins的用法和区别">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="记录个人成长与生活，前端，算法，nlp">
+        content="如题目">
     
     
       <meta 
@@ -54,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -338,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
       </div>
     </article>
   
@@ -356,7 +360,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">153</span>
+          <span class="categories-list-item-badge">154</span>
         </div>
       </a>
     
@@ -510,14 +514,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      Vue中extend,extends,minxin,minxins的用法和区别
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092202.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-22T07:03:44.220Z">
+    <time datetime="2022-09-22T07:21:12.616Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -525,17 +529,74 @@
       <span>2022-09-22</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>1.1k 字</span>
     
   </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>初学vue。extend，extends，minxin，minxins一直没怎么了解清楚，经过大量的查阅后，总结出以下几点，有什么错误的话请大佬指正。</p>
+<h2 id="Vue-extend"><a href="#Vue-extend" class="headerlink" title="Vue.extend"></a>Vue.extend</h2><p>Vue.extend是一个全局的API，实际是创建一个构造器，并将其挂载到HTML的元素上(创建一个template标签)。可以通过propsData传参。</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Vue.extend<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">hr</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;element&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">hr</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">author</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">author</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">hr</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;transmit&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<p>注意：被挂载的元素内的内容会被覆盖</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile1</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(&#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;&lt;p&gt;My name is &#123;&#123;Name&#125;&#125;&lt;/p&gt;&#x27;</span>,<br>  <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-title class_">Name</span>: <span class="hljs-string">&#x27;ElucidatorSky&#x27;</span><br>    &#125;<br>  &#125;<br>&#125;)<br><br><span class="hljs-comment">// 输出 Profile1 实例，在控制台输出为VueComponent&#123;&#125;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile1</span>());<br><br><span class="hljs-comment">// 创建 Profile1 实例，并挂载到一个元素上。</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile1</span>().$mount(<span class="hljs-string">&#x27;#element&#x27;</span>)<br><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile2</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(&#123;<br>  <span class="hljs-attr">template</span>:<span class="hljs-string">&quot;&lt;p&gt;&#123;&#123;Name&#125;&#125;&lt;/p&gt;&quot;</span>,<br>  <span class="hljs-attr">data</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>      <span class="hljs-title class_">Name</span>:<span class="hljs-string">&#x27;ElucidatorSky&#x27;</span><br>    &#125;<br>  &#125;<br>&#125;);   <br><span class="hljs-comment">// 创建 Profile2 实例，并挂载到一个元素上。</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile2</span>().$mount(<span class="hljs-string">&#x27;author&#x27;</span>);<br><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile3</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(&#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;&lt;p&gt;&#123;&#123;extendData&#125;&#125;&lt;/br&gt;实例传入的数据为:&#123;&#123;propsExtend&#125;&#125;&lt;/p&gt;&#x27;</span>,<br>  <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">extendData</span>: <span class="hljs-string">&#x27;这是extend扩展的数据&#x27;</span>,<br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">props</span>:[<span class="hljs-string">&#x27;propsExtend&#x27;</span>]<br>&#125;)<br><br><span class="hljs-comment">// 创建 Profile 实例，并挂载到一个元素上。可以通过propsData传参.</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile3</span>(&#123;<span class="hljs-attr">propsData</span>:&#123;<span class="hljs-attr">propsExtend</span>:<span class="hljs-string">&#x27;我是实例传入的数据&#x27;</span>&#125;&#125;).$mount(<span class="hljs-string">&#x27;#transmit&#x27;</span>)<br></code></pre>
+
+<p>运行后</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b5e876a6-e03d-4916-9ba2-f50b7fdfebef-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b5e876a6-e03d-4916-9ba2-f50b7fdfebef-3807603.jpg"></p>
+<h2 id="为什么使用-extend"><a href="#为什么使用-extend" class="headerlink" title="为什么使用 extend"></a>为什么使用 extend</h2><p>在 vue 项目中，我们有了初始化的根实例后，所有页面基本上都是通过 router 来管理，组件也是通过 import 来进行局部注册，所以组件的创建我们不需要去关注，相比 extend 要更省心一些。但是这样做会有几个缺点：</p>
+<p>组件模板都是事先定义好的，如果我要从接口动态渲染组件怎么办？ 所有内容都是在 #app下渲染，注册组件都是在当前位置渲染。如果我要实现一个类似于 window.alert()提示组件要求像调用 JS 函数一样调用它，该怎么办？ 这时候，Vue.extend + vm.$mount 组合就派上用场了。</p>
+<h2 id="extends"><a href="#extends" class="headerlink" title="extends"></a>extends</h2><p>extends是一个选项，主要是为了便于扩展单文件组件。只不过接收的参数是简单的选项对象或构造函数,所以extends只能单次扩展一个组件</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// extends示例</span><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">CompA</span> = &#123; <br>  <span class="hljs-attr">created</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;我是被扩展出来的&quot;</span>);<br>  &#125;<br>&#125;<br><span class="hljs-attr">extends</span>: <span class="hljs-title class_">CompA</span><br></code></pre>
+
+<p>控制台输出</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8c854d44-395c-483b-a722-f1ccfc481b2f-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8c854d44-395c-483b-a722-f1ccfc481b2f-3807603.jpg"></p>
+<h2 id="Vue-mixin和minxins"><a href="#Vue-mixin和minxins" class="headerlink" title="Vue.mixin和minxins"></a>Vue.mixin和minxins</h2><p>Vue.mixin即是混入。mixin的作用是多个组件可以共享数据和方法，在使用mixin的组件中引入后，mixin中的方法和属性也就并入到该组件中，可以直接使用，在已有的组件数据和方法进行了扩充。Vue.mixin()可以把你创建的自定义方法混入所有的 Vue 实例（就是所有添加的组件都会混入你自定义的方法）。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// mixins示例        </span><br><span class="hljs-comment">//全局混入</span><br><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">mixin</span>(&#123;<br>  <span class="hljs-attr">created</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是全局被混入的&#x27;</span>);<br>  &#125;<br>&#125;)<br><span class="hljs-keyword">var</span> mixin = &#123;<br>  <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123; <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是外部被混入的&#x27;</span>) &#125;<br>&#125;<br><span class="hljs-keyword">var</span> app = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br><span class="hljs-comment">// 局部混入</span><br>  <span class="hljs-attr">mixins</span>: [mixin]<br>&#125;)<br></code></pre>
+
+<h2 id="mixins的特点-方法和参数在各组件中不共享"><a href="#mixins的特点-方法和参数在各组件中不共享" class="headerlink" title="mixins的特点:方法和参数在各组件中不共享"></a>mixins的特点:方法和参数在各组件中不共享</h2><p>混合对象中的参数num</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">num</span>: <span class="hljs-number">1</span>,<br>    &#125;<br>  &#125;,<br>  <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">hello</span>();<br>  &#125;,<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-title function_">hello</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;hello form mixinIn&#x27;</span>)<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>组件1中的参数num进行+1操作</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;template1&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;addone&quot;</span>&gt;</span>组件1<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>      template1里的num:&#123;&#123;num&#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">import</span> mixinIn <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../assets/mixinIn&#x27;</span></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">mixins</span>: [mixinIn],</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>:&#123;</span><br><span class="language-javascript">        <span class="hljs-title function_">addone</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">this</span>.<span class="hljs-property">num</span>++</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">&#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+
+<p>组件2中参数进行+2操作</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;template1&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;addtwo&quot;</span>&gt;</span>组件2<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>      template2里的num:&#123;&#123;num&#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">import</span> mixin <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../assets/mixinIn&#x27;</span></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">mixins</span>: [mixin],</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>:&#123;</span><br><span class="language-javascript">        <span class="hljs-title function_">addtwo</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">this</span>.<span class="hljs-property">num</span>+=<span class="hljs-number">2</span></span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">&#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+<p>组件1,组件2里的num互不受影响</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/72834eb3-789b-47a5-95cc-dac2d762d934-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/72834eb3-789b-47a5-95cc-dac2d762d934-3807603.jpg"></p>
+
   </div>
   <div>
     
@@ -583,7 +644,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -597,7 +658,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
     </article>
   
   
@@ -613,22 +674,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/theNodeProperties/"><div class="recent-posts-item-content">Node属性</div></a>
+        <a href="/2022/09/22/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/theOperatingSystem0/"><div class="recent-posts-item-content">操作系统期末考试——0</div></a>
+        <a href="/2022/09/22/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
+        <a href="/2022/09/22/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
+        <a href="/2022/09/22/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
       </div>
     
   </div>
