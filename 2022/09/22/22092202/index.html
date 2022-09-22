@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">他们之间的区别</span></a></li></ol>
       </div>
     </article>
   
@@ -521,7 +521,7 @@
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092202.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-22T07:21:12.616Z">
+    <time datetime="2022-09-22T07:31:31.636Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -540,7 +540,7 @@
     
     
       <span class="dot"></span>
-      <span>1.1k 字</span>
+      <span>1.5k 字</span>
     
   </div>
   
@@ -596,6 +596,29 @@
 <pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;template1&quot;</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;addtwo&quot;</span>&gt;</span>组件2<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>      template2里的num:&#123;&#123;num&#125;&#125;<br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">import</span> mixin <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../assets/mixinIn&#x27;</span></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">mixins</span>: [mixin],</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>:&#123;</span><br><span class="language-javascript">        <span class="hljs-title function_">addtwo</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">this</span>.<span class="hljs-property">num</span>+=<span class="hljs-number">2</span></span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">&#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
 <p>组件1,组件2里的num互不受影响</p>
 <p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/72834eb3-789b-47a5-95cc-dac2d762d934-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/72834eb3-789b-47a5-95cc-dac2d762d934-3807603.jpg"></p>
+<p>mixin和extends都可以在外部创建js文件，通过import来引用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//全局引用mixin</span><br><span class="hljs-keyword">import</span> mixin1 <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./mixin1&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Vue</span>_extend <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./Vue_extend&#x27;</span><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile1</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(<span class="hljs-title class_">Vue</span>_extend)<br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile1</span>().$mount(<span class="hljs-string">&#x27;#app&#x27;</span>)<br><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">mixin</span>(mixin1)<br><span class="hljs-comment">//局部引用mixin</span><br><span class="hljs-keyword">import</span> mixin2 <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./mixin2&#x27;</span>; <span class="hljs-comment">// 引入mixin文件</span><br><span class="hljs-keyword">import</span> extend <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./extend&#x27;</span>; <span class="hljs-comment">// 引入mixin文件</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>   <span class="hljs-attr">mixins</span>: [mixin2],<br>   <span class="hljs-attr">extend</span>: extend<br>&#125;<br></code></pre>
+
+<h2 id="他们之间的区别"><a href="#他们之间的区别" class="headerlink" title="他们之间的区别"></a>他们之间的区别</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">Vue</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> mixin1 <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./assets/mixin1&#x27;</span><br><span class="hljs-keyword">import</span> mixin2 <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./assets/mixin2&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Vue</span>_extend <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./assets/Vue_extend&#x27;</span><br><span class="hljs-keyword">import</span> extend <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./assets/extend&#x27;</span><br><span class="hljs-keyword">var</span> <span class="hljs-title class_">Profile1</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">extend</span>(<span class="hljs-title class_">Vue</span>_extend)<br><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">mixin</span>(mixin1) <span class="hljs-comment">// 先混入</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Profile1</span>().$mount(<span class="hljs-string">&#x27;#app&#x27;</span>)  <span class="hljs-comment">// 再挂载 先挂载则全局混入不进去</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;App&#x27;</span>,<br>  <span class="hljs-attr">mixins</span>:[mixin2],<br>  <span class="hljs-attr">extends</span>: extend,<br>  <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;我是原生app的&quot;</span>)<br>  &#125;<br>&#125;<br><span class="hljs-comment">// mixin1.js</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>    <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是全局混入的mixin1&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// mixin2.js</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>    <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是局部混入的mixin2&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// extend.js</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>    <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是局部扩展的&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// Vue_extends.js</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>    <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;我是全局扩展的&#x27;</span>)<br>    &#125;<br>&#125;<br><br></code></pre>
+
+<p>结果</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/52b2aef1-06ba-49c7-8279-fc03475e7e69-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/52b2aef1-06ba-49c7-8279-fc03475e7e69-3807603.jpg"></p>
+<p>我们可以看出，全局的mixin1混入了挂载的Vue_extend和扩展的extend上</p>
+<ul>
+<li>先调用混入挂载上的mixin1：“我是全局混入的mixin1”</li>
+<li>然后输出挂载的Vue_extend：“我是全局扩展的”</li>
+<li>之后输出混入到原生app上的mixin1： “我是全局混入的mixin1”</li>
+<li>再输出混入到extend里的mixin1： “我是全局混入的mixin1”</li>
+<li>然后输出extend扩展的：“我是局部扩展的”</li>
+<li>再输出局部混入的mixin2：“我是局部混入的mixin2”</li>
+<li>最后输出原生app的：“我是原生的app”</li>
+</ul>
+<p>由此可见</p>
+<ol>
+<li>extend会被Vue.mixin混入</li>
+<li>若组件被混入，混入的先执行</li>
+<li>执行顺序：Vue.extends &gt; 原生app混入的Vue.mixin &gt; extends &gt; mixins &gt; 原生app</li>
+</ol>
 
   </div>
   <div>
@@ -644,7 +667,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">他们之间的区别</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -658,7 +681,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-extend"><span class="toc-text">Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8-extend"><span class="toc-text">为什么使用 extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#extends"><span class="toc-text">extends</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-mixin%E5%92%8Cminxins"><span class="toc-text">Vue.mixin和minxins</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%9A%84%E7%89%B9%E7%82%B9-%E6%96%B9%E6%B3%95%E5%92%8C%E5%8F%82%E6%95%B0%E5%9C%A8%E5%90%84%E7%BB%84%E4%BB%B6%E4%B8%AD%E4%B8%8D%E5%85%B1%E4%BA%AB"><span class="toc-text">mixins的特点:方法和参数在各组件中不共享</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">他们之间的区别</span></a></li></ol>
     </article>
   
   
@@ -674,22 +697,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+        <a href="/2022/09/22/webpackConfigurationOptimizationWithDetails/"><div class="recent-posts-item-content">Webpack配置优化与详情</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+        <a href="/2022/09/22/webpackProfile/"><div class="recent-posts-item-content">Webpack简介</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+        <a href="/2022/09/22/websitePerformanceOptimization/"><div class="recent-posts-item-content">网站性能监测与优化策略</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-22</div>
-        <a href="/2022/09/22/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+        <a href="/2022/09/22/whyAwaitCannotBeUsedInForEach/"><div class="recent-posts-item-content">重学 JS：为啥 await 不能用在 forEach 中</div></a>
       </div>
     
   </div>
