@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>Javscript数组快速填充数据的8种方法</title>
+  <title>Vue.js中 watch 的高级用法</title>
   
     
       <meta 
         property="og:title" 
-        content="Javscript数组快速填充数据的8种方法">
+        content="Vue.js中 watch 的高级用法">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/23/js8waysToQuicklyPopulateAnArrayWithData/index.html">
+        content="http://example.com/2022/09/23/22092315/index.html">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="如何快速造数据">
+        content="如题目">
     
     
       <meta 
@@ -58,6 +58,10 @@
           <meta 
             property="og:article:tag" 
             content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -342,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fill"><span class="toc-text">fill()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copyWithin"><span class="toc-text">copyWithin()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keys"><span class="toc-text">keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-from"><span class="toc-text">Array.from()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-of"><span class="toc-text">Array.of()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBuffer"><span class="toc-text">ArrayBuffer()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-keys"><span class="toc-text">Object.keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handler%E6%96%B9%E6%B3%95%E5%92%8Cimmediate%E5%B1%9E%E6%80%A7"><span class="toc-text">handler方法和immediate属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deep%E5%B1%9E%E6%80%A7"><span class="toc-text">deep属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E9%94%80watch"><span class="toc-text">注销watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -521,14 +525,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      Javscript数组快速填充数据的8种方法
+      Vue.js中 watch 的高级用法
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/js8waysToQuicklyPopulateAnArrayWithData.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092315.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-23T09:11:16.707Z">
+    <time datetime="2022-09-23T09:11:16.699Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -567,6 +571,15 @@
             js
           </a>
         
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
       </div>
     </div>
   
@@ -574,62 +587,39 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>日常开发过程中经常会遇到模拟数据填充的问题。也就是造一些假数据，方便自己调试和开发。由此，整理了常用的数据填充的方法。</p>
-<h2 id="fill"><a href="#fill" class="headerlink" title="fill()"></a>fill()</h2><p>fill() 方法用一个固定值填充一个数组中从起始索引到终止索引内的全部元素。不包括终止索引。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> arr  = <span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>).<span class="hljs-title function_">fill</span>(<span class="hljs-string">&#x27;1&#x27;</span>)<br><span class="hljs-comment">//[ &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot;, &quot;1&quot; ]</span><br><br><span class="hljs-keyword">let</span> obj = <span class="hljs-title class_">Array</span>(<span class="hljs-number">2</span>).<span class="hljs-title function_">fill</span>(&#123;<span class="hljs-attr">name</span>:<span class="hljs-string">&#x27;叫我詹躲躲&#x27;</span>,<span class="hljs-attr">age</span>:<span class="hljs-number">18</span>&#125;)<br><span class="hljs-comment">//[&#123; name: &quot;叫我詹躲躲&quot;, age: 18 &#125;,&#123; name: &quot;叫我詹躲躲&quot;, age: 18 &#125;]</span><br></code></pre>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>假设有如下代码：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>FullName: &#123;&#123;fullName&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>FirstName: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;firstName&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#root&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">data</span>: &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;Dawei&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;Lou&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">fullName</span>: <span class="hljs-string">&#x27;&#x27;</span></span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">watch</span>: &#123;</span><br><span class="language-javascript">    <span class="hljs-title function_">firstName</span>(<span class="hljs-params">newName, oldName</span>) &#123;</span><br><span class="language-javascript">      <span class="hljs-variable language_">this</span>.<span class="hljs-property">fullName</span> = newName + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span>;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125; </span><br><span class="language-javascript">&#125;)</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
 
-<h2 id="copyWithin"><a href="#copyWithin" class="headerlink" title="copyWithin()"></a>copyWithin()</h2><p>copyWithin() 方法浅复制数组的一部分到同一数组中的另一个位置，并返回它，不会改变原数组的长度。填充的都是undefined.<br><strong>语法</strong><br>array.copyWithin(target, start, end)<br><strong>参数</strong></p>
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><em>target</em></td>
-<td align="left">必需。复制到指定目标索引位置。</td>
-</tr>
-<tr>
-<td align="left"><em>start</em></td>
-<td align="left">可选。元素复制的起始位置。</td>
-</tr>
-<tr>
-<td align="left"><em>end</em></td>
-<td align="left">可选。停止复制的索引位置 (默认为 <em>array</em>.length)。如果为负值，表示倒数。</td>
-</tr>
-</tbody></table>
-<pre class="highlight"><code class="hljs javascript"> <span class="hljs-keyword">const</span> arr = [...<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>)].<span class="hljs-title function_">copyWithin</span>(<span class="hljs-number">0</span>)<br><span class="hljs-comment">//[ undefined, undefined, undefined, undefined, undefined ]</span><br></code></pre>
-<p>还可以根据索引复制数组的值到另一个数组</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> arr = [<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>, <span class="hljs-string">&#x27;e&#x27;</span>];<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr.<span class="hljs-title function_">copyWithin</span>(<span class="hljs-number">0</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>));<br>[ <span class="hljs-string">&quot;d&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>, <span class="hljs-string">&quot;d&quot;</span>, <span class="hljs-string">&quot;e&quot;</span> ]<br></code></pre>
+<p>上面的代码的效果是，当我们输入firstName后，wacth监听每次修改变化的新值，然后计算输出fullName。</p>
+<h2 id="handler方法和immediate属性"><a href="#handler方法和immediate属性" class="headerlink" title="handler方法和immediate属性"></a>handler方法和immediate属性</h2><p>这里 watch 的一个特点是，最初绑定的时候是不会执行的，要等到 firstName 改变时才执行监听计算。那我们想要一开始就让他最初绑定的时候就执行改怎么办呢？我们需要修改一下我们的 watch 写法，修改过后的 watch 代码如下：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">watch</span>: &#123;<br>  <span class="hljs-attr">firstName</span>: &#123;<br>    <span class="hljs-title function_">handler</span>(<span class="hljs-params">newName, oldName</span>) &#123;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">fullName</span> = newName + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span>;<br>    &#125;,<br>    <span class="hljs-comment">// 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法</span><br>    <span class="hljs-attr">immediate</span>: <span class="hljs-literal">true</span><br>  &#125;<br>&#125;<br></code></pre>
 
-<h2 id="keys"><a href="#keys" class="headerlink" title="keys()"></a>keys()</h2><p>keys() 方法用于从数组创建一个包含数组键的可迭代对象。 如果对象是数组返回 true，否则返回 false。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//填充数组</span><br><span class="hljs-keyword">const</span> arr = [...<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>).<span class="hljs-title function_">keys</span>()]<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br></code></pre>
+<p>注意到handler了吗，我们给 firstName 绑定了一个handler方法，之前我们写的 watch 方法其实默认写的就是这个handler，Vue.js会去处理这个逻辑，最终编译出来其实就是这个handler。</p>
+<p>而immediate:true代表如果在 wacth 里声明了 firstName 之后，就会立即先去执行里面的handler方法，如果为 false就跟我们以前的效果一样，不会在绑定的时候就执行。</p>
+<h2 id="deep属性"><a href="#deep属性" class="headerlink" title="deep属性"></a>deep属性</h2><p>watch 里面还有一个属性 deep，默认值是 false，代表是否深度监听，比如我们 data 里有一个obj属性：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>obj.a: &#123;&#123;obj.a&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>obj.a: <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;obj.a&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;</span><br><span class="language-javascript">  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#root&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">data</span>: &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">obj</span>: &#123;</span><br><span class="language-javascript">      <span class="hljs-attr">a</span>: <span class="hljs-number">123</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">watch</span>: &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">obj</span>: &#123;</span><br><span class="language-javascript">      <span class="hljs-title function_">handler</span>(<span class="hljs-params">newName, oldName</span>) &#123;</span><br><span class="language-javascript">         <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;obj.a changed&#x27;</span>);</span><br><span class="language-javascript">      &#125;,</span><br><span class="language-javascript">      <span class="hljs-attr">immediate</span>: <span class="hljs-literal">true</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125; </span><br><span class="language-javascript">&#125;)</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
 
-<h2 id="Array-from"><a href="#Array-from" class="headerlink" title="Array.from()"></a>Array.from()</h2><p>Array.from() 方法从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(arrayLike[, mapFn[, thisArg]])<br></code></pre>
-<p><strong>参数</strong></p>
-<ul>
-<li>arrayLike想要转换成数组的伪数组对象或可迭代对象。</li>
-<li>mapFn 可选 如果指定了该参数，新数组中的每个元素会执行该回调函数。</li>
-<li>thisArg 可选 可选参数，执行回调函数 mapFn 时 this 对象。</li>
-</ul>
-<p><strong>四种填充顺序数据方法（其他数据亦可）</strong></p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>)).<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item,index</span>)=&gt;</span>index)<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br><br><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>), <span class="hljs-function">(<span class="hljs-params">item, index</span>)=&gt;</span>index)<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br><br><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">apply</span>(<span class="hljs-literal">null</span>, <span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>)).<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item, index</span>)=&gt;</span>index)<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br><br><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(&#123;<span class="hljs-attr">length</span>:<span class="hljs-number">10</span>&#125;,<span class="hljs-function">(<span class="hljs-params">item,index</span>)=&gt;</span>index)<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br></code></pre>
+<p>当我们在在输入框中输入数据视图改变obj.a的值时，我们发现是无效的。受现代 JavaScript 的限制 (以及废弃 Object.observe)，Vue 不能检测到对象属性的添加或删除。由于 Vue 会在初始化实例时对属性执行 getter&#x2F;setter 转化过程，所以属性必须在 data 对象上存在才能让 Vue 转换它，这样才能让它是响应的。</p>
+<p>默认情况下 handler 只监听obj这个属性它的引用的变化，我们只有给obj赋值的时候它才会监听到，比如我们在 mounted事件钩子函数中对obj进行重新赋值：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">mounted</span>: &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">obj</span> = &#123;<br>    <span class="hljs-attr">a</span>: <span class="hljs-string">&#x27;456&#x27;</span><br>  &#125;<br>&#125;<br></code></pre>
 
-<h2 id="map"><a href="#map" class="headerlink" title="map()"></a>map()</h2><p>一个Map对象在迭代时会根据对象中元素的插入顺序来进行 — 一个 for…of 循环在每次迭代后会返回一个形式为[key，value]的数组。 使用map填充顺序数据</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr =[...<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>)].<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item,index</span>)=&gt;</span>index)<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br></code></pre>
+<p>这样我们的 handler 才会执行，打印obj.a changed。</p>
+<p>相反，如果我们需要监听obj里的属性a的值呢？这时候deep属性就派上用场了！</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">watch</span>: &#123;<br>  <span class="hljs-attr">obj</span>: &#123;<br>    <span class="hljs-title function_">handler</span>(<span class="hljs-params">newName, oldName</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;obj.a changed&#x27;</span>);<br>    &#125;,<br>    <span class="hljs-attr">immediate</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-attr">deep</span>: <span class="hljs-literal">true</span><br>  &#125;<br>&#125; <br></code></pre>
 
-<h2 id="Array-of"><a href="#Array-of" class="headerlink" title="Array.of()"></a>Array.of()</h2><p>Array.of() 方法创建一个具有可变数量参数的新数组实例，而不考虑参数的数量或类型</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">of</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);   <br><span class="hljs-comment">// [1, 2, 3]</span><br><span class="hljs-title class_">Array</span>.<span class="hljs-title function_">of</span>() 和 <span class="hljs-title class_">Array</span> 构造函数之间的区别在于处理整数参数：<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">of</span>(<span class="hljs-number">7</span>) 创建一个具有单个元素 <span class="hljs-number">7</span> 的数组，而 <span class="hljs-title class_">Array</span>(<span class="hljs-number">7</span>) 创建一个长度为<span class="hljs-number">7</span>的空数组（注意：这是指一个有<span class="hljs-number">7</span>个空位(empty)的数组，而不是由<span class="hljs-number">7</span>个<span class="hljs-literal">undefined</span>组成的数组）。<br><br><span class="hljs-keyword">const</span> arr = <span class="hljs-title class_">Array</span>(<span class="hljs-number">7</span>);          <br><span class="hljs-comment">// [ , , , , , , ]</span><br><span class="hljs-keyword">const</span> arr1 = <span class="hljs-title class_">Array</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>);    <br><span class="hljs-comment">// [1, 2, 3]</span><br></code></pre>
+<p>deep的意思就是深入观察，监听器会一层层的往下遍历，给对象的所有属性都加上这个监听器，但是这样性能开销就会非常大了，任何修改obj里面任何一个属性都会触发这个监听器里的 handler。</p>
+<p>优化，我们可以是使用字符串形式监听。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">watch</span>: &#123;<br>  <span class="hljs-string">&#x27;obj.a&#x27;</span>: &#123;<br>    <span class="hljs-title function_">handler</span>(<span class="hljs-params">newName, oldName</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;obj.a changed&#x27;</span>);<br>    &#125;,<br>    <span class="hljs-attr">immediate</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-comment">// deep: true</span><br>  &#125;<br>&#125; <br></code></pre>
 
-<h2 id="ArrayBuffer"><a href="#ArrayBuffer" class="headerlink" title="ArrayBuffer()"></a>ArrayBuffer()</h2><p>ArrayBuffer 对象用来表示通用的、固定长度的原始二进制数据缓冲区。 有时候还会建立固定长度的原始二进制数据缓冲区。可以使用ArrayBuffer，它是一个字节数组。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> buffer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayBuffer</span>(<span class="hljs-number">8</span>);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(buffer.<span class="hljs-property">byteLength</span>);<br><span class="hljs-comment">//8</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(buffer);<br><span class="hljs-comment">//&#123; byteLength: 8 &#125;</span><br></code></pre>
+<p>这样Vue.js才会一层一层解析下去，直到遇到属性a，然后才给a设置监听函数。</p>
+<h2 id="注销watch"><a href="#注销watch" class="headerlink" title="注销watch"></a>注销watch</h2><p>为什么要注销 watch？因为我们的组件是经常要被销毁的，比如我们跳一个路由，从一个页面跳到另外一个页面，那么原来的页面的 watch 其实就没用了，这时候我们应该注销掉原来页面的 watch 的，不然的话可能会导致内置溢出。好在我们平时 watch 都是写在组件的选项中的，他会随着组件的销毁而销毁。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> app = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;&lt;div id=&quot;root&quot;&gt;&#123;&#123;text&#125;&#125;&lt;/div&gt;&#x27;</span>,<br>  <span class="hljs-attr">data</span>: &#123;<br>    <span class="hljs-attr">text</span>: <span class="hljs-number">0</span><br>  &#125;,<br>  <span class="hljs-attr">watch</span>: &#123;<br>    <span class="hljs-title function_">text</span>(<span class="hljs-params">newVal, oldVal</span>)&#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;newVal&#125;</span> : <span class="hljs-subst">$&#123;oldVal&#125;</span>`</span>);<br>    &#125;<br>  &#125;<br>&#125;);<br></code></pre>
 
-<h2 id="Object-keys"><a href="#Object-keys" class="headerlink" title="Object.keys()"></a>Object.keys()</h2><p>Object.keys() 方法会返回一个由一个给定对象的自身可枚举属性组成的数组，数组中属性名的排列顺序和正常循环遍历该对象时返回的顺序一致 。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> arr = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">apply</span>(<span class="hljs-literal">null</span>, &#123;<span class="hljs-attr">length</span>:<span class="hljs-number">10</span>&#125;)).<span class="hljs-title function_">map</span>((<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>+item));<br><span class="hljs-comment">//[ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]</span><br>创建值为<span class="hljs-title class_">String</span>的数组<br><br><span class="hljs-keyword">let</span> arr = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>([...<span class="hljs-title class_">Array</span>(<span class="hljs-number">10</span>)]);<br><span class="hljs-comment">//[ &quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot; ]</span><br>可以创建临时数据进行展示<br><br><span class="hljs-keyword">let</span> yData = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(&#123; <span class="hljs-attr">length</span>: <span class="hljs-number">5</span> &#125;, <span class="hljs-function"><span class="hljs-params">v</span> =&gt;</span> <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>() * <span class="hljs-number">10240</span>)<br> <span class="hljs-comment">//[ 7513.437978671786, 5167.373983274039, 3814.0122504839223, 981.9482320596001, 4330.3850800180335 ]</span><br> <br><span class="hljs-keyword">let</span> xData = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(&#123; <span class="hljs-attr">length</span>: <span class="hljs-number">5</span> &#125;, <span class="hljs-function">(<span class="hljs-params">v, w</span>) =&gt;</span> <span class="hljs-string">&#x27;叫我詹躲躲&#x27;</span> + w)<br><span class="hljs-comment">//[ &quot;叫我詹躲躲0&quot;, &quot;叫我詹躲躲1&quot;, &quot;叫我詹躲躲2&quot;, &quot;叫我詹躲躲3&quot;, &quot;叫我詹躲躲4&quot; ]</span><br></code></pre>
+<p>但是，如果我们使用下面这样的方式写 watch，那么就要手动注销了，这种注销其实也很简单</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> unWatch = app.$watch(<span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">newVal, oldVal</span>) =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;newVal&#125;</span> : <span class="hljs-subst">$&#123;oldVal&#125;</span>`</span>);<br>&#125;)<br><br><span class="hljs-title function_">unWatch</span>(); <span class="hljs-comment">// 手动注销watch</span><br></code></pre>
 
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/267587176">Javscript数组快速填充数据的8种方法</a></p>
+<p>app.$watch调用后会返回一个值，就是unWatch方法，你要注销 watch 只要调用unWatch方法就可以了。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903600737484808">Vue.js中 watch 的高级用法</a></p>
 
   </div>
   <div>
@@ -640,13 +630,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/23/inlineElements/" 
+        href="/2022/09/23/22092314/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">行内元素、块级元素和行内块级元素 </div>
+            <div class="nav-title">Vue.set()和this.$set()介绍 </div>
           
         </div>
       </a>
@@ -655,12 +645,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/23/HTTPSWorksWithTheTCPHandshakeMechanism/" 
+        href="/2022/09/23/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">HTTPS的工作原理 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -678,7 +668,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fill"><span class="toc-text">fill()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copyWithin"><span class="toc-text">copyWithin()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keys"><span class="toc-text">keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-from"><span class="toc-text">Array.from()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-of"><span class="toc-text">Array.of()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBuffer"><span class="toc-text">ArrayBuffer()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-keys"><span class="toc-text">Object.keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handler%E6%96%B9%E6%B3%95%E5%92%8Cimmediate%E5%B1%9E%E6%80%A7"><span class="toc-text">handler方法和immediate属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deep%E5%B1%9E%E6%80%A7"><span class="toc-text">deep属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E9%94%80watch"><span class="toc-text">注销watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -692,7 +682,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fill"><span class="toc-text">fill()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copyWithin"><span class="toc-text">copyWithin()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keys"><span class="toc-text">keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-from"><span class="toc-text">Array.from()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Array-of"><span class="toc-text">Array.of()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayBuffer"><span class="toc-text">ArrayBuffer()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-keys"><span class="toc-text">Object.keys()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#handler%E6%96%B9%E6%B3%95%E5%92%8Cimmediate%E5%B1%9E%E6%80%A7"><span class="toc-text">handler方法和immediate属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#deep%E5%B1%9E%E6%80%A7"><span class="toc-text">deep属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E9%94%80watch"><span class="toc-text">注销watch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
