@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>静态属性和静态方法</title>
+  <title>霜序廿的个人网站</title>
   
     
       <meta 
         property="og:title" 
-        content="静态属性和静态方法">
+        content="霜序廿的个人网站">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/23/staticPropertiesAndStaticMethods/index.html">
+        content="http://example.com/2022/09/23/22092303/index.html">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="如题目~">
+        content="记录个人成长与生活，前端，算法，nlp">
     
     
       <meta 
@@ -54,10 +54,6 @@
         property="og:article:author" 
         content="霜序廿">
       
-        
-          <meta 
-            property="og:article:tag" 
-            content="js">
         
       
     
@@ -342,7 +338,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7"><span class="toc-text">静态属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7%E5%92%8C%E6%96%B9%E6%B3%95"><span class="toc-text">继承静态属性和方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+
       </div>
     </article>
   
@@ -514,14 +510,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      静态属性和静态方法
+      
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/staticPropertiesAndStaticMethods.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092303.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-23T02:46:37.554Z">
+    <time datetime="2022-09-23T02:46:37.542Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -529,85 +525,36 @@
       <span>2022-09-23</span>
     </time>
     
-      <span class="dot"></span>
-      
-        <a 
-          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
-          class="post-meta-link">
-          技术文章
-        </a>
-      
-    
     
       <span class="dot"></span>
-      <span>1.2k 字</span>
+      <span>1.9k 字</span>
     
   </div>
-  
-    <div 
-      class="post-meta post-show-meta" 
-      style="margin-top: -10px;">
-      <div style="display: flex; align-items: center;">
-        <i 
-          class="iconfont icon-biaoqian" 
-          style="margin-right: 2px; font-size: 1.15rem;">
-        </i>
-        
-          
-          <a 
-            href="/tags/js/" 
-            class="post-meta-link">
-            js
-          </a>
-        
-      </div>
-    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们可以把一个方法赋值给类的函数本身，而不是赋给它的 “prototype”。这样的方法被称为 静态的（static）。<br>在一个类中，它们以 static 关键字开头，如下所示：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>  <span class="hljs-keyword">static</span> <span class="hljs-title function_">staticMethod</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-title function_">alert</span>(<span class="hljs-variable language_">this</span> === <span class="hljs-title class_">User</span>);<br>  &#125;<br>&#125;<br><span class="hljs-title class_">User</span>.<span class="hljs-title function_">staticMethod</span>(); <span class="hljs-comment">// true</span><br></code></pre>
-<p>这实际上跟直接将其作为属性赋值的作用相同：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123; &#125;<br><span class="hljs-title class_">User</span>.<span class="hljs-property">staticMethod</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-title function_">alert</span>(<span class="hljs-variable language_">this</span> === <span class="hljs-title class_">User</span>);<br>&#125;;<br><br><span class="hljs-title class_">User</span>.<span class="hljs-title function_">staticMethod</span>(); <span class="hljs-comment">// true</span><br></code></pre>
-<p>在 User.staticMethod() 调用中的 this 的值是类构造器 User 自身（“点符号前面的对象”规则）。<br>通常，静态方法用于实现属于该类但不属于该类任何特定对象的函数。<br>例如，我们有对象 Article，并且需要一个方法来比较它们。一个自然的解决方案就是添加 Article.compare 方法，像下面这样：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Article</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">title, date</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">title</span> = title;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">date</span> = date;<br>  &#125;<br><br>  <span class="hljs-keyword">static</span> <span class="hljs-title function_">compare</span>(<span class="hljs-params">articleA, articleB</span>) &#123;<br>    <span class="hljs-keyword">return</span> articleA.<span class="hljs-property">date</span> - articleB.<span class="hljs-property">date</span>;<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// 用法</span><br><span class="hljs-keyword">let</span> articles = [<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Article</span>(<span class="hljs-string">&quot;HTML&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(<span class="hljs-number">2019</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)),<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Article</span>(<span class="hljs-string">&quot;CSS&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(<span class="hljs-number">2019</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>)),<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Article</span>(<span class="hljs-string">&quot;JavaScript&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(<span class="hljs-number">2019</span>, <span class="hljs-number">11</span>, <span class="hljs-number">1</span>))<br>];<br><br>articles.<span class="hljs-title function_">sort</span>(<span class="hljs-title class_">Article</span>.<span class="hljs-property">compare</span>);<br><br><span class="hljs-title function_">alert</span>( articles[<span class="hljs-number">0</span>].<span class="hljs-property">title</span> ); <span class="hljs-comment">// CSS</span><br></code></pre>
-<p>这里 Article.compare 代表“上面的”文章，意思是比较它们。它不是文章的方法，而是整个 class 的方法。<br>另一个例子是所谓的“工厂”方法。想象一下，我们需要通过几种方法来创建一个文章：</p>
-<ol>
-<li>通过用给定的参数来创建（title，date 等）。</li>
-<li>使用今天的日期来创建一个空的文章。</li>
-<li>……其它方法。</li>
-</ol>
-<p>第一种方法我们可以通过 constructor 来实现。对于第二种方式，我们可以创建类的一个静态方法来实现。<br>就像这里的 Article.createTodays()：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Article</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">title, date</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">title</span> = title;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">date</span> = date;<br>  &#125;<br><br>  <span class="hljs-keyword">static</span> <span class="hljs-title function_">createTodays</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">// 记住 this = Article</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title function_">this</span>(<span class="hljs-string">&quot;Today&#x27;s digest&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>());<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> article = <span class="hljs-title class_">Article</span>.<span class="hljs-title function_">createTodays</span>();<br><br><span class="hljs-title function_">alert</span>( article.<span class="hljs-property">title</span> ); <span class="hljs-comment">// Today&#x27;s digest</span><br></code></pre>
-<p>现在，每当我们需要创建一个今天的文章时，我们就可以调用 Article.createTodays()。再说明一次，它不是一个文章的方法，而是整个 class 的方法。<br>静态方法也被用于与数据库相关的公共类，可以用于搜索&#x2F;保存&#x2F;删除数据库中的条目， 就像这样：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 假定 Article 是一个用来管理文章的特殊类</span><br><span class="hljs-comment">// 静态方法用于移除文章：</span><br><span class="hljs-title class_">Article</span>.<span class="hljs-title function_">remove</span>(&#123;<span class="hljs-attr">id</span>: <span class="hljs-number">12345</span>&#125;);<br></code></pre>
-
-<h2 id="静态属性"><a href="#静态属性" class="headerlink" title="静态属性"></a>静态属性</h2><p>静态的属性也是可能的，它们看起来就像常规的类属性，但前面加有 static：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Article</span> &#123;<br>  <span class="hljs-keyword">static</span> publisher = <span class="hljs-string">&quot;Levi Ding&quot;</span>;<br>&#125;<br><br><span class="hljs-title function_">alert</span>( <span class="hljs-title class_">Article</span>.<span class="hljs-property">publisher</span> ); <span class="hljs-comment">// Levi Ding</span><br></code></pre>
-<p>这等同于直接给 Article 赋值：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Article</span>.<span class="hljs-property">publisher</span> = <span class="hljs-string">&quot;Levi Ding&quot;</span>;<br></code></pre>
-
-<h2 id="继承静态属性和方法"><a href="#继承静态属性和方法" class="headerlink" title="继承静态属性和方法"></a>继承静态属性和方法</h2><p>静态属性和方法是可被继承的。<br>例如，下面这段代码中的 Animal.compare 和 Animal.planet 是可被继承的，可以通过 Rabbit.compare 和 Rabbit.planet 来访问：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span> &#123;<br>  <span class="hljs-keyword">static</span> planet = <span class="hljs-string">&quot;Earth&quot;</span>;<br><br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">name, speed</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">speed</span> = speed;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = name;<br>  &#125;<br><br>  <span class="hljs-title function_">run</span>(<span class="hljs-params">speed = <span class="hljs-number">0</span></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">speed</span> += speed;<br>    <span class="hljs-title function_">alert</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.name&#125;</span> runs with speed <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.speed&#125;</span>.`</span>);<br>  &#125;<br><br>  <span class="hljs-keyword">static</span> <span class="hljs-title function_">compare</span>(<span class="hljs-params">animalA, animalB</span>) &#123;<br>    <span class="hljs-keyword">return</span> animalA.<span class="hljs-property">speed</span> - animalB.<span class="hljs-property">speed</span>;<br>  &#125;<br><br>&#125;<br><br><span class="hljs-comment">// 继承于 Animal</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Rabbit</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Animal</span> &#123;<br>  <span class="hljs-title function_">hide</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-title function_">alert</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.name&#125;</span> hides!`</span>);<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> rabbits = [<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Rabbit</span>(<span class="hljs-string">&quot;White Rabbit&quot;</span>, <span class="hljs-number">10</span>),<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">Rabbit</span>(<span class="hljs-string">&quot;Black Rabbit&quot;</span>, <span class="hljs-number">5</span>)<br>];<br><br>rabbits.<span class="hljs-title function_">sort</span>(<span class="hljs-title class_">Rabbit</span>.<span class="hljs-property">compare</span>);<br><br>rabbits[<span class="hljs-number">0</span>].<span class="hljs-title function_">run</span>(); <span class="hljs-comment">// Black Rabbit runs with speed 5.</span><br><br><span class="hljs-title function_">alert</span>(<span class="hljs-title class_">Rabbit</span>.<span class="hljs-property">planet</span>); <span class="hljs-comment">// Earth</span><br></code></pre>
-
-<p>现在我们调用 Rabbit.compare 时，继承的 Animal.compare 将会被调用。<br>它是如何工作的？再次，使用原型。你可能已经猜到了，extends 让 Rabbit 的 [[Prototype]] 指向了 Animal。</p>
-<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d2c3a0d3-6117-47e8-8325-5b195e31d85e-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/d2c3a0d3-6117-47e8-8325-5b195e31d85e-3807603.jpg"></p>
-<p>所以，Rabbit extends Animal 创建了两个 [[Prototype]] 引用：</p>
-<ol>
-<li>Rabbit 函数原型继承自 Animal 函数。</li>
-<li>Rabbit.prototype 原型继承自 Animal.prototype。</li>
-</ol>
-<p>结果就是，继承对常规方法和静态方法都有效。<br>这里，让我们通过代码来检验一下：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span> &#123;&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Rabbit</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Animal</span> &#123;&#125;<br><br><span class="hljs-comment">// 对于静态的</span><br><span class="hljs-title function_">alert</span>(<span class="hljs-title class_">Rabbit</span>.<span class="hljs-property">__proto__</span> === <span class="hljs-title class_">Animal</span>); <span class="hljs-comment">// true</span><br><br><span class="hljs-comment">// 对于常规方法</span><br><span class="hljs-title function_">alert</span>(<span class="hljs-title class_">Rabbit</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">__proto__</span> === <span class="hljs-title class_">Animal</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// true</span><br></code></pre>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>静态方法被用于实现属于整个类的功能。它与具体的类实例无关。<br>举个例子， 一个用于进行比较的方法 Article.compare(article1, article2) 或一个工厂（factory）方法 Article.createTodays()。<br>在类生命中，它们都被用关键字 static 进行了标记。<br>静态属性被用于当我们想要存储类级别的数据时，而不是绑定到实例。<br>语法如下所示：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MyClass</span> &#123;<br>  <span class="hljs-keyword">static</span> property = ...;<br><br>  <span class="hljs-keyword">static</span> <span class="hljs-title function_">method</span>(<span class="hljs-params"></span>) &#123;<br>    ...<br>  &#125;<br>&#125;<br></code></pre>
-<p>从技术上讲，静态声明与直接给类本身赋值相同：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">MyClass</span>.<span class="hljs-property">property</span> = ...<br><span class="hljs-title class_">MyClass</span>.<span class="hljs-property">method</span> = ...<br></code></pre>
-<p>静态属性和方法是可被继承的。<br>对于 class B extends A，类 B 的 prototype 指向了 A：B.[[Prototype]] &#x3D; A。因此，如果一个字段在 B 中没有找到，会继续在 A 中查找。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zh.javascript.info/static-properties-methods">静态属性和静态方法</a></p>
+    <p>苏州值得一玩的景点合集（内附详细旅游攻略）</p>
+<p>前言<br>“上有天堂，下有苏杭”。苏杭自古一来就被称为“人间天堂”，苏州的江南水乡吸引的大量的游客前来游玩。但是还是有很多小伙伴不知道到底哪些苏州景点值得游览。</p>
+<p>所以，话不多说，给大家详细介绍10个苏州热门景点，园林、大学、古镇、商业街、网红打卡点全部包含。</p>
+<p>经典景点介绍：</p>
+<p>1.苏州博物馆<br>苏博最近真是火到没朋友，来苏博即使不看展品也有很多地方可以拍照。强推可以拍出天空之境效果的湖边！</p>
+<p>地址：姑苏区东北街204号<br>交通：乘坐游1、游2、游5、55、178、202、309、313、518、529路等到苏州博物馆<br>门票：免费(可在官网提前预约)<br>开放时间：每星期二至星期日9:00~17:00（16:00停止入馆）<br>建议用时：2-3小时<br>Tips:周末和节假日人非常多，可以提前网上预约走绿色通道（周一闭馆）</p>
+<p>2.平江路<br>近几年，平江路商业化越来越严重了，但该有的老苏州特色保留还算完整，去平江路摸摸白墙青瓦，尝尝苏州特色美食，也是不错的，超火的猫的天空之城也在这哦！</p>
+<p>地址：姑苏区平江路<br>交通：<br>地铁：1号线相门站或临顿路站下，步行约300米可到平江路的南端<br>公交：乘坐301路、305路，在平江路站下<br>门票：免费<br>开放时间：全天开放<br>建议用时：1-3小时<br>Tips：很多粉墙瓦黛不建议中午拍摄，阳光太强影响成片效果。</p>
+<p>3.周庄<br>周庄可是苏州古镇中的重头戏，虽然商业化重了一些，但最热闹最出名。如果气候合适，可以穿件旗袍，来这里感受一下老苏州的风土人情、小桥流水。即使在桥边静坐随便一个pose，都很美。</p>
+<p>地址：苏州市昆山市全福路<br>交通：苏州汽车北站至周庄有直达班车，时间1小时，票价17元；<br>汽车南站到吴江江泽，票价13元，时间1小时20分钟，下车后步行不久就是周庄古镇<br>门票：100.00元 夜游周庄：80.00元<br>开放时间： 08:00<del>21:00<br>建议用时：1天<br>Tips：如果游玩时间有限，古镇推荐周庄</del></p>
+<p>4.虎丘<br>虎丘非常大，里面的虎丘塔被称为中国比萨斜塔，十分个性，拍人像的时候特别适合跟虎丘塔来一张错位照。景区内有一大片竹林，配上幽深小路，超级适合拍照~</p>
+<p>地址：姑苏区山塘街虎丘山门内8号<br>交通：南门入口：146、游1、游2路虎丘首末站；北门入口：32、快线3号虎丘北门站<br>门票：淡季：60.00元 旺季：80.00元<br>开放时间： 7:30-17:30&#x2F;17：00<br>建议用时：2-3小时<br>Tips：景区内有免费讲解，很贴心</p>
+<p>5.七里山塘<br>山塘古城苏州是著名的江南水乡，城内水港交错，街衢纵横，西接“吴中第一名胜”虎丘，长约七里，是唐代大诗人白居易任苏州刺史时募工凿河堆堤而成。在苏州众多的街巷之中，名胜山塘街，被称誉为“姑苏第一名街”，晚的山塘街很有意境，适合拍照。</p>
+<p>地址：吴中区干将东路333号<br>交通：地铁2号线山塘街站<br>门票：免费<br>开放时间：08:30~21:00<br>建议用时：3-4小时<br>6.苏州大学<br>苏大可以拍照的地方太多了，而且一年四季均可，挑一天阳光明媚的日子，一身青春洋溢的穿搭，就可以去苏大拍拍拍啦本部的钟楼搭配绿树、著名的情人坡、复古欧式红楼建筑，都十分适合拍小清新风格，拍出来的照片绝对能狠狠戳中你的少女心,来苏州强推苏大。</p>
+<p>地址：苏州市姑苏区十梓街1号<br>交通：乘坐地铁1号线至相门站下，步行约270米<br>门票：免费<br>开放时间：8:00~17:00<br>建议用时：2-3小时<br>Tips：提前预约。搜索“苏州大学”公众号→菜单栏“校园导览”里有鉴赏日一栏→根据要求填上姓名，身份证等信息就可以啦</p>
+<p>7.金鸡湖&amp;东方之门<br>金鸡湖、东方之门都很好拍，白天逛逛诚品书店，在ins风十足的甜品店小坐，拍几张文艺美照，或租一辆自行车，在湖边骑行。晚上路灯亮起，金鸡湖在月色下波光粼粼，远远望去高楼大厦霓虹闪烁，灯火璀璨，你绝对会看到最美的苏州夜景。</p>
+<p>地址：苏州市星港街199号<br>交通：可乘坐地铁1号线东方之门站<br>门票：免费<br>开放时间： 全天<br>建议用时：1天<br>8.狮子林<br>狮子林是所有园林中最有趣味，也是我很喜欢的一个。假山很多，还有好看的门窗框，十分适合框景拍摄，稍微注意一下构图，拍出来的照片就好像嵌入画中。Ps：狮子林比较绕，可能会迷路，拍照时注意脚下，以防磕绊。</p>
+<p>地址：苏州市姑苏区园林路23号<br>交通：游1、游2、游5线；202、923、178、301、811、55、529、309、518路均可<br>门票：40元（旺季），30元（淡季）<br>开放时间： 9:30—16:30<br>建议用时：2-3小时<br>9.拙政园<br>拙政园的大气是别的苏州园林不可比拟的，亭台楼阁、粉墙瓦黛十分适合拍大场景照片，问题是无论工作日还是周末都是人人人…Ps：拙政园比较大，建议在游客中心领取园区导览图，小心迷路</p>
+<p>地址：苏州市姑苏区东北街178号<br>交通： 乘坐40、313路公交车在北园路站下车<br>门票：50元（淡季）；90元（旺季）<br>开放时间： 07:30-17:30<br>建议用时：2-3小时<br>10.盘门<br>盘门位于苏州市城西南隅，是吴都八门之一，是苏州仅存的古城门遗迹，也是全国现存唯一的水路并联城门。具有极高的历史文物价值，有“北看长城之雄，南看盘门之秀”的说法，所以来苏州一定要来盘门逛逛。</p>
+<p>地址：苏州市东大街1号<br>交通： 可乘坐公交39路、47路、305路、935路、949路、游2路、游5路北线、游5路南线至盘门景区北站<br>门票：40元<br>开放时间： 07:30-17:00<br>建议用时：2-3小时<br>路线计划<br>晚上从杭州走，住在北寺塔附近，周六上午北寺塔，博物馆，下午平江路，晚上夜游金鸡湖；周日虎丘山风景区，白洋湾公园，下午虎丘湿地公园，晚上回杭州<br>晚上从杭州走，住在木渎附近，周六周日，灵岩山，穹窿山，太湖渔洋山，周日春天西京湾花海<br>参考链接<br>苏州值得一玩的景点合集（内附详细旅游攻略）</p>
 
   </div>
   <div>
@@ -618,13 +565,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/23/sort/" 
+        href="/2022/09/23/22092302/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">快速排序详解 </div>
+            <div class="nav-title">Flex 布局教程：语法篇 </div>
           
         </div>
       </a>
@@ -633,12 +580,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/23/studyMapAndParselnt/" 
+        href="/2022/09/23/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">从.map(parseInt)讲起 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -656,7 +603,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7"><span class="toc-text">静态属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7%E5%92%8C%E6%96%B9%E6%B3%95"><span class="toc-text">继承静态属性和方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+
 </div>
             </main>
             <aside class="right-column">
@@ -670,7 +617,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7"><span class="toc-text">静态属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E9%9D%99%E6%80%81%E5%B1%9E%E6%80%A7%E5%92%8C%E6%96%B9%E6%B3%95"><span class="toc-text">继承静态属性和方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+
     </article>
   
   
