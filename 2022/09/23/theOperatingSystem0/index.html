@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>操作系统期末考试——0</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="操作系统期末考试——0">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/23/theOperatingSystem0/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="本文涉及到操作系统引论、进程管理">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-23">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-23">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="考试">
+        
+          <meta 
+            property="og:article:tag" 
+            content="操作系统">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>187</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>5</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>39</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%95%E8%AE%BA"><span class="toc-text">操作系统引论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9A%E4%B9%89"><span class="toc-text">操作系统定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%9C%E7%94%A8"><span class="toc-text">操作系统作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%97%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E7%89%B9%E5%BE%81"><span class="toc-text">分时系统的原理与特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%84%B1%E6%9C%BAI-x2F-O%E5%8E%9F%E7%90%86"><span class="toc-text">脱机I&#x2F;O原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%89%B9%E5%BE%81"><span class="toc-text">操作系统的基本特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%9A"><span class="toc-text">作业</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-text">进程管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%A1%BA%E5%BA%8F%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序顺序执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序并发执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%95%E5%85%A5%E8%BF%9B%E7%A8%8B"><span class="toc-text">为什么引入进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="toc-text">进程定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%89%B9%E5%BE%81"><span class="toc-text">进程特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%89%E6%80%81%EF%BC%89"><span class="toc-text">进程的基本状态、相互转换原因及转换图（三态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%80%81%EF%BC%88%E6%A0%B8%E5%BF%83%E6%80%81%EF%BC%89%E5%92%8C%E7%94%A8%E6%88%B7%E6%80%81"><span class="toc-text">系统态（核心态）和用户态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E6%8C%82%E8%B5%B7%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%BA%94%E6%80%81%EF%BC%89"><span class="toc-text">具有挂起状态的进程状态、相互转换原因及其转换图（五态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E5%88%9B%E5%BB%BA%E7%BB%88%E6%AD%A2%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%83%E6%80%81%EF%BC%89"><span class="toc-text">具有创建终止状态的进程状态、相互转换原因及其转换图（七态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%EF%BC%9F%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">什么是进程控制块？进程控制块的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90%E4%B8%8E%E4%B8%B4%E7%95%8C%E5%8C%BA%E5%8C%BA%E5%88%AB"><span class="toc-text">临界资源与临界区区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6%E5%BA%94%E9%81%B5%E5%BE%AA%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-text">同步机制应遵循的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-text">记录型信号量的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%AD%A3%E8%B4%9F%E5%80%BC%E7%9A%84%E7%89%A9%E7%90%86%E6%84%8F%E4%B9%89"><span class="toc-text">信号量正负值的物理意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait-%E5%92%8C-signal-%E6%93%8D%E4%BD%9C"><span class="toc-text">wait 和 signal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AND-%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89%EF%BC%8CSwait-%E5%92%8C-Ssignal-%E6%93%8D%E4%BD%9C"><span class="toc-text">AND 型信号量的定义，Swait 和 Ssignal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%EF%BC%8D%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">生产者－消费者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E4%BC%9A%E6%AD%BB%E9%94%81%E7%9A%84%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">不会死锁的哲学家就餐问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-1"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-1"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953-1"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E8%80%85%EF%BC%8D%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">读者－写者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-2"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-2"><span class="toc-text">方法2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E4%BA%A4%E8%BD%A6%E7%AE%97%E6%B3%95"><span class="toc-text">公交车算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-3"><span class="toc-text">方法1</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="toc-text">高级进程通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92%E9%80%9A%E4%BF%A1%E7%9A%84%E4%B8%A4%E7%A7%8D%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="toc-text">消息传递通信的两种通信方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97%E9%80%9A%E4%BF%A1%E5%B1%9E%E4%BA%8E%E4%BB%80%E4%B9%88%E9%80%9A%E4%BF%A1"><span class="toc-text">消息缓冲队列通信属于什么通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%9A%E4%B9%89%E5%8F%8A%E5%B1%9E%E6%80%A7"><span class="toc-text">线程定义及属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8B%E5%8C%BA%E5%88%AB"><span class="toc-text">线程和进程区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B-OS-%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">多线程 OS 中的进程的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%8F%8A%E4%BB%A3%E7%A0%81"><span class="toc-text">前趋图及代码</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">160</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/webpack/" 
+        title="webpack">
+        <div class="tags-list-item">webpack</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%A0%91/" 
+        title="树">
+        <div class="tags-list-item">树</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      操作系统期末考试——0
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/theOperatingSystem0.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-23T02:21:06.171Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-23</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E8%80%83%E8%AF%95/" 
+          class="post-meta-link">
+          考试
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E8%80%83%E8%AF%95/" 
+            class="post-meta-link">
+            考试
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+            class="post-meta-link">
+            操作系统
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="操作系统引论"><a href="#操作系统引论" class="headerlink" title="操作系统引论"></a>操作系统引论</h2><h3 id="操作系统定义"><a href="#操作系统定义" class="headerlink" title="操作系统定义"></a>操作系统定义</h3><p>是管理计算机硬件和软件资源的计算机程序，同时也是计算机系统的内核与基石</p>
+<h3 id="操作系统作用"><a href="#操作系统作用" class="headerlink" title="操作系统作用"></a>操作系统作用</h3><ul>
+<li>OS作为用户与计算机硬件系统之间的接口</li>
+<li>OS作为计算机系统资源的管理者</li>
+<li>OS实现了对计算机资源的抽象</li>
+</ul>
+<h3 id="分时系统的原理与特征"><a href="#分时系统的原理与特征" class="headerlink" title="分时系统的原理与特征"></a>分时系统的原理与特征</h3><p><strong>原理</strong></p>
+<ul>
+<li>人机交互</li>
+<li>共享主机</li>
+<li>一台主机上链接了多个配有显示器和键盘的终端并由此组成的系统，该系统允许多个用户同时通过自己的终端，以交互方式使用计算机，共享主机中的资源</li>
+</ul>
+<p><strong>特征</strong></p>
+<ul>
+<li>多路性</li>
+<li>独立性</li>
+<li>及时性</li>
+<li>交互性</li>
+</ul>
+<h3 id="脱机I-x2F-O原理"><a href="#脱机I-x2F-O原理" class="headerlink" title="脱机I&#x2F;O原理"></a>脱机I&#x2F;O原理</h3><p>事先将装有用户程序和数据的纸带装入纸带输入机，在一台外围机的控制下，把纸带上的数据输入到磁带上，当CPU需要这些程序和数据时，再从磁带上高速地调入内存。<br>当CPU需要输出时，可由CPU把数据直接从内存高速的输送到磁带上，然后在另一台外围机的控制下，再将磁带上的结果通过相应的输出设备输出。<br>由于程序和数据的输入输出都是在外围机的控制下完成的，或者说他们是在脱离主机的情况下进行的，故称脱机IO。<br>其优点是：减少CPU空闲时间，提高IO速度。</p>
+<h3 id="操作系统的基本特征"><a href="#操作系统的基本特征" class="headerlink" title="操作系统的基本特征"></a>操作系统的基本特征</h3><ul>
+<li>并发</li>
+<li>共享</li>
+<li>虚拟</li>
+<li>异步</li>
+</ul>
+<p><img src="https://api2.mubu.com/v3/document_image/80ab4df3-d66d-4ec7-96c3-91ca778e5192-3807603.jpg" alt="图0" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/80ab4df3-d66d-4ec7-96c3-91ca778e5192-3807603.jpg" class="lozad post-image"></p>
+<h3 id="作业"><a href="#作业" class="headerlink" title="作业"></a>作业</h3><p>31页：2，3，5，8,  11， 14</p>
+<h2 id="进程管理"><a href="#进程管理" class="headerlink" title="进程管理"></a>进程管理</h2><h3 id="程序顺序执行时的特征"><a href="#程序顺序执行时的特征" class="headerlink" title="程序顺序执行时的特征"></a>程序顺序执行时的特征</h3><ul>
+<li>顺序性</li>
+<li>封闭性</li>
+<li>可再现性</li>
+</ul>
+<h3 id="程序并发执行时的特征"><a href="#程序并发执行时的特征" class="headerlink" title="程序并发执行时的特征"></a>程序并发执行时的特征</h3><ul>
+<li>间断性</li>
+<li>失去封闭性</li>
+<li>不可再现性</li>
+</ul>
+<h3 id="为什么引入进程"><a href="#为什么引入进程" class="headerlink" title="为什么引入进程"></a>为什么引入进程</h3><p>实现程序并发执行</p>
+<h3 id="进程定义"><a href="#进程定义" class="headerlink" title="进程定义"></a>进程定义</h3><p>进程是程序的一次执行。</p>
+<p>进程是一个程序及其数据在处理机上顺序执行时所发生的活动。</p>
+<p>进程是程序在一个数据集合上运行的过程，它是系统进行资源分配和调度的一个独立单位。</p>
+<p>进程是进程实体的运行过程，是系统进行资源分配和调度的一个独立单位。</p>
+<h3 id="进程特征"><a href="#进程特征" class="headerlink" title="进程特征"></a>进程特征</h3><p><strong>动态性</strong></p>
+<ul>
+<li>进程描述执行的程序</li>
+<li>是动态的</li>
+<li>具有生命周期</li>
+</ul>
+<p><strong>并发性</strong></p>
+<ul>
+<li>引入进程就是为了保证程序并发执行</li>
+</ul>
+<p><strong>独立性</strong></p>
+<ul>
+<li>进程是OS资源分配和调度的一个独立单位</li>
+<li>OS以进程为单位分配处理机、内存、I&#x2F;O设备</li>
+</ul>
+<p><strong>异步性</strong></p>
+<ul>
+<li>指进程按各自独立的、不可预知的速度向前推进</li>
+<li>“走走停停”</li>
+<li>原因：共享资源，进程之间相互影响</li>
+</ul>
+<h3 id="进程的基本状态、相互转换原因及转换图（三态）"><a href="#进程的基本状态、相互转换原因及转换图（三态）" class="headerlink" title="进程的基本状态、相互转换原因及转换图（三态）"></a>进程的基本状态、相互转换原因及转换图（三态）</h3><p><img src="https://api2.mubu.com/v3/document_image/accde508-2e30-4b6c-958e-bcb0346f7787-3807603.jpg" alt="图1" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/accde508-2e30-4b6c-958e-bcb0346f7787-3807603.jpg" class="lozad post-image"></p>
+<h3 id="系统态（核心态）和用户态"><a href="#系统态（核心态）和用户态" class="headerlink" title="系统态（核心态）和用户态"></a>系统态（核心态）和用户态</h3><p><strong>系统态（内核态）</strong>：具有较高的特权，能执行一切指令，访问所有的寄存器和存储区。OS在内核态运行。<br><strong>用户态</strong>：具有较低特权的执行状态，仅能执行规定的指令，访问指定的寄存器和存储区。应用程序在用户态运行。</p>
+<h3 id="具有挂起状态的进程状态、相互转换原因及其转换图（五态）"><a href="#具有挂起状态的进程状态、相互转换原因及其转换图（五态）" class="headerlink" title="具有挂起状态的进程状态、相互转换原因及其转换图（五态）"></a>具有挂起状态的进程状态、相互转换原因及其转换图（五态）</h3><p><strong>什么是挂起状态</strong><br>挂起：暂停程序的执行，进程处于“静止” 状态</p>
+<p><strong>引入挂起状态的原因</strong></p>
+<ul>
+<li>终端用户请求。</li>
+<li>父进程请求。</li>
+<li>负荷调节需要。</li>
+<li>操作系统需要。</li>
+</ul>
+<p><img src="https://api2.mubu.com/v3/document_image/bc01d049-4e31-4f73-8a15-19ffae4d216e-3807603.jpg" alt="图2" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/bc01d049-4e31-4f73-8a15-19ffae4d216e-3807603.jpg" class="lozad post-image"></p>
+<h3 id="具有创建终止状态的进程状态、相互转换原因及其转换图（七态）"><a href="#具有创建终止状态的进程状态、相互转换原因及其转换图（七态）" class="headerlink" title="具有创建终止状态的进程状态、相互转换原因及其转换图（七态）"></a>具有创建终止状态的进程状态、相互转换原因及其转换图（七态）</h3><p><img src="https://api2.mubu.com/v3/document_image/90889247-1847-479f-b9c5-b2db9aa46159-3807603.jpg" alt="图3" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/90889247-1847-479f-b9c5-b2db9aa46159-3807603.jpg" class="lozad post-image"></p>
+<h3 id="什么是进程控制块？进程控制块的作用"><a href="#什么是进程控制块？进程控制块的作用" class="headerlink" title="什么是进程控制块？进程控制块的作用"></a>什么是进程控制块？进程控制块的作用</h3><p>为了便于系统描述和管理进程的运行，OS为每个进程定义了数据结构，即进程控制块。</p>
+<p><strong>作用</strong></p>
+<ul>
+<li>进程控制块是描述进程的数据结构。</li>
+<li>进程与PCB是一一对应的</li>
+<li>OS根据PCB控制和管理进程。</li>
+</ul>
+<h3 id="临界资源与临界区区别"><a href="#临界资源与临界区区别" class="headerlink" title="临界资源与临界区区别"></a>临界资源与临界区区别</h3><p><strong>临界区</strong>：进程中访问临界资源的那段代码<br><strong>临界资源</strong>：一段时间内只允许一个进程访问的资源</p>
+<h3 id="同步机制应遵循的规则"><a href="#同步机制应遵循的规则" class="headerlink" title="同步机制应遵循的规则"></a>同步机制应遵循的规则</h3><ul>
+<li>空闲让进： （临界资源）空闲让（进程）进（入临界区）。</li>
+<li>忙则等待： （临界资源）忙（进程）则等待（进入临界区）。</li>
+<li>有限等待： （进程）等待有限（时间进入临界区） 。</li>
+<li>让权等待： （进程）让（处理器）权等待（进入临界区）。</li>
+</ul>
+<h3 id="记录型信号量的定义"><a href="#记录型信号量的定义" class="headerlink" title="记录型信号量的定义"></a>记录型信号量的定义</h3><p>记录型信号量是一种不存在“忙等”现象的进程同步机制。</p>
+<h3 id="信号量正负值的物理意义"><a href="#信号量正负值的物理意义" class="headerlink" title="信号量正负值的物理意义"></a>信号量正负值的物理意义</h3><p>S-&gt; value初值表示系统中某类资源的数目。</p>
+<p>当S-&gt;value &gt;0时，其值表示系统中某类资源当前可用数目</p>
+<p>当S-&gt;value &lt;0时，其绝对值 | S-&gt;value | 表示在该信号量链表中已阻塞进程的数目。</p>
+<p>如果S-&gt;value的初值为1，资源的数目为1，表示只允许一个进程访问临界资源，此时的信号量即互斥信号量。</p>
+<h3 id="wait-和-signal-操作"><a href="#wait-和-signal-操作" class="headerlink" title="wait 和 signal 操作"></a>wait 和 signal 操作</h3><p><strong>wait操作</strong></p>
+<ul>
+<li>每次wait操作表示进程请求一个单位的该类资源：</li>
+<li>S-&gt;value &#x3D; S-&gt;value -1；</li>
+<li>当S-&gt;value＜0时，表示该类资源已分配完毕，因此进程应调用block原语，进行自我阻塞，放弃处理机，并插入到信号量链表S-&gt;list中。</li>
+<li>因此记录型机制遵循了“让权等待”准则。</li>
+</ul>
+<p><strong>signal操作</strong></p>
+<ul>
+<li>对信号量的每次signal操作，表示执行进程释放一个单位资源，</li>
+<li>S-&gt;value &#x3D; S-&gt;value +1操作表示资源数目加1。</li>
+<li>若加1后仍是S-&gt;value ≤0，则表示在该信号量链表中，仍有等待该资源的进程被阻塞，故还应调用wakeup原语，将S-&gt;list链表中的第一个等待进程唤醒。</li>
+<li>被唤醒的进程由阻塞状态转变为就绪状态</li>
+</ul>
+<h3 id="AND-型信号量的定义，Swait-和-Ssignal-操作"><a href="#AND-型信号量的定义，Swait-和-Ssignal-操作" class="headerlink" title="AND 型信号量的定义，Swait 和 Ssignal 操作"></a>AND 型信号量的定义，Swait 和 Ssignal 操作</h3><p>AND同步机制的基本思想：同时申请，同时释放<br>Swait操作</p>
+<p><img src="https://api2.mubu.com/v3/document_image/ede87dd8-b6db-45e6-b15d-1a354578d510-3807603.jpg" alt="swait" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ede87dd8-b6db-45e6-b15d-1a354578d510-3807603.jpg" class="lozad post-image"></p>
+<p>Ssignal操作</p>
+<p><img src="https://api2.mubu.com/v3/document_image/5a6d993c-2a83-4d49-b302-eff86e0f4b31-3807603.jpg" alt="ssignal" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/5a6d993c-2a83-4d49-b302-eff86e0f4b31-3807603.jpg" class="lozad post-image"></p>
+<h3 id="生产者－消费者问题算法"><a href="#生产者－消费者问题算法" class="headerlink" title="生产者－消费者问题算法"></a>生产者－消费者问题算法</h3><h4 id="方法1"><a href="#方法1" class="headerlink" title="方法1"></a>方法1</h4><p><img src="https://api2.mubu.com/v3/document_image/a676eab5-09fb-4d4d-bacf-64babfcfa679-3807603.jpg" alt="t0" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a676eab5-09fb-4d4d-bacf-64babfcfa679-3807603.jpg" class="lozad post-image"></p>
+<p><img src="https://api2.mubu.com/v3/document_image/a4953d14-5dcd-4326-9281-f8fba318b09c-3807603.jpg" alt="t1" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a4953d14-5dcd-4326-9281-f8fba318b09c-3807603.jpg" class="lozad post-image"></p>
+<h4 id="方法2"><a href="#方法2" class="headerlink" title="方法2"></a>方法2</h4><p><img src="https://api2.mubu.com/v3/document_image/edc065a7-e63e-41af-94ae-c9ead4748a98-3807603.jpg" alt="t2" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/edc065a7-e63e-41af-94ae-c9ead4748a98-3807603.jpg" class="lozad post-image"></p>
+<h4 id="方法3"><a href="#方法3" class="headerlink" title="方法3"></a>方法3</h4><p>用信号量机制实现</p>
+<p><img src="https://api2.mubu.com/v3/document_image/275f4591-cccc-4443-997f-8519bbab0180-3807603.jpg" alt="t3" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/275f4591-cccc-4443-997f-8519bbab0180-3807603.jpg" class="lozad post-image"></p>
+<h3 id="不会死锁的哲学家就餐问题算法"><a href="#不会死锁的哲学家就餐问题算法" class="headerlink" title="不会死锁的哲学家就餐问题算法"></a>不会死锁的哲学家就餐问题算法</h3><h4 id="方法1-1"><a href="#方法1-1" class="headerlink" title="方法1"></a>方法1</h4><p><img src="https://api2.mubu.com/v3/document_image/f9e2b0ca-895d-45a1-8c53-8f092ec850c9-3807603.jpg" alt="t4" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/f9e2b0ca-895d-45a1-8c53-8f092ec850c9-3807603.jpg" class="lozad post-image"></p>
+<h4 id="方法2-1"><a href="#方法2-1" class="headerlink" title="方法2"></a>方法2</h4><p>奇数动手算法</p>
+<p><img src="https://api2.mubu.com/v3/document_image/dadfbd6a-bc8f-4ca9-826d-3c8662e90779-3807603.jpg" alt="t5" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/dadfbd6a-bc8f-4ca9-826d-3c8662e90779-3807603.jpg" class="lozad post-image"></p>
+<p><img src="https://api2.mubu.com/v3/document_image/7e920ff7-16ea-40e9-b86d-c1b63e3c605e-3807603.jpg" alt="t6" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7e920ff7-16ea-40e9-b86d-c1b63e3c605e-3807603.jpg" class="lozad post-image"></p>
+<h4 id="方法3-1"><a href="#方法3-1" class="headerlink" title="方法3"></a>方法3</h4><p>用信号量机制实现</p>
+<p><img src="https://api2.mubu.com/v3/document_image/b7f27e16-ee81-4453-bed2-eb1c8a5dd16b-3807603.jpg" alt="t7" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b7f27e16-ee81-4453-bed2-eb1c8a5dd16b-3807603.jpg" class="lozad post-image"></p>
+<h3 id="读者－写者问题算法"><a href="#读者－写者问题算法" class="headerlink" title="读者－写者问题算法"></a>读者－写者问题算法</h3><h4 id="方法1-2"><a href="#方法1-2" class="headerlink" title="方法1"></a>方法1</h4><p>ps:代码有问题</p>
+<p><img src="https://api2.mubu.com/v3/document_image/84467293-702f-48d5-9b26-b7fe813563dd-3807603.jpg" alt="t8" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/84467293-702f-48d5-9b26-b7fe813563dd-3807603.jpg" class="lozad post-image"></p>
+<p>说明：</p>
+<ul>
+<li>设置一个整型变量readcount表示正在读的进程数目。</li>
+<li>只要有一个Reader进程在读，便不允许Writer进程去写。</li>
+<li>仅当readcount&#x3D;0, 表示尚无Reader进程在读时，Reader进程才需要执行Wait(Wmutex)操作。</li>
+<li>若wait(Wmutex)操作成功，Reader进程便可去读，相应地，做readcount+1操作。</li>
+<li>仅当Reader进程在执行了readcount减1操作后其值为0时，才须执行signal(Wmutex)操作，以便让Writer进程写。</li>
+</ul>
+<h4 id="方法2-2"><a href="#方法2-2" class="headerlink" title="方法2"></a>方法2</h4><p>ps:代码没问题</p>
+<p><img src="https://api2.mubu.com/v3/document_image/d44eddcc-781a-4865-a5d5-ce73ac528bc7-3807603.jpg" alt="t9" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d44eddcc-781a-4865-a5d5-ce73ac528bc7-3807603.jpg" class="lozad post-image"></p>
+<p><img src="https://api2.mubu.com/v3/document_image/d1d71d37-82fb-4932-a013-f9a7ad80ea81-3807603.jpg" alt="t10" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d1d71d37-82fb-4932-a013-f9a7ad80ea81-3807603.jpg" class="lozad post-image"></p>
+<p><img src="https://api2.mubu.com/v3/document_image/034e0ec2-90b5-418e-bc81-841ca917e56a-3807603.jpg" alt="t11" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/034e0ec2-90b5-418e-bc81-841ca917e56a-3807603.jpg" class="lozad post-image"></p>
+<h3 id="公交车算法"><a href="#公交车算法" class="headerlink" title="公交车算法"></a>公交车算法</h3><h4 id="方法1-3"><a href="#方法1-3" class="headerlink" title="方法1"></a>方法1</h4><p><img src="https://api2.mubu.com/v3/document_image/38a408a2-c802-4c59-9ee8-4deff6774b2b-3807603.jpg" alt="t12" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/38a408a2-c802-4c59-9ee8-4deff6774b2b-3807603.jpg" class="lozad post-image"></p>
+<h3 id="高级进程通信"><a href="#高级进程通信" class="headerlink" title="高级进程通信"></a>高级进程通信</h3><p>利用操作系统所提供的一组通信命令，高效地传送大量数据的通信方式。<br>一共有三种类型：</p>
+<p><img src="https://api2.mubu.com/v3/document_image/cecff76a-0cbe-4259-84a1-b5bc4ef17dcb-3807603.jpg" alt="t13" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/cecff76a-0cbe-4259-84a1-b5bc4ef17dcb-3807603.jpg" class="lozad post-image"></p>
+<h3 id="消息传递通信的两种通信方式"><a href="#消息传递通信的两种通信方式" class="headerlink" title="消息传递通信的两种通信方式"></a>消息传递通信的两种通信方式</h3><p>直接通信（消息缓冲队列通信机制）<br>间接通信（信箱通信）</p>
+<h3 id="消息缓冲队列通信属于什么通信"><a href="#消息缓冲队列通信属于什么通信" class="headerlink" title="消息缓冲队列通信属于什么通信"></a>消息缓冲队列通信属于什么通信</h3><p>是一种直接消息传递系统</p>
+<h3 id="线程定义及属性"><a href="#线程定义及属性" class="headerlink" title="线程定义及属性"></a>线程定义及属性</h3><p>有时称轻量级进程，是进程中的一个运行实例，是CPU调度单位。<br>在一个进程中，可以独立运行的程序片段叫作“线程”</p>
+<h3 id="线程和进程区别"><a href="#线程和进程区别" class="headerlink" title="线程和进程区别"></a>线程和进程区别</h3><p>1、调度性<br>2、并发性<br>3、拥有资源<br>4、独立性<br>5、系统开销<br>6、支持多处理机系统</p>
+<h3 id="多线程-OS-中的进程的作用"><a href="#多线程-OS-中的进程的作用" class="headerlink" title="多线程 OS 中的进程的作用"></a>多线程 OS 中的进程的作用</h3><p>进程作为系统资源分配的单位。<br>一个进程拥有多个线程。<br>进程不是一个可执行的实体，而是一个资源的载体。</p>
+<h3 id="前趋图及代码"><a href="#前趋图及代码" class="headerlink" title="前趋图及代码"></a>前趋图及代码</h3><p>图片</p>
+<p><img src="https://api2.mubu.com/v3/document_image/e71a747a-d4ab-4ebd-9010-d71044127597-3807603.jpg" alt="t14" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e71a747a-d4ab-4ebd-9010-d71044127597-3807603.jpg" class="lozad post-image"></p>
+<p>代码</p>
+<p><img src="https://api2.mubu.com/v3/document_image/e2261d1c-35d1-413b-930b-0ee868d4bf81-3807603.jpg" alt="t15" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e2261d1c-35d1-413b-930b-0ee868d4bf81-3807603.jpg" class="lozad post-image"></p>
+<p><img src="https://api2.mubu.com/v3/document_image/35210c61-3329-4ccd-a020-316a39beb1a2-3807603.jpg" alt="t16" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/35210c61-3329-4ccd-a020-316a39beb1a2-3807603.jpg" class="lozad post-image"></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/23/theNodeProperties/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Node属性 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/23/theOperatingSystem1/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">操作系统期末考试——1 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%95%E8%AE%BA"><span class="toc-text">操作系统引论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9A%E4%B9%89"><span class="toc-text">操作系统定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%9C%E7%94%A8"><span class="toc-text">操作系统作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%97%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E7%89%B9%E5%BE%81"><span class="toc-text">分时系统的原理与特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%84%B1%E6%9C%BAI-x2F-O%E5%8E%9F%E7%90%86"><span class="toc-text">脱机I&#x2F;O原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%89%B9%E5%BE%81"><span class="toc-text">操作系统的基本特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%9A"><span class="toc-text">作业</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-text">进程管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%A1%BA%E5%BA%8F%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序顺序执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序并发执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%95%E5%85%A5%E8%BF%9B%E7%A8%8B"><span class="toc-text">为什么引入进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="toc-text">进程定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%89%B9%E5%BE%81"><span class="toc-text">进程特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%89%E6%80%81%EF%BC%89"><span class="toc-text">进程的基本状态、相互转换原因及转换图（三态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%80%81%EF%BC%88%E6%A0%B8%E5%BF%83%E6%80%81%EF%BC%89%E5%92%8C%E7%94%A8%E6%88%B7%E6%80%81"><span class="toc-text">系统态（核心态）和用户态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E6%8C%82%E8%B5%B7%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%BA%94%E6%80%81%EF%BC%89"><span class="toc-text">具有挂起状态的进程状态、相互转换原因及其转换图（五态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E5%88%9B%E5%BB%BA%E7%BB%88%E6%AD%A2%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%83%E6%80%81%EF%BC%89"><span class="toc-text">具有创建终止状态的进程状态、相互转换原因及其转换图（七态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%EF%BC%9F%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">什么是进程控制块？进程控制块的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90%E4%B8%8E%E4%B8%B4%E7%95%8C%E5%8C%BA%E5%8C%BA%E5%88%AB"><span class="toc-text">临界资源与临界区区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6%E5%BA%94%E9%81%B5%E5%BE%AA%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-text">同步机制应遵循的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-text">记录型信号量的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%AD%A3%E8%B4%9F%E5%80%BC%E7%9A%84%E7%89%A9%E7%90%86%E6%84%8F%E4%B9%89"><span class="toc-text">信号量正负值的物理意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait-%E5%92%8C-signal-%E6%93%8D%E4%BD%9C"><span class="toc-text">wait 和 signal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AND-%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89%EF%BC%8CSwait-%E5%92%8C-Ssignal-%E6%93%8D%E4%BD%9C"><span class="toc-text">AND 型信号量的定义，Swait 和 Ssignal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%EF%BC%8D%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">生产者－消费者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E4%BC%9A%E6%AD%BB%E9%94%81%E7%9A%84%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">不会死锁的哲学家就餐问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-1"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-1"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953-1"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E8%80%85%EF%BC%8D%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">读者－写者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-2"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-2"><span class="toc-text">方法2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E4%BA%A4%E8%BD%A6%E7%AE%97%E6%B3%95"><span class="toc-text">公交车算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-3"><span class="toc-text">方法1</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="toc-text">高级进程通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92%E9%80%9A%E4%BF%A1%E7%9A%84%E4%B8%A4%E7%A7%8D%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="toc-text">消息传递通信的两种通信方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97%E9%80%9A%E4%BF%A1%E5%B1%9E%E4%BA%8E%E4%BB%80%E4%B9%88%E9%80%9A%E4%BF%A1"><span class="toc-text">消息缓冲队列通信属于什么通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%9A%E4%B9%89%E5%8F%8A%E5%B1%9E%E6%80%A7"><span class="toc-text">线程定义及属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8B%E5%8C%BA%E5%88%AB"><span class="toc-text">线程和进程区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B-OS-%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">多线程 OS 中的进程的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%8F%8A%E4%BB%A3%E7%A0%81"><span class="toc-text">前趋图及代码</span></a></li></ol></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%95%E8%AE%BA"><span class="toc-text">操作系统引论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%AE%9A%E4%B9%89"><span class="toc-text">操作系统定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%9C%E7%94%A8"><span class="toc-text">操作系统作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%97%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E7%89%B9%E5%BE%81"><span class="toc-text">分时系统的原理与特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%84%B1%E6%9C%BAI-x2F-O%E5%8E%9F%E7%90%86"><span class="toc-text">脱机I&#x2F;O原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%89%B9%E5%BE%81"><span class="toc-text">操作系统的基本特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%9C%E4%B8%9A"><span class="toc-text">作业</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="toc-text">进程管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E9%A1%BA%E5%BA%8F%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序顺序执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%8B%E5%BA%8F%E5%B9%B6%E5%8F%91%E6%89%A7%E8%A1%8C%E6%97%B6%E7%9A%84%E7%89%B9%E5%BE%81"><span class="toc-text">程序并发执行时的特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%95%E5%85%A5%E8%BF%9B%E7%A8%8B"><span class="toc-text">为什么引入进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%AE%9A%E4%B9%89"><span class="toc-text">进程定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%89%B9%E5%BE%81"><span class="toc-text">进程特征</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%89%E6%80%81%EF%BC%89"><span class="toc-text">进程的基本状态、相互转换原因及转换图（三态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%80%81%EF%BC%88%E6%A0%B8%E5%BF%83%E6%80%81%EF%BC%89%E5%92%8C%E7%94%A8%E6%88%B7%E6%80%81"><span class="toc-text">系统态（核心态）和用户态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E6%8C%82%E8%B5%B7%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%BA%94%E6%80%81%EF%BC%89"><span class="toc-text">具有挂起状态的进程状态、相互转换原因及其转换图（五态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E5%88%9B%E5%BB%BA%E7%BB%88%E6%AD%A2%E7%8A%B6%E6%80%81%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%8A%B6%E6%80%81%E3%80%81%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2%E5%8E%9F%E5%9B%A0%E5%8F%8A%E5%85%B6%E8%BD%AC%E6%8D%A2%E5%9B%BE%EF%BC%88%E4%B8%83%E6%80%81%EF%BC%89"><span class="toc-text">具有创建终止状态的进程状态、相互转换原因及其转换图（七态）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%EF%BC%9F%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">什么是进程控制块？进程控制块的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90%E4%B8%8E%E4%B8%B4%E7%95%8C%E5%8C%BA%E5%8C%BA%E5%88%AB"><span class="toc-text">临界资源与临界区区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6%E5%BA%94%E9%81%B5%E5%BE%AA%E7%9A%84%E8%A7%84%E5%88%99"><span class="toc-text">同步机制应遵循的规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-text">记录型信号量的定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%AD%A3%E8%B4%9F%E5%80%BC%E7%9A%84%E7%89%A9%E7%90%86%E6%84%8F%E4%B9%89"><span class="toc-text">信号量正负值的物理意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wait-%E5%92%8C-signal-%E6%93%8D%E4%BD%9C"><span class="toc-text">wait 和 signal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AND-%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E7%9A%84%E5%AE%9A%E4%B9%89%EF%BC%8CSwait-%E5%92%8C-Ssignal-%E6%93%8D%E4%BD%9C"><span class="toc-text">AND 型信号量的定义，Swait 和 Ssignal 操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%EF%BC%8D%E6%B6%88%E8%B4%B9%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">生产者－消费者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E4%BC%9A%E6%AD%BB%E9%94%81%E7%9A%84%E5%93%B2%E5%AD%A6%E5%AE%B6%E5%B0%B1%E9%A4%90%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">不会死锁的哲学家就餐问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-1"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-1"><span class="toc-text">方法2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%953-1"><span class="toc-text">方法3</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E8%80%85%EF%BC%8D%E5%86%99%E8%80%85%E9%97%AE%E9%A2%98%E7%AE%97%E6%B3%95"><span class="toc-text">读者－写者问题算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-2"><span class="toc-text">方法1</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%952-2"><span class="toc-text">方法2</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E4%BA%A4%E8%BD%A6%E7%AE%97%E6%B3%95"><span class="toc-text">公交车算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951-3"><span class="toc-text">方法1</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AB%98%E7%BA%A7%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1"><span class="toc-text">高级进程通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E4%BC%A0%E9%80%92%E9%80%9A%E4%BF%A1%E7%9A%84%E4%B8%A4%E7%A7%8D%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="toc-text">消息传递通信的两种通信方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B6%88%E6%81%AF%E7%BC%93%E5%86%B2%E9%98%9F%E5%88%97%E9%80%9A%E4%BF%A1%E5%B1%9E%E4%BA%8E%E4%BB%80%E4%B9%88%E9%80%9A%E4%BF%A1"><span class="toc-text">消息缓冲队列通信属于什么通信</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%9A%E4%B9%89%E5%8F%8A%E5%B1%9E%E6%80%A7"><span class="toc-text">线程定义及属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8B%E5%8C%BA%E5%88%AB"><span class="toc-text">线程和进程区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B-OS-%E4%B8%AD%E7%9A%84%E8%BF%9B%E7%A8%8B%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="toc-text">多线程 OS 中的进程的作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%8F%8A%E4%BB%A3%E7%A0%81"><span class="toc-text">前趋图及代码</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-23</div>
+        <a href="/2022/09/23/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-23</div>
+        <a href="/2022/09/23/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-23</div>
+        <a href="/2022/09/23/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-23</div>
+        <a href="/2022/09/23/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
