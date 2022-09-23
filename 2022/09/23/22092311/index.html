@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>二叉树前序、中序、后序遍历相互求法</title>
+  <title>Vue事件总线（EventBus）使用详细介绍</title>
   
     
       <meta 
         property="og:title" 
-        content="二叉树前序、中序、后序遍历相互求法">
+        content="Vue事件总线（EventBus）使用详细介绍">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/23/binaryTreeFront,%20MiddleAndBack/index.html">
+        content="http://example.com/2022/09/23/22092311/index.html">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="已知两个遍历，如何求第三种遍历方法">
+        content="如题目">
     
     
       <meta 
@@ -57,11 +57,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="二叉树">
-        
-          <meta 
-            property="og:article:tag" 
-            content="c++">
+            content="vue">
         
       
     
@@ -346,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E5%89%8D%E5%BA%8F%E3%80%81%E4%B8%AD%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知前序、中序遍历，求后序遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E4%B8%AD%E5%BA%8F%E5%92%8C%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知中序和后序遍历，求前序遍历</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -525,14 +521,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      二叉树前序、中序、后序遍历相互求法
+      Vue事件总线（EventBus）使用详细介绍
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/binaryTreeFront, MiddleAndBack.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092311.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-23T08:27:18.551Z">
+    <time datetime="2022-09-23T08:27:18.543Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -543,15 +539,15 @@
       <span class="dot"></span>
       
         <a 
-          href="/categories/%E7%AE%97%E6%B3%95/" 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
           class="post-meta-link">
-          算法
+          技术文章
         </a>
       
     
     
       <span class="dot"></span>
-      <span>1.3k 字</span>
+      <span>1.5k 字</span>
     
   </div>
   
@@ -566,18 +562,9 @@
         
           
           <a 
-            href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/" 
+            href="/tags/vue/" 
             class="post-meta-link">
-            二叉树
-          </a>
-        
-          
-            <span class="dot"></span>
-          
-          <a 
-            href="/tags/c/" 
-            class="post-meta-link">
-            c++
+            vue
           </a>
         
       </div>
@@ -587,30 +574,43 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>今天来总结下二叉树前序、中序、后序遍历相互求法，即如果知道两个的遍历，如何求第三种遍历方法，比较笨的方法是画出来二叉树，然后根据各种遍历不同的特性来求，也可以编程求出，下面我们分别说明。</p>
-<p>首先，我们看看前序、中序、后序遍历的特性：<br><strong>前序遍历</strong>：<br>    1.访问根节点<br>    2.前序遍历左子树<br>    3.前序遍历右子树<br><strong>中序遍历</strong>：<br>    1.中序遍历左子树<br>    2.访问根节点<br>    3.中序遍历右子树<br><strong>后序遍历</strong>：<br>    1.后序遍历左子树<br>    2.后序遍历右子树<br>    3.访问根节点</p>
-<h2 id="已知前序、中序遍历，求后序遍历"><a href="#已知前序、中序遍历，求后序遍历" class="headerlink" title="已知前序、中序遍历，求后序遍历"></a>已知前序、中序遍历，求后序遍历</h2><p>例：<br>前序遍历:         GDAFEMHZ<br>中序遍历:         ADEFGHMZ<br>求后序遍历</p>
-<p><strong>思路</strong></p>
-<p>第一步，根据前序遍历的特点，我们知道根结点为G</p>
-<p>第二步，观察中序遍历ADEFGHMZ。其中root节点G左侧的ADEF必然是root的左子树，G右侧的HMZ必然是root的右子树。</p>
-<p>第三步，观察左子树ADEF，左子树的中的根节点必然是大树的root的leftchild。在前序遍历中，大树的root的leftchild位于root之后，所以左子树的根节点为D。</p>
-<p>第四步，同样的道理，root的右子树节点HMZ中的根节点也可以通过前序遍历求得。在前序遍历中，一定是先把root和root的所有左子树节点遍历完之后才会遍历右子树，并且遍历的左子树的第一个节点就是左子树的根节点。同理，遍历的右子树的第一个节点就是右子树的根节点。</p>
-<p>第五步，观察发现，上面的过程是递归的。先找到当前树的根节点，然后划分为左子树，右子树，然后进入左子树重复上面的过程，然后进入右子树重复上面的过程。最后就可以还原一棵树了。该步递归的过程可以简洁表达如下：<br>    1 确定根,确定左子树，确定右子树。<br>    2 在左子树中递归。<br>    3 在右子树中递归。<br>    4 打印当前根。<br>那么，我们可以画出这个二叉树的形状：</p>
-<p><img src="https://api2.mubu.com/v3/document_image/865b48f1-986d-4167-ad29-325829461bb3-3807603.jpg" alt="t0" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/865b48f1-986d-4167-ad29-325829461bb3-3807603.jpg" class="lozad post-image"></p>
-<p>因此可写出代码：</p>
-<pre class="highlight"><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span><br>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span> *left;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span> *right;<br>    <span class="hljs-type">char</span> elem;<br>&#125;;<br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">BinaryTreeFromOrderings</span><span class="hljs-params">(<span class="hljs-type">char</span> *inorder, <span class="hljs-type">char</span> *preorder, <span class="hljs-type">int</span> length)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span> (length == <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-comment">//cout&lt;&lt;&quot;invalid length&quot;;</span><br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    TreeNode *node = <span class="hljs-keyword">new</span> TreeNode; <span class="hljs-comment">//Noice that [new] should be written out.</span><br>    node-&gt;elem = *preorder;<br>    <span class="hljs-type">int</span> rootIndex = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (; rootIndex &lt; length; rootIndex++)<br>    &#123;<br>        <span class="hljs-keyword">if</span> (inorder[rootIndex] == *preorder)<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>    <span class="hljs-comment">//Left</span><br>    <span class="hljs-built_in">BinaryTreeFromOrderings</span>(inorder, preorder + <span class="hljs-number">1</span>, rootIndex);<br>    <span class="hljs-comment">//Right</span><br>    <span class="hljs-built_in">BinaryTreeFromOrderings</span>(inorder + rootIndex + <span class="hljs-number">1</span>, preorder + rootIndex + <span class="hljs-number">1</span>, length - (rootIndex + <span class="hljs-number">1</span>));<br>    cout &lt;&lt; node-&gt;elem &lt;&lt; endl;<br>    <span class="hljs-keyword">return</span>;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Hello World!\n&quot;</span>);<br>    <span class="hljs-type">char</span> *pr = <span class="hljs-string">&quot;GDAFEMHZ&quot;</span>;<br>    <span class="hljs-type">char</span> *in = <span class="hljs-string">&quot;ADEFGHMZ&quot;</span>;<br>    <span class="hljs-built_in">BinaryTreeFromOrderings</span>(in, pr, <span class="hljs-number">8</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>vue组件非常常见的有父子组件通信，兄弟组件通信。而父子组件通信就很简单，父组件会通过 props 向下传数据给子组件，当子组件有事情要告诉父组件时会通过 $emit 事件告诉父组件。今天就来说说如果两个页面没有任何引入和被引入关系，该如何通信了？</p>
+<p>如果咱们的应用程序不需要类似Vuex这样的库来处理组件之间的数据通信，就可以考虑Vue中的 事件总线 ，即 EventBus来通信。</p>
+<h2 id="EventBus的简介"><a href="#EventBus的简介" class="headerlink" title="EventBus的简介"></a>EventBus的简介</h2><p>EventBus 又称为事件总线。在Vue中可以使用 EventBus 来作为沟通桥梁的概念，就像是所有组件共用相同的事件中心，可以向该中心注册发送事件或接收事件，所以组件都可以上下平行地通知其他组件，但也就是太方便所以若使用不慎，就会造成难以维护的“灾难”，因此才需要更完善的Vuex作为状态管理中心，将通知的概念上升到共享状态层次。</p>
+<h2 id="如何使用EventBus"><a href="#如何使用EventBus" class="headerlink" title="如何使用EventBus"></a>如何使用EventBus</h2><h3 id="一、初始化"><a href="#一、初始化" class="headerlink" title="一、初始化"></a>一、初始化</h3><p>首先需要创建事件总线并将其导出，以便其它模块可以使用或者监听它。我们可以通过两种方式来处理。先来看第一种，新创建一个 .js 文件，比如 event-bus.js</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// event-bus.js</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Vue</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title class_">EventBus</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>()<br></code></pre>
 
-<p>输出的结果为：AEFDHZMG</p>
-<h2 id="已知中序和后序遍历，求前序遍历"><a href="#已知中序和后序遍历，求前序遍历" class="headerlink" title="已知中序和后序遍历，求前序遍历"></a>已知中序和后序遍历，求前序遍历</h2><p>依然是上面的题，这次我们只给出中序和后序遍历：<br>中序遍历:       ADEFGHMZ<br>后序遍历:       AEFDHZMG<br>求前序遍历</p>
-<p><strong>思路</strong></p>
-<p>第一步，根据后序遍历的特点，我们知道后序遍历最后一个结点即为根结点，即根结点为G。</p>
-<p>第二步，观察中序遍历ADEFGHMZ。其中root节点G左侧的ADEF必然是root的左子树，G右侧的HMZ必然是root的右子树。</p>
-<p>第三步，观察左子树ADEF，左子树的中的根节点必然是大树的root的leftchild。在前序遍历中，大树的root的leftchild位于root之后，所以左子树的根节点为D。</p>
-<p>第四步，同样的道理，root的右子树节点HMZ中的根节点也可以通过前序遍历求得。在前后序遍历中，一定是先把root和root的所有左子树节点遍历完之后才会遍历右子树，并且遍历的左子树的第一个节点就是左子树的根节点。同理，遍历的右子树的第一个节点就是右子树的根节点。</p>
-<p>第五步，观察发现，上面的过程是递归的。先找到当前树的根节点，然后划分为左子树，右子树，然后进入左子树重复上面的过程，然后进入右子树重复上面的过程。最后就可以还原一棵树了。该步递归的过程可以简洁表达如下：<br>    1 确定根,确定左子树，确定右子树。<br>    2 在左子树中递归。<br>    3 在右子树中递归。<br>    4 打印当前根。<br>这样，我们就可以画出二叉树的形状，如上图所示，这里就不再赘述。</p>
-<p>因此写出代码</p>
-<pre class="highlight"><code class="hljs cpp"><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br> <br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span><br>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span>* left;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">TreeNode</span>* right;<br>    <span class="hljs-type">char</span>  elem;<br>&#125;;<br> <br> <br><span class="hljs-function">TreeNode* <span class="hljs-title">BinaryTreeFromOrderings</span><span class="hljs-params">(<span class="hljs-type">char</span>* inorder, <span class="hljs-type">char</span>* aftorder, <span class="hljs-type">int</span> length)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-keyword">if</span>(length == <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    &#125;<br>    TreeNode* node = <span class="hljs-keyword">new</span> TreeNode;<span class="hljs-comment">//Noice that [new] should be written out.</span><br>    node-&gt;elem = *(aftorder+length<span class="hljs-number">-1</span>);<br>    std::cout&lt;&lt;node-&gt;elem&lt;&lt;std::endl;<br>    <span class="hljs-type">int</span> rootIndex = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(;rootIndex &lt; length; rootIndex++)<span class="hljs-comment">//a variation of the loop</span><br>    &#123;<br>        <span class="hljs-keyword">if</span>(inorder[rootIndex] ==  *(aftorder+length<span class="hljs-number">-1</span>))<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>    node-&gt;left = <span class="hljs-built_in">BinaryTreeFromOrderings</span>(inorder, aftorder , rootIndex);<br>    node-&gt;right = <span class="hljs-built_in">BinaryTreeFromOrderings</span>(inorder + rootIndex + <span class="hljs-number">1</span>, aftorder + rootIndex , length - (rootIndex + <span class="hljs-number">1</span>));<br>    <br>    <span class="hljs-keyword">return</span> node;<br>&#125;<br> <br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">char</span>* af=<span class="hljs-string">&quot;AEFDHZMG&quot;</span>;    <br>    <span class="hljs-type">char</span>* in=<span class="hljs-string">&quot;ADEFGHMZ&quot;</span>; <br>    <span class="hljs-built_in">BinaryTreeFromOrderings</span>(in, af, <span class="hljs-number">8</span>); <br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\n&quot;</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre>
-<p>输出的前序遍历结果为:         GDAFEMHZ</p>
+<p>实质上EventBus是一个不具备 DOM 的组件，它具有的仅仅只是它实例方法而已，因此它非常的轻便。</p>
+<p>另外一种方式，可以直接在项目中的 main.js 初始化 EventBus :</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// main.js</span><br><span class="hljs-title class_">Vue</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">$EventBus</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>()<br></code></pre>
+
+<p>注意，这种方式初始化的EventBus是一个全局的事件总线。稍后再来聊一聊全局的事件总线。</p>
+<p>现在我们已经创建了 EventBus ，接下来你需要做到的就是在你的组件中加载它，并且调用同一个方法，就如你在父子组件中互相传递消息一样。</p>
+<h3 id="二、发送事件"><a href="#二、发送事件" class="headerlink" title="二、发送事件"></a>二、发送事件</h3><p>假设你有两个Vue页面需要通信： A 和 B ，A页面 在按钮上面绑定了点击事件，发送一则消息，想&#x3D;通知 B页面。</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-comment">&lt;!-- A.vue --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;sendMsg()&quot;</span>&gt;</span>-<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"> </span><br><span class="language-javascript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">EventBus</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../event-bus.js&quot;</span>;</span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">  <span class="hljs-attr">methods</span>: &#123;</span><br><span class="language-javascript">    <span class="hljs-title function_">sendMsg</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">      <span class="hljs-title class_">EventBus</span>.$emit(<span class="hljs-string">&quot;aMsg&quot;</span>, <span class="hljs-string">&#x27;来自A页面的消息&#x27;</span>);</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript">&#125;; </span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+
+<p>接下来，我们需要在 B页面 中接收这则消息。</p>
+<h3 id="三、接收事件"><a href="#三、接收事件" class="headerlink" title="三、接收事件"></a>三、接收事件</h3><pre class="highlight"><code class="hljs html"><span class="hljs-comment">&lt;!-- IncrementCount.vue --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;&#123;msg&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"> </span><br><span class="language-javascript"><span class="hljs-keyword">import</span> &#123; </span><br><span class="language-javascript">  <span class="hljs-title class_">EventBus</span> </span><br><span class="language-javascript">&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;../event-bus.js&quot;</span>;</span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">    <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">      <span class="hljs-attr">msg</span>: <span class="hljs-string">&#x27;&#x27;</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">    <span class="hljs-title class_">EventBus</span>.$on(<span class="hljs-string">&quot;aMsg&quot;</span>, <span class="hljs-function">(<span class="hljs-params">msg</span>) =&gt;</span> &#123;</span><br><span class="language-javascript">      <span class="hljs-comment">// A发送来的消息</span></span><br><span class="language-javascript">      <span class="hljs-variable language_">this</span>.<span class="hljs-property">msg</span> = msg;</span><br><span class="language-javascript">    &#125;);</span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript">&#125;;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+<p>同理我们也可以在 B页面 向 A页面 发送消息。这里主要用到的两个方法：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 发送消息</span><br><span class="hljs-title class_">EventBus</span>.$emit(<span class="hljs-attr">channel</span>: string, <span class="hljs-title function_">callback</span>(payload1,…))<br><br><span class="hljs-comment">// 监听接收消息</span><br><span class="hljs-title class_">EventBus</span>.$on(<span class="hljs-attr">channel</span>: string, <span class="hljs-title function_">callback</span>(payload1,…))<br></code></pre>
+<p>前面提到过，如果使用不善，EventBus会是一种灾难，到底是什么样的“灾难”了？大家都知道vue是单页应用，如果你在某一个页面刷新了之后，与之相关的EventBus会被移除，这样就导致业务走不下去。还要就是如果业务有反复操作的页面，EventBus在监听的时候就会触发很多次，也是一个非常大的隐患。这时候我们就需要好好处理EventBus在项目中的关系。通常会用到，在vue页面销毁时，同时移除EventBus事件监听。</p>
+<h2 id="移除事件监听者"><a href="#移除事件监听者" class="headerlink" title="移除事件监听者"></a>移除事件监听者</h2><p>如果想移除事件的监听，可以像下面这样操作：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; <br>  eventBus <br>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./event-bus.js&#x27;</span><br><span class="hljs-title class_">EventBus</span>.$off(<span class="hljs-string">&#x27;aMsg&#x27;</span>, &#123;&#125;)<br></code></pre>
+
+<p>你也可以使用 <code>EventBus.$off(&#39;aMsg&#39;)</code> 来移除应用内所有对此某个事件的监听。或者直接调用 <code>EventBus.$off()</code> 来移除所有事件频道，不需要添加任何参数 。</p>
+<p>上面就是 EventBus 的使用方法，是不是很简单。上面的示例中我们也看到了，每次使用 EventBus 时都需要在各组件中引入 event-bus.js 。事实上，我们还可以通过别的方式，让事情变得简单一些。那就是创建一个全局的 EventBus 。接下来的示例向大家演示如何在Vue项目中创建一个全局的 EventBus 。</p>
+<h2 id="全局EventBus"><a href="#全局EventBus" class="headerlink" title="全局EventBus"></a>全局EventBus</h2><p>它的工作原理是发布&#x2F;订阅方法，通常称为 Pub&#x2F;Sub 。</p>
+<p><strong>创建全局EventBus</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">EventBus</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>();<br><br><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperties</span>(<span class="hljs-title class_">Vue</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>, &#123;<br>  <span class="hljs-attr">$bus</span>: &#123;<br>    <span class="hljs-attr">get</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">EventBus</span><br>    &#125;<br>  &#125;<br>&#125;)<br></code></pre>
+<p>在这个特定的总线中使用两个方法$on和$emit。一个用于创建发出的事件，它就是$emit；另一个用于订阅$on：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">EventBus</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>();<br><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$bus</span>.$emit(<span class="hljs-string">&#x27;nameOfEvent&#x27;</span>, &#123; ... pass some event data ...&#125;);<br><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$bus</span>.$on(<span class="hljs-string">&#x27;nameOfEvent&#x27;</span>,<span class="hljs-function">(<span class="hljs-params">$event</span>) =&gt;</span> &#123;<br>  <span class="hljs-comment">// ...</span><br>&#125;)<br></code></pre>
+
+<p>然后我们可以在某个Vue页面使用<code>this.$bus.$emit(&quot;sendMsg&quot;, &#39;我是web秀&#39;)</code>;，另一个Vue页面使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">this</span>.<span class="hljs-property">$bus</span>.$on(<span class="hljs-string">&#x27;updateMessage&#x27;</span>, <span class="hljs-keyword">function</span>(<span class="hljs-params">value</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(value); <span class="hljs-comment">// 我是web秀</span><br>&#125;)<br></code></pre>
+
+<p>同时也可以使用<code>this.$bus.$off(&#39;sendMsg&#39;)</code>来移除事件监听。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要通过简单的实例学习了Vue中有关于 EventBus 相关的知识点。主要涉及了 EventBus 如何实例化，又是如何通过 $emit 发送频道信号，又是如何通过 $on 来接收频道信号。最后简单介绍了如何创建全局的 EventBus 。从实例中我们可以了解到， EventBus 可以较好的实现兄弟组件之间的数据通讯。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/72777951">Vue事件总线（EventBus）使用详细介绍</a></p>
 
   </div>
   <div>
@@ -621,13 +621,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/23/basicVueProblem/" 
+        href="/2022/09/23/22092310/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">Vue高频面试题 </div>
+            <div class="nav-title">斐波那契js的四种实现方法 </div>
           
         </div>
       </a>
@@ -636,12 +636,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/23/canIUsePort6666/" 
+        href="/2022/09/23/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">端口可以用6666吗 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -659,7 +659,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E5%89%8D%E5%BA%8F%E3%80%81%E4%B8%AD%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知前序、中序遍历，求后序遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E4%B8%AD%E5%BA%8F%E5%92%8C%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知中序和后序遍历，求前序遍历</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -673,7 +673,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E5%89%8D%E5%BA%8F%E3%80%81%E4%B8%AD%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知前序、中序遍历，求后序遍历</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5%E4%B8%AD%E5%BA%8F%E5%92%8C%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%EF%BC%8C%E6%B1%82%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="toc-text">已知中序和后序遍历，求前序遍历</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EventBus%E7%9A%84%E7%AE%80%E4%BB%8B"><span class="toc-text">EventBus的简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8EventBus"><span class="toc-text">如何使用EventBus</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">一、初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%8F%91%E9%80%81%E4%BA%8B%E4%BB%B6"><span class="toc-text">二、发送事件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%8E%A5%E6%94%B6%E4%BA%8B%E4%BB%B6"><span class="toc-text">三、接收事件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%BB%E9%99%A4%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E8%80%85"><span class="toc-text">移除事件监听者</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80EventBus"><span class="toc-text">全局EventBus</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
