@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>js实现文字头像的生成</title>
+  <title>vue早期源码学习系列之一：如何监听一个对象的变化</title>
   
     
       <meta 
         property="og:title" 
-        content="js实现文字头像的生成">
+        content="vue早期源码学习系列之一：如何监听一个对象的变化">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/23/22092006/index.html">
+        content="http://example.com/2022/09/23/22092313/index.html">
     
     
       <meta 
@@ -54,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
         
           <meta 
             property="og:article:tag" 
@@ -342,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -521,14 +525,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      js实现文字头像的生成
+      vue早期源码学习系列之一：如何监听一个对象的变化
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092006.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092313.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-23T08:58:17.874Z">
+    <time datetime="2022-09-23T08:58:17.878Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -547,7 +551,7 @@
     
     
       <span class="dot"></span>
-      <span>128 字</span>
+      <span>976 字</span>
     
   </div>
   
@@ -562,6 +566,15 @@
         
           
           <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
             href="/tags/vue/" 
             class="post-meta-link">
             vue
@@ -574,7 +587,23 @@
   <div 
     id="section" 
     class="post-content">
-    <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">gen_text_img</span>(<span class="hljs-params">size, s</span>) &#123;<br>    <span class="hljs-keyword">let</span> colors = [<br>        <span class="hljs-string">&quot;rgb(239,150,26)&quot;</span>, <span class="hljs-string">&#x27;rgb(255,58,201)&#x27;</span>, <span class="hljs-string">&quot;rgb(111,75,255)&quot;</span>, <span class="hljs-string">&quot;rgb(36,174,34)&quot;</span>, <span class="hljs-string">&quot;rgb(80,80,80)&quot;</span><br>    ];<br>    <span class="hljs-keyword">let</span> cvs = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createElement</span>(<span class="hljs-string">&quot;canvas&quot;</span>);<br>    cvs.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;width&#x27;</span>, size[<span class="hljs-number">0</span>]);<br>    cvs.<span class="hljs-title function_">setAttribute</span>(<span class="hljs-string">&#x27;height&#x27;</span>, size[<span class="hljs-number">1</span>]);<br>    <span class="hljs-keyword">let</span> ctx = cvs.<span class="hljs-title function_">getContext</span>(<span class="hljs-string">&quot;2d&quot;</span>);<br>    ctx.<span class="hljs-property">fillStyle</span> = colors[<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>()*(colors.<span class="hljs-property">length</span>))];<br>    ctx.<span class="hljs-title function_">fillRect</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, size[<span class="hljs-number">0</span>], size[<span class="hljs-number">1</span>]);<br>    ctx.<span class="hljs-property">fillStyle</span> = <span class="hljs-string">&#x27;rgb(255,255,255)&#x27;</span>;<br>    ctx.<span class="hljs-property">font</span> = size[<span class="hljs-number">0</span>]*<span class="hljs-number">0.6</span>+<span class="hljs-string">&quot;px Arial&quot;</span>;<br>    ctx.<span class="hljs-property">textBaseline</span> = <span class="hljs-string">&quot;middle&quot;</span>;<br>    ctx.<span class="hljs-property">textAlign</span> = <span class="hljs-string">&quot;center&quot;</span>;<br>    ctx.<span class="hljs-title function_">fillText</span>(s,size[<span class="hljs-number">0</span>]/<span class="hljs-number">2</span>,size[<span class="hljs-number">1</span>]/<span class="hljs-number">2</span>);<br><br>    <span class="hljs-keyword">return</span>  cvs.<span class="hljs-title function_">toDataURL</span>(<span class="hljs-string">&#x27;image/jpeg&#x27;</span>, <span class="hljs-number">1</span>);<br>&#125;<br></code></pre>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们都知道，要想精通前端领域，研究分析成熟的框架是必不可少的一步。很多人可能都有这样的体会：“很努力地去阅读一些热门框架的源码，但是发现难度太高，花了很多时间却得不到什么，最终不得不放弃。”<br>我也一直被这个问题困扰，直到我想到了这样的一个方法。<br>从成熟框架的早期源码开始看起，从作者的第一个commit开始看起，然后逐个的往前翻。这样一开始的代码量不多，多看几遍还是可以理解的。而且在这个过程中，就像电影回放一样，我们可以看到作者先写什么，后写什么，在哪些地方进行了什么样的改良，其中又不小心引入了什么bug，等等。<br>这真的是一个很好的办法。所以，我就用这个方法来研究vue的源码。</p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>我<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue/tree/706c67d1d013577fdbfab258bca78557419cba7c">checkout</a>到的版本是这个，在这个版本中，我们可以发现：代码中主要是observer和emitter这些东西，这些是以后实现数据绑定以及$watch的关键基础。所以我们把本篇的学习目标定位为：“如何监听一个对象的变化” </p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>我们有两个难点需要解决。</p>
+<p>第一：当对象的某个属性变化的时候，如何触发自定义的回调函数？<br>答案：ES5中新添加了一个方法：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a>，通过这个方法，可以自定义getter和setter函数，从而在获取对象属性和设置对象属性的时候能够执行自定义的回调函数。</p>
+<p>第二：对象往往是一个深层次的结构，对象的某个属性可能仍然是一个对象，这种情况怎么处理？<br>比如说</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> data = &#123;<br>    <span class="hljs-attr">user</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;liangshaofeng&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-string">&quot;24&quot;</span><br>    &#125;,<br>    <span class="hljs-attr">address</span>: &#123;<br>        <span class="hljs-attr">city</span>: <span class="hljs-string">&quot;beijing&quot;</span><br>    &#125;<br>&#125;;<br></code></pre>
+
+<p>答案：递归算法，也就是下面代码中的walk函数。如果对象的属性仍然是一个对象的话，那么继续new一个Observer，直到到达最底层的属性位置。</p>
+<p>下面是实现的具体代码。</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 观察者构造函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Observer</span>(<span class="hljs-params">data</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = data;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">walk</span>(data)<br>&#125;<br><br><span class="hljs-keyword">let</span> p = <span class="hljs-title class_">Observer</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>;<br><br><span class="hljs-comment">// 此函数用于深层次遍历对象的各个属性</span><br><span class="hljs-comment">// 采用的是递归的思路</span><br><span class="hljs-comment">// 因为我们要为对象的每一个属性绑定getter和setter</span><br>p.<span class="hljs-property">walk</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">obj</span>) &#123;<br>    <span class="hljs-keyword">let</span> val;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;<br>        <span class="hljs-comment">// 这里为什么要用hasOwnProperty进行过滤呢？</span><br>        <span class="hljs-comment">// 因为for...in 循环会把对象原型链上的所有可枚举属性都循环出来</span><br>        <span class="hljs-comment">// 而我们想要的仅仅是这个对象本身拥有的属性，所以要这么做。</span><br>        <span class="hljs-keyword">if</span> (obj.<span class="hljs-title function_">hasOwnProperty</span>(key)) &#123;<br>            val = obj[key];<br><br>            <span class="hljs-comment">// 这里进行判断，如果还没有遍历到最底层，继续new Observer</span><br>            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> val === <span class="hljs-string">&#x27;object&#x27;</span>) &#123;<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observer</span>(val);<br>            &#125;<br><br>            <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">convert</span>(key, val);<br>        &#125;<br>    &#125;<br>&#125;;<br><br>p.<span class="hljs-property">convert</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">key, val</span>) &#123;<br>    <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, key, &#123;<br>        <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">get</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;你访问了&#x27;</span> + key);<br>            <span class="hljs-keyword">return</span> val<br>        &#125;,<br>        <span class="hljs-attr">set</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">newVal</span>) &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;你设置了&#x27;</span> + key);<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;新的&#x27;</span> + key + <span class="hljs-string">&#x27; = &#x27;</span> + newVal)<br>            <span class="hljs-keyword">if</span> (newVal === val) <span class="hljs-keyword">return</span>;<br>            val = newVal<br>        &#125;<br>    &#125;)<br>&#125;;<br><br><span class="hljs-keyword">let</span> data = &#123;<br>    <span class="hljs-attr">user</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;liangshaofeng&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-string">&quot;24&quot;</span><br>    &#125;,<br>    <span class="hljs-attr">address</span>: &#123;<br>        <span class="hljs-attr">city</span>: <span class="hljs-string">&quot;beijing&quot;</span><br>    &#125;<br>&#125;;<br><br><span class="hljs-keyword">let</span> app = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observer</span>(data);<br></code></pre>
+
+<h2 id="遗留问题"><a href="#遗留问题" class="headerlink" title="遗留问题"></a>遗留问题</h2><p>上面实现的代码还有很多问题。<br>比如：</p>
+<ol>
+<li>只监听的对象的变化，没有处理数组的变化。</li>
+<li>当你重新set的属性是对象的话，那么新set的对象里面的属性不能调用getter和setter。比如像下图所示，重新设置的job属性就不在带有自定义的getter和setter了，不再提示“你访问了job”这些字样。</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/22695144">vue早期源码学习系列之一：如何监听一个对象的变化</a></p>
 
   </div>
   <div>
@@ -585,13 +614,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/23/22092005/" 
+        href="/2022/09/23/22092312/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">JS高阶编程技巧——惰性函数&amp;单例设计模式、柯里化函数思想、compose函数 </div>
+            <div class="nav-title">watch死循环解决方法 </div>
           
         </div>
       </a>
@@ -600,12 +629,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/23/22092007/" 
+        href="/2022/09/23/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">npm install模块安装机制 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -623,7 +652,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -637,7 +666,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
