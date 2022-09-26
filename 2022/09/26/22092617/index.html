@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>斐波那契js的四种实现方法</title>
+  <title>Javascript类型与类型判断</title>
   
     
       <meta 
         property="og:title" 
-        content="斐波那契js的四种实现方法">
+        content="Javascript类型与类型判断">
     
     
       <meta 
@@ -58,10 +58,6 @@
           <meta 
             property="og:article:tag" 
             content="js">
-        
-          <meta 
-            property="og:article:tag" 
-            content="算法">
         
       
     
@@ -346,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">类型判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">基本类型判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">Object类型判断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">类型判断工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NaN"><span class="toc-text">NaN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -525,14 +521,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      斐波那契js的四种实现方法
+      Javascript类型与类型判断
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092617.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T07:38:49.052Z">
+    <time datetime="2022-09-26T07:42:41.388Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -551,7 +547,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>639 字</span>
     
   </div>
   
@@ -571,15 +567,6 @@
             js
           </a>
         
-          
-            <span class="dot"></span>
-          
-          <a 
-            href="/tags/%E7%AE%97%E6%B3%95/" 
-            class="post-meta-link">
-            算法
-          </a>
-        
       </div>
     </div>
   
@@ -587,7 +574,43 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="JS类型"><a href="#JS类型" class="headerlink" title="JS类型"></a>JS类型</h2><p>JS共有8种类型，其中7种基本类型</p>
+<ul>
+<li>Boolean</li>
+<li>Null</li>
+<li>Undefined</li>
+<li>Number</li>
+<li>BigInt</li>
+<li>String</li>
+<li>Symbol</li>
+</ul>
+<blockquote>
+<p>基本类型（基本数值、基本数据类型）是一种既非对象也无方法的数据。所有基本类型的值都是不可改变的。但需要注意的是，基本类型本身和一个赋值为基本类型的变量的区别。变量会被赋予一个新值，而原值不能像数组、对象以及函数那样被改变。</p>
+</blockquote>
+<p>剩余一种</p>
+<ul>
+<li>Object</li>
+</ul>
+<p>除 Object 以外的所有类型都是不可变的（值本身无法被改变）</p>
+<h2 id="类型判断"><a href="#类型判断" class="headerlink" title="类型判断"></a>类型判断</h2><h3 id="基本类型判断"><a href="#基本类型判断" class="headerlink" title="基本类型判断"></a>基本类型判断</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// Boolean</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-literal">true</span> <span class="hljs-comment">// boolean</span><br><br><span class="hljs-comment">// Number</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-number">1</span> <span class="hljs-comment">// number</span><br><br><span class="hljs-comment">// String</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-comment">// string</span><br><br><span class="hljs-comment">// Undefined</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-literal">undefined</span> <span class="hljs-comment">// undefined</span><br><span class="hljs-literal">undefined</span> === <span class="hljs-literal">undefined</span> <span class="hljs-comment">// true</span><br><br><span class="hljs-comment">// Null</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-literal">null</span> <span class="hljs-comment">// object</span><br><span class="hljs-literal">null</span> === <span class="hljs-literal">null</span> <span class="hljs-comment">// true</span><br><br><span class="hljs-comment">// BigInt</span><br><span class="hljs-comment">// 可以用在一个整数字面量后面加 n 的方式定义一个 BigInt ，如：10n，或者调用函数BigInt()。</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-number">10n</span> === <span class="hljs-string">&#x27;bigint&#x27;</span>; <span class="hljs-comment">// true</span><br><span class="hljs-number">10n</span> == <span class="hljs-number">10</span> <span class="hljs-comment">// true</span><br><span class="hljs-number">10n</span> === <span class="hljs-number">10</span> <span class="hljs-comment">// false</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-title class_">BigInt</span>(<span class="hljs-string">&#x27;1&#x27;</span>) === <span class="hljs-string">&#x27;bigint&#x27;</span>; <span class="hljs-comment">// true</span><br><br><span class="hljs-comment">// Symbol</span><br><span class="hljs-keyword">typeof</span> <span class="hljs-title class_">Symbol</span>() <span class="hljs-comment">// symbol</span><br></code></pre>
+<p>由上可以看出，基本类型除了null之外，都可以使用typeof判断出来具体类型.</p>
+<h3 id="Object类型判断"><a href="#Object类型判断" class="headerlink" title="Object类型判断"></a>Object类型判断</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// Array</span><br><span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>]) <span class="hljs-comment">// true</span><br><br><span class="hljs-comment">// Function</span><br><span class="hljs-keyword">typeof</span> (<span class="hljs-function">()=&gt;</span>&#123;&#125;) <span class="hljs-comment">// function</span><br></code></pre>
+
+<p>对于像Date、Math等对象，就没有很好的直接判断方式了，但是可以通过 Object.prototype.toString.call(obj) 来判断</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>([]); <span class="hljs-comment">// [object Array]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(&#123;&#125;); <span class="hljs-comment">// [object Object]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-string">&#x27;&#x27;</span>); <span class="hljs-comment">// [object String]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>()); <span class="hljs-comment">// [object Date]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-number">1</span>); <span class="hljs-comment">// [object Number]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;&#125;); <span class="hljs-comment">// [object Function]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-regexp">/test/i</span>); <span class="hljs-comment">// [object RegExp]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-literal">true</span>); <span class="hljs-comment">// [object Boolean]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>); <span class="hljs-comment">// [object Null]</span><br><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(); <span class="hljs-comment">// [object Undefined]</span><br></code></pre>
+
+<h2 id="类型判断工具类"><a href="#类型判断工具类" class="headerlink" title="类型判断工具类"></a>类型判断工具类</h2><p>通过上面的总结分析，可以考虑封装一个类型判断的工具类，下面是感觉最简洁高效的一个实现：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> type = (<span class="hljs-keyword">function</span>(<span class="hljs-params"><span class="hljs-variable language_">global</span></span>) &#123;<br>    <span class="hljs-keyword">var</span> cache = &#123;&#125;;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>) &#123;<br>        <span class="hljs-keyword">var</span> key;<br>        <span class="hljs-keyword">return</span> obj === <span class="hljs-literal">null</span> ? <span class="hljs-string">&#x27;null&#x27;</span> <span class="hljs-comment">// null</span><br>            : obj === <span class="hljs-variable language_">global</span> ? <span class="hljs-string">&#x27;global&#x27;</span> <span class="hljs-comment">// window in browser or global in nodejs</span><br>            : (key = <span class="hljs-keyword">typeof</span> obj) !== <span class="hljs-string">&#x27;object&#x27;</span> ? key <span class="hljs-comment">// basic: string, boolean, number, undefined, function</span><br>            : obj.<span class="hljs-property">nodeType</span> ? <span class="hljs-string">&#x27;object&#x27;</span> <span class="hljs-comment">// DOM element</span><br>            : cache[key = (&#123;&#125;).<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(obj)] <span class="hljs-comment">// cached. date, regexp, error, object, array, math</span><br>            || (cache[key] = key.<span class="hljs-title function_">slice</span>(<span class="hljs-number">8</span>, -<span class="hljs-number">1</span>).<span class="hljs-title function_">toLowerCase</span>()); <span class="hljs-comment">// get XXXX from [object XXXX], and cache it</span><br>    &#125;;<br>&#125;(<span class="hljs-variable language_">this</span>));<br></code></pre>
+
+<p>这样使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">type</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;); <span class="hljs-comment">// -&gt; &quot;function&quot;</span><br><span class="hljs-title function_">type</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]); <span class="hljs-comment">// -&gt; &quot;array&quot;</span><br><span class="hljs-title function_">type</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>()); <span class="hljs-comment">// -&gt; &quot;date&quot;</span><br><span class="hljs-title function_">type</span>(&#123;&#125;); <span class="hljs-comment">// -&gt; &quot;object&quot;</span><br></code></pre>
+
+<h2 id="NaN"><a href="#NaN" class="headerlink" title="NaN"></a>NaN</h2><p>注意NaN不是一种数据类型。NaN是一个全局对象的属性，它表示不是一个数字（Not-A-Number）。</p>
+<p>NaN有如下特性：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">typeof</span> <span class="hljs-title class_">NaN</span> <span class="hljs-comment">// number</span><br><span class="hljs-title class_">NaN</span> === <span class="hljs-title class_">NaN</span> <span class="hljs-comment">// false</span><br><span class="hljs-built_in">isNaN</span>(<span class="hljs-title class_">NaN</span>) <span class="hljs-comment">// true,可以通过此种方式来判断NaN</span><br><span class="hljs-keyword">var</span> num = <span class="hljs-title class_">Number</span>(<span class="hljs-string">&#x27;num&#x27;</span>) <span class="hljs-comment">// 此时num为NaN</span><br>num === num <span class="hljs-comment">// flase</span><br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6855674811159412743">Javascript类型与类型判断</a></p>
+
   </div>
   <div>
     
@@ -610,20 +633,6 @@
     </div>
   
   
-    <div class="nav-item-next">
-      <a 
-        href="/2022/09/26/22092618/" 
-        class="nav-link">
-        <div>
-          <div class="nav-label">下一篇</div>
-          
-            <div class="nav-title">斐波那契js的四种实现方法 </div>
-          
-        </div>
-        <i class="iconfont icon-right nav-next-icon"></i>
-      </a>
-    </div>
-  
 </div>
 
 <div 
@@ -635,7 +644,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">类型判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">基本类型判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">Object类型判断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">类型判断工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NaN"><span class="toc-text">NaN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -649,7 +658,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JS%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">类型判断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">基本类型判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD"><span class="toc-text">Object类型判断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7%E7%B1%BB"><span class="toc-text">类型判断工具类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NaN"><span class="toc-text">NaN</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -665,22 +674,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/webpackProfile/"><div class="recent-posts-item-content">Webpack简介</div></a>
+        <a href="/2022/09/26/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/websitePerformanceOptimization/"><div class="recent-posts-item-content">网站性能监测与优化策略</div></a>
+        <a href="/2022/09/26/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyAwaitCannotBeUsedInForEach/"><div class="recent-posts-item-content">重学 JS：为啥 await 不能用在 forEach 中</div></a>
+        <a href="/2022/09/26/theOperatingSystem3/"><div class="recent-posts-item-content">操作系统期末考试——3</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyBinarySearchTreesWhenHashTablesAreSoGood/"><div class="recent-posts-item-content">散列表那么优秀，为什么还要二叉查找树？</div></a>
+        <a href="/2022/09/26/theOperatingSystem4/"><div class="recent-posts-item-content">操作系统期末考试——4</div></a>
       </div>
     
   </div>
