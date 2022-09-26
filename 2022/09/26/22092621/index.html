@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>Vue中mixins的使用方法和注意点</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="Vue中mixins的使用方法和注意点">
     
     
       <meta 
@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E4%BB%8B%E7%BB%8D"><span class="toc-text">mixins介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%89%B9%E7%82%B9"><span class="toc-text">mixins特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -521,14 +521,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      Vue中mixins的使用方法和注意点
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092621.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T08:01:28.238Z">
+    <time datetime="2022-09-26T08:04:34.575Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -547,7 +547,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>760 字</span>
     
   </div>
   
@@ -574,7 +574,25 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="mixins介绍"><a href="#mixins介绍" class="headerlink" title="mixins介绍"></a>mixins介绍</h2><p>Mixins：则是在引入组件之后与组件中的对象和方法进行合并，相当于扩展了父组件的对象与方法，可以理解为形成了一个新的组件。</p>
+<p>混入 (mixins)：是一种分发 Vue 组件中可复用功能的非常灵活的方式。混入对象可以包含任意组件选项。当组件使用混入对象时，所有混入对象的选项将被混入该组件本身的选项。</p>
+<p>具体应该怎么用？举个栗子：</p>
+<p>定义公共的mixins文件：如mixin.vue</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;mixins-test-main&#x27;</span>,</span><br><span class="language-javascript">  <span class="hljs-attr">components</span>: &#123;&#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">props</span>: &#123;&#125;,</span><br><span class="language-javascript">  data () &#123;</span><br><span class="language-javascript">      <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">          <span class="hljs-attr">mixinData</span>: <span class="hljs-string">&#x27;mixin中的变量&#x27;</span></span><br><span class="language-javascript">      &#125;</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">methods</span>: &#123;</span><br><span class="language-javascript">      mixinFunction () &#123;</span><br><span class="language-javascript">          <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;我是mixins里面的公共方法&#x27;</span></span><br><span class="language-javascript">      &#125;,</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  mounted () &#123;</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">computed</span>: &#123;&#125;</span><br><span class="language-javascript">&#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">scoped</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<p>在你页面内调用：需要import这个mixins文件 ，然后通过mixins:[‘文件名’]来使用就可以了</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;handleMixin&quot;</span>&gt;</span>调用mixin方法<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">import</span> <span class="hljs-title class_">MixinItem</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./mixin&#x27;</span></span><br><span class="language-javascript">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;mixin-test-comp&#x27;</span>,</span><br><span class="language-javascript">    <span class="hljs-attr">props</span>: &#123;&#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">mixins</span>: [<span class="hljs-title class_">MixinItem</span>],</span><br><span class="language-javascript">    <span class="hljs-attr">components</span>: &#123;&#125;,</span><br><span class="language-javascript">    data () &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">return</span> &#123;&#125;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>: &#123;</span><br><span class="language-javascript">        handleMixin () &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;mixin-data=========&#x27;</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">mixinData</span>)</span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> mixfun = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">mixinFunction</span>()</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;mixin-fun====&gt;&gt;&gt;&#x27;</span>, mixfun)</span><br><span class="language-javascript">        &#125;,</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    mounted () &#123;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">computed</span>: &#123;&#125;</span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">scoped</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h2 id="mixins特点"><a href="#mixins特点" class="headerlink" title="mixins特点"></a>mixins特点</h2><ol>
+<li>方法和参数在各组件中不共享<br>  如混入对象中有一个 cont:1的变量,在组件A中改变cont值为5，这时候在组件B中获取这个值，拿到的还是1，还是混入对象里的初始值，数据不共享</li>
+<li>值为对象的选项<br>  如methods,components等，选项会被合并，键冲突的组件会覆盖混入对象的，比如混入对象里有个方法A，组件里也有方法A，这时候在组件里调用的话，执行的是组件里的A方法</li>
+<li>值为函数的选项<br>  如created,mounted等，就会被合并调用，混合对象里的钩子函数在组件里的钩子函数之前调用，同一个钩子函数里，会先执行混入对象的东西，再执行本组件的</li>
+<li>与vuex的区别<br>  vuex：用来做状态管理的，里面定义的变量在每个组件中均可以使用和修改，在任一组件中修改此变量的值之后，其他组件中此变量的值也会随之修改。</li>
+<li>Mixins：可以定义共用的变量，在每个组件中使用，引入组件中之后，各个变量是相互独立的，值的修改在组件中不会相互影响。</li>
+<li>与公共组件的区别<br>  组件：在父组件中引入组件，相当于在父组件中给出一片独立的空间供子组件使用，然后根据props来传值，但本质上两者是相对独立的。</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903908398071816">Vue中mixins的使用方法和注意点</a></p>
+
   </div>
   <div>
     
@@ -584,13 +602,11 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/26/22092620/" 
+        href="/2022/09/26/22092622/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
-          
-            <div class="nav-title">前端性能优化之白屏时间 </div>
           
         </div>
       </a>
@@ -599,7 +615,7 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/26/22092622/" 
+        href="/2022/09/26/22092624/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
@@ -620,7 +636,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E4%BB%8B%E7%BB%8D"><span class="toc-text">mixins介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%89%B9%E7%82%B9"><span class="toc-text">mixins特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -634,7 +650,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E4%BB%8B%E7%BB%8D"><span class="toc-text">mixins介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mixins%E7%89%B9%E7%82%B9"><span class="toc-text">mixins特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -650,22 +666,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyBinarySearchTreesWhenHashTablesAreSoGood/"><div class="recent-posts-item-content">散列表那么优秀，为什么还要二叉查找树？</div></a>
+        <a href="/2022/09/26/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyDoesComputerTimeStartOnJanuary,1,1970/"><div class="recent-posts-item-content">为什么计算机时间要从1970年1月1日开始算起</div></a>
+        <a href="/2022/09/26/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyIsTCPAReliableConnection/"><div class="recent-posts-item-content">为什么说TCP是可靠连接</div></a>
+        <a href="/2022/09/26/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/whyUsecallDetectionObjectTypes/"><div class="recent-posts-item-content">为什么用Object.prototype. toString.call(obj)检测对象类型?</div></a>
+        <a href="/2022/09/26/webMessaging/"><div class="recent-posts-item-content">网页消息通信</div></a>
       </div>
     
   </div>
