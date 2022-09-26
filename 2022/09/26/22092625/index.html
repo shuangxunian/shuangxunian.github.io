@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>Vue的computed和watch的细节全面分析</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="Vue的computed和watch的细节全面分析">
     
     
       <meta 
@@ -58,6 +58,10 @@
           <meta 
             property="og:article:tag" 
             content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
         
       
     
@@ -297,7 +301,7 @@
   <a 
     class="author-posts-count" 
     href="/archives">
-    <span>228</span>
+    <span>229</span>
     <span>文章</span>
   </a>
   <a 
@@ -342,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#computed"><span class="toc-text">computed</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E7%94%A8%E6%B3%95"><span class="toc-text">get用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E5%92%8Cset%E7%94%A8%E6%B3%95"><span class="toc-text">get和set用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch"><span class="toc-text">watch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听简单数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%A4%8D%E6%9D%82%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听复杂数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%AF%B9%E8%B1%A1%E5%8D%95%E4%B8%AA%E5%B1%9E%E6%80%A7"><span class="toc-text">监听对象单个属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed%E5%92%8Cwatch%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">computed和watch的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E7%89%B9%E6%80%A7"><span class="toc-text">computed特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch%E7%89%B9%E6%80%A7"><span class="toc-text">watch特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#props%E4%BC%A0%E5%80%BC"><span class="toc-text">props传值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF1"><span class="toc-text">常见错误1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%881"><span class="toc-text">解决方案1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%882"><span class="toc-text">解决方案2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -360,7 +364,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">199</span>
+          <span class="categories-list-item-badge">200</span>
         </div>
       </a>
     
@@ -521,14 +525,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      Vue的computed和watch的细节全面分析
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092625.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T09:00:34.560Z">
+    <time datetime="2022-09-26T09:23:21.262Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -547,7 +551,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>1.5k 字</span>
     
   </div>
   
@@ -567,6 +571,15 @@
             js
           </a>
         
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
       </div>
     </div>
   
@@ -574,7 +587,68 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="computed"><a href="#computed" class="headerlink" title="computed"></a>computed</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>是一个计算属性,类似于过滤器,对绑定到view的数据进行处理</p>
+<h3 id="get用法"><a href="#get用法" class="headerlink" title="get用法"></a>get用法</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">data</span>: &#123;<br>  <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;Foo&#x27;</span>,<br>  <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;Bar&#x27;</span><br>&#125;,<br><span class="hljs-attr">computed</span>: &#123;<br>  <span class="hljs-attr">fullName</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span><br>  &#125;<br>&#125;<br></code></pre>
+
+<p>fullName不可在data里面定义,如果定义会报如下图片的错误,因为对应的computed作为计算属性定义fullName并返回对应的结果给这个变量,变量不可被重复定义和赋值</p>
+<h3 id="get和set用法"><a href="#get和set用法" class="headerlink" title="get和set用法"></a>get和set用法</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">data</span>: &#123;<br>  <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;Foo&#x27;</span>,<br>  <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;Bar&#x27;</span><br>&#125;,<br><span class="hljs-attr">computed</span>: &#123;<br>  fullName：&#123;<br>    <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>)&#123;<span class="hljs-comment">//回调函数 当需要读取当前属性值是执行，根据相关数据计算并返回当前属性的值</span><br>      <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span><br>    &#125;,<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">val</span>)&#123;<span class="hljs-comment">//监视当前属性值的变化，当属性值发生变化时执行，更新相关的属性数据</span><br>      <span class="hljs-comment">//val就是fullName的最新属性值</span><br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(val)<br>      <span class="hljs-keyword">const</span> names = val.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27; &#x27;</span>);<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(names)<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> = names[<span class="hljs-number">0</span>];<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span> = names[<span class="hljs-number">1</span>];<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+
+<h2 id="watch"><a href="#watch" class="headerlink" title="watch"></a>watch</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>watch是一个观察的动作</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">data</span>: &#123;<br>  <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;Foo&#x27;</span>,<br>  <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;Bar&#x27;</span>,<br>  <span class="hljs-attr">fullName</span>: <span class="hljs-string">&#x27;Foo Bar&#x27;</span><br>&#125;,<br><span class="hljs-attr">watch</span>: &#123;<br>  <span class="hljs-attr">firstName</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">val</span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">fullName</span> = val + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span><br>&#125;,<br><span class="hljs-attr">lastName</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">val</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">fullName</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> + <span class="hljs-string">&#x27; &#x27;</span> + val<br>  &#125;<br>&#125;<br></code></pre>
+
+<h3 id="监听简单数据类型"><a href="#监听简单数据类型" class="headerlink" title="监听简单数据类型"></a>监听简单数据类型</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span>&#123;<br>    <span class="hljs-string">&#x27;first&#x27;</span>:<span class="hljs-number">2</span><br>  &#125;<br>&#125;,<br><span class="hljs-attr">watch</span>:&#123;<br>  <span class="hljs-title function_">first</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">first</span>)<br>  &#125;<br>&#125;,<br></code></pre>
+
+<h3 id="监听复杂数据类型"><a href="#监听复杂数据类型" class="headerlink" title="监听复杂数据类型"></a>监听复杂数据类型</h3><p>监听复杂数据类型需用深度监听</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span>&#123;<br>    <span class="hljs-string">&#x27;first&#x27;</span>:&#123;<br>      <span class="hljs-attr">second</span>:<span class="hljs-number">0</span><br>    &#125;<br>  &#125;<br>&#125;,<br><span class="hljs-attr">watch</span>:&#123;<br>  <span class="hljs-attr">secondChange</span>:&#123;<br>    <span class="hljs-title function_">handler</span>(<span class="hljs-params">oldVal,newVal</span>)&#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(oldVal)<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newVal)<br>    &#125;,<br>    <span class="hljs-attr">deep</span>:<span class="hljs-literal">true</span><br>  &#125;<br>&#125;,<br></code></pre>
+
+<p>console.log打印的结果,发现oldVal和newVal值是一样的,所以深度监听虽然可以监听到对象的变化,但是无法监听到具体对象里面那个属性的变化<br>oldVal和newVal值一样的原因是它们索引同一个对象&#x2F;数组。Vue 不会保留修改之前值的副本</p>
+<p>深度监听对应的函数名必须为handler,否则无效果,因为watcher里面对应的是对handler的调用</p>
+<h3 id="监听对象单个属性"><a href="#监听对象单个属性" class="headerlink" title="监听对象单个属性"></a>监听对象单个属性</h3><p>方法一：可以直接对用对象.属性的方法拿到属性</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span>&#123;<br>    <span class="hljs-string">&#x27;first&#x27;</span>:&#123;<br>      <span class="hljs-attr">second</span>:<span class="hljs-number">0</span><br>    &#125;<br>  &#125;<br>&#125;,<br><span class="hljs-attr">watch</span>:&#123;<br>  first.<span class="hljs-property">second</span>:<span class="hljs-keyword">function</span>(<span class="hljs-params">newVal,oldVal</span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newVal,oldVal);<br>  &#125;<br>&#125;,<br></code></pre>
+
+<p>方法二：watch如果想要监听对象的单个属性的变化,必须用computed作为中间件转化,因为computed可以取到对应的属性值</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span>&#123;<br>    <span class="hljs-string">&#x27;first&#x27;</span>:&#123;<br>      <span class="hljs-attr">second</span>:<span class="hljs-number">0</span><br>    &#125;<br>  &#125;<br>&#125;,<br><span class="hljs-attr">computed</span>:&#123;<br>  <span class="hljs-title function_">secondChange</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">first</span>.<span class="hljs-property">second</span><br>  &#125;<br>&#125;,<br><span class="hljs-attr">watch</span>:&#123;<br>  <span class="hljs-title function_">secondChange</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;second属性值变化了&#x27;</span>)<br>  &#125;<br>&#125;,<br></code></pre>
+
+<h2 id="computed和watch的区别"><a href="#computed和watch的区别" class="headerlink" title="computed和watch的区别"></a>computed和watch的区别</h2><h3 id="computed特性"><a href="#computed特性" class="headerlink" title="computed特性"></a>computed特性</h3><ol>
+<li>是计算值</li>
+<li>应用：就是简化tempalte里面 <code>&#123;&#123;&#125;&#125;</code> 计算和处理props或$emit的传值</li>
+<li>具有缓存性，页面重新渲染值不变化,计算属性会立即返回之前的计算结果，而不必再次执行函数</li>
+</ol>
+<h3 id="watch特性"><a href="#watch特性" class="headerlink" title="watch特性"></a>watch特性</h3><ol>
+<li>是观察的动作</li>
+<li>应用：监听props，$emit或本组件的值执行异步操作</li>
+<li>无缓存性，页面重新渲染时值不变化也会执行</li>
+</ol>
+<h2 id="props传值"><a href="#props传值" class="headerlink" title="props传值"></a>props传值</h2><h3 id="常见错误1"><a href="#常见错误1" class="headerlink" title="常见错误1"></a>常见错误1</h3><p>传入的值想作为局部变量来使用,直接使用会报错</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">props</span>:[<span class="hljs-string">&#x27;listShop&#x27;</span>],<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;&#125;<br>  &#125;,<br>  <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">listShop</span>=<span class="hljs-number">30</span><br>  &#125;<br></code></pre>
+
+<p>这个错误是说的避免直接修改父组件传入的值,因为会改变父组件的值</p>
+<h3 id="解决方案1"><a href="#解决方案1" class="headerlink" title="解决方案1"></a>解决方案1</h3><p>简单数据类型解决方案:<br>可以在data中重新定义一个变量,改变指向,但是也只是针对简单数据类型,因为复杂数据类型栈存贮的是指针</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">props</span>:[<span class="hljs-string">&#x27;listShop&#x27;</span>],<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>      <span class="hljs-attr">listShopChild</span>:<span class="hljs-variable language_">this</span>.<span class="hljs-property">listShop</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-title function_">created</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">listShopChild</span>=<span class="hljs-number">30</span><br>  &#125;<br></code></pre>
+
+<p>这样就可以愉快的更改传入的简单数据类型的数据啦!不会有任何报错,也不会影响父组件!</p>
+<h3 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>复杂数据类型在栈中存贮的是指针,所以赋值给新的变量也会改变原始的变量值.那么应该咋整呢?</p>
+<p>可以手动深度克隆一个复杂的数据出来,循环或者递归都行</p>
+<p>数组深度克隆:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> x = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];<br><span class="hljs-keyword">var</span> y = [];<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; x.<span class="hljs-property">length</span>; i++) &#123;<br>  y[i]=x[i];<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y);  <span class="hljs-comment">//[1,2,3]</span><br>y.<span class="hljs-title function_">push</span>(<span class="hljs-number">4</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y);  <span class="hljs-comment">//[1,2,3,4]</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x);  <span class="hljs-comment">//[1,2,3]</span><br></code></pre>
+
+<p>对象深度克隆:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> x = &#123;<span class="hljs-attr">a</span>:<span class="hljs-number">1</span>,<span class="hljs-attr">b</span>:<span class="hljs-number">2</span>&#125;;<br><span class="hljs-keyword">var</span> y = &#123;&#125;;<br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i <span class="hljs-keyword">in</span> x)&#123;<br>    y[i] = x[i];<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y);  <span class="hljs-comment">//Object &#123;a: 1, b: 2&#125;</span><br>y.<span class="hljs-property">c</span> = <span class="hljs-number">3</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(y);  <span class="hljs-comment">//Object &#123;a: 1, b: 2, c: 3&#125;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(x);  <span class="hljs-comment">//Object &#123;a: 1, b: 2&#125;</span><br></code></pre>
+
+<p>函数深度克隆</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> x = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-number">1</span>);&#125;;<br><span class="hljs-keyword">var</span> y = x;<br>y = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-number">2</span>);&#125;;<br><span class="hljs-title function_">x</span>();  <span class="hljs-comment">//1</span><br><span class="hljs-title function_">y</span>();  <span class="hljs-comment">//2</span><br></code></pre>
+
+<ol>
+<li>为什么函数可以直接赋值克隆?<br>  由于函数对象克隆之后的对象会单独复制一次并存储实际数据，因此并不会影响克隆之前的对象。所以采用简单的复制“&#x3D;”即可完成克隆。</li>
+<li>Object.assign<br>  只会对只是一级属性复制，比浅拷贝多深拷贝了一层而已,所以还是无法达到深度克隆的目的.</li>
+<li>强大的JSON.stringify和JSON.parse，这是ES5新出来的API,先将对象转化为字符串,就是简单数据类型赋值,再用JSON.parse转化  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> obj1 = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(obj));<br></code></pre></li>
+</ol>
+<h3 id="解决方案2"><a href="#解决方案2" class="headerlink" title="解决方案2"></a>解决方案2</h3><p>直接用computed改变</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">computed</span>:&#123;<br>  <span class="hljs-title function_">listShopChild</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">listShop</span><br>   &#125;<br>&#125;<br></code></pre>
+
+<h3 id="存在的问题-1"><a href="#存在的问题-1" class="headerlink" title="存在的问题"></a>存在的问题</h3><p>注意:此时用computed时,如果是数组<code>this.$set(arr,1,true)</code>对应的值也不更新，这个很坑，这个bug我找个很久，如果传入的值只是在data定义，并未在methods或生命周期钩子更改，直接改变也会报错，所以还是可以先用局部变量接收,再修改，这个坑比较多</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000012948175">Vue的computed和watch的细节全面分析</a></p>
+
   </div>
   <div>
     
@@ -599,12 +673,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/26/25ThingsAboutJavaScriptAndES/" 
+        href="/2022/09/26/22092626/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">JavaScript与ES的25个知识点 </div>
+            <div class="nav-title">都9102年了，还问GET和POST的区别 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -622,7 +696,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#computed"><span class="toc-text">computed</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E7%94%A8%E6%B3%95"><span class="toc-text">get用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E5%92%8Cset%E7%94%A8%E6%B3%95"><span class="toc-text">get和set用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch"><span class="toc-text">watch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听简单数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%A4%8D%E6%9D%82%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听复杂数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%AF%B9%E8%B1%A1%E5%8D%95%E4%B8%AA%E5%B1%9E%E6%80%A7"><span class="toc-text">监听对象单个属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed%E5%92%8Cwatch%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">computed和watch的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E7%89%B9%E6%80%A7"><span class="toc-text">computed特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch%E7%89%B9%E6%80%A7"><span class="toc-text">watch特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#props%E4%BC%A0%E5%80%BC"><span class="toc-text">props传值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF1"><span class="toc-text">常见错误1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%881"><span class="toc-text">解决方案1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%882"><span class="toc-text">解决方案2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -636,7 +710,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#computed"><span class="toc-text">computed</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E7%94%A8%E6%B3%95"><span class="toc-text">get用法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#get%E5%92%8Cset%E7%94%A8%E6%B3%95"><span class="toc-text">get和set用法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#watch"><span class="toc-text">watch</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="toc-text">定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-text">示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听简单数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%A4%8D%E6%9D%82%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">监听复杂数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%91%E5%90%AC%E5%AF%B9%E8%B1%A1%E5%8D%95%E4%B8%AA%E5%B1%9E%E6%80%A7"><span class="toc-text">监听对象单个属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed%E5%92%8Cwatch%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">computed和watch的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#computed%E7%89%B9%E6%80%A7"><span class="toc-text">computed特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#watch%E7%89%B9%E6%80%A7"><span class="toc-text">watch特性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#props%E4%BC%A0%E5%80%BC"><span class="toc-text">props传值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF1"><span class="toc-text">常见错误1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%881"><span class="toc-text">解决方案1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">存在的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%882"><span class="toc-text">解决方案2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98-1"><span class="toc-text">存在的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -652,22 +726,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
+        <a href="/2022/09/26/threeCSSLayouts/"><div class="recent-posts-item-content">CSS-水平居中、垂直居中、水平垂直居中</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
+        <a href="/2022/09/26/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem3/"><div class="recent-posts-item-content">操作系统期末考试——3</div></a>
+        <a href="/2022/09/26/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem4/"><div class="recent-posts-item-content">操作系统期末考试——4</div></a>
+        <a href="/2022/09/26/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
       </div>
     
   </div>
