@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>斐波那契js的四种实现方法</title>
+  <title>观察者模式与发布/订阅模式区别</title>
   
     
       <meta 
         property="og:title" 
-        content="斐波那契js的四种实现方法">
+        content="观察者模式与发布/订阅模式区别">
     
     
       <meta 
@@ -61,7 +61,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="算法">
+            content="vue">
         
       
     
@@ -346,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">观察者模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E5%B8%83-x2F-%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">发布&#x2F;订阅模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95"><span class="toc-text">附录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -448,15 +448,15 @@
       </a>
     
       <a 
-        href="/tags/%E7%AE%97%E6%B3%95/" 
-        title="算法">
-        <div class="tags-list-item">算法</div>
-      </a>
-    
-      <a 
         href="/tags/%E5%85%B6%E4%BB%96/" 
         title="其他">
         <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
       </a>
     
       <a 
@@ -525,14 +525,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      斐波那契js的四种实现方法
+      观察者模式与发布/订阅模式区别
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092618.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T07:42:41.392Z">
+    <time datetime="2022-09-26T07:47:14.392Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -551,7 +551,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>988 字</span>
     
   </div>
   
@@ -575,9 +575,9 @@
             <span class="dot"></span>
           
           <a 
-            href="/tags/%E7%AE%97%E6%B3%95/" 
+            href="/tags/vue/" 
             class="post-meta-link">
-            算法
+            vue
           </a>
         
       </div>
@@ -587,7 +587,24 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <p>在翻阅资料的时候，有人把观察者（Observer）模式等同于发布（Publish）&#x2F;订阅（Subscribe）模式，也有人认为这两种模式还是存在差异，而我认为确实是存在差异的，本质上的区别是调度的地方不同。</p>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>比较概念的解释是，目标和观察者是基类，目标提供维护观察者的一系列方法，观察者提供更新接口。具体观察者和具体目标继承各自的基类，然后具体观察者把自己注册到具体目标里，在具体目标发生变化时候，调度观察者的更新方法。</p>
+<p>比如有个“天气中心”的具体目标A，专门监听天气变化，而有个显示天气的界面的观察者B，B就把自己注册到A里，当A触发天气变化，就调度B的更新方法，并带上自己的上下文。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ca61a7e5-c587-4574-8fc1-c65c35af55fc-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/ca61a7e5-c587-4574-8fc1-c65c35af55fc-3807603.jpg"></p>
+<h2 id="发布-x2F-订阅模式"><a href="#发布-x2F-订阅模式" class="headerlink" title="发布&#x2F;订阅模式"></a>发布&#x2F;订阅模式</h2><p>比较概念的解释是，订阅者把自己想订阅的事件注册到调度中心，当该事件触发时候，发布者发布该事件到调度中心（顺带上下文），由调度中心统一调度订阅者注册到调度中心的处理代码。</p>
+<p>比如有个界面是实时显示天气，它就订阅天气事件（注册到调度中心，包括处理程序），当天气变化时（定时获取数据），就作为发布者发布天气信息到调度中心，调度中心就调度订阅者的天气处理程序。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/dfe62664-96ea-442e-95f5-104e75679dfd-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/dfe62664-96ea-442e-95f5-104e75679dfd-3807603.jpg"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>从两张图片可以看到，最大的区别是调度的地方。</p>
+<p>虽然两种模式都存在订阅者和发布者（具体观察者可认为是订阅者、具体目标可认为是发布者），但是观察者模式是由具体目标调度的，而发布&#x2F;订阅模式是统一由调度中心调的，所以观察者模式的订阅者与发布者之间是存在依赖的，而发布&#x2F;订阅模式则不会。</p>
+<p>两种模式都可以用于松散耦合，改进代码管理和潜在的复用。</p>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>观察者模式实现代码（JavaScript版）：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//观察者列表</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">ObserverList</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span> = [];<br>&#125;<br><span class="hljs-title class_">ObserverList</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">add</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> obj </span>)&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>.<span class="hljs-title function_">push</span>( obj );<br>&#125;;<br><span class="hljs-title class_">ObserverList</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">count</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>.<span class="hljs-property">length</span>;<br>&#125;;<br><span class="hljs-title class_">ObserverList</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">get</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> index </span>)&#123;<br>  <span class="hljs-keyword">if</span>( index &gt; -<span class="hljs-number">1</span> &amp;&amp; index &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>.<span class="hljs-property">length</span> )&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>[ index ];<br>  &#125;<br>&#125;;<br><span class="hljs-title class_">ObserverList</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">indexOf</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> obj, startIndex </span>)&#123;<br>  <span class="hljs-keyword">var</span> i = startIndex;<br>  <span class="hljs-keyword">while</span>( i &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>.<span class="hljs-property">length</span> )&#123;<br>    <span class="hljs-keyword">if</span>( <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>[i] === obj )&#123;<br>      <span class="hljs-keyword">return</span> i;<br>    &#125;<br>    i++;<br>  &#125;<br>  <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;<br>&#125;;<br><span class="hljs-title class_">ObserverList</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">removeAt</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> index </span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">observerList</span>.<span class="hljs-title function_">splice</span>( index, <span class="hljs-number">1</span> );<br>&#125;;<br><br><span class="hljs-comment">//目标</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Subject</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObserverList</span>();<br>&#125;<br><span class="hljs-title class_">Subject</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">addObserver</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> observer </span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span>.<span class="hljs-title function_">add</span>( observer );<br>&#125;;<br><span class="hljs-title class_">Subject</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">removeObserver</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> observer </span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span>.<span class="hljs-title function_">removeAt</span>( <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span>.<span class="hljs-title function_">indexOf</span>( observer, <span class="hljs-number">0</span> ) );<br>&#125;;<br><span class="hljs-title class_">Subject</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">notify</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> context </span>)&#123;<br>  <span class="hljs-keyword">var</span> observerCount = <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span>.<span class="hljs-title function_">count</span>();<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; observerCount; i++)&#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">observers</span>.<span class="hljs-title function_">get</span>(i).<span class="hljs-title function_">update</span>( context );<br>  &#125;<br>&#125;;<br><br><span class="hljs-comment">//观察者</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Observer</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">update</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-comment">// ...</span><br>  &#125;;<br>&#125;<br></code></pre>
+
+<p>发布&#x2F;订阅模式实现代码（JavaScript经典版）：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> pubsub = &#123;&#125;;<br>(<span class="hljs-keyword">function</span>(<span class="hljs-params">myObject</span>) &#123;<br>    <span class="hljs-comment">// Storage for topics that can be broadcast</span><br>    <span class="hljs-comment">// or listened to</span><br>    <span class="hljs-keyword">var</span> topics = &#123;&#125;;<br>    <span class="hljs-comment">// An topic identifier</span><br>    <span class="hljs-keyword">var</span> subUid = -<span class="hljs-number">1</span>;<br>    <span class="hljs-comment">// Publish or broadcast events of interest</span><br>    <span class="hljs-comment">// with a specific topic name and arguments</span><br>    <span class="hljs-comment">// such as the data to pass along</span><br>    myObject.<span class="hljs-property">publish</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> topic, args </span>) &#123;<br>        <span class="hljs-keyword">if</span> ( !topics[topic] ) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>        <span class="hljs-keyword">var</span> subscribers = topics[topic],<br>            len = subscribers ? subscribers.<span class="hljs-property">length</span> : <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span> (len--) &#123;<br>            subscribers[len].<span class="hljs-title function_">func</span>( topic, args );<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;<br>    &#125;;<br>    <span class="hljs-comment">// Subscribe to events of interest</span><br>    <span class="hljs-comment">// with a specific topic name and a</span><br>    <span class="hljs-comment">// callback function, to be executed</span><br>    <span class="hljs-comment">// when the topic/event is observed</span><br>    myObject.<span class="hljs-property">subscribe</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> topic, func </span>) &#123;<br>        <span class="hljs-keyword">if</span> (!topics[topic]) &#123;<br>            topics[topic] = [];<br>        &#125;<br>        <span class="hljs-keyword">var</span> token = ( ++subUid ).<span class="hljs-title function_">toString</span>();<br>        topics[topic].<span class="hljs-title function_">push</span>(&#123;<br>            <span class="hljs-attr">token</span>: token,<br>            <span class="hljs-attr">func</span>: func<br>        &#125;);<br>        <span class="hljs-keyword">return</span> token;<br>    &#125;;<br>    <span class="hljs-comment">// Unsubscribe from a specific</span><br>    <span class="hljs-comment">// topic, based on a tokenized reference</span><br>    <span class="hljs-comment">// to the subscription</span><br>    myObject.<span class="hljs-property">unsubscribe</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"> token </span>) &#123;<br>        <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> m <span class="hljs-keyword">in</span> topics ) &#123;<br>            <span class="hljs-keyword">if</span> ( topics[m] ) &#123;<br>                <span class="hljs-keyword">for</span> ( <span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>, j = topics[m].<span class="hljs-property">length</span>; i &lt; j; i++ ) &#123;<br>                    <span class="hljs-keyword">if</span> ( topics[m][i].<span class="hljs-property">token</span> === token ) &#123;<br>                        topics[m].<span class="hljs-title function_">splice</span>( i, <span class="hljs-number">1</span> );<br>                        <span class="hljs-keyword">return</span> token;<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;<br>    &#125;;<br>&#125;( pubsub ));<br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lovesong/p/5272752.html">设计模式（三）：观察者模式与发布&#x2F;订阅模式区别</a></p>
+
   </div>
   <div>
     
@@ -597,13 +614,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/26/fromTheV8SourceCodeAnalysisOfAJSArrayMemoryFootprint/" 
+        href="/2022/09/26/22092617/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">从V8源码分析一个JS数组的内存占用问题 </div>
+            <div class="nav-title">Javascript类型与类型判断 </div>
           
         </div>
       </a>
@@ -635,7 +652,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">观察者模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E5%B8%83-x2F-%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">发布&#x2F;订阅模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95"><span class="toc-text">附录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -649,7 +666,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">观察者模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%91%E5%B8%83-x2F-%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F"><span class="toc-text">发布&#x2F;订阅模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95"><span class="toc-text">附录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -665,22 +682,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem1/"><div class="recent-posts-item-content">操作系统期末考试——1</div></a>
+        <a href="/2022/09/26/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem2/"><div class="recent-posts-item-content">操作系统期末考试——2</div></a>
+        <a href="/2022/09/26/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem3/"><div class="recent-posts-item-content">操作系统期末考试——3</div></a>
+        <a href="/2022/09/26/webMessaging/"><div class="recent-posts-item-content">网页消息通信</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theOperatingSystem4/"><div class="recent-posts-item-content">操作系统期末考试——4</div></a>
+        <a href="/2022/09/26/webpackConfigurationOptimizationWithDetails/"><div class="recent-posts-item-content">Webpack配置优化与详情</div></a>
       </div>
     
   </div>
