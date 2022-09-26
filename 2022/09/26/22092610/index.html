@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>斐波那契js的四种实现方法</title>
+  <title>探索parseInt() 的神秘行为：parseInt(0.0000005) =＞ 5</title>
   
     
       <meta 
         property="og:title" 
-        content="斐波那契js的四种实现方法">
+        content="探索parseInt() 的神秘行为：parseInt(0.0000005) =＞ 5">
     
     
       <meta 
@@ -58,10 +58,6 @@
           <meta 
             property="og:article:tag" 
             content="js">
-        
-          <meta 
-            property="og:article:tag" 
-            content="算法">
         
       
     
@@ -346,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E7%A5%9E%E7%A7%98%E8%A1%8C%E4%B8%BA"><span class="toc-text">parseInt（）的神秘行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E5%A5%A5%E7%A7%98"><span class="toc-text">探索parseInt（）的奥秘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -454,15 +450,15 @@
       </a>
     
       <a 
-        href="/tags/%E7%AE%97%E6%B3%95/" 
-        title="算法">
-        <div class="tags-list-item">算法</div>
-      </a>
-    
-      <a 
         href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
         title="浏览器">
         <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
       </a>
     
       <a 
@@ -525,14 +521,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      斐波那契js的四种实现方法
+      探索parseInt() 的神秘行为：parseInt(0.0000005) =＞ 5
     </h1>
   </header>
   <div class="post-meta post-show-meta">
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092610.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T06:43:34.179Z">
+    <time datetime="2022-09-26T07:02:37.442Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -551,7 +547,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>755 字</span>
     
   </div>
   
@@ -571,15 +567,6 @@
             js
           </a>
         
-          
-            <span class="dot"></span>
-          
-          <a 
-            href="/tags/%E7%AE%97%E6%B3%95/" 
-            class="post-meta-link">
-            算法
-          </a>
-        
       </div>
     </div>
   
@@ -587,7 +574,39 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>parseInt() 是 JavaScript 的内置函数，用于解析数字字符串中的整数。例如，从数字字符串中解析整数’100’：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> number = <span class="hljs-built_in">parseInt</span>(<span class="hljs-string">&#x27;100&#x27;</span>);<br>number; <span class="hljs-comment">// 100</span><br></code></pre>
+
+<p>如预期的那样，‘100’ 将被解析为 100。</p>
+<p>parseInt(numericalString, radix) 还接受第二个参数 radix，radix 是2-36之间的整数，表示被解析字符串的基数，最常见的是2、8、10 和 16，默认为 10，也就是十进制。</p>
+<p>让我们使用parseInt()解析基数2中的数字字符串：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> number = <span class="hljs-built_in">parseInt</span>(<span class="hljs-string">&#x27;100&#x27;</span>, <span class="hljs-number">2</span>);<br>number; <span class="hljs-comment">// 4</span><br></code></pre>
+
+<p>parseInt(‘100’, 2) 解析’ 100’ 为以 2 为基数的整数：因此，它返回值4（十进制）。</p>
+<h2 id="parseInt（）的神秘行为"><a href="#parseInt（）的神秘行为" class="headerlink" title="parseInt（）的神秘行为"></a>parseInt（）的神秘行为</h2><p>parseInt(numericalString) 的第一个参数如果不是字符串，将执行 ToString 操作注1将其转换为字符串，然后再将该字符串解析为整数值。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.5</span>);      <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.05</span>);     <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.005</span>);    <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.0005</span>);   <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.00005</span>);  <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.000005</span>); <span class="hljs-comment">// =&gt; 0</span><br></code></pre>
+
+<p>提取 float 之类的整数部分，例如 0.5，0.05 结果为0，这将按照我们预期的工作。</p>
+<p>但提取 0.0000005 的整数部分呢？</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.0000005</span>); <span class="hljs-comment">// =&gt; 5</span><br></code></pre>
+
+<p>parseInt() 将 float 解析 0.0000005 为… 5，有趣而又让人意外，那么为什么 parseInt(0.0000005) 会有这样的神秘行为？</p>
+<h2 id="探索parseInt（）的奥秘"><a href="#探索parseInt（）的奥秘" class="headerlink" title="探索parseInt（）的奥秘"></a>探索parseInt（）的奥秘</h2><p>让我们再次看一下 parseInt(numericalString) 第一个参数的作用：如果它不是字符串，则将其转换为字符串，然后进行解析，并返回解析后的整数。</p>
+<p>这可能是第一个线索。</p>
+<p>然后让我们尝试将浮点数手动转换为字符串表示形式：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">String</span>(<span class="hljs-number">0.5</span>);      <span class="hljs-comment">// =&gt; &#x27;0.5&#x27;</span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.05</span>);     <span class="hljs-comment">// =&gt; &#x27;0.05&#x27;</span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.005</span>);    <span class="hljs-comment">// =&gt; &#x27;0.05&#x27;</span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.0005</span>);   <span class="hljs-comment">// =&gt; &#x27;0.005&#x27; </span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.00005</span>);  <span class="hljs-comment">// =&gt; &#x27;0.00005&#x27;</span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.000005</span>); <span class="hljs-comment">// =&gt; &#x27;0.000005&#x27;</span><br><span class="hljs-title class_">String</span>(<span class="hljs-number">0.0000005</span>); <span class="hljs-comment">// =&gt; ‘5e-7’</span><br></code></pre>
+
+<p>显式转换为字符串的String(0.0000005)行为与其他浮点数不同：它是指数表示法的字符串表示形式！</p>
+<p>第二个线索，当采用指数表示法解析为整数时，您将得到数字5：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">0.0000005</span>); <span class="hljs-comment">// =&gt; 5</span><br><span class="hljs-comment">// 类似于</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-number">5e-7</span>);      <span class="hljs-comment">// =&gt; 5</span><br><span class="hljs-comment">// 类似于</span><br><span class="hljs-built_in">parseInt</span>(<span class="hljs-string">&#x27;5e-7&#x27;</span>);    <span class="hljs-comment">// =&gt; 5</span><br></code></pre>
+<p>parseInt(‘5e-7’)考虑到第一个数字’5’，但跳过’e-7’。</p>
+<p>谜团已揭开！因为parseInt()总是将其第一个参数转换为字符串，所以小于10 -6的浮点数将以指数表示法编写。然后parseInt()从float的指数表示法中提取整数！</p>
+<p>附带说明一下，为了安全地提取浮点数的整数部分，建议使用以下Math.floor()函数：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.5</span>);      <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.05</span>);     <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.005</span>);    <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.0005</span>);   <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.00005</span>);  <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.000005</span>); <span class="hljs-comment">// =&gt; 0</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(<span class="hljs-number">0.0000005</span>); <span class="hljs-comment">// =&gt; 0</span><br></code></pre>
+
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>parseInt() 是将数字字符串解析为整数的函数，尝试提取浮点数的整数部分时必须小心使用 parseInt()，防止出现意想不到的结果。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_30071415/article/details/117127187">探索parseInt() 的神秘行为：parseInt(0.0000005) &#x3D;＞ 5</a></p>
+
   </div>
   <div>
     
@@ -635,7 +654,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E7%A5%9E%E7%A7%98%E8%A1%8C%E4%B8%BA"><span class="toc-text">parseInt（）的神秘行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E5%A5%A5%E7%A7%98"><span class="toc-text">探索parseInt（）的奥秘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -649,7 +668,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E7%A5%9E%E7%A7%98%E8%A1%8C%E4%B8%BA"><span class="toc-text">parseInt（）的神秘行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2parseInt%EF%BC%88%EF%BC%89%E7%9A%84%E5%A5%A5%E7%A7%98"><span class="toc-text">探索parseInt（）的奥秘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -665,22 +684,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theScrollBar/"><div class="recent-posts-item-content">记一次关于滚动条的bug</div></a>
+        <a href="/2022/09/26/principleOfCDN/"><div class="recent-posts-item-content">CDN原理详解</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/theTitleWheels/"><div class="recent-posts-item-content">一个浮动的标题</div></a>
+        <a href="/2022/09/26/pureCSSToDrawTheBasicGraphics/"><div class="recent-posts-item-content">纯CSS画的基本图形（矩形、圆形、三角形、多边形、爱心、八卦等）</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/thereWasATimeWhenIWantedToGetOverIt/"><div class="recent-posts-item-content">曾经我也想过一了百了歌词</div></a>
+        <a href="/2022/09/26/quicklyGetStartedWithTokenLoginAuthentication/"><div class="recent-posts-item-content">快速上手Token登录认证</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-26</div>
-        <a href="/2022/09/26/thisScopeDetail/"><div class="recent-posts-item-content">javascript中的this作用域详解</div></a>
+        <a href="/2022/09/26/quikWebsite/"><div class="recent-posts-item-content">基于hexo+gitee快速建站</div></a>
       </div>
     
   </div>
