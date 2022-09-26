@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>HTML5离线存储原理</title>
+  <title>斐波那契js的四种实现方法</title>
   
     
       <meta 
         property="og:title" 
-        content="HTML5离线存储原理">
+        content="斐波那契js的四种实现方法">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/26/HTML5OfflineStoragePrinciple/index.html">
+        content="http://example.com/2022/09/26/22092609/index.html">
     
     
       <meta 
@@ -57,7 +57,11 @@
         
           <meta 
             property="og:article:tag" 
-            content="html">
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="算法">
         
       
     
@@ -342,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="toc-text">前言：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">原理和环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E6%B8%85%E5%8D%95"><span class="toc-text">解析清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-MANIFEST"><span class="toc-text">CACHE MANIFEST</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NETWORK"><span class="toc-text">NETWORK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FALLBACK"><span class="toc-text">FALLBACK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E7%BC%93%E5%AD%98"><span class="toc-text">更新缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a></li></ol>
+
       </div>
     </article>
   
@@ -521,14 +525,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      HTML5离线存储原理
+      斐波那契js的四种实现方法
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/HTML5OfflineStoragePrinciple.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092609.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T06:36:47.899Z">
+    <time datetime="2022-09-26T06:36:47.895Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -547,7 +551,7 @@
     
     
       <span class="dot"></span>
-      <span>1k 字</span>
+      <span>0 字</span>
     
   </div>
   
@@ -562,9 +566,18 @@
         
           
           <a 
-            href="/tags/html/" 
+            href="/tags/js/" 
             class="post-meta-link">
-            html
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E7%AE%97%E6%B3%95/" 
+            class="post-meta-link">
+            算法
           </a>
         
       </div>
@@ -574,52 +587,7 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h2><p>使用HTML5，通过创建cache manifest文件，可轻松创建web应用的离线版本。<br>HTML5引入了应用程序缓存，这意味着web应用可进行缓存，并可在没有网络时进行访问。<br>应用程序缓存为应用带来三个优势：</p>
-<ul>
-<li>离线浏览–用户可在离线时使用它们。</li>
-<li>速度–已经缓存的资源加载得更快。</li>
-<li>减少服务器负载–浏览器将只从服务器下载更改过的资源。</li>
-</ul>
-<h2 id="原理和环境"><a href="#原理和环境" class="headerlink" title="原理和环境"></a>原理和环境</h2><p>如上面提到的HTML5的离线存储是基于一个新建的.appcache文件的，通过这个文件上的解析清单离线存储资源，这些资源就会像cookie一样被存储了下来。之后当网络在处于离线状态下时，浏览器会通过被离线存储的数据进行页面展示。</p>
-<p>就像cookie一样，html5的离线存储也需要服务器环境。</p>
-<h2 id="解析清单"><a href="#解析清单" class="headerlink" title="解析清单"></a>解析清单</h2><p>在开始之前要先了解下manifest（即.appcache文件），上面的解析清单要怎么写。</p>
-<p>manifest 文件是简单的文本文件，它告知浏览器被缓存的内容（以及不缓存的内容）。</p>
-<p>manifest 文件可分为三个部分：</p>
-<ul>
-<li>CACHE MANIFEST - 在此标题下列出的文件将在首次下载后进行缓存</li>
-<li>NETWORK - 在此标题下列出的文件需要与服务器的连接，且不会被缓存</li>
-<li>FALLBACK - 在此标题下列出的文件规定当页面无法访问时的回退页面（比如 404 页面）</li>
-</ul>
-<p>在线的情况下,用户代理每次访问页面，都会去读一次manifest.如果发现其改变, 则重新加载全部清单中的资源。</p>
-<h2 id="CACHE-MANIFEST"><a href="#CACHE-MANIFEST" class="headerlink" title="CACHE MANIFEST"></a>CACHE MANIFEST</h2><p>第一行，CACHE MANIFEST，是必需的：</p>
-<p><code>CACHE MANIFEST /theme.css /logo.gif /main.js</code></p>
-<p>上面的 manifest 文件列出了三个资源：一个 CSS 文件，一个 GIF 图像，以及一个 JavaScript 文件。当 manifest 文件加载后，浏览器会从网站的根目录下载这三个文件。然后，无论用户何时与因特网断开连接，这些资源依然是可用的。</p>
-<h2 id="NETWORK"><a href="#NETWORK" class="headerlink" title="NETWORK"></a>NETWORK</h2><p>白名单，使用通配符”*”. 则会进入白名单的open状态. 这种状态下.所有不在相关Cache区域出现的url都默认使用HTTP相关缓存头策略.</p>
-<p>下面的 NETWORK 小节规定文件 “login.asp” 永远不会被缓存，且离线时是不可用的，即：<code>NETWORK: login.asp</code></p>
-<p>可以使用*来指示所有其他资源&#x2F;文件都需要因特网连接，即：<code>NETWORK: *</code></p>
-<h2 id="FALLBACK"><a href="#FALLBACK" class="headerlink" title="FALLBACK"></a>FALLBACK</h2><p>下面的 FALLBACK 小节规定如果无法建立因特网连接，则用 “offline.html” 替代 &#x2F;html5&#x2F; 目录中的所有文件：</p>
-<p><code>ALLBACK：/html5/ /404.html</code></p>
-<p>注释：第一个 URI 是资源，第二个是替补。</p>
-<h2 id="更新缓存"><a href="#更新缓存" class="headerlink" title="更新缓存"></a>更新缓存</h2><p>一旦应用被缓存，它就会保持缓存直到发生下列情况：</p>
-<ul>
-<li>用户清空浏览器缓存</li>
-<li>manifest 文件被修改</li>
-<li>由程序来更新应用缓存</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
-<li>站点离线存储的容量限制是5M</li>
-<li>如果manifest文件，或者内部列举的某一个文件不能正常下载，整个更新过程将视为失败，浏览器继续全部使用老的缓存</li>
-<li>引用manifest的html必须与manifest文件同源，在同一个域下</li>
-<li>在manifest中使用的相对路径，相对参照物为manifest文件</li>
-<li>CACHE MANIFEST字符串应在第一行，且必不可少</li>
-<li>系统会自动缓存引用清单文件的 HTML 文件</li>
-<li>manifest文件中CACHE则与NETWORK，FALLBACK的位置顺序没有关系，如果是隐式声明需要在最前面</li>
-<li>FALLBACK中的资源必须和manifest文件同源</li>
-<li>当一个资源被缓存后，该浏览器直接请求这个绝对路径也会访问缓存中的资源。</li>
-<li>站点中的其他页面即使没有设置manifest属性，请求的资源如果在缓存中也从缓存中访问</li>
-<li>当manifest文件发生改变时，资源请求本身也会触发更新</li>
-</ul>
-
+    
   </div>
   <div>
     
@@ -629,13 +597,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/26/GitHubStyleRandomAvatarsAPI/" 
+        href="/2022/09/26/22092608/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">GitHub 风格随机头像 API </div>
+            <div class="nav-title">Vue事件总线（EventBus）使用详细介绍 </div>
           
         </div>
       </a>
@@ -644,12 +612,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/26/HTML5StorageMode/" 
+        href="/2022/09/26/3WaysCSSCanHideScrollbarsAndScrollContent/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">HTML5存储方式 </div>
+            <div class="nav-title">3种方法实现CSS隐藏滚动条并可以滚动内容 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -667,7 +635,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="toc-text">前言：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">原理和环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E6%B8%85%E5%8D%95"><span class="toc-text">解析清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-MANIFEST"><span class="toc-text">CACHE MANIFEST</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NETWORK"><span class="toc-text">NETWORK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FALLBACK"><span class="toc-text">FALLBACK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E7%BC%93%E5%AD%98"><span class="toc-text">更新缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a></li></ol>
+
 </div>
             </main>
             <aside class="right-column">
@@ -681,7 +649,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80%EF%BC%9A"><span class="toc-text">前言：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E7%90%86%E5%92%8C%E7%8E%AF%E5%A2%83"><span class="toc-text">原理和环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E6%B8%85%E5%8D%95"><span class="toc-text">解析清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-MANIFEST"><span class="toc-text">CACHE MANIFEST</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NETWORK"><span class="toc-text">NETWORK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#FALLBACK"><span class="toc-text">FALLBACK</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E7%BC%93%E5%AD%98"><span class="toc-text">更新缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">注意事项</span></a></li></ol>
+
     </article>
   
   
