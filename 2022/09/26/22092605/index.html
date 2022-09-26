@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>Vue 之 Mixins （混入）</title>
+  <title>HTTP 和 HTTPS 的区别（面试常考题）</title>
   
     
       <meta 
         property="og:title" 
-        content="Vue 之 Mixins （混入）">
+        content="HTTP 和 HTTPS 的区别（面试常考题）">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/26/22092101/index.html">
+        content="http://example.com/2022/09/26/22092605/index.html">
     
     
       <meta 
@@ -57,7 +57,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="vue">
+            content="网络原理">
         
       
     
@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%AE%9E%E4%BE%8B"><span class="toc-text">基础实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6"><span class="toc-text">合并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E5%86%85"><span class="toc-text">数据对象内</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">钩子函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%80%BC%E4%B8%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%80%89%E9%A1%B9"><span class="toc-text">值为对象的选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%B7%B7%E5%85%A5"><span class="toc-text">全局混入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
       </div>
     </article>
   
@@ -521,14 +521,14 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      Vue 之 Mixins （混入）
+      HTTP 和 HTTPS 的区别（面试常考题）
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092101.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092605.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-26T03:31:22.506Z">
+    <time datetime="2022-09-26T03:31:22.510Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -547,7 +547,7 @@
     
     
       <span class="dot"></span>
-      <span>1k 字</span>
+      <span>798 字</span>
     
   </div>
   
@@ -562,9 +562,9 @@
         
           
           <a 
-            href="/tags/vue/" 
+            href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
             class="post-meta-link">
-            vue
+            网络原理
           </a>
         
       </div>
@@ -574,36 +574,21 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Mixins是一种分发Vue组件中可复用功能的非常灵活的一种方式。</p>
-<p>那么页面的风格不用，但是执行的方法和需要的数据类似，我们是选择每个都写呢还是提取出公共部分呢？</p>
-<h2 id="基础实例"><a href="#基础实例" class="headerlink" title="基础实例"></a>基础实例</h2><p>我们有一对不同的组件，它们的作用是切换一个状态布尔值，一个模态框和一个提示框。这些提示框和模态框除了在功能上，没有其他共同点：它们看起来不一样，用法不一样，但是逻辑一样。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 模态框</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Modal</span> = &#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;#modal&#x27;</span>,<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">isShowing</span>: <span class="hljs-literal">false</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-title function_">toggleShow</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">isShowing</span> = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">isShowing</span>;<br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">components</span>: &#123;<br>    <span class="hljs-attr">appChild</span>: <span class="hljs-title class_">Child</span><br>  &#125;<br>&#125;<br></code></pre>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 提示框</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Tooltip</span> = &#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;#tooltip&#x27;</span>,<br>  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">isShowing</span>: <span class="hljs-literal">false</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-title function_">toggleShow</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">isShowing</span> = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">isShowing</span>;<br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">components</span>: &#123;<br>    <span class="hljs-attr">appChild</span>: <span class="hljs-title class_">Child</span><br>  &#125;<br>&#125;<br></code></pre>
-<p>解决办法如下：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> toggle = &#123;<br>    data () &#123;<br>        <span class="hljs-attr">isshowing</span>: <span class="hljs-literal">false</span><br>    &#125;,<br>    <span class="hljs-attr">methods</span>: &#123;<br>        <span class="hljs-title function_">toggleShow</span>(<span class="hljs-params"></span>) &#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">isshowing</span> = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">isshowing</span><br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 下面即可使用了</span><br><span class="hljs-comment">// mixins: [变量名]</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Modal</span> = &#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;#modal&#x27;</span>,<br>  <span class="hljs-attr">mixins</span>: [toggle],<br>  <span class="hljs-attr">components</span>: &#123;<br>    <span class="hljs-attr">appChild</span>: <span class="hljs-title class_">Child</span><br>  &#125;<br>&#125;;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">Tooltip</span> = &#123;<br>  <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;#tooltip&#x27;</span>,<br>  <span class="hljs-attr">mixins</span>: [toggle],<br>  <span class="hljs-attr">components</span>: &#123;<br>    <span class="hljs-attr">appChild</span>: <span class="hljs-title class_">Child</span><br>  &#125;<br>&#125;;<br></code></pre>
-
-<p>如果你是以vue-cli创建的项目来写，可以这样</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// mixin.js</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> toggle = &#123;<br>    data () &#123;<br>        <span class="hljs-attr">isshowing</span>: <span class="hljs-literal">false</span><br>    &#125;,<br>    <span class="hljs-attr">methods</span>: &#123;<br>        <span class="hljs-title function_">toggleShow</span>(<span class="hljs-params"></span>) &#123;<br>            <span class="hljs-variable language_">this</span>.<span class="hljs-property">isshowing</span> = !<span class="hljs-variable language_">this</span>.<span class="hljs-property">isshowing</span><br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-comment">// modal.vue</span><br><span class="hljs-comment">// 将mixin引入该组件，就可以直接使用 toggleShow() 了</span><br><span class="hljs-keyword">import</span> &#123;mixin&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../mixin.js&#x27;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;<br>    <span class="hljs-attr">mixins</span>: [mixin],<br>    mounted () &#123;<br>        <br>    &#125;<br>&#125;<br><span class="hljs-comment">// tooltip组件同上</span><br></code></pre>
-
-<h2 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h2><p>当组件和混入对象含有同名选项时，这些选项将以恰当的方式混合。</p>
-<h3 id="数据对象内"><a href="#数据对象内" class="headerlink" title="数据对象内"></a>数据对象内</h3><p>mixin的数据对象和组件的数据发生冲突时以组件数据优先。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> mixin = &#123;<br>  <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;hello&#x27;</span>,<br>      <span class="hljs-attr">foo</span>: <span class="hljs-string">&#x27;abc&#x27;</span><br>    &#125;<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">mixins</span>: [mixin],<br>  <span class="hljs-attr">data</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;goodbye&#x27;</span>,<br>      <span class="hljs-attr">bar</span>: <span class="hljs-string">&#x27;def&#x27;</span><br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$data</span>)<br>    <span class="hljs-comment">// =&gt; &#123; message: &quot;goodbye&quot;, foo: &quot;abc&quot;, bar: &quot;def&quot; &#125;</span><br>  &#125;<br>&#125;)<br></code></pre>
-
-<h3 id="钩子函数"><a href="#钩子函数" class="headerlink" title="钩子函数"></a>钩子函数</h3><p>同名钩子函数将会混合为一个数组，都将被调用到，但是混入对象的钩子将在组件自身钩子之前调用。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> mixin = &#123;<br>  <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;混入对象的钩子被调用&#x27;</span>)<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">mixins</span>: [mixin],<br>  <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;组件钩子被调用&#x27;</span>)<br>  &#125;<br>&#125;)<br><br><span class="hljs-comment">// =&gt; &quot;混入对象的钩子被调用&quot;</span><br><span class="hljs-comment">// =&gt; &quot;组件钩子被调用&quot;</span><br></code></pre>
-
-<h3 id="值为对象的选项"><a href="#值为对象的选项" class="headerlink" title="值为对象的选项"></a>值为对象的选项</h3><p>值为对象的选项，例如 methods, components 和 directives，将被混合为同一个对象。两个对象键名冲突时，取组件对象的键值对。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> mixin = &#123;<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-attr">foo</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;foo&#x27;</span>)<br>    &#125;,<br>    <span class="hljs-attr">conflicting</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;from mixin&#x27;</span>)<br>    &#125;<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">var</span> vm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">mixins</span>: [mixin],<br>  <span class="hljs-attr">methods</span>: &#123;<br>    <span class="hljs-attr">bar</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;bar&#x27;</span>)<br>    &#125;,<br>    <span class="hljs-attr">conflicting</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;from self&#x27;</span>)<br>    &#125;<br>  &#125;<br>&#125;)<br><br>vm.<span class="hljs-title function_">foo</span>() <span class="hljs-comment">// =&gt; &quot;foo&quot;</span><br>vm.<span class="hljs-title function_">bar</span>() <span class="hljs-comment">// =&gt; &quot;bar&quot;</span><br>vm.<span class="hljs-title function_">conflicting</span>() <span class="hljs-comment">// =&gt; &quot;from self&quot;</span><br></code></pre>
-
-<h2 id="全局混入"><a href="#全局混入" class="headerlink" title="全局混入"></a>全局混入</h2><p>全局混合被注册到了每个单一组件上。因此，它们的使用场景极其有限并且要非常的小心。一个我能想到的用途就是它像一个插件，你需要赋予它访问所有东西的权限。但即使在这种情况下，也不建议这么做，还是十分危险的。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">mixin</span>(&#123;<br>    <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;我是mixin&quot;</span>);<br>    &#125;<br>&#125;)<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>    ...<br>&#125;)<br></code></pre>
-
-<p>此个<code>console.log</code>将会出现在每个组件上。这种情况还不算坏（除了控制台上有多余的输出），但如果它被错误的使用，它是十分有害的。</p>
-<p>一个使用合理的例子</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 为自定义的选项 &#x27;myOption&#x27; 注入一个处理器。</span><br><span class="hljs-title class_">Vue</span>.<span class="hljs-title function_">mixin</span>(&#123;<br>  <span class="hljs-attr">created</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">var</span> myOption = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$options</span>.<span class="hljs-property">myOption</span><br>    <span class="hljs-keyword">if</span> (myOption) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(myOption)<br>    &#125;<br>  &#125;<br>&#125;)<br><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">myOption</span>: <span class="hljs-string">&#x27;hello!&#x27;</span><br>&#125;)<br><span class="hljs-comment">// =&gt; &quot;hello!&quot;</span><br></code></pre>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>混合对于封装一小段想要复用的代码来讲是有用的。对你来说它们当然不是唯一可行的。混合很好，它不需要传递状态，但是这种模式当然也可能会被滥用。所以我们还是需要仔细斟酌使用喽！！</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><img src="https://v2.cn.vuejs.org/v2/guide/mixins.html#%E5%9F%BA%E7%A1%80" alt="vue文档" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://v2.cn.vuejs.org/v2/guide/mixins.html#%E5%9F%BA%E7%A1%80" class="lozad post-image"></p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>无论是在校学习还是找工作的时候，老师和面试官都问过同学 HTTP 和 HTTPS 的区别。平时上网的时候也没有关注这个问题，只是知道计算机网络里 HTTP 的概念，所以最近才查资料好好补补这一块。其实这一块的知识延伸很广，如果之前不太了解加密算法和 SSL 协议，可以在学习了这个问题的基础上再做研究。</p>
+<p>一、HTTP 和 HTTPS 的基本概念<br>HTTP ：超文本传输协议（HTTP，HyperText Transfer Protocol）是互联网上应用最为广泛的一种网络协议。设计 HTTP 最初的目的是为了提供一种发布和接收 HTML 页面的方法。它可以使浏览器更加高效。HTTP 协议是以明文方式发送信息的，如果黑客截取了 Web 浏览器和服务器之间的传输报文，就可以直接获得其中的信息。</p>
+<p>HTTP 原理：</p>
+<ol>
+<li>客户端的浏览器首先要通过网络与服务器建立连接，该连接是通过 TCP 来完成的，一般 TCP 连接的端口号是80。 建立连接后，客户机发送一个请求给服务器，请求方式的格式为：统一资源标识符（URI）、协议版本号，后边是 MIME 信息包括请求修饰符、客户机信息和许可内容。</li>
+<li>服务器接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边是 MIME 信息包括服务器信息、实体信息和可能的内容。</li>
+</ol>
+<p>HTTPS ：是以安全为目标的 HTTP 通道，是 HTTP 的安全版。HTTPS 的安全基础是 SSL。SSL 协议位于 TCP&#x2F;IP 协议与各种应用层协议之间，为数据通讯提供安全支持。SSL 协议可分为两层：SSL 记录协议（SSL Record Protocol），它建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL 握手协议（SSL Handshake Protocol），它建立在 SSL 记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b2c5dc51-b5ac-4ce4-bb8c-c2e3a27cb457-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b2c5dc51-b5ac-4ce4-bb8c-c2e3a27cb457-3807603.jpg"></p>
+<p>HTTPS 设计目标：</p>
+<ol>
+<li>数据保密性：保证数据内容在传输的过程中不会被第三方查看。就像快递员传递包裹一样，都进行了封装，别人无法获知里面装了什么 。</li>
+<li>数据完整性：及时发现被第三方篡改的传输内容。就像快递员虽然不知道包裹里装了什么东西，但他有可能中途掉包，数据完整性就是指如果被掉包，我们能轻松发现并拒收 。</li>
+<li>身份校验安全性：保证数据到达用户期望的目的地。就像我们邮寄包裹时，虽然是一个封装好的未掉包的包裹，但必须确定这个包裹不会送错地方，通过身份校验来确保送对了地方 。</li>
+</ol>
 
   </div>
   <div>
@@ -614,13 +599,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/26/22092009/" 
+        href="/2022/09/26/22092604/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">vue @click.native和@click.stop和@click.self </div>
+            <div class="nav-title">100个网络基础知识 </div>
           
         </div>
       </a>
@@ -629,12 +614,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/26/22092102/" 
+        href="/2022/09/26/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">vue组件之间互相传值：兄弟组件通信 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -652,7 +637,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%AE%9E%E4%BE%8B"><span class="toc-text">基础实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6"><span class="toc-text">合并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E5%86%85"><span class="toc-text">数据对象内</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">钩子函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%80%BC%E4%B8%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%80%89%E9%A1%B9"><span class="toc-text">值为对象的选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%B7%B7%E5%85%A5"><span class="toc-text">全局混入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -666,7 +651,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E5%AE%9E%E4%BE%8B"><span class="toc-text">基础实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6"><span class="toc-text">合并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E5%86%85"><span class="toc-text">数据对象内</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">钩子函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%80%BC%E4%B8%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E9%80%89%E9%A1%B9"><span class="toc-text">值为对象的选项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%B7%B7%E5%85%A5"><span class="toc-text">全局混入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
     </article>
   
   
