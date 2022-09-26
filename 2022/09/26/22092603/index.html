@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>vue早期源码学习系列之一：如何监听一个对象的变化</title>
+  <title>二叉树入门</title>
   
     
       <meta 
         property="og:title" 
-        content="vue早期源码学习系列之一：如何监听一个对象的变化">
+        content="二叉树入门">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/26/22092313/index.html">
+        content="http://example.com/2022/09/26/22092603/index.html">
     
     
       <meta 
@@ -61,7 +61,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="vue">
+            content="算法">
         
       
     
@@ -346,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%89%B9%E6%AE%8A%E7%B1%BB%E5%9E%8B"><span class="toc-text">一些特殊类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="toc-text">相关术语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86"><span class="toc-text">二叉树的遍历</span></a></li></ol>
       </div>
     </article>
   
@@ -525,11 +525,11 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      vue早期源码学习系列之一：如何监听一个对象的变化
+      二叉树入门
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092313.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092603.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
     <time datetime="2022-09-26T03:06:29.945Z">
@@ -551,7 +551,7 @@
     
     
       <span class="dot"></span>
-      <span>976 字</span>
+      <span>874 字</span>
     
   </div>
   
@@ -575,9 +575,9 @@
             <span class="dot"></span>
           
           <a 
-            href="/tags/vue/" 
+            href="/tags/%E7%AE%97%E6%B3%95/" 
             class="post-meta-link">
-            vue
+            算法
           </a>
         
       </div>
@@ -587,23 +587,31 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们都知道，要想精通前端领域，研究分析成熟的框架是必不可少的一步。很多人可能都有这样的体会：“很努力地去阅读一些热门框架的源码，但是发现难度太高，花了很多时间却得不到什么，最终不得不放弃。”<br>我也一直被这个问题困扰，直到我想到了这样的一个方法。<br>从成熟框架的早期源码开始看起，从作者的第一个commit开始看起，然后逐个的往前翻。这样一开始的代码量不多，多看几遍还是可以理解的。而且在这个过程中，就像电影回放一样，我们可以看到作者先写什么，后写什么，在哪些地方进行了什么样的改良，其中又不小心引入了什么bug，等等。<br>这真的是一个很好的办法。所以，我就用这个方法来研究vue的源码。</p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p>我<a target="_blank" rel="noopener" href="https://github.com/vuejs/vue/tree/706c67d1d013577fdbfab258bca78557419cba7c">checkout</a>到的版本是这个，在这个版本中，我们可以发现：代码中主要是observer和emitter这些东西，这些是以后实现数据绑定以及$watch的关键基础。所以我们把本篇的学习目标定位为：“如何监听一个对象的变化” </p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>我们有两个难点需要解决。</p>
-<p>第一：当对象的某个属性变化的时候，如何触发自定义的回调函数？<br>答案：ES5中新添加了一个方法：<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a>，通过这个方法，可以自定义getter和setter函数，从而在获取对象属性和设置对象属性的时候能够执行自定义的回调函数。</p>
-<p>第二：对象往往是一个深层次的结构，对象的某个属性可能仍然是一个对象，这种情况怎么处理？<br>比如说</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> data = &#123;<br>    <span class="hljs-attr">user</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;liangshaofeng&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-string">&quot;24&quot;</span><br>    &#125;,<br>    <span class="hljs-attr">address</span>: &#123;<br>        <span class="hljs-attr">city</span>: <span class="hljs-string">&quot;beijing&quot;</span><br>    &#125;<br>&#125;;<br></code></pre>
-
-<p>答案：递归算法，也就是下面代码中的walk函数。如果对象的属性仍然是一个对象的话，那么继续new一个Observer，直到到达最底层的属性位置。</p>
-<p>下面是实现的具体代码。</p>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 观察者构造函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Observer</span>(<span class="hljs-params">data</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span> = data;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">walk</span>(data)<br>&#125;<br><br><span class="hljs-keyword">let</span> p = <span class="hljs-title class_">Observer</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>;<br><br><span class="hljs-comment">// 此函数用于深层次遍历对象的各个属性</span><br><span class="hljs-comment">// 采用的是递归的思路</span><br><span class="hljs-comment">// 因为我们要为对象的每一个属性绑定getter和setter</span><br>p.<span class="hljs-property">walk</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">obj</span>) &#123;<br>    <span class="hljs-keyword">let</span> val;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;<br>        <span class="hljs-comment">// 这里为什么要用hasOwnProperty进行过滤呢？</span><br>        <span class="hljs-comment">// 因为for...in 循环会把对象原型链上的所有可枚举属性都循环出来</span><br>        <span class="hljs-comment">// 而我们想要的仅仅是这个对象本身拥有的属性，所以要这么做。</span><br>        <span class="hljs-keyword">if</span> (obj.<span class="hljs-title function_">hasOwnProperty</span>(key)) &#123;<br>            val = obj[key];<br><br>            <span class="hljs-comment">// 这里进行判断，如果还没有遍历到最底层，继续new Observer</span><br>            <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> val === <span class="hljs-string">&#x27;object&#x27;</span>) &#123;<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observer</span>(val);<br>            &#125;<br><br>            <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">convert</span>(key, val);<br>        &#125;<br>    &#125;<br>&#125;;<br><br>p.<span class="hljs-property">convert</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">key, val</span>) &#123;<br>    <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>, key, &#123;<br>        <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>        <span class="hljs-attr">get</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;你访问了&#x27;</span> + key);<br>            <span class="hljs-keyword">return</span> val<br>        &#125;,<br>        <span class="hljs-attr">set</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">newVal</span>) &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;你设置了&#x27;</span> + key);<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;新的&#x27;</span> + key + <span class="hljs-string">&#x27; = &#x27;</span> + newVal)<br>            <span class="hljs-keyword">if</span> (newVal === val) <span class="hljs-keyword">return</span>;<br>            val = newVal<br>        &#125;<br>    &#125;)<br>&#125;;<br><br><span class="hljs-keyword">let</span> data = &#123;<br>    <span class="hljs-attr">user</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;liangshaofeng&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-string">&quot;24&quot;</span><br>    &#125;,<br>    <span class="hljs-attr">address</span>: &#123;<br>        <span class="hljs-attr">city</span>: <span class="hljs-string">&quot;beijing&quot;</span><br>    &#125;<br>&#125;;<br><br><span class="hljs-keyword">let</span> app = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observer</span>(data);<br></code></pre>
-
-<h2 id="遗留问题"><a href="#遗留问题" class="headerlink" title="遗留问题"></a>遗留问题</h2><p>上面实现的代码还有很多问题。<br>比如：</p>
-<ol>
-<li>只监听的对象的变化，没有处理数组的变化。</li>
-<li>当你重新set的属性是对象的话，那么新set的对象里面的属性不能调用getter和setter。比如像下图所示，重新设置的job属性就不在带有自定义的getter和setter了，不再提示“你访问了job”这些字样。</li>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>二叉树是每个节点最多只有两个分支的树结构。通常分支被称作“左子树”或“右子树”。二叉树的分支具有左右次序，不能随意颠倒。</p>
+<p>二叉树是指树中节点的度不大于2的有序树，它是一种最简单且最重要的树。二叉树的递归定义为：二叉树是一棵空树，或者是一棵由一个根节点和两棵互不相交的，分别称作根的左子树和右子树组成的非空树；左子树和右子树又同样都是二叉树。</p>
+<h2 id="一些特殊类型"><a href="#一些特殊类型" class="headerlink" title="一些特殊类型"></a>一些特殊类型</h2><ol>
+<li>满二叉树：如果一棵二叉树只有度为0的结点和度为2的结点，并且度为0的结点在同一层上，则这棵二叉树为满二叉树。</li>
+<li>完全二叉树：深度为k，有n个结点的二叉树当且仅当其每一个结点都与深度为k的满二叉树中编号从1到n的结点一一对应时，称为完全二叉树。</li>
 </ol>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/22695144">vue早期源码学习系列之一：如何监听一个对象的变化</a></p>
+<p>完全二叉树的特点是叶子结点只可能出现在层序最大的两层上，并且某个结点的左分支下子孙的最大层序与右分支下子孙的最大层序相等或大1。</p>
+<h2 id="相关术语"><a href="#相关术语" class="headerlink" title="相关术语"></a>相关术语</h2><ol>
+<li>结点：包含一个数据元素及若干指向子树分支的信息。</li>
+<li>结点的度：一个结点拥有子树的数目称为结点的度。</li>
+<li>叶子结点：也称为终端结点，没有子树的结点或者度为零的结点。</li>
+<li>分支结点：也称为非终端结点，度不为零的结点称为非终端结点。</li>
+<li>树的度：树中所有结点的度的最大值。</li>
+<li>结点的层次：从根结点开始，假设根结点为第1层，根结点的子节点为第2层，依此类推，如果某一个结点位于第L层，则其子节点位于第L+1层。</li>
+<li>树的深度：也称为树的高度，树中所有结点的层次最大值称为树的深度。</li>
+<li>有序树：如果树中各棵子树的次序是有先后次序，则称该树为有序树。</li>
+<li>无序树：如果树中各棵子树的次序没有先后次序，则称该树为无序树。</li>
+<li>森林：由m（m≥0）棵互不相交的树构成一片森林。如果把一棵非空的树的根结点删除，则该树就变成了一片森林，森林中的树由原来根结点的各棵子树构成。</li>
+</ol>
+<h2 id="二叉树的遍历"><a href="#二叉树的遍历" class="headerlink" title="二叉树的遍历"></a>二叉树的遍历</h2><p>对于二叉树，有深度遍历和广度遍历，深度遍历有前序、中序以及后序三种遍历方法，广度遍历即我们平常所说的层次遍历。因为树的定义本身就是递归定义，因此采用递归的方法去实现树的三种遍历不仅容易理解而且代码很简洁，而对于广度遍历来说，需要其他数据结构的支撑，比如堆了。所以，对于一段代码来说，可读性有时候要比代码本身的效率要重要的多。</p>
+<p>四种主要的遍历思想为：</p>
+<p>前序遍历：根结点 —&gt; 左子树 —&gt; 右子树</p>
+<p>中序遍历：左子树—&gt; 根结点 —&gt; 右子树</p>
+<p>后序遍历：左子树 —&gt; 右子树 —&gt; 根结点</p>
+<p>层次遍历：只需按层次遍历即可</p>
 
   </div>
   <div>
@@ -614,13 +622,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/26/22092312/" 
+        href="/2022/09/26/22092602/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">watch死循环解决方法 </div>
+            <div class="nav-title">手摸手带你理解Vue的Watch原理 </div>
           
         </div>
       </a>
@@ -629,12 +637,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/26/22092314/" 
+        href="/2022/09/26/25ThingsAboutJavaScriptAndES/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">Vue.set()和this.$set()介绍 </div>
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -652,7 +660,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%89%B9%E6%AE%8A%E7%B1%BB%E5%9E%8B"><span class="toc-text">一些特殊类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="toc-text">相关术语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86"><span class="toc-text">二叉树的遍历</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -666,7 +674,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="toc-text">代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%81%97%E7%95%99%E9%97%AE%E9%A2%98"><span class="toc-text">遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%89%B9%E6%AE%8A%E7%B1%BB%E5%9E%8B"><span class="toc-text">一些特殊类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="toc-text">相关术语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86"><span class="toc-text">二叉树的遍历</span></a></li></ol>
     </article>
   
   
