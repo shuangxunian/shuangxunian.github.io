@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>MVVM原理</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="MVVM原理">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/27/22092704/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-27">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-27">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>233</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>47</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%82%B9"><span class="toc-text">重点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%83"><span class="toc-text">为什么是它</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-text">如何使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E9%80%A0MVVM"><span class="toc-text">打造MVVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8A%AB%E6%8C%81"><span class="toc-text">数据劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%A3%E7%90%86"><span class="toc-text">数据代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BC%96%E8%AF%91"><span class="toc-text">数据编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="toc-text">发布订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0%E8%A7%86%E5%9B%BE"><span class="toc-text">数据更新视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A"><span class="toc-text">双向数据绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed-%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7-amp-amp-mounted-%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">computed(计算属性) &amp;&amp; mounted(钩子函数)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-text">补充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">204</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      MVVM原理
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092704.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-27T06:04:45.560Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-27</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>众所周知当下是MVVM盛行的时代，从早期的Angular到现在的React和Vue，再从最初的三分天下到现在的两虎相争。</p>
+<p>无疑不给我们的开发带来了一种前所未有的新体验，告别了操作DOM的思维，换上了数据驱动页面的思想。</p>
+<h2 id="重点"><a href="#重点" class="headerlink" title="重点"></a>重点</h2><p>MVVM 双向数据绑定 在Angular1.x版本的时候通过的是脏值检测来处理，而现在无论是React还是Vue还是最新的Angular，其实实现方式都更相近了，那就是通过数据劫持+发布订阅模式。</p>
+<p>真正实现其实靠的也是ES5中提供的Object.defineProperty，当然这是不兼容的所以Vue等只支持了IE8+</p>
+<h3 id="为什么是它"><a href="#为什么是它" class="headerlink" title="为什么是它"></a>为什么是它</h3><p>Object.defineProperty() 说实在的我们大家在开发中确实用的不多，多数是修改内部特性，不过就是定义对象上的属性和值么？干嘛搞的这么费劲(纯属个人想法)，但是在实现框架或库的时候却发挥了大用场了，这个就不多说了，只不过轻舟一片而已，还没到写库的实力</p>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;&#125;;<br><span class="hljs-keyword">let</span> song = <span class="hljs-string">&#x27;发如雪&#x27;</span>; <br>obj.<span class="hljs-property">singer</span> = <span class="hljs-string">&#x27;周杰伦&#x27;</span>;  <br><br><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(obj, <span class="hljs-string">&#x27;music&#x27;</span>, &#123;<br>    <span class="hljs-comment">// 1. value: &#x27;七里香&#x27;,</span><br>    <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,     <span class="hljs-comment">// 2. 可以配置对象，删除属性</span><br>    <span class="hljs-comment">// writable: true,         // 3. 可以修改对象</span><br>    <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>,        <span class="hljs-comment">// 4. 可以枚举</span><br>    <span class="hljs-comment">// ☆ get,set设置时不能设置writable和value，它们代替了二者且是互斥的</span><br>    <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>) &#123;     <span class="hljs-comment">// 5. 获取obj.music的时候就会调用get方法</span><br>        <span class="hljs-keyword">return</span> song;<br>    &#125;,<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">val</span>) &#123;      <span class="hljs-comment">// 6. 将修改的值重新赋给song</span><br>        song = val;   <br>    &#125;<br>&#125;);<br><br><span class="hljs-comment">// 下面打印的部分分别是对应代码写入顺序执行</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);   <span class="hljs-comment">// &#123;singer: &#x27;周杰伦&#x27;, music: &#x27;七里香&#x27;&#125;  // 1</span><br><br><span class="hljs-keyword">delete</span> obj.<span class="hljs-property">music</span>;   <span class="hljs-comment">// 如果想对obj里的属性进行删除，configurable要设为true  2</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);   <span class="hljs-comment">// 此时为  &#123;singer: &#x27;周杰伦&#x27;&#125;</span><br><br>obj.<span class="hljs-property">music</span> = <span class="hljs-string">&#x27;听妈妈的话&#x27;</span>;   <span class="hljs-comment">// 如果想对obj的属性进行修改，writable要设为true  3</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);   <span class="hljs-comment">// &#123;singer: &#x27;周杰伦&#x27;, music: &quot;听妈妈的话&quot;&#125;</span><br><br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;    <br>    <span class="hljs-comment">// 默认情况下通过defineProperty定义的属性是不能被枚举(遍历)的</span><br>    <span class="hljs-comment">// 需要设置enumerable为true才可以</span><br>    <span class="hljs-comment">// 不然你是拿不到music这个属性的，你只能拿到singer</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(key);   <span class="hljs-comment">// singer, music    4</span><br>&#125;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">music</span>);   <span class="hljs-comment">// &#x27;发如雪&#x27;  5</span><br>obj.<span class="hljs-property">music</span> = <span class="hljs-string">&#x27;夜曲&#x27;</span>;       <span class="hljs-comment">// 调用set设置新的值</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">music</span>);   <span class="hljs-comment">// &#x27;夜曲&#x27;    6</span><br></code></pre>
+
+<p>以上是关于Object.defineProperty的用法</p>
+<p>下面我们来写个实例看看，这里我们以Vue为参照去实现怎么写MVVM</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-comment">&lt;!-- index.html --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;app&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>&#123;&#123;song&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>《&#123;&#123;album.name&#125;&#125;》是&#123;&#123;singer&#125;&#125;2005年11月发行的专辑<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>主打歌为&#123;&#123;album.theme&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>作词人为&#123;&#123;singer&#125;&#125;等人。<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>        为你弹奏肖邦的&#123;&#123;album.theme&#125;&#125;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-comment">&lt;!--实现的mvvm--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;mvvm.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">// 写法和Vue一样</span></span><br><span class="language-javascript">        <span class="hljs-keyword">let</span> mvvm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Mvvm</span>(&#123;</span><br><span class="language-javascript">            <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#app&#x27;</span>,</span><br><span class="language-javascript">            <span class="hljs-attr">data</span>: &#123;     <span class="hljs-comment">// Object.defineProperty(obj, &#x27;song&#x27;, &#x27;发如雪&#x27;);</span></span><br><span class="language-javascript">                <span class="hljs-attr">song</span>: <span class="hljs-string">&#x27;发如雪&#x27;</span>,</span><br><span class="language-javascript">                <span class="hljs-attr">album</span>: &#123;</span><br><span class="language-javascript">                    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;十一月的萧邦&#x27;</span>,</span><br><span class="language-javascript">                    <span class="hljs-attr">theme</span>: <span class="hljs-string">&#x27;夜曲&#x27;</span></span><br><span class="language-javascript">                &#125;,</span><br><span class="language-javascript">                <span class="hljs-attr">singer</span>: <span class="hljs-string">&#x27;周杰伦&#x27;</span></span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">        &#125;);</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br></code></pre>
+
+<p>上面是html里的写法，相信用过Vue的同学并不陌生</p>
+<p>那么现在就开始实现一个自己的MVVM吧</p>
+<h2 id="打造MVVM"><a href="#打造MVVM" class="headerlink" title="打造MVVM"></a>打造MVVM</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 创建一个Mvvm构造函数</span><br><span class="hljs-comment">// 这里用es6方法将options赋一个初始值，防止没传，等同于options || &#123;&#125;</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Mvvm</span>(<span class="hljs-params">options = &#123;&#125;</span>) &#123;   <br>    <span class="hljs-comment">// vm.$options Vue上是将所有属性挂载到上面</span><br>    <span class="hljs-comment">// 所以我们也同样实现,将所有属性挂载到了$options</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">$options</span> = options;<br>    <span class="hljs-comment">// this._data 这里也和Vue一样</span><br>    <span class="hljs-keyword">let</span> data = <span class="hljs-variable language_">this</span>.<span class="hljs-property">_data</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$options</span>.<span class="hljs-property">data</span>;<br>    <br>    <span class="hljs-comment">// 数据劫持</span><br>    <span class="hljs-title function_">observe</span>(data);<br>&#125;<br></code></pre>
+
+<h3 id="数据劫持"><a href="#数据劫持" class="headerlink" title="数据劫持"></a>数据劫持</h3><p>为什么要做数据劫持？</p>
+<ul>
+<li>观察对象，给对象增加Object.defineProperty</li>
+<li>vue特点是不能新增不存在的属性 不存在的属性没有get和set</li>
+<li>深度响应 因为每次赋予一个新对象时会给这个新对象增加defineProperty(数据劫持)</li>
+</ul>
+<p>多说无益，一起看代码</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 创建一个Observe构造函数</span><br><span class="hljs-comment">// 写数据劫持的主要逻辑</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Observe</span>(<span class="hljs-params">data</span>) &#123;<br>    <span class="hljs-comment">// 所谓数据劫持就是给对象增加get,set</span><br>    <span class="hljs-comment">// 先遍历一遍对象再说</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> data) &#123;     <span class="hljs-comment">// 把data属性通过defineProperty的方式定义属性</span><br>        <span class="hljs-keyword">let</span> val = data[key];<br>        <span class="hljs-title function_">observe</span>(val);   <span class="hljs-comment">// 递归继续向下找，实现深度的数据劫持</span><br>        <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(data, key, &#123;<br>            <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>            <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>) &#123;<br>                <span class="hljs-keyword">return</span> val;<br>            &#125;,<br>            <span class="hljs-title function_">set</span>(<span class="hljs-params">newVal</span>) &#123;   <span class="hljs-comment">// 更改值的时候</span><br>                <span class="hljs-keyword">if</span> (val === newVal) &#123;   <span class="hljs-comment">// 设置的值和以前值一样就不理它</span><br>                    <span class="hljs-keyword">return</span>;<br>                &#125;<br>                val = newVal;   <span class="hljs-comment">// 如果以后再获取值(get)的时候，将刚才设置的值再返回去</span><br>                <span class="hljs-title function_">observe</span>(newVal);    <span class="hljs-comment">// 当设置为新值后，也需要把新值再去定义成属性</span><br>            &#125;<br>        &#125;);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 外面再写一个函数</span><br><span class="hljs-comment">// 不用每次调用都写个new</span><br><span class="hljs-comment">// 也方便递归调用</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">observe</span>(<span class="hljs-params">data</span>) &#123;<br>    <span class="hljs-comment">// 如果不是对象的话就直接return掉</span><br>    <span class="hljs-comment">// 防止递归溢出</span><br>    <span class="hljs-keyword">if</span> (!data || <span class="hljs-keyword">typeof</span> data !== <span class="hljs-string">&#x27;object&#x27;</span>) <span class="hljs-keyword">return</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Observe</span>(data);<br>&#125;<br></code></pre>
+
+<p>以上代码就实现了数据劫持，不过可能也有些疑惑的地方比如：递归</p>
+<p>再来细说一下为什么递归吧，看这个栗子</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> mvvm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Mvvm</span>(&#123;<br>    <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#app&#x27;</span>,<br>    <span class="hljs-attr">data</span>: &#123;<br>        <span class="hljs-attr">a</span>: &#123;<br>            <span class="hljs-attr">b</span>: <span class="hljs-number">1</span><br>        &#125;,<br>        <span class="hljs-attr">c</span>: <span class="hljs-number">2</span><br>    &#125;<br>&#125;);<br></code></pre>
+
+<p>我们在控制台里看下</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e8e7b661-dfb1-4d89-bc0b-3b1922c3075a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/e8e7b661-dfb1-4d89-bc0b-3b1922c3075a-3807603.jpg"></p>
+<p>被标记的地方就是通过递归observe(val)进行数据劫持添加上了get和set，递归继续向a里面的对象去定义属性，亲测通过可放心食用</p>
+<p>接下来说一下observe(newVal)这里为什么也要递归</p>
+<p>还是在可爱的控制台上，敲下这么一段代码 <code>mvvm._data.a = &#123;b:’ok’&#125;</code></p>
+<p>然后继续看图说话</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/49b8d5bc-3352-40ed-8679-5dd2239dc1fc-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/49b8d5bc-3352-40ed-8679-5dd2239dc1fc-3807603.jpg"></p>
+<p>通过observe(newVal)加上了</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/e4d54501-2082-4d3a-9a8b-acb0fe183fcb-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/e4d54501-2082-4d3a-9a8b-acb0fe183fcb-3807603.jpg"></p>
+<p>现在大致明白了为什么要对设置的新值也进行递归observe了吧，哈哈，so easy</p>
+<p>数据劫持已完成，我们再做个数据代理</p>
+<h3 id="数据代理"><a href="#数据代理" class="headerlink" title="数据代理"></a>数据代理</h3><p>数据代理就是让我们每次拿data里的数据时，不用每次都写一长串，如mvvm._data.a.b这种，我们其实可以直接写成mvvm.a.b这种显而易见的方式</p>
+<p>下面继续看下去，+号表示实现部分</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Mvvm</span>(<span class="hljs-params">options = &#123;&#125;</span>) &#123;  <br>    <span class="hljs-comment">// 数据劫持</span><br>    <span class="hljs-title function_">observe</span>(data);<br>    <span class="hljs-comment">// this 代理了this._data</span><br>+   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> data) &#123;<br>        <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(<span class="hljs-variable language_">this</span>, key, &#123;<br>            <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>            <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>) &#123;<br>                <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_data</span>[key];     <span class="hljs-comment">// 如this.a = &#123;b: 1&#125;</span><br>            &#125;,<br>            <span class="hljs-title function_">set</span>(<span class="hljs-params">newVal</span>) &#123;<br>                <span class="hljs-variable language_">this</span>.<span class="hljs-property">_data</span>[key] = newVal;<br>            &#125;<br>        &#125;);<br>+   &#125;<br>&#125;<br><br><span class="hljs-comment">// 此时就可以简化写法了</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(mvvm.<span class="hljs-property">a</span>.<span class="hljs-property">b</span>);   <span class="hljs-comment">// 1</span><br>mvvm.<span class="hljs-property">a</span>.<span class="hljs-property">b</span> = <span class="hljs-string">&#x27;ok&#x27;</span>;    <br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(mvvm.<span class="hljs-property">a</span>.<span class="hljs-property">b</span>);  <span class="hljs-comment">// &#x27;ok&#x27;</span><br></code></pre>
+
+<p>写到这里数据劫持和数据代理都实现了，那么接下来就需要编译一下了，把 <code>&#123;&#123; &#125;&#125;</code> 里面的内容解析出来</p>
+<h3 id="数据编译"><a href="#数据编译" class="headerlink" title="数据编译"></a>数据编译</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Mvvm</span>(<span class="hljs-params">options = &#123;&#125;</span>) &#123;<br>    <span class="hljs-comment">// observe(data);</span><br>        <br>    <span class="hljs-comment">// 编译    </span><br>+   <span class="hljs-keyword">new</span> <span class="hljs-title class_">Compile</span>(options.<span class="hljs-property">el</span>, <span class="hljs-variable language_">this</span>);    <br>&#125;<br><br><span class="hljs-comment">// 创建Compile构造函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Compile</span>(<span class="hljs-params">el, vm</span>) &#123;<br>    <span class="hljs-comment">// 将el挂载到实例上方便调用</span><br>    vm.<span class="hljs-property">$el</span> = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelector</span>(el);<br>    <span class="hljs-comment">// 在el范围里将内容都拿到，当然不能一个一个的拿</span><br>    <span class="hljs-comment">// 可以选择移到内存中去然后放入文档碎片中，节省开销</span><br>    <span class="hljs-keyword">let</span> fragment = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">createDocumentFragment</span>();<br>    <br>    <span class="hljs-keyword">while</span> (child = vm.<span class="hljs-property">$el</span>.<span class="hljs-property">firstChild</span>) &#123;<br>        fragment.<span class="hljs-title function_">appendChild</span>(child);    <span class="hljs-comment">// 此时将el中的内容放入内存中</span><br>    &#125;<br>    <span class="hljs-comment">// 对el里面的内容进行替换</span><br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">replace</span>(<span class="hljs-params">frag</span>) &#123;<br>        <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(frag.<span class="hljs-property">childNodes</span>).<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">node</span> =&gt;</span> &#123;<br>            <span class="hljs-keyword">let</span> txt = node.<span class="hljs-property">textContent</span>;<br>            <span class="hljs-keyword">let</span> reg = <span class="hljs-regexp">/\&#123;\&#123;(.*?)\&#125;\&#125;/g</span>;   <span class="hljs-comment">// 正则匹配&#123;&#123;&#125;&#125;</span><br>            <br>            <span class="hljs-keyword">if</span> (node.<span class="hljs-property">nodeType</span> === <span class="hljs-number">3</span> &amp;&amp; reg.<span class="hljs-title function_">test</span>(txt)) &#123; <span class="hljs-comment">// 即是文本节点又有大括号的情况&#123;&#123;&#125;&#125;</span><br>                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">RegExp</span>.<span class="hljs-property">$1</span>); <span class="hljs-comment">// 匹配到的第一个分组 如： a.b, c</span><br>                <span class="hljs-keyword">let</span> arr = <span class="hljs-title class_">RegExp</span>.<span class="hljs-property">$1</span>.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>);<br>                <span class="hljs-keyword">let</span> val = vm;<br>                arr.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;<br>                    val = val[key];     <span class="hljs-comment">// 如this.a.b</span><br>                &#125;);<br>                <span class="hljs-comment">// 用trim方法去除一下首尾空格</span><br>                node.<span class="hljs-property">textContent</span> = txt.<span class="hljs-title function_">replace</span>(reg, val).<span class="hljs-title function_">trim</span>();<br>            &#125;<br>            <span class="hljs-comment">// 如果还有子节点，继续递归replace</span><br>            <span class="hljs-keyword">if</span> (node.<span class="hljs-property">childNodes</span> &amp;&amp; node.<span class="hljs-property">childNodes</span>.<span class="hljs-property">length</span>) &#123;<br>                <span class="hljs-title function_">replace</span>(node);<br>            &#125;<br>        &#125;);<br>    &#125;<br>    <br>    <span class="hljs-title function_">replace</span>(fragment);  <span class="hljs-comment">// 替换内容</span><br>    <br>    vm.<span class="hljs-property">$el</span>.<span class="hljs-title function_">appendChild</span>(fragment);   <span class="hljs-comment">// 再将文档碎片放入el中</span><br>&#125;<br></code></pre>
+
+<p>看到这里在面试中已经可以初露锋芒了，那就一鼓作气，做事做全套，来个一条龙</p>
+<p>现在数据已经可以编译了，但是我们手动修改后的数据并没有在页面上发生改变</p>
+<p>下面我们就来看看怎么处理，其实这里就用到了特别常见的设计模式，发布订阅模式</p>
+<h3 id="发布订阅"><a href="#发布订阅" class="headerlink" title="发布订阅"></a>发布订阅</h3><p>发布订阅主要靠的就是数组关系，订阅就是放入函数，发布就是让数组里的函数执行</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 发布订阅模式  订阅和发布 如[fn1, fn2, fn3]</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Dep</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">// 一个数组(存放函数的事件池)</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">subs</span> = [];<br>&#125;<br><span class="hljs-title class_">Dep</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = &#123;<br>    <span class="hljs-title function_">addSub</span>(<span class="hljs-params">sub</span>) &#123;   <br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">subs</span>.<span class="hljs-title function_">push</span>(sub);    <br>    &#125;,<br>    <span class="hljs-title function_">notify</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-comment">// 绑定的方法，都有一个update方法</span><br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">subs</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">sub</span> =&gt;</span> sub.<span class="hljs-title function_">update</span>());<br>    &#125;<br>&#125;;<br><span class="hljs-comment">// 监听函数</span><br><span class="hljs-comment">// 通过Watcher这个类创建的实例，都拥有update方法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Watcher</span>(<span class="hljs-params">fn</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">fn</span> = fn;   <span class="hljs-comment">// 将fn放到实例上</span><br>&#125;<br><span class="hljs-title class_">Watcher</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">update</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fn</span>();  <br>&#125;;<br><br><span class="hljs-keyword">let</span> watcher = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Watcher</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-number">111</span>));  <span class="hljs-comment">// </span><br><span class="hljs-keyword">let</span> dep = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Dep</span>();<br>dep.<span class="hljs-title function_">addSub</span>(watcher);    <span class="hljs-comment">// 将watcher放到数组中,watcher自带update方法， =&gt; [watcher]</span><br>dep.<span class="hljs-title function_">addSub</span>(watcher);<br>dep.<span class="hljs-title function_">notify</span>();   <span class="hljs-comment">//  111, 111</span><br></code></pre>
+
+<h3 id="数据更新视图"><a href="#数据更新视图" class="headerlink" title="数据更新视图"></a>数据更新视图</h3><ul>
+<li>现在我们要订阅一个事件，当数据改变需要重新刷新视图，这就需要在replace替换的逻辑里来处理</li>
+<li>通过new Watcher把数据订阅一下，数据一变就执行改变内容的操作<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">replace</span>(<span class="hljs-params">frag</span>) &#123;<br>    <span class="hljs-comment">// 省略...</span><br>    <span class="hljs-comment">// 替换的逻辑</span><br>    node.<span class="hljs-property">textContent</span> = txt.<span class="hljs-title function_">replace</span>(reg, val).<span class="hljs-title function_">trim</span>();<br>    <span class="hljs-comment">// 监听变化</span><br>    <span class="hljs-comment">// 给Watcher再添加两个参数，用来取新的值(newVal)给回调函数传参</span><br>+   <span class="hljs-keyword">new</span> <span class="hljs-title class_">Watcher</span>(vm, <span class="hljs-title class_">RegExp</span>.<span class="hljs-property">$1</span>, <span class="hljs-function"><span class="hljs-params">newVal</span> =&gt;</span> &#123;<br>        node.<span class="hljs-property">textContent</span> = txt.<span class="hljs-title function_">replace</span>(reg, newVal).<span class="hljs-title function_">trim</span>();    <br>+   &#125;);<br>&#125;<br><br><span class="hljs-comment">// 重写Watcher构造函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Watcher</span>(<span class="hljs-params">vm, exp, fn</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">fn</span> = fn;<br>+   <span class="hljs-variable language_">this</span>.<span class="hljs-property">vm</span> = vm;<br>+   <span class="hljs-variable language_">this</span>.<span class="hljs-property">exp</span> = exp;<br>    <span class="hljs-comment">// 添加一个事件</span><br>    <span class="hljs-comment">// 这里我们先定义一个属性</span><br>+   <span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> = <span class="hljs-variable language_">this</span>;<br>+   <span class="hljs-keyword">let</span> arr = exp.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>);<br>+   <span class="hljs-keyword">let</span> val = vm;<br>+   arr.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;    <span class="hljs-comment">// 取值</span><br>+      val = val[key];     <span class="hljs-comment">// 获取到this.a.b，默认就会调用get方法</span><br>+   &#125;);<br>+   <span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> = <span class="hljs-literal">null</span>;<br>&#125;<br></code></pre></li>
+</ul>
+<p>当获取值的时候就会自动调用get方法，于是我们去找一下数据劫持那里的get方法</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Observe</span>(<span class="hljs-params">data</span>) &#123;<br>+   <span class="hljs-keyword">let</span> dep = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Dep</span>();<br>    <span class="hljs-comment">// 省略...</span><br>    <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(data, key, &#123;<br>        <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>) &#123;<br>+           <span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> &amp;&amp; dep.<span class="hljs-title function_">addSub</span>(<span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span>);   <span class="hljs-comment">// 将watcher添加到订阅事件中 [watcher]</span><br>            <span class="hljs-keyword">return</span> val;<br>        &#125;,<br>        <span class="hljs-title function_">set</span>(<span class="hljs-params">newVal</span>) &#123;<br>            <span class="hljs-keyword">if</span> (val === newVal) &#123;<br>                <span class="hljs-keyword">return</span>;<br>            &#125;<br>            val = newVal;<br>            <span class="hljs-title function_">observe</span>(newVal);<br>+           dep.<span class="hljs-title function_">notify</span>();   <span class="hljs-comment">// 让所有watcher的update方法执行即可</span><br>        &#125;<br>    &#125;)<br>&#125;<br></code></pre>
+
+<p>当set修改值的时候执行了dep.notify方法，这个方法是执行watcher的update方法，那么我们再对update进行修改一下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Watcher</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">update</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">// notify的时候值已经更改了</span><br>    <span class="hljs-comment">// 再通过vm, exp来获取新的值</span><br>+   <span class="hljs-keyword">let</span> arr = <span class="hljs-variable language_">this</span>.<span class="hljs-property">exp</span>.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>);<br>+   <span class="hljs-keyword">let</span> val = <span class="hljs-variable language_">this</span>.<span class="hljs-property">vm</span>;<br>+   arr.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;    <br>+       val = val[key];   <span class="hljs-comment">// 通过get获取到新的值</span><br>+   &#125;);<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fn</span>(val);   <span class="hljs-comment">// 将每次拿到的新值去替换&#123;&#123;&#125;&#125;的内容即可</span><br>&#125;;<br></code></pre>
+
+<p>现在我们数据的更改可以修改视图了，这很good，还剩最后一点，我们再来看看面试常考的双向数据绑定吧</p>
+<h3 id="双向数据绑定"><a href="#双向数据绑定" class="headerlink" title="双向数据绑定"></a>双向数据绑定</h3><pre class="highlight"><code class="hljs html">    // html结构<br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;c&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-comment">// 数据部分</span></span><br><span class="language-javascript">    <span class="hljs-attr">data</span>: &#123;</span><br><span class="language-javascript">        <span class="hljs-attr">a</span>: &#123;</span><br><span class="language-javascript">            <span class="hljs-attr">b</span>: <span class="hljs-number">1</span></span><br><span class="language-javascript">        &#125;,</span><br><span class="language-javascript">        <span class="hljs-attr">c</span>: <span class="hljs-number">2</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    </span><br><span class="language-javascript">    <span class="hljs-keyword">function</span> <span class="hljs-title function_">replace</span>(<span class="hljs-params">frag</span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-comment">// 省略...</span></span><br><span class="language-javascript">+       <span class="hljs-keyword">if</span> (node.<span class="hljs-property">nodeType</span> === <span class="hljs-number">1</span>) &#123;  <span class="hljs-comment">// 元素节点</span></span><br><span class="language-javascript">            <span class="hljs-keyword">let</span> nodeAttr = node.<span class="hljs-property">attributes</span>; <span class="hljs-comment">// 获取dom上的所有属性,是个类数组</span></span><br><span class="language-javascript">            <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(nodeAttr).<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">attr</span> =&gt;</span> &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> name = attr.<span class="hljs-property">name</span>;   <span class="hljs-comment">// v-model  type</span></span><br><span class="language-javascript">                <span class="hljs-keyword">let</span> exp = attr.<span class="hljs-property">value</span>;   <span class="hljs-comment">// c        text</span></span><br><span class="language-javascript">                <span class="hljs-keyword">if</span> (name.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;v-&#x27;</span>))&#123;</span><br><span class="language-javascript">                    node.<span class="hljs-property">value</span> = vm[exp];   <span class="hljs-comment">// this.c 为 2</span></span><br><span class="language-javascript">                &#125;</span><br><span class="language-javascript">                <span class="hljs-comment">// 监听变化</span></span><br><span class="language-javascript">                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Watcher</span>(vm, exp, <span class="hljs-keyword">function</span>(<span class="hljs-params">newVal</span>) &#123;</span><br><span class="language-javascript">                    node.<span class="hljs-property">value</span> = newVal;   <span class="hljs-comment">// 当watcher触发时会自动将内容放进输入框中</span></span><br><span class="language-javascript">                &#125;);</span><br><span class="language-javascript">                </span><br><span class="language-javascript">                node.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;input&#x27;</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> &#123;</span><br><span class="language-javascript">                    <span class="hljs-keyword">let</span> newVal = e.<span class="hljs-property">target</span>.<span class="hljs-property">value</span>;</span><br><span class="language-javascript">                    <span class="hljs-comment">// 相当于给this.c赋了一个新值</span></span><br><span class="language-javascript">                    <span class="hljs-comment">// 而值的改变会调用set，set中又会调用notify，notify中调用watcher的update方法实现了更新</span></span><br><span class="language-javascript">                    vm[exp] = newVal;   </span><br><span class="language-javascript">                &#125;);</span><br><span class="language-javascript">            &#125;);</span><br><span class="language-javascript">+       &#125;</span><br><span class="language-javascript">        <span class="hljs-keyword">if</span> (node.<span class="hljs-property">childNodes</span> &amp;&amp; node.<span class="hljs-property">childNodes</span>.<span class="hljs-property">length</span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-title function_">replace</span>(node);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+
+<p>大功告成，面试问Vue的东西不过就是这个罢了，什么双向数据绑定怎么实现的，问的一点心意都没有，差评！！！</p>
+<p>大官人请留步，本来应该收手了，可临时起意(手痒)，再写点功能吧，再加个computed(计算属性)和mounted(钩子函数)吧</p>
+<h3 id="computed-计算属性-amp-amp-mounted-钩子函数"><a href="#computed-计算属性-amp-amp-mounted-钩子函数" class="headerlink" title="computed(计算属性) &amp;&amp; mounted(钩子函数)"></a>computed(计算属性) &amp;&amp; mounted(钩子函数)</h3><pre class="highlight"><code class="hljs html">    // html结构<br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>求和的值是&#123;&#123;sum&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-attr">data</span>: &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">9</span> &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">computed</span>: &#123;</span><br><span class="language-javascript">        <span class="hljs-title function_">sum</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">a</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">b</span>;</span><br><span class="language-javascript">        &#125;,</span><br><span class="language-javascript">        <span class="hljs-title function_">noop</span>(<span class="hljs-params"></span>) &#123;&#125;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;所有事情都搞定了&#x27;</span>);</span><br><span class="language-javascript">        &#125;, <span class="hljs-number">1000</span>);</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    </span><br><span class="language-javascript">    <span class="hljs-keyword">function</span> <span class="hljs-title function_">Mvvm</span>(<span class="hljs-params">options = &#123;&#125;</span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-comment">// 初始化computed,将this指向实例</span></span><br><span class="language-javascript">+       initComputed.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>);     </span><br><span class="language-javascript">        <span class="hljs-comment">// 编译</span></span><br><span class="language-javascript">        <span class="hljs-keyword">new</span> <span class="hljs-title class_">Compile</span>(options.<span class="hljs-property">el</span>, <span class="hljs-variable language_">this</span>);</span><br><span class="language-javascript">        <span class="hljs-comment">// 所有事情处理好后执行mounted钩子函数</span></span><br><span class="language-javascript">+       options.<span class="hljs-property">mounted</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>); <span class="hljs-comment">// 这就实现了mounted钩子函数</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    </span><br><span class="language-javascript">    <span class="hljs-keyword">function</span> <span class="hljs-title function_">initComputed</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">let</span> vm = <span class="hljs-variable language_">this</span>;</span><br><span class="language-javascript">        <span class="hljs-keyword">let</span> computed = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$options</span>.<span class="hljs-property">computed</span>;  <span class="hljs-comment">// 从options上拿到computed属性   &#123;sum: ƒ, noop: ƒ&#125;</span></span><br><span class="language-javascript">        <span class="hljs-comment">// 得到的都是对象的key可以通过Object.keys转化为数组</span></span><br><span class="language-javascript">        <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(computed).<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;  <span class="hljs-comment">// key就是sum,noop</span></span><br><span class="language-javascript">            <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(vm, key, &#123;</span><br><span class="language-javascript">                <span class="hljs-comment">// 这里判断是computed里的key是对象还是函数</span></span><br><span class="language-javascript">                <span class="hljs-comment">// 如果是函数直接就会调get方法</span></span><br><span class="language-javascript">                <span class="hljs-comment">// 如果是对象的话，手动调一下get方法即可</span></span><br><span class="language-javascript">                <span class="hljs-comment">// 如： sum() &#123;return this.a + this.b;&#125;,他们获取a和b的值就会调用get方法</span></span><br><span class="language-javascript">                <span class="hljs-comment">// 所以不需要new Watcher去监听变化了</span></span><br><span class="language-javascript">                <span class="hljs-attr">get</span>: <span class="hljs-keyword">typeof</span> computed[key] === <span class="hljs-string">&#x27;function&#x27;</span> ? computed[key] : computed[key].<span class="hljs-property">get</span>,</span><br><span class="language-javascript">                <span class="hljs-title function_">set</span>(<span class="hljs-params"></span>) &#123;&#125;</span><br><span class="language-javascript">            &#125;);</span><br><span class="language-javascript">        &#125;);</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">      </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+<p>写了这些内容也不算少了，最后做一个形式上的总结吧</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过自己实现的mvvm一共包含了以下东西</p>
+<ul>
+<li>通过Object.defineProperty的get和set进行数据劫持</li>
+<li>通过遍历data数据进行数据代理到this上</li>
+<li>通过<code>&#123;&#123; &#125;&#125;</code>对数据进行编译</li>
+<li>通过发布订阅模式实现数据与视图同步</li>
+<li>通过通过通过，收了，感谢大官人的留步了</li>
+</ul>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>针对以上代码在实现编译的时候还是会有一些小bug，再次经过研究和高人指点，完善了编译，下面请看修改后的代码</p>
+<p>修复：两个相邻的<code>&#123;&#123; &#125;&#125;</code>正则匹配，后一个不能正确编译成对应的文本，如<code>&#123;&#123;album.name&#125;&#125; &#123;&#123;singer&#125;&#125;</code></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Compile</span>(<span class="hljs-params">el, vm</span>) &#123;<br>    <span class="hljs-comment">// 省略...</span><br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">replace</span>(<span class="hljs-params">frag</span>) &#123;<br>        <span class="hljs-comment">// 省略...</span><br>        <span class="hljs-keyword">if</span> (node.<span class="hljs-property">nodeType</span> === <span class="hljs-number">3</span> &amp;&amp; reg.<span class="hljs-title function_">test</span>(txt)) &#123;<br>            <span class="hljs-keyword">function</span> <span class="hljs-title function_">replaceTxt</span>(<span class="hljs-params"></span>) &#123;<br>                node.<span class="hljs-property">textContent</span> = txt.<span class="hljs-title function_">replace</span>(reg, <span class="hljs-function">(<span class="hljs-params">matched, placeholder</span>) =&gt;</span> &#123;   <br>                    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(placeholder);   <span class="hljs-comment">// 匹配到的分组 如：song, album.name, singer...</span><br>                    <span class="hljs-keyword">new</span> <span class="hljs-title class_">Watcher</span>(vm, placeholder, replaceTxt);   <span class="hljs-comment">// 监听变化，进行匹配替换内容</span><br>                    <br>                    <span class="hljs-keyword">return</span> placeholder.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>).<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">val, key</span>) =&gt;</span> &#123;<br>                        <span class="hljs-keyword">return</span> val[key]; <br>                    &#125;, vm);<br>                &#125;);<br>            &#125;;<br>            <span class="hljs-comment">// 替换</span><br>            <span class="hljs-title function_">replaceTxt</span>();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>上面代码主要实现依赖的是reduce方法，reduce 为数组中的每一个元素依次执行回调函数</p>
+<p>如果还有不太清楚的，那我们单独抽出来reduce这部分再看一下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 将匹配到的每一个值都进行split分割</span><br><span class="hljs-comment">// 如:&#x27;song&#x27;.split(&#x27;.&#x27;) =&gt; [&#x27;song&#x27;] =&gt; [&#x27;song&#x27;].reduce((val, key) =&gt; val[key]) </span><br><span class="hljs-comment">// 其实就是将vm传给val做初始值，reduce执行一次回调返回一个值</span><br><span class="hljs-comment">// vm[&#x27;song&#x27;] =&gt; &#x27;周杰伦&#x27;</span><br><br><span class="hljs-comment">// 上面不够深入，我们再来看一个</span><br><span class="hljs-comment">// 再如：&#x27;album.name&#x27;.split(&#x27;.&#x27;) =&gt; [&#x27;album&#x27;, &#x27;name&#x27;] =&gt; [&#x27;album&#x27;, &#x27;name&#x27;].reduce((val, key) =&gt; val[key])</span><br><span class="hljs-comment">// 这里vm还是做为初始值传给val，进行第一次调用，返回的是vm[&#x27;album&#x27;]</span><br><span class="hljs-comment">// 然后将返回的vm[&#x27;album&#x27;]这个对象传给下一次调用的val</span><br><span class="hljs-comment">// 最后就变成了vm[&#x27;album&#x27;][&#x27;name&#x27;] =&gt; &#x27;十一月的萧邦&#x27;</span><br><br><span class="hljs-keyword">return</span> placeholder.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;.&#x27;</span>).<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">val, key</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> val[key]; <br>&#125;, vm);<br></code></pre>
+
+<p>reduce的用处多多，比如计算数组求和是比较普通的方法了，还有一种比较好用的妙处是可以进行二维数组的展平(flatten)，各位不妨来看最后一眼</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> arr = [<br>  [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>],<br>  [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>],<br>  [<span class="hljs-number">5</span>, <span class="hljs-number">6</span>]<br>];<br><br><span class="hljs-keyword">let</span> flatten = arr.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">previous, current</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> previous.<span class="hljs-title function_">concat</span>(current);<br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(flatten); <span class="hljs-comment">// [1, 2, 3, 4, 5, 6]</span><br><br><span class="hljs-comment">// ES6中也可以利用...展开运算符来实现的，实现思路一样，只是写法更精简了</span><br>flatten = arr.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> [...a, ...b]);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(flatten); <span class="hljs-comment">// [1, 2, 3, 4, 5, 6]</span><br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903586103558158">不好意思！耽误你的十分钟，让MVVM原理还给你</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/27/22092703/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">深入理解http2.0协议 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/27/25ThingsAboutJavaScriptAndES/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">JavaScript与ES的25个知识点 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%82%B9"><span class="toc-text">重点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%83"><span class="toc-text">为什么是它</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-text">如何使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E9%80%A0MVVM"><span class="toc-text">打造MVVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8A%AB%E6%8C%81"><span class="toc-text">数据劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%A3%E7%90%86"><span class="toc-text">数据代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BC%96%E8%AF%91"><span class="toc-text">数据编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="toc-text">发布订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0%E8%A7%86%E5%9B%BE"><span class="toc-text">数据更新视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A"><span class="toc-text">双向数据绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed-%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7-amp-amp-mounted-%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">computed(计算属性) &amp;&amp; mounted(钩子函数)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-text">补充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E7%82%B9"><span class="toc-text">重点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%83"><span class="toc-text">为什么是它</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-text">如何使用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%93%E9%80%A0MVVM"><span class="toc-text">打造MVVM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%8A%AB%E6%8C%81"><span class="toc-text">数据劫持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BB%A3%E7%90%86"><span class="toc-text">数据代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BC%96%E8%AF%91"><span class="toc-text">数据编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85"><span class="toc-text">发布订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0%E8%A7%86%E5%9B%BE"><span class="toc-text">数据更新视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E5%90%91%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A"><span class="toc-text">双向数据绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#computed-%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7-amp-amp-mounted-%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0"><span class="toc-text">computed(计算属性) &amp;&amp; mounted(钩子函数)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-text">补充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-27</div>
+        <a href="/2022/09/27/websitePerformanceOptimization/"><div class="recent-posts-item-content">网站性能监测与优化策略</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-27</div>
+        <a href="/2022/09/27/whyAwaitCannotBeUsedInForEach/"><div class="recent-posts-item-content">重学 JS：为啥 await 不能用在 forEach 中</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-27</div>
+        <a href="/2022/09/27/whyBinarySearchTreesWhenHashTablesAreSoGood/"><div class="recent-posts-item-content">散列表那么优秀，为什么还要二叉查找树？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-27</div>
+        <a href="/2022/09/27/whyDoesComputerTimeStartOnJanuary,1,1970/"><div class="recent-posts-item-content">为什么计算机时间要从1970年1月1日开始算起</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
