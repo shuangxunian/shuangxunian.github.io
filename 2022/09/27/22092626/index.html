@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#coding-utf-8"><span class="toc-text">-- coding: utf-8 --</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E9%A6%96%E8%A1%8C"><span class="toc-text">解析首行</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
       </div>
     </article>
   
@@ -528,7 +528,7 @@
     <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092626.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-27T02:26:50.502Z">
+    <time datetime="2022-09-27T02:35:16.453Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -574,12 +574,16 @@
   <div 
     id="section" 
     class="post-content">
-    <p>前言<br>最近看了一些同学的面经，发现无论什么技术岗位，还是会问到 get 和 post 的区别，而搜索出来的答案并不能让我们装得一手好逼，那就让我们从 HTTP 报文的角度来撸一波，从而搞明白他们的区别。</p>
-<p>标准答案<br>在开撸之前吗，让我们先看一下标准答案长什么样子 w3school: GET 对比 POST。标准答案很美好，但是在面试的时候把标准答案一说可能并不符合面试官的预期。</p>
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近看了一些同学的面经，发现无论什么技术岗位，还是会问到 get 和 post 的区别，而搜索出来的答案并不能让我们装得一手好逼，那就让我们从 HTTP 报文的角度来撸一波，从而搞明白他们的区别。</p>
+<h2 id="标准答案"><a href="#标准答案" class="headerlink" title="标准答案"></a>标准答案</h2><p>在开撸之前吗，让我们先看一下标准答案长什么样子 w3school: GET 对比 POST。标准答案很美好，但是在面试的时候把标准答案一说可能并不符合面试官的预期。</p>
 <p>注意，并不是说标准答案有误，上述区别在大部分浏览器上是存在的，因为这些浏览器实现了 HTTP 标准。</p>
 <p>所以从标准上来看，GET 和 POST 的区别如下：</p>
-<p>GET 用于获取信息，是无副作用的，是幂等的，且可缓存<br>POST 用于修改服务器上的数据，有副作用，非幂等，不可缓存<br>但是，既然本文从报文角度来说，那就先不讨论 RFC 上的区别，单纯从数据角度谈谈。</p>
-<p>GET 和 POST 报文上的区别<br>先下结论，GET 和 POST 方法没有实质区别，只是报文格式不同。</p>
+<ul>
+<li>GET 用于获取信息，是无副作用的，是幂等的，且可缓存</li>
+<li>POST 用于修改服务器上的数据，有副作用，非幂等，不可缓存</li>
+</ul>
+<p>但是，既然本文从报文角度来说，那就先不讨论 RFC 上的区别，单纯从数据角度谈谈。</p>
+<h2 id="GET-和-POST-报文上的区别"><a href="#GET-和-POST-报文上的区别" class="headerlink" title="GET 和 POST 报文上的区别"></a>GET 和 POST 报文上的区别</h2><p>先下结论，GET 和 POST 方法没有实质区别，只是报文格式不同。</p>
 <p>GET 和 POST 只是 HTTP 协议中两种请求方式，而 HTTP 协议是基于 TCP&#x2F;IP 的应用层协议，无论 GET 还是 POST，用的都是同一个传输层协议，所以在传输上，没有区别。</p>
 <p>报文格式上，不带参数时，最大区别就是第一行方法名不同</p>
 <p>POST方法请求报文第一行是这样的 POST &#x2F;uri HTTP&#x2F;1.1 \r\n</p>
@@ -588,63 +592,43 @@
 <p>带参数时报文的区别呢？ 在约定中，GET 方法的参数应该放在 url 中，POST 方法参数应该放在 body 中</p>
 <p>举个例子，如果参数是 name&#x3D;qiming.c, age&#x3D;22。</p>
 <p>GET 方法简约版报文是这样的</p>
-<p>GET &#x2F;index.php?name&#x3D;qiming.c&amp;age&#x3D;22 HTTP&#x2F;1.1<br>Host: localhost<br>POST 方法简约版报文是这样的</p>
-<p>POST &#x2F;index.php HTTP&#x2F;1.1<br>Host: localhost<br>Content-Type: application&#x2F;x-www-form-urlencoded<br>name&#x3D;qiming.c&amp;age&#x3D;22<br>现在我们知道了两种方法本质上是 TCP 连接，没有差别，也就是说，如果我不按规范来也是可以的。我们可以在 URL 上写参数，然后方法使用 POST；也可以在 Body 写参数，然后方法使用 GET。当然，这需要服务端支持。</p>
-<p>常见问题<br>GET 方法参数写法是固定的吗？<br>在约定中，我们的参数是写在 ? 后面，用 &amp; 分割。</p>
+<pre class="highlight"><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/index.php?name=qiming.c&amp;age=22</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>localhost<br></code></pre>
+
+<p>POST 方法简约版报文是这样的</p>
+<pre class="highlight"><code class="hljs fortran">POST /<span class="hljs-built_in">index</span>.php HTTP/<span class="hljs-number">1.1</span><br>Host: localhost<br>Content-<span class="hljs-keyword">Type</span>: application/x-www-<span class="hljs-keyword">form</span>-urlencoded<br><span class="hljs-keyword">name</span>=qiming.c&amp;age=<span class="hljs-number">22</span><br></code></pre>
+
+<p>现在我们知道了两种方法本质上是 TCP 连接，没有差别，也就是说，如果我不按规范来也是可以的。我们可以在 URL 上写参数，然后方法使用 POST；也可以在 Body 写参数，然后方法使用 GET。当然，这需要服务端支持。</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="GET-方法参数写法是固定的吗？"><a href="#GET-方法参数写法是固定的吗？" class="headerlink" title="GET 方法参数写法是固定的吗？"></a>GET 方法参数写法是固定的吗？</h3><p>在约定中，我们的参数是写在 ? 后面，用 &amp; 分割。</p>
 <p>我们知道，解析报文的过程是通过获取 TCP 数据，用正则等工具从数据中获取 Header 和 Body，从而提取参数。</p>
-<p>也就是说，我们可以自己约定参数的写法，只要服务端能够解释出来就行，一种比较流行的写法是 <a target="_blank" rel="noopener" href="http://www.example.com/user/name/chengqm/age/22%E3%80%82">http://www.example.com/user/name/chengqm/age/22。</a></p>
-<p>POST 方法比 GET 方法安全？<br>按照网上大部分文章的解释，POST 比 GET 安全，因为数据在地址栏上不可见。</p>
+<p>也就是说，我们可以自己约定参数的写法，只要服务端能够解释出来就行，</p>
+<h3 id="POST-方法比-GET-方法安全？"><a href="#POST-方法比-GET-方法安全？" class="headerlink" title="POST 方法比 GET 方法安全？"></a>POST 方法比 GET 方法安全？</h3><p>按照网上大部分文章的解释，POST 比 GET 安全，因为数据在地址栏上不可见。</p>
 <p>然而，从传输的角度来说，他们都是不安全的，因为 HTTP 在网络上是明文传输的，只要在网络节点上捉包，就能完整地获取数据报文。</p>
 <p>要想安全传输，就只有加密，也就是 HTTPS。</p>
-<p>GET 方法的长度限制是怎么回事？<br>在网上看到很多关于两者区别的文章都有这一条，提到浏览器地址栏输入的参数是有限的。</p>
+<h3 id="GET-方法的长度限制是怎么回事？"><a href="#GET-方法的长度限制是怎么回事？" class="headerlink" title="GET 方法的长度限制是怎么回事？"></a>GET 方法的长度限制是怎么回事？</h3><p>在网上看到很多关于两者区别的文章都有这一条，提到浏览器地址栏输入的参数是有限的。</p>
 <p>首先说明一点，HTTP 协议没有 Body 和 URL 的长度限制，对 URL 限制的大多是浏览器和服务器的原因。</p>
 <p>浏览器原因就不说了，服务器是因为处理长 URL 要消耗比较多的资源，为了性能和安全（防止恶意构造长 URL 来攻击）考虑，会给 URL 长度加限制。</p>
-<p>POST 方法会产生两个TCP数据包？<br>有些文章中提到，post 会将 header 和 body 分开发送，先发送 header，服务端返回 100 状态码再发送 body。</p>
+<h3 id="POST-方法会产生两个TCP数据包？"><a href="#POST-方法会产生两个TCP数据包？" class="headerlink" title="POST 方法会产生两个TCP数据包？"></a>POST 方法会产生两个TCP数据包？</h3><p>有些文章中提到，post 会将 header 和 body 分开发送，先发送 header，服务端返回 100 状态码再发送 body。</p>
 <p>HTTP 协议中没有明确说明 POST 会产生两个 TCP 数据包，而且实际测试(Chrome)发现，header 和 body 不会分开发送。</p>
 <p>所以，header 和 body 分开发送是部分浏览器或框架的请求方法，不属于 post 必然行为。</p>
-<p>code<br>如果对 get 和 post 报文区别有疑惑，直接起一个 Socket 服务端，然后封装简单的 HTTP 处理方法，直接观察和处理 HTTP 报文，就能一目了然</p>
-<p>#!&#x2F;usr&#x2F;bin&#x2F;env python</p>
-<h1 id="coding-utf-8"><a href="#coding-utf-8" class="headerlink" title="-- coding: utf-8 --"></a>-<em>- coding: utf-8 -</em>-</h1><p>import socket</p>
-<p>HOST, PORT &#x3D; ‘’, 23333</p>
-<p>def server_run():<br>    listen_socket &#x3D; socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)<br>    listen_socket.bind((HOST, PORT))<br>    listen_socket.listen(1)<br>    print(‘Serving HTTP on port %s …’ % PORT)<br>    while True:<br>        # 接受连接<br>        client_connection, client_address &#x3D; listen_socket.accept()<br>        handle_request(client_connection)</p>
-<p>def handle_request(client_connection):<br>    # 获取请求报文<br>    request &#x3D; ‘’<br>    while True:<br>        recv_data &#x3D; client_connection.recv(2400)<br>        recv_data &#x3D; recv_data.decode()<br>        request +&#x3D; recv_data<br>        if len(recv_data) &lt; 2400:<br>            break</p>
-<pre><code># 解析首行
-first_line_array = request.split(&#39;\r\n&#39;)[0].split(&#39; &#39;)
+<h3 id="code"><a href="#code" class="headerlink" title="code"></a>code</h3><p>如果对 get 和 post 报文区别有疑惑，直接起一个 Socket 服务端，然后封装简单的 HTTP 处理方法，直接观察和处理 HTTP 报文，就能一目了然</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> socket<br><br>HOST, PORT = <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-number">23333</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">server_run</span>():<br>    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="hljs-number">1</span>)<br>    listen_socket.bind((HOST, PORT))<br>    listen_socket.listen(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Serving HTTP on port %s ...&#x27;</span> % PORT)<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        <span class="hljs-comment"># 接受连接</span><br>        client_connection, client_address = listen_socket.accept()<br>        handle_request(client_connection)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_request</span>(<span class="hljs-params">client_connection</span>):<br>    <span class="hljs-comment"># 获取请求报文</span><br>    request = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        recv_data = client_connection.recv(<span class="hljs-number">2400</span>)<br>        recv_data = recv_data.decode()<br>        request += recv_data<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(recv_data) &lt; <span class="hljs-number">2400</span>:<br>            <span class="hljs-keyword">break</span><br><br>    <span class="hljs-comment"># 解析首行</span><br>    first_line_array = request.split(<span class="hljs-string">&#x27;\r\n&#x27;</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&#x27; &#x27;</span>)<br><br>    <span class="hljs-comment"># 分离 header 和 body</span><br>    space_line_index = request.index(<span class="hljs-string">&#x27;\r\n\r\n&#x27;</span>)<br>    header = request[<span class="hljs-number">0</span>: space_line_index]<br>    body = request[space_line_index + <span class="hljs-number">4</span>:]<br><br>    <span class="hljs-comment"># 打印请求报文</span><br>    <span class="hljs-built_in">print</span>(request)<br><br>    <span class="hljs-comment"># 返回报文</span><br>    http_response = <span class="hljs-string">b&quot;&quot;&quot;\</span><br><span class="hljs-string">HTTP/1.1 200 OK</span><br><span class="hljs-string"></span><br><span class="hljs-string">&lt;!DOCTYPE html&gt;</span><br><span class="hljs-string">&lt;html&gt;</span><br><span class="hljs-string">&lt;head&gt;</span><br><span class="hljs-string">    &lt;title&gt;Hello, World!&lt;/title&gt;</span><br><span class="hljs-string">&lt;/head&gt;</span><br><span class="hljs-string">&lt;body&gt;</span><br><span class="hljs-string">&lt;p style=&quot;color: green&quot;&gt;Hello, World!&lt;/p&gt;</span><br><span class="hljs-string">&lt;/body&gt;</span><br><span class="hljs-string">&lt;/html&gt;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>    client_connection.sendall(http_response)<br>    client_connection.close()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    server_run()<br></code></pre>
 
-# 分离 header 和 body
-space_line_index = request.index(&#39;\r\n\r\n&#39;)
-header = request[0: space_line_index]
-body = request[space_line_index + 4:]
+<p>上面代码就是简单的打印请求报文然后返回 HelloWorld 的 html 页面，我们运行起来</p>
+<pre class="highlight"><code class="hljs vim">[root@chengqm <span class="hljs-keyword">shell</span>]# <span class="hljs-keyword">python</span> httpserver.<span class="hljs-keyword">py</span> <br>Serving HTTP <span class="hljs-keyword">on</span> port <span class="hljs-number">23333</span> ...<br></code></pre>
 
-# 打印请求报文
-print(request)
-
-# 返回报文
-http_response = b&quot;&quot;&quot;\
-</code></pre>
-<p>HTTP&#x2F;1.1 200 OK</p>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Hello, World!</title>
-</head>
-<body>
-<p style="color: green">Hello, World!</p>
-</body>
-</html>
-"""
-    client_connection.sendall(http_response)
-    client_connection.close()
-
-
-<p>if <strong>name</strong> &#x3D;&#x3D; ‘<strong>main</strong>‘:<br>    server_run()<br>上面代码就是简单的打印请求报文然后返回 HelloWorld 的 html 页面，我们运行起来</p>
-<p>[root@chengqm shell]# python httpserver.py<br>Serving HTTP on port 23333 …<br>然后从浏览器中请求看看</p>
+<p>然后从浏览器中请求看看</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8c9be8dc-bd20-4141-adfa-65aece22a131-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8c9be8dc-bd20-4141-adfa-65aece22a131-3807603.jpg"></p>
 <p>打印出来的报文</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2138ff56-921d-4b2b-a99d-defe31039409-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2138ff56-921d-4b2b-a99d-defe31039409-3807603.jpg"></p>
 <p>然后就可以手动证明上述说法，比如说要测试 header 和 body 是否分开传输，由于代码没有返回 100 状态码，如果我们 post 请求成功就说明是一起传输的(Chrome&#x2F;postman)。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/11c2b585-33cd-455c-91d4-d80800ded8f4-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/11c2b585-33cd-455c-91d4-d80800ded8f4-3807603.jpg"></p>
 <p>又比如 w3school 里面说 URL 的最大长度是 2048 个字符，那我们在代码里面加上一句计算 uri 长度的代码</p>
-<h1 id="解析首行"><a href="#解析首行" class="headerlink" title="解析首行"></a>解析首行</h1><p>first_line_array &#x3D; request.split(‘\r\n’)[0].split(‘ ‘)<br>print(‘uri长度: %s’ % len(first_line_array[1]))<br>我们用 postman 直接发送超过 2048 个字符的请求看看</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-comment"># 解析首行</span><br>first_line_array = request.split(<span class="hljs-string">&#x27;\r\n&#x27;</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&#x27; &#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;uri长度: %s&#x27;</span> % <span class="hljs-built_in">len</span>(first_line_array[<span class="hljs-number">1</span>]))<br></code></pre>
+
+<p>我们用 postman 直接发送超过 2048 个字符的请求看看</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/79b28c2f-a4ab-40d2-8499-52bd4b2f2dc9-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/79b28c2f-a4ab-40d2-8499-52bd4b2f2dc9-3807603.jpg"></p>
 <p>然后我们可以得出结论，url 长度限制是某些浏览器和服务器的限制，和 HTTP 协议没有关系。</p>
-<p>参考链接<br>99%的人都理解错了HTTP中GET与POST的区别<br>关于HTTP GET 和 POST<br>w3school: HTTP 方法：GET 对比 POST<br>wikipedia: 超文本传输协议<br>RFC 2068<br>都9102年了，还问GET和POST的区别</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI3NzIzMzg3Mw==&mid=100000054&idx=1&sn=71f6c214f3833d9ca20b9f7dcd9d33e4#rd">99%的人都理解错了HTTP中GET与POST的区别</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38217343">关于HTTP GET 和 POST</a><br><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/tags/html_ref_httpmethods.asp">w3school: HTTP 方法：GET 对比 POST</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018129846">都9102年了，还问GET和POST的区别</a></p>
 
   </div>
   <div>
@@ -693,7 +677,7 @@ http_response = b&quot;&quot;&quot;\
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#coding-utf-8"><span class="toc-text">-- coding: utf-8 --</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E9%A6%96%E8%A1%8C"><span class="toc-text">解析首行</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
             </main>
             <aside class="right-column">
@@ -707,7 +691,7 @@ http_response = b&quot;&quot;&quot;\
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#coding-utf-8"><span class="toc-text">-- coding: utf-8 --</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E6%9E%90%E9%A6%96%E8%A1%8C"><span class="toc-text">解析首行</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
     </article>
   
   
@@ -723,22 +707,22 @@ http_response = b&quot;&quot;&quot;\
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-27</div>
-        <a href="/2022/09/27/theArrayDimensionReduction/"><div class="recent-posts-item-content">js之数组降维</div></a>
+        <a href="/2022/09/27/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-27</div>
-        <a href="/2022/09/27/theDifferenceBetweenPseudoClassAndPseudoElement/"><div class="recent-posts-item-content">【CSS基础】伪类与伪元素的区别</div></a>
+        <a href="/2022/09/27/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-27</div>
-        <a href="/2022/09/27/theMeaningOfTheInline/"><div class="recent-posts-item-content">行内元素、块级元素和行内块级元素的转换</div></a>
+        <a href="/2022/09/27/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-27</div>
-        <a href="/2022/09/27/theNewBrowserCachingPolicy/"><div class="recent-posts-item-content">新的浏览器缓存策略变更：舍弃性能、确保安全</div></a>
+        <a href="/2022/09/27/understandTheRequireImplementationPrinciple/"><div class="recent-posts-item-content">彻底搞懂 Node.js 中的 Require 机制(源码分析到手写实践)</div></a>
       </div>
     
   </div>
