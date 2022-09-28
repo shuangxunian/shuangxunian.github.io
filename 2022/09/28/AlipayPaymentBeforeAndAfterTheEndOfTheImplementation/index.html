@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>支付宝支付前后端实现(Vue+Spring Boot)</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="支付宝支付前后端实现(Vue+Spring Boot)">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/28/AlipayPaymentBeforeAndAfterTheEndOfTheImplementation/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-28">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-28">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+          <meta 
+            property="og:article:tag" 
+            content="轮子">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>236</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>48</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">应用创建与配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="toc-text">处理流程概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%8F%91%E8%B5%B7"><span class="toc-text">前端发起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90"><span class="toc-text">支付表单生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E8%B7%B3%E8%BD%AC%E5%A4%84%E7%90%86"><span class="toc-text">前端跳转处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%BF%94%E5%9B%9E%E9%A1%B5%E9%9D%A2%E5%A4%84%E7%90%86%E5%8F%8A%E6%94%AF%E4%BB%98%E7%8A%B6%E6%80%81%E6%9B%B4%E6%96%B0"><span class="toc-text">支付返回页面处理及支付状态更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E7%BB%93%E6%9E%9C%E6%8E%A5%E6%94%B6"><span class="toc-text">支付结果接收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">207</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      支付宝支付前后端实现(Vue+Spring Boot)
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/AlipayPaymentBeforeAndAfterTheEndOfTheImplementation.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-28T03:33:37.096Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-28</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.9k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E8%BD%AE%E5%AD%90/" 
+            class="post-meta-link">
+            轮子
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近项目需要使用支付宝支付功能，整理一下思路。</p>
+<h2 id="应用创建与配置"><a href="#应用创建与配置" class="headerlink" title="应用创建与配置"></a>应用创建与配置</h2><ol>
+<li><p>登录支付宝开放平台创建应用； 并视情况需要添加“手机网站支付”和“电脑网站支付”能力；<br> 手机网站支付可通过浏览器打开支付宝应用程序进行付款，但在微信公众号打开的页面无法通过支付宝进行支付，电脑端的可通过二维码或者登录支付宝账号付款。</p>
+</li>
+<li><p>密钥配置<br> 包括应用私钥、应用公钥和支付宝公钥。</p>
+<p> 可通过支付宝开放平台开发助手生成应用私钥与应用公钥，然后在开放平台中将应用公钥配置到应用中，生成支付宝公钥。最终程序中需要使用到应用私钥与支付宝公钥，其中应用私钥用于对发往支付宝的消息进行加密，而支付宝公钥用于对支付宝返回的数据进行验签。</p>
+</li>
+</ol>
+<p>具体配置过程如下：<br>    1. 使用支付宝开放平台助手生成应用私钥与公钥切记生成后将私钥与公钥另外保存；<br>    2. 登录开放平台配置应用公钥<br>    3. 点击接口加签方式中的设置按钮，在弹出窗口中将应用公钥复制进去，然后生成支付宝公钥，将公钥复制下来保存，后续在代码中会需要使用到。生成支付宝公钥后应用公钥基本就用不着了，后续的代码主要使用的是应用私钥和支付宝公钥。</p>
+<h2 id="处理流程概述"><a href="#处理流程概述" class="headerlink" title="处理流程概述"></a>处理流程概述</h2><p>支付处理步骤如下所示：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a3915ace-dea7-403f-9a74-ae2a0df62612-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a3915ace-dea7-403f-9a74-ae2a0df62612-3807603.jpg"></p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><h3 id="前端发起"><a href="#前端发起" class="headerlink" title="前端发起"></a>前端发起</h3><p>具体支付界面视业务场景而定，用户选择或填写相关信息后，点击确定按钮时调用后端接口生成订单编号，然后将相关信息展示给用户确认，用户确认后再发起付款流程。发起付款流程前端关键代码如下所示：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">this</span>.$post(<span class="hljs-string">&quot;/pay/refill&quot;</span>, &#123;<br>    <span class="hljs-attr">orderNo</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">orderNo</span>,<br>    <span class="hljs-attr">fee</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">selectedPlan</span>.<span class="hljs-property">refillMoney</span>,<br>    <span class="hljs-attr">channel</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">refillChannel</span> === <span class="hljs-string">&quot;wx&quot;</span> ? <span class="hljs-number">2</span> : <span class="hljs-number">1</span>,<br>    <span class="hljs-attr">tbAmount</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">selectedPlan</span>.<span class="hljs-property">payMoney</span>,<br>    <span class="hljs-attr">tbSentAmount</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">isVip</span> ? <span class="hljs-variable language_">this</span>.<span class="hljs-property">selectedPlan</span>.<span class="hljs-property">payMoney</span> * <span class="hljs-number">0.5</span> : <span class="hljs-number">0</span>,<br>&#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">resp</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">refillCompleted</span> = <span class="hljs-literal">true</span>;<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">refillChannel</span> === <span class="hljs-string">&quot;wx&quot;</span>) &#123;<br>        <span class="hljs-variable language_">this</span>.$goPath(<span class="hljs-string">&quot;/user/pay/wx-pay&quot;</span>, resp);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// 支付宝</span><br>        <span class="hljs-comment">// 打开单独的支付宝页面</span><br>        <span class="hljs-variable language_">this</span>.$goPath(<span class="hljs-string">&quot;/user/pay/ali-pay&quot;</span>, resp);<br>    &#125;<br>&#125;);<br></code></pre>
+
+<p>注意demo项目支持微信与支付宝两种支付方式，因此前端选择完后会将所选择的方式、金额等信息传给后台生成支付表单。</p>
+<h3 id="支付表单生成"><a href="#支付表单生成" class="headerlink" title="支付表单生成"></a>支付表单生成</h3><ol>
+<li>依赖包下载：后端需要使用到阿里的包，maven地址： <pre class="highlight"><code class="hljs java">&lt;dependency&gt;<br>    &lt;groupId&gt;com.alipay.sdk&lt;/groupId&gt;<br>    &lt;artifactId&gt;alipay-sdk-java&lt;/artifactId&gt;<br>    &lt;version&gt;<span class="hljs-number">4.10</span><span class="hljs-number">.111</span>.ALL&lt;/version&gt;<br>&lt;/dependency&gt;<br></code></pre></li>
+<li>订单生成<br> 前端发起订单生成请求后，后端生成订单记录，并根据微信还是支付宝来判断调用微信还是支付宝接口完成支付表单生成。 <pre class="highlight"><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 充值</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> refill 充值</span><br><span class="hljs-comment">* <span class="hljs-doctag">@return</span> 支付相关信息</span><br><span class="hljs-comment">*/</span><br><span class="hljs-meta">@PreAuthorize(&quot;isAuthenticated()&quot;)</span><br><span class="hljs-meta">@PostMapping(&quot;/refill&quot;)</span><br><span class="hljs-keyword">public</span> PayDTO <span class="hljs-title function_">refill</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> <span class="hljs-meta">@Validated</span> RefillDTO refill)</span> &#123;<br>    <span class="hljs-type">UserDTO</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.getLoginUserOrThrow();<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == tradeService.findByNo(refill.getOrderNo())) &#123;<br>        <span class="hljs-comment">// 保存订单</span><br>        <span class="hljs-type">TradeDTO</span> <span class="hljs-variable">tradeDTO</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TradeDTO</span>();<br>        ...<br>            tradeService.save(user, tradeDTO);<br>    &#125;<br><br>    <span class="hljs-comment">// 获取支付表单信息</span><br>    <span class="hljs-keyword">if</span> (refill.getChannel().equals(TradeChannel.WX)) &#123;<br>        <span class="hljs-comment">// 微信</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">openId</span> <span class="hljs-operator">=</span> user.getWxOpenId();<br>        <span class="hljs-keyword">if</span> (refill.getPlatform().equals(<span class="hljs-number">1</span>)) &#123;<br>            openId = user.getMpOpenId();<br>        &#125;<br>        <span class="hljs-keyword">return</span> wxPayService.getPayUrl(openId, refill.getOrderNo(), refill.getFee(), TradeType.REFILL, refill.getPlatform());<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (refill.getChannel().equals(TradeChannel.ALIPAY)) &#123;<br>        <span class="hljs-comment">// 支付宝</span><br>        <span class="hljs-keyword">return</span> aliPayService.getPayForm(refill.getOrderNo(), refill.getFee(), TradeType.REFILL, refill.getPlatform());<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnsupportedOperationException</span>(<span class="hljs-string">&quot;不支持的支付渠道&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></li>
+<li>支付表单生成 <pre class="highlight"><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 获取支付表单</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> orderNo   订单号</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> fee       订单金额</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> tradeType 交易类型</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> platform  平台，0：WEB；1：移动端</span><br><span class="hljs-comment">* <span class="hljs-doctag">@return</span> 下单表单</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> PayDTO <span class="hljs-title function_">getPayForm</span><span class="hljs-params">(String orderNo, Double fee, TradeType tradeType, Integer platform)</span> &#123;<br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">isH5</span> <span class="hljs-operator">=</span> Optional.ofNullable(platform).orElse(<span class="hljs-number">0</span>).equals(<span class="hljs-number">1</span>);<br><br>    <span class="hljs-type">AlipayClient</span> <span class="hljs-variable">alipayClient</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DefaultAlipayClient</span>(API_URL, APP_ID, APP_KEY, <span class="hljs-string">&quot;json&quot;</span>, <span class="hljs-string">&quot;utf-8&quot;</span>, ZFB_PUBLIC_KEY, SIGN_TYPE);<br><br>    Map&lt;String, String&gt; params = MapEnhancer.&lt;String, String&gt;create()<br>        .put(<span class="hljs-string">&quot;out_trade_no&quot;</span>, orderNo)<br>        .put(<span class="hljs-string">&quot;total_amount&quot;</span>, String.format(<span class="hljs-string">&quot;%.2f&quot;</span>, fee))<br>        .put(<span class="hljs-string">&quot;subject&quot;</span>, tradeType.getName())<br>        .put(<span class="hljs-string">&quot;product_code&quot;</span>, <span class="hljs-string">&quot;FAST_INSTANT_TRADE_PAY&quot;</span>)<br>        .get();<br><br>    String body;<br><br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-keyword">if</span> (isH5) &#123;<br>            <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) &#123;<br>                logger.debug(<span class="hljs-string">&quot;return url: &#123;&#125;&quot;</span>, h5ReturnUrl);<br>            &#125;<br><br>            <span class="hljs-type">AlipayTradeWapPayRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AlipayTradeWapPayRequest</span>();<br>            request.setBizContent(JSONObject.toJSONString(params));<br>            request.setReturnUrl(h5ReturnUrl);<br>            request.setNotifyUrl(notifyUrl);<br><br>            body = alipayClient.pageExecute(request).getBody();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-type">AlipayTradePagePayRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AlipayTradePagePayRequest</span>();<br>            request.setBizContent(JSONObject.toJSONString(params));<br>            request.setReturnUrl(returnUrl);<br>            request.setNotifyUrl(notifyUrl);<br>            body = alipayClient.pageExecute(request).getBody();<br>        &#125;<br>    &#125; <span class="hljs-keyword">catch</span> (AlipayApiException e) &#123;<br>        logger.error(<span class="hljs-string">&quot;生成支付宝支付表单失败&quot;</span>, e);<br>        <span class="hljs-keyword">throw</span> BusinessException.create(<span class="hljs-string">&quot;生成支付宝支付表单失败&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) &#123;<br>        logger.debug(<span class="hljs-string">&quot;支付表单内容: &#123;&#125;&quot;</span>, body);<br>    &#125;<br><br>    <span class="hljs-type">PayDTO</span> <span class="hljs-variable">payDTO</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PayDTO</span>();<br>    payDTO.setFee(fee);<br>    payDTO.setOrderNo(orderNo);<br>    payDTO.setCodeUrl(body);<br>    <span class="hljs-keyword">return</span> payDTO;<br>&#125;<br></code></pre></li>
+</ol>
+<p>其中API_URL为支付宝网关地址（ <a target="_blank" rel="noopener" href="https://openapi.alipay.com/gateway.do">https://openapi.alipay.com/gateway.do</a> ），APP_ID为支付宝开放平台中的应用id， APP_KEY为前面密钥配置中的应用私钥；ZFB_PUBLIC_KEY为密钥配置中的支付宝公钥。</p>
+<p>注意需要根据h5及pc网站类型来判断使用哪个API；API关键参数如下：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/fe59435a-1dfe-43e9-ac1a-7af448b45778-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/fe59435a-1dfe-43e9-ac1a-7af448b45778-3807603.jpg"></p>
+<p>调用接口成功后将请求返回的数据与订单号、交易金额一起返回给前端，由前端进行下一步处理。</p>
+<p>另外在调用接口时，还需要指定returnUrl与notifyUrl，其中returnUrl是支付宝在用户支付完成后跳转到的页面；notifyUrl是用于接收支付宝支付结果的地址（一般为后端地址，由支付宝调用）；</p>
+<h3 id="前端跳转处理"><a href="#前端跳转处理" class="headerlink" title="前端跳转处理"></a>前端跳转处理</h3><p>前端接收到后端生成的支付表单后，跳转到一个专门的页面，将返回的内容加载到页面中，并自动触发表单提交，处理如下：(ali-pay.vue)</p>
+<pre class="highlight"><code class="hljs html"><br><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 支付宝支付界面 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ali-pay box-shadow mt-4 border-radius&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">v-html</span>=<span class="hljs-string">&quot;payInfo.codeUrl&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;pay&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">components</span>: &#123;&#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">props</span>: [],</span><br><span class="language-javascript">    <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-attr">payInfo</span>: &#123;&#125;,</span><br><span class="language-javascript">        &#125;;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">this</span>.<span class="hljs-property">payInfo</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$route</span>.<span class="hljs-property">query</span>;</span><br><span class="language-javascript"> </span><br><span class="language-javascript">        <span class="hljs-variable language_">this</span>.$nextTick(<span class="hljs-function">() =&gt;</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>.<span class="hljs-property">pay</span>.<span class="hljs-property">children</span>[<span class="hljs-number">0</span>].<span class="hljs-title function_">submit</span>();</span><br><span class="language-javascript">        &#125;);</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>: &#123;&#125;,</span><br><span class="language-javascript">&#125;;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;scss&quot;</span>&gt;</span><br>.ali-pay &#123;<br>&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+<p>经过以上处理，h5端将会调起支付宝软件进行支付，web端则会显示二维码或账号输入页面。</p>
+<h3 id="支付返回页面处理及支付状态更新"><a href="#支付返回页面处理及支付状态更新" class="headerlink" title="支付返回页面处理及支付状态更新"></a>支付返回页面处理及支付状态更新</h3><p>用户支付完成后，支付宝将会返回生成表单时指定的returnUrl地址，同时会附带订单号在查询参数中；在这个页面中我们可以根据订单号，通过后台调用支付宝接口查询订单状态，然后依此来更新系统订单支付状态。</p>
+<p>前端页面如下（待完善，可以在trade&#x2F;status接口返回查询的订单状态，在页面做相应提示）：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 支付宝支付界面 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;ali-pay-success box-shadow mt-4 border-radius p-4&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>            支付成功，您可以进入<br>            <span class="hljs-tag">&lt;<span class="hljs-name">el-button</span></span><br><span class="hljs-tag">                <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span></span><br><span class="hljs-tag">                @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;$goPath(&#x27;/user/account/refill-history&#x27;)&quot;</span></span><br><span class="hljs-tag">                &gt;</span>充值记录&lt;/el-button<br>            &gt;查看历史记录<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    <span class="hljs-attr">components</span>: &#123;&#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">props</span>: [],</span><br><span class="language-javascript">    <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-attr">payInfo</span>: &#123;&#125;,</span><br><span class="language-javascript">        &#125;;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-title function_">mounted</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">this</span>.<span class="hljs-property">payInfo</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">$route</span>.<span class="hljs-property">query</span>;</span><br><span class="language-javascript"> </span><br><span class="language-javascript">        <span class="hljs-comment">// 更新支付状态</span></span><br><span class="language-javascript">        <span class="hljs-variable language_">this</span>.$get(<span class="hljs-string">&quot;/trade/status&quot;</span>, &#123; <span class="hljs-attr">no</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">payInfo</span>.<span class="hljs-property">out_trade_no</span> &#125;);</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>: &#123;&#125;,</span><br><span class="language-javascript">&#125;;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;scss&quot;</span>&gt;</span><br>.ali-pay-success &#123;<br>&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<p>后端&#x2F;trade&#x2F;status接口实现如下：</p>
+<pre class="highlight"><code class="hljs java">    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 查询交易状态</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> no 交易编号</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 交易状态，0：失败，1：成功，2：未知</span><br><span class="hljs-comment">     */</span><br><span class="hljs-meta">@GetMapping(&quot;/status&quot;)</span><br><span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getTradeStatus</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam(&quot;no&quot;)</span> String no)</span> &#123;<br>    <span class="hljs-type">TradeDTO</span> <span class="hljs-variable">trade</span> <span class="hljs-operator">=</span> tradeService.findByNo(no);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == trade) &#123;<br>        <span class="hljs-keyword">throw</span> BusinessException.create(<span class="hljs-string">&quot;订单不存在&quot;</span>);<br>    &#125;<br> <br>    <span class="hljs-keyword">if</span> (trade.getState() == <span class="hljs-number">1</span> || trade.getState() == <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">return</span> trade.getState();<br>    &#125;<br> <br>    <span class="hljs-comment">// 交易状态未知时，通过相关支付服务查询状态</span><br>    <span class="hljs-keyword">if</span> (trade.getChannel().equals(TradeChannel.WX)) &#123;<br>        <span class="hljs-keyword">return</span> wxPayService.getTradeStatus(trade);<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (trade.getChannel().equals(TradeChannel.ALIPAY)) &#123;<br>        <span class="hljs-keyword">return</span> aliPayService.getTradeStatus(trade);<br>    &#125;<br> <br>    <span class="hljs-keyword">return</span> trade.getState();<br>&#125;<br></code></pre>
+
+<p>这里先在系统里面查询订单状态（状态可能已经变更，因为我们同时会接收支付宝支付成功的通知），如果订单状态未知，那么通过支付宝或微信支付的接口更新订单状态。</p>
+<p>支付宝支付状态查询接口实现：</p>
+<pre class="highlight"><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 获取订单状态</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> trade 订单信息</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 订单状态</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getTradeStatus</span><span class="hljs-params">(TradeDTO trade)</span> &#123;<br>    <span class="hljs-type">AlipayClient</span> <span class="hljs-variable">alipayClient</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DefaultAlipayClient</span>(API_URL, APP_ID, APP_KEY, <span class="hljs-string">&quot;json&quot;</span>, <span class="hljs-string">&quot;utf-8&quot;</span>, ZFB_PUBLIC_KEY, SIGN_TYPE);<br> <br>    <span class="hljs-type">AlipayTradeQueryRequest</span> <span class="hljs-variable">request</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AlipayTradeQueryRequest</span>();<br>    Map&lt;String, String&gt; params = MapEnhancer.&lt;String, String&gt;create()<br>            .put(<span class="hljs-string">&quot;out_trade_no&quot;</span>, trade.getNo())<br>            .get();<br>    request.setBizContent(JSONObject.toJSONString(params));<br>    AlipayTradeQueryResponse response;<br>    <span class="hljs-keyword">try</span> &#123;<br>        response = alipayClient.execute(request);<br>    &#125; <span class="hljs-keyword">catch</span> (AlipayApiException e) &#123;<br>        logger.error(<span class="hljs-string">&quot;查询订单状态失败&quot;</span>, e);<br>        <span class="hljs-keyword">return</span> trade.getState();<br>    &#125;<br> <br>    <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) &#123;<br>        logger.debug(<span class="hljs-string">&quot;订单信息: &#123;&#125;&quot;</span>, JSONObject.toJSONString(response));<br>    &#125;<br> <br>    <span class="hljs-keyword">if</span> (response.isSuccess()) &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">tradeStatus</span> <span class="hljs-operator">=</span> response.getTradeStatus();<br>        <span class="hljs-keyword">if</span> (tradeStatus.equals(<span class="hljs-string">&quot;TRADE_SUCCESS&quot;</span>) || tradeStatus.equals(<span class="hljs-string">&quot;TRADE_FINISHED&quot;</span>)) &#123;<br>            tradeService.tradeSuccess(trade);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tradeStatus.equals(<span class="hljs-string">&quot;TRADE_CLOSED&quot;</span>)) &#123;<br>            tradeService.tradeFailed(trade);<br>        &#125;<br>    &#125;<br> <br>    <span class="hljs-keyword">return</span> trade.getState();<br>&#125;<br></code></pre>
+
+<p>注意查询到结果后，需要更新交易状态，并视情况进行下一步的业务处理，如用户充值的就得增加用户余额等。</p>
+<h3 id="支付结果接收"><a href="#支付结果接收" class="headerlink" title="支付结果接收"></a>支付结果接收</h3><p>至此支付过程基本已经完成。但某些情况用户支付完成后并未返回我们指定的页面，如用户可能直接关闭浏览器等极端情况，因此必须与支付宝推送结果的方式结合，来防止状态不一致。</p>
+<p>接收支付宝支付结果的接口实现如下：</p>
+<pre class="highlight"><code class="hljs java"><span class="hljs-meta">@RequestMapping(&quot;ali-notify&quot;)</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">aliNotify</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam</span> Map&lt;String, String&gt; params)</span> &#123;<br>    <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) &#123;<br>        logger.debug(<span class="hljs-string">&quot;收到支付宝通知: &#123;&#125;&quot;</span>, params);<br>    &#125;<br> <br>    <span class="hljs-keyword">return</span> aliPayService.parseAndSaveTradeResult(params);<br>&#125;<br></code></pre>
+
+<p>具体service方法实现如下：</p>
+<pre class="highlight"><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* 解析通知结果并保存</span><br><span class="hljs-comment">*</span><br><span class="hljs-comment">* <span class="hljs-doctag">@param</span> params 通知结果</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">public</span> String <span class="hljs-title function_">parseAndSaveTradeResult</span><span class="hljs-params">(Map&lt;String, String&gt; params)</span> &#123;<br>    <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) &#123;<br>        logger.debug(<span class="hljs-string">&quot;接收到支付宝支付结果: &#123;&#125;&quot;</span>, params);<br>    &#125;<br> <br>    <span class="hljs-comment">// 结果验签</span><br>    <span class="hljs-type">boolean</span> signVerified;<br>    <span class="hljs-keyword">try</span> &#123;<br>        signVerified = AlipaySignature.rsaCheckV1(params, ZFB_PUBLIC_KEY, <span class="hljs-string">&quot;utf-8&quot;</span>, SIGN_TYPE);<br>    &#125; <span class="hljs-keyword">catch</span> (AlipayApiException e) &#123;<br>        logger.error(<span class="hljs-string">&quot;验签失败&quot;</span>, e);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;failure&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (!signVerified) &#123;<br>        logger.warn(<span class="hljs-string">&quot;验签失败，通知内容：&#123;&#125;&quot;</span>, params);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;failure&quot;</span>;<br>    &#125;<br> <br>    <span class="hljs-type">String</span> <span class="hljs-variable">orderNo</span> <span class="hljs-operator">=</span> MapUtils.getString(params, <span class="hljs-string">&quot;out_trade_no&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-keyword">if</span> (StringUtils.isBlank(orderNo)) &#123;<br>        logger.warn(<span class="hljs-string">&quot;订单号为空，通知内容：&#123;&#125;&quot;</span>, params);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>    &#125;<br> <br>    <span class="hljs-comment">// 根据订单号查询订单</span><br>    <span class="hljs-type">TradeDTO</span> <span class="hljs-variable">trade</span> <span class="hljs-operator">=</span> tradeService.findByNo(orderNo);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == trade) &#123;<br>        logger.warn(<span class="hljs-string">&quot;订单不存在，通知内容：&#123;&#125;&quot;</span>, params);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>    &#125;<br> <br>    <span class="hljs-keyword">if</span> (trade.getState() == <span class="hljs-number">1</span>) &#123;<br>        logger.debug(<span class="hljs-string">&quot;订单已成功&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>    &#125;<br> <br>    <span class="hljs-type">String</span> <span class="hljs-variable">tradeStatus</span> <span class="hljs-operator">=</span> MapUtils.getString(params, <span class="hljs-string">&quot;trade_status&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-keyword">if</span> (tradeStatus.equals(<span class="hljs-string">&quot;TRADE_SUCCESS&quot;</span>) || tradeStatus.equals(<span class="hljs-string">&quot;TRADE_FINISHED&quot;</span>)) &#123;<br>        trade.setState(<span class="hljs-number">1</span>);<br>        tradeService.tradeSuccess(trade);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        trade.setState(<span class="hljs-number">0</span>);<br>        tradeService.tradeFailed(trade);<br>    &#125;<br> <br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;success&quot;</span>;<br>&#125;<br></code></pre>
+
+<p>注意如果查询到支付状态是成功的，就需要进行下一步的业务处理了，如增加用户余额等。</p>
+<p>实际交易成功处理，因为同一笔订单可能会有两个进程更新交易状态（通道消息和主动查询的消息），这两个操作肯定只能有一个操作能够生效；如果是单节点情况，可以通过JVM锁来控制；如果多节点的，就需要通过分页式锁来控制了。demo项目里面是采用了Redis实现了个简单的分布式锁处理，具体实现方案网上一大堆，不在此展开。</p>
+<p>另外，可以看到demo里面有很多关于微信支付与支付宝支付的判断，这是因为demo同时支持了微信支付与支付宝支付；这两者的支付过程基本类似，本文主要讲的是支付宝支付，微信的未展开，后续再单独对微信支付实现做一个补充。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/leehomlian/article/details/114588616">支付宝支付前后端实现(Vue+Spring Boot)</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/28/ADesignProposalForAProject/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">一个项目的设计方案 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/28/AcrossDomainsAndSolutions/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">什么是跨域以及几种简单解决方案 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">应用创建与配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="toc-text">处理流程概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%8F%91%E8%B5%B7"><span class="toc-text">前端发起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90"><span class="toc-text">支付表单生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E8%B7%B3%E8%BD%AC%E5%A4%84%E7%90%86"><span class="toc-text">前端跳转处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%BF%94%E5%9B%9E%E9%A1%B5%E9%9D%A2%E5%A4%84%E7%90%86%E5%8F%8A%E6%94%AF%E4%BB%98%E7%8A%B6%E6%80%81%E6%9B%B4%E6%96%B0"><span class="toc-text">支付返回页面处理及支付状态更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E7%BB%93%E6%9E%9C%E6%8E%A5%E6%94%B6"><span class="toc-text">支付结果接收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-text">应用创建与配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0"><span class="toc-text">处理流程概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E5%8F%91%E8%B5%B7"><span class="toc-text">前端发起</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%A1%A8%E5%8D%95%E7%94%9F%E6%88%90"><span class="toc-text">支付表单生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E8%B7%B3%E8%BD%AC%E5%A4%84%E7%90%86"><span class="toc-text">前端跳转处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E8%BF%94%E5%9B%9E%E9%A1%B5%E9%9D%A2%E5%A4%84%E7%90%86%E5%8F%8A%E6%94%AF%E4%BB%98%E7%8A%B6%E6%80%81%E6%9B%B4%E6%96%B0"><span class="toc-text">支付返回页面处理及支付状态更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%AF%E4%BB%98%E7%BB%93%E6%9E%9C%E6%8E%A5%E6%94%B6"><span class="toc-text">支付结果接收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/understandTheRequireImplementationPrinciple/"><div class="recent-posts-item-content">彻底搞懂 Node.js 中的 Require 机制(源码分析到手写实践)</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

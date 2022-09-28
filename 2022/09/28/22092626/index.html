@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>都9102年了，还问GET和POST的区别</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="都9102年了，还问GET和POST的区别">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/28/22092626/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-28">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-28">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络原理">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>236</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>48</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">207</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      都9102年了，还问GET和POST的区别
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/22092626.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-28T03:33:37.096Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-28</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+            class="post-meta-link">
+            网络原理
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近看了一些同学的面经，发现无论什么技术岗位，还是会问到 get 和 post 的区别，而搜索出来的答案并不能让我们装得一手好逼，那就让我们从 HTTP 报文的角度来撸一波，从而搞明白他们的区别。</p>
+<h2 id="标准答案"><a href="#标准答案" class="headerlink" title="标准答案"></a>标准答案</h2><p>在开撸之前吗，让我们先看一下标准答案长什么样子 w3school: GET 对比 POST。标准答案很美好，但是在面试的时候把标准答案一说可能并不符合面试官的预期。</p>
+<p>注意，并不是说标准答案有误，上述区别在大部分浏览器上是存在的，因为这些浏览器实现了 HTTP 标准。</p>
+<p>所以从标准上来看，GET 和 POST 的区别如下：</p>
+<ul>
+<li>GET 用于获取信息，是无副作用的，是幂等的，且可缓存</li>
+<li>POST 用于修改服务器上的数据，有副作用，非幂等，不可缓存</li>
+</ul>
+<p>但是，既然本文从报文角度来说，那就先不讨论 RFC 上的区别，单纯从数据角度谈谈。</p>
+<h2 id="GET-和-POST-报文上的区别"><a href="#GET-和-POST-报文上的区别" class="headerlink" title="GET 和 POST 报文上的区别"></a>GET 和 POST 报文上的区别</h2><p>先下结论，GET 和 POST 方法没有实质区别，只是报文格式不同。</p>
+<p>GET 和 POST 只是 HTTP 协议中两种请求方式，而 HTTP 协议是基于 TCP&#x2F;IP 的应用层协议，无论 GET 还是 POST，用的都是同一个传输层协议，所以在传输上，没有区别。</p>
+<p>报文格式上，不带参数时，最大区别就是第一行方法名不同</p>
+<p>POST方法请求报文第一行是这样的 POST &#x2F;uri HTTP&#x2F;1.1 \r\n</p>
+<p>GET方法请求报文第一行是这样的 GET &#x2F;uri HTTP&#x2F;1.1 \r\n</p>
+<p>是的，不带参数时他们的区别就仅仅是报文的前几个字符不同而已</p>
+<p>带参数时报文的区别呢？ 在约定中，GET 方法的参数应该放在 url 中，POST 方法参数应该放在 body 中</p>
+<p>举个例子，如果参数是 name&#x3D;qiming.c, age&#x3D;22。</p>
+<p>GET 方法简约版报文是这样的</p>
+<pre class="highlight"><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/index.php?name=qiming.c&amp;age=22</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>localhost<br></code></pre>
+
+<p>POST 方法简约版报文是这样的</p>
+<pre class="highlight"><code class="hljs fortran">POST /<span class="hljs-built_in">index</span>.php HTTP/<span class="hljs-number">1.1</span><br>Host: localhost<br>Content-<span class="hljs-keyword">Type</span>: application/x-www-<span class="hljs-keyword">form</span>-urlencoded<br><span class="hljs-keyword">name</span>=qiming.c&amp;age=<span class="hljs-number">22</span><br></code></pre>
+
+<p>现在我们知道了两种方法本质上是 TCP 连接，没有差别，也就是说，如果我不按规范来也是可以的。我们可以在 URL 上写参数，然后方法使用 POST；也可以在 Body 写参数，然后方法使用 GET。当然，这需要服务端支持。</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="GET-方法参数写法是固定的吗？"><a href="#GET-方法参数写法是固定的吗？" class="headerlink" title="GET 方法参数写法是固定的吗？"></a>GET 方法参数写法是固定的吗？</h3><p>在约定中，我们的参数是写在 ? 后面，用 &amp; 分割。</p>
+<p>我们知道，解析报文的过程是通过获取 TCP 数据，用正则等工具从数据中获取 Header 和 Body，从而提取参数。</p>
+<p>也就是说，我们可以自己约定参数的写法，只要服务端能够解释出来就行，</p>
+<h3 id="POST-方法比-GET-方法安全？"><a href="#POST-方法比-GET-方法安全？" class="headerlink" title="POST 方法比 GET 方法安全？"></a>POST 方法比 GET 方法安全？</h3><p>按照网上大部分文章的解释，POST 比 GET 安全，因为数据在地址栏上不可见。</p>
+<p>然而，从传输的角度来说，他们都是不安全的，因为 HTTP 在网络上是明文传输的，只要在网络节点上捉包，就能完整地获取数据报文。</p>
+<p>要想安全传输，就只有加密，也就是 HTTPS。</p>
+<h3 id="GET-方法的长度限制是怎么回事？"><a href="#GET-方法的长度限制是怎么回事？" class="headerlink" title="GET 方法的长度限制是怎么回事？"></a>GET 方法的长度限制是怎么回事？</h3><p>在网上看到很多关于两者区别的文章都有这一条，提到浏览器地址栏输入的参数是有限的。</p>
+<p>首先说明一点，HTTP 协议没有 Body 和 URL 的长度限制，对 URL 限制的大多是浏览器和服务器的原因。</p>
+<p>浏览器原因就不说了，服务器是因为处理长 URL 要消耗比较多的资源，为了性能和安全（防止恶意构造长 URL 来攻击）考虑，会给 URL 长度加限制。</p>
+<h3 id="POST-方法会产生两个TCP数据包？"><a href="#POST-方法会产生两个TCP数据包？" class="headerlink" title="POST 方法会产生两个TCP数据包？"></a>POST 方法会产生两个TCP数据包？</h3><p>有些文章中提到，post 会将 header 和 body 分开发送，先发送 header，服务端返回 100 状态码再发送 body。</p>
+<p>HTTP 协议中没有明确说明 POST 会产生两个 TCP 数据包，而且实际测试(Chrome)发现，header 和 body 不会分开发送。</p>
+<p>所以，header 和 body 分开发送是部分浏览器或框架的请求方法，不属于 post 必然行为。</p>
+<h3 id="code"><a href="#code" class="headerlink" title="code"></a>code</h3><p>如果对 get 和 post 报文区别有疑惑，直接起一个 Socket 服务端，然后封装简单的 HTTP 处理方法，直接观察和处理 HTTP 报文，就能一目了然</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python</span><br><span class="hljs-comment"># -*- coding: utf-8 -*-</span><br><br><span class="hljs-keyword">import</span> socket<br><br>HOST, PORT = <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-number">23333</span><br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">server_run</span>():<br>    listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="hljs-number">1</span>)<br>    listen_socket.bind((HOST, PORT))<br>    listen_socket.listen(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Serving HTTP on port %s ...&#x27;</span> % PORT)<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        <span class="hljs-comment"># 接受连接</span><br>        client_connection, client_address = listen_socket.accept()<br>        handle_request(client_connection)<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">handle_request</span>(<span class="hljs-params">client_connection</span>):<br>    <span class="hljs-comment"># 获取请求报文</span><br>    request = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        recv_data = client_connection.recv(<span class="hljs-number">2400</span>)<br>        recv_data = recv_data.decode()<br>        request += recv_data<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(recv_data) &lt; <span class="hljs-number">2400</span>:<br>            <span class="hljs-keyword">break</span><br><br>    <span class="hljs-comment"># 解析首行</span><br>    first_line_array = request.split(<span class="hljs-string">&#x27;\r\n&#x27;</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&#x27; &#x27;</span>)<br><br>    <span class="hljs-comment"># 分离 header 和 body</span><br>    space_line_index = request.index(<span class="hljs-string">&#x27;\r\n\r\n&#x27;</span>)<br>    header = request[<span class="hljs-number">0</span>: space_line_index]<br>    body = request[space_line_index + <span class="hljs-number">4</span>:]<br><br>    <span class="hljs-comment"># 打印请求报文</span><br>    <span class="hljs-built_in">print</span>(request)<br><br>    <span class="hljs-comment"># 返回报文</span><br>    http_response = <span class="hljs-string">b&quot;&quot;&quot;\</span><br><span class="hljs-string">HTTP/1.1 200 OK</span><br><span class="hljs-string"></span><br><span class="hljs-string">&lt;!DOCTYPE html&gt;</span><br><span class="hljs-string">&lt;html&gt;</span><br><span class="hljs-string">&lt;head&gt;</span><br><span class="hljs-string">    &lt;title&gt;Hello, World!&lt;/title&gt;</span><br><span class="hljs-string">&lt;/head&gt;</span><br><span class="hljs-string">&lt;body&gt;</span><br><span class="hljs-string">&lt;p style=&quot;color: green&quot;&gt;Hello, World!&lt;/p&gt;</span><br><span class="hljs-string">&lt;/body&gt;</span><br><span class="hljs-string">&lt;/html&gt;</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>    client_connection.sendall(http_response)<br>    client_connection.close()<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    server_run()<br></code></pre>
+
+<p>上面代码就是简单的打印请求报文然后返回 HelloWorld 的 html 页面，我们运行起来</p>
+<pre class="highlight"><code class="hljs vim">[root@chengqm <span class="hljs-keyword">shell</span>]# <span class="hljs-keyword">python</span> httpserver.<span class="hljs-keyword">py</span> <br>Serving HTTP <span class="hljs-keyword">on</span> port <span class="hljs-number">23333</span> ...<br></code></pre>
+
+<p>然后从浏览器中请求看看</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8c9be8dc-bd20-4141-adfa-65aece22a131-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8c9be8dc-bd20-4141-adfa-65aece22a131-3807603.jpg"></p>
+<p>打印出来的报文</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2138ff56-921d-4b2b-a99d-defe31039409-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2138ff56-921d-4b2b-a99d-defe31039409-3807603.jpg"></p>
+<p>然后就可以手动证明上述说法，比如说要测试 header 和 body 是否分开传输，由于代码没有返回 100 状态码，如果我们 post 请求成功就说明是一起传输的(Chrome&#x2F;postman)。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/11c2b585-33cd-455c-91d4-d80800ded8f4-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/11c2b585-33cd-455c-91d4-d80800ded8f4-3807603.jpg"></p>
+<p>又比如 w3school 里面说 URL 的最大长度是 2048 个字符，那我们在代码里面加上一句计算 uri 长度的代码</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-comment"># 解析首行</span><br>first_line_array = request.split(<span class="hljs-string">&#x27;\r\n&#x27;</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">&#x27; &#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;uri长度: %s&#x27;</span> % <span class="hljs-built_in">len</span>(first_line_array[<span class="hljs-number">1</span>]))<br></code></pre>
+
+<p>我们用 postman 直接发送超过 2048 个字符的请求看看</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/79b28c2f-a4ab-40d2-8499-52bd4b2f2dc9-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/79b28c2f-a4ab-40d2-8499-52bd4b2f2dc9-3807603.jpg"></p>
+<p>然后我们可以得出结论，url 长度限制是某些浏览器和服务器的限制，和 HTTP 协议没有关系。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzI3NzIzMzg3Mw==&mid=100000054&idx=1&sn=71f6c214f3833d9ca20b9f7dcd9d33e4#rd">99%的人都理解错了HTTP中GET与POST的区别</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/38217343">关于HTTP GET 和 POST</a><br><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/tags/html_ref_httpmethods.asp">w3school: HTTP 方法：GET 对比 POST</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018129846">都9102年了，还问GET和POST的区别</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/28/22092701/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">深入 vue.js 异步响应队列 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/28/22092702/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">浅说 XSS 和 CSRF </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%AD%94%E6%A1%88"><span class="toc-text">标准答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GET-%E5%92%8C-POST-%E6%8A%A5%E6%96%87%E4%B8%8A%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">GET 和 POST 报文上的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="toc-text">常见问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E5%8F%82%E6%95%B0%E5%86%99%E6%B3%95%E6%98%AF%E5%9B%BA%E5%AE%9A%E7%9A%84%E5%90%97%EF%BC%9F"><span class="toc-text">GET 方法参数写法是固定的吗？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E6%AF%94-GET-%E6%96%B9%E6%B3%95%E5%AE%89%E5%85%A8%EF%BC%9F"><span class="toc-text">POST 方法比 GET 方法安全？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GET-%E6%96%B9%E6%B3%95%E7%9A%84%E9%95%BF%E5%BA%A6%E9%99%90%E5%88%B6%E6%98%AF%E6%80%8E%E4%B9%88%E5%9B%9E%E4%BA%8B%EF%BC%9F"><span class="toc-text">GET 方法的长度限制是怎么回事？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#POST-%E6%96%B9%E6%B3%95%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%B8%A4%E4%B8%AATCP%E6%95%B0%E6%8D%AE%E5%8C%85%EF%BC%9F"><span class="toc-text">POST 方法会产生两个TCP数据包？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#code"><span class="toc-text">code</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/understandingOfBase64/"><div class="recent-posts-item-content">面试官昨天问我对base64的理解，着实被问懵了</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/understandTheRequireImplementationPrinciple/"><div class="recent-posts-item-content">彻底搞懂 Node.js 中的 Require 机制(源码分析到手写实践)</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/urlToBrowser/"><div class="recent-posts-item-content">输入一个url到浏览器页面展示都经历了哪些过程</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-28</div>
+        <a href="/2022/09/28/usedGitBook/"><div class="recent-posts-item-content">GitBook 使用教程</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
