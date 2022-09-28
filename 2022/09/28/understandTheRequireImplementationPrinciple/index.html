@@ -525,10 +525,10 @@
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/tree/server/source/_posts/understandTheRequireImplementationPrinciple.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/understandTheRequireImplementationPrinciple.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-28T07:31:47.594Z">
+    <time datetime="2022-09-28T07:53:23.394Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -777,6 +777,7 @@
 </div>
 <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-CommonJS"><span class="toc-text">什么是 CommonJS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%88%86%E7%B1%BB"><span class="toc-text">模块分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E5%8A%A0%E8%BD%BD"><span class="toc-text">模块加载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#require-%E5%8A%A0%E8%BD%BD%E5%8E%9F%E7%90%86-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E4%B8%8E%E6%89%8B%E5%86%99"><span class="toc-text">require 加载原理(源码分析与手写)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%9F%BA%E7%A1%80%E5%87%86%E5%A4%87%E9%98%B6%E6%AE%B5"><span class="toc-text">1.基础准备阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%B7%AF%E5%BE%84%E5%88%86%E6%9E%90%E5%B9%B6%E5%AE%9A%E4%BD%8D%E5%88%B0%E6%96%87%E4%BB%B6"><span class="toc-text">2.路径分析并定位到文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%88%A4%E6%96%AD%E6%A8%A1%E5%9D%97%E6%98%AF%E5%90%A6%E5%8A%A0%E8%BD%BD%E8%BF%87-%E7%BC%93%E5%AD%98%E5%88%A4%E6%96%AD"><span class="toc-text">3.判断模块是否加载过(缓存判断)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%8E%BB%E5%8A%A0%E8%BD%BD-node-%E5%8E%9F%E7%94%9F%E6%A8%A1%E5%9D%97"><span class="toc-text">4.去加载 node 原生模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA-KoalaModule-%E5%AE%9E%E4%BE%8B"><span class="toc-text">5.创建一个 KoalaModule 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%B7%BB%E5%8A%A0%E7%BC%93%E5%AD%98"><span class="toc-text">6.添加缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-module-load-%E7%9C%9F%E6%AD%A3%E7%9A%84%E5%8E%BB%E5%8A%A0%E8%BD%BD%E4%BB%A3%E7%A0%81"><span class="toc-text">7.module.load 真正的去加载代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E8%BF%94%E5%9B%9E%E6%A8%A1%E5%9D%97%E7%9A%84-module-exports"><span class="toc-text">8.返回模块的 module.exports</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#require-%E5%8E%9F%E7%90%86%E7%90%86%E8%A7%A3%E5%90%8E%E7%9A%84%E6%80%9D%E8%80%83"><span class="toc-text">require 原理理解后的思考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#require%E5%8A%A0%E8%BD%BD%E6%98%AF%E5%90%8C%E6%AD%A5%E8%BF%98%E6%98%AF%E5%BC%82%E6%AD%A5"><span class="toc-text">require加载是同步还是异步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#exports%E5%92%8Cmodule-exports%E7%9A%84%E5%8C%BA%E5%88%AB%E7%A9%B6%E7%AB%9F%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">exports和module.exports的区别究竟是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#require-%E4%BC%9A%E4%B8%8D%E4%BC%9A%E9%80%A0%E6%88%90%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">require 会不会造成循环引用的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#require%E6%98%AF%E6%80%8E%E4%B9%88%E6%9D%A5%E7%9A%84%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5%E7%9B%B4%E6%8E%A5%E5%9C%A8%E4%B8%80%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%AD%E4%BD%BF%E7%94%A8require"><span class="toc-text">require是怎么来的，为什么可以直接在一个文件中使用require</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85"><span class="toc-text">补充</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
 </div>
+
             </main>
             <aside class="right-column">
               <div class="sticky-widescreen">
@@ -805,22 +806,22 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-28</div>
-        <a href="/2022/09/28/thisScopeDetail/"><div class="recent-posts-item-content">javascript中的this作用域详解</div></a>
+        <a href="/2022/09/28/webpackProfile/"><div class="recent-posts-item-content">Webpack简介</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-28</div>
-        <a href="/2022/09/28/threeCSSLayouts/"><div class="recent-posts-item-content">CSS-水平居中、垂直居中、水平垂直居中</div></a>
+        <a href="/2022/09/28/websitePerformanceOptimization/"><div class="recent-posts-item-content">网站性能监测与优化策略</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-28</div>
-        <a href="/2022/09/28/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+        <a href="/2022/09/28/whyAwaitCannotBeUsedInForEach/"><div class="recent-posts-item-content">重学 JS：为啥 await 不能用在 forEach 中</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2022-09-28</div>
-        <a href="/2022/09/28/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+        <a href="/2022/09/28/whyBinarySearchTreesWhenHashTablesAreSoGood/"><div class="recent-posts-item-content">散列表那么优秀，为什么还要二叉查找树？</div></a>
       </div>
     
   </div>
