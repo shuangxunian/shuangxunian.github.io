@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>一文彻底理解JavaScript的深拷贝与浅拷贝</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="一文彻底理解JavaScript的深拷贝与浅拷贝">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/29/22092609/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>240</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>49</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A4%E8%AF%86%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">认识深拷贝和浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="toc-text">深拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%B8%80%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89%EF%BC%9A"><span class="toc-text">简单深拷贝常用的方法如下（一维的数据结构）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%BA%8C%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E4%BB%A5%E4%B8%8A%EF%BC%89%EF%BC%9A"><span class="toc-text">复杂深拷贝常用的方法如下（二维的数据结构及以上）：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-text">深拷贝不同方法的性能对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-text">二维</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">211</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      一文彻底理解JavaScript的深拷贝与浅拷贝
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092609.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-29T05:55:51.435Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-29</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.8k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="认识深拷贝和浅拷贝"><a href="#认识深拷贝和浅拷贝" class="headerlink" title="认识深拷贝和浅拷贝"></a>认识深拷贝和浅拷贝</h2><p>javascript中一般有按值传递和按引用传递两种复制方式:</p>
+<p>按值传递的是基本数据类型（Number,String,Boolean,Null,Undefined,Symbol），一般存放于内存中的栈区，存取速度快，存放量小；</p>
+<p>按引用传递的是引用类型（Object,Array,Function），一般存放与内存中的堆区，存取速度慢，存放量大，其引用指针存于栈区，并指向引用本身。</p>
+<p>深拷贝和浅拷贝是相对于引用类型而言的：</p>
+<ul>
+<li>浅拷贝： 指两个js 对象指向同一个内存地址，其中一个改变会影响另一个；</li>
+<li>深拷贝： 指复制后的新对象重新指向一个新的内存地址，两个对象改变互不影响</li>
+</ul>
+<h2 id="浅拷贝"><a href="#浅拷贝" class="headerlink" title="浅拷贝"></a>浅拷贝</h2><p>浅拷贝常用的方法如下：</p>
+<ol>
+<li>简单的赋值操作：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> arr = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];<br><span class="hljs-keyword">var</span> newarr = arr;<br>newarr[<span class="hljs-number">0</span>] = <span class="hljs-string">&quot;one&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr);    <span class="hljs-comment">//  [&quot;one&quot;, 2, 3]</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newarr);    <span class="hljs-comment">//  [&quot;one&quot;, 2, 3]</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr==newarr);   <span class="hljs-comment">//  true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr===newarr);  <span class="hljs-comment">//  true</span><br></code></pre></li>
+<li>Object.assign()方法是ES6的新函数，可以把任意多个的源对象自身的可枚举属性拷贝给目标对象，然后返回目标对象。拷贝的是对象的属性的引用，而不是对象本身,但是也可以实现一层深拷贝：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, obj);<br>newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span> = <span class="hljs-string">&quot;hello world&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &#123;a: &quot;hello world&quot;&#125;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &#123;a: &quot;hello world&quot;&#125;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>==newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>);   <span class="hljs-comment">//  true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>===newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>);  <span class="hljs-comment">//  true</span><br></code></pre></li>
+<li>$.extend({},obj)使用递归思路实现了浅拷贝和深拷贝，第一个参数类型为Boolean,当为false的时候必须省略不写则是浅拷贝，当为true的时候为深拷贝：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = $.<span class="hljs-title function_">extend</span>(&#123;&#125;, obj);<br>newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span> = <span class="hljs-string">&quot;hello world&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &#123;a: &quot;hello world&quot;&#125;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &#123;a: &quot;hello world&quot;&#125;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>==newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>);   <span class="hljs-comment">//  true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>===newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span>);  <span class="hljs-comment">//  true</span><br></code></pre></li>
+</ol>
+<p>浅拷贝是我们经常使用的操作一些对象或数组的有效方法，具体的使用需要结合实际场景来合理的使用，还要考虑一些兼容性的问题，但是在大多实际情景下我们需要使用更多的是深拷贝，尤其是在各种MVVM框架中，引入了状态管理，更多的体现在数据流中希望我们不改变原对象，这样的话实现深拷贝就显得尤为重要。</p>
+<h2 id="深拷贝"><a href="#深拷贝" class="headerlink" title="深拷贝"></a>深拷贝</h2><h3 id="简单深拷贝常用的方法如下（一维的数据结构）："><a href="#简单深拷贝常用的方法如下（一维的数据结构）：" class="headerlink" title="简单深拷贝常用的方法如下（一维的数据结构）："></a>简单深拷贝常用的方法如下（一维的数据结构）：</h3><ol>
+<li>手动的赋值操作：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">10</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">20</span>&#125;;<br><span class="hljs-keyword">var</span> newObj = &#123; <span class="hljs-attr">a</span>: obj.<span class="hljs-property">a</span>, <span class="hljs-attr">b</span>: obj.<span class="hljs-property">b</span>&#125;;<br>newObj.<span class="hljs-property">b</span> = <span class="hljs-number">100</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">// &#123; a: 10, b: 20&#125;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: 10, b: 100&#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj == newObj);    <span class="hljs-comment">//  false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj === newObj);    <span class="hljs-comment">//  false</span><br></code></pre></li>
+<li>Object.assign()方法是ES6的新函数，只能简单的复制一层属性到目标对象，还得考虑兼容性：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, obj);<br>newObj.<span class="hljs-property">b</span> = <span class="hljs-number">100</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &quot;hello&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &quot;hello&quot;, b: 100 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj==newObj);   <span class="hljs-comment">//  false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj===newObj);  <span class="hljs-comment">//  false</span><br></code></pre></li>
+</ol>
+<h3 id="复杂深拷贝常用的方法如下（二维的数据结构及以上）："><a href="#复杂深拷贝常用的方法如下（二维的数据结构及以上）：" class="headerlink" title="复杂深拷贝常用的方法如下（二维的数据结构及以上）："></a>复杂深拷贝常用的方法如下（二维的数据结构及以上）：</h3><ol>
+<li>JSON.parse(JSON.stringify(obj))是最简单粗暴的深拷贝，能够处理JSON格式的所有数据类型，但是对于正则表达式类型、函数类型等无法进行深拷贝，而且会直接丢失相应的值，还有就是它会抛弃对象的constructor。也就是深拷贝之后，不管这个对象原来的构造函数是什么，在深拷贝之后都会变成Object。同时如果对象中存在循环引用的情况也无法正确处理：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(obj));<br>newObj.<span class="hljs-property">b</span> = <span class="hljs-string">&quot;hello world&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &quot;hello&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &quot;hello world&quot;, b: 33&#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj==newObj);   <span class="hljs-comment">//  false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj===newObj);  <span class="hljs-comment">//  false</span><br></code></pre></li>
+<li>$.extend(true,{},obj)使用递归思路可以实现深拷贝，要求第一个参数必须为true:  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = $.<span class="hljs-title function_">extend</span>(<span class="hljs-literal">true</span>, &#123;&#125;, obj);<br>newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span> = <span class="hljs-string">&quot;hello world&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &quot;hello&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &quot;hello world&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj==newObj);   <span class="hljs-comment">//  false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj===newObj);  <span class="hljs-comment">//  false</span><br></code></pre></li>
+<li>lodash中的_.clone(obj, true)等价于_.cloneDeep(obj) 两个方法，lodash花了大量的代码来实现ES6引入的大量新的标准对象,并针对存在环的对象的处理也是非常出色的，因此对于深拷贝来说lodash和其他库相比最友好：  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-string">&quot;hello&quot;</span>&#125;, <span class="hljs-attr">b</span>: <span class="hljs-number">33</span> &#125;;<br><span class="hljs-keyword">var</span> newObj = _.<span class="hljs-title function_">cloneDeep</span>(obj);<br>newObj.<span class="hljs-property">a</span>.<span class="hljs-property">a</span> = <span class="hljs-string">&quot;hello world&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj);    <span class="hljs-comment">//  &#123; a: &quot;hello&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(newObj);    <span class="hljs-comment">//  &#123; a: &quot;hello world&quot;, b: 33 &#125;;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj==newObj);   <span class="hljs-comment">//  false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(obj===newObj);  <span class="hljs-comment">//  false</span><br></code></pre></li>
+<li>自己实现一个简单的深拷贝deepClone():  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">deepClone</span>(<span class="hljs-params">obj</span>)&#123;<br>  <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> obj !== <span class="hljs-string">&quot;object&quot;</span>) <span class="hljs-keyword">return</span>;    <br>  <span class="hljs-keyword">let</span> newObj = obj <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Array</span> ? [] : &#123;&#125;;<br>  <span class="hljs-keyword">for</span>(<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj)&#123;<br>     <span class="hljs-keyword">if</span>(obj.<span class="hljs-title function_">hasOwnProperty</span>(key))&#123;<br>        newObj[key] = <span class="hljs-keyword">typeof</span> obj[key] === <span class="hljs-string">&quot;object&quot;</span> ? <span class="hljs-title function_">deepClone</span>(obj[key]) : obj[key];<br>    &#125;      <br>  &#125;  <br>  <span class="hljs-keyword">return</span> newObj;  <br>&#125;<br><span class="hljs-keyword">let</span> obj = &#123;<span class="hljs-attr">a</span>: <span class="hljs-number">11</span>, <span class="hljs-attr">b</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;, <span class="hljs-attr">c</span>: &#123;<span class="hljs-attr">d</span>: <span class="hljs-number">22</span>&#125;&#125;;<br><span class="hljs-title function_">deepClone</span>(obj);  <span class="hljs-comment">// &#123;a: 11, b: f(), c: &#123;d: 22&#125;&#125;;</span><br></code></pre></li>
+</ol>
+<p>对于深拷贝来说最常用的就是这些方法，当然还有其他的一些库，比如deepCopy等，此外数组常用contact和slice来实现深拷贝，不同的方法有其最好的适用环境，还是那句话：”离开场景谈性能就是耍流氓”，下面用数据具体分析一下一维数据结构和二维数据结构在不同方法下的性能对比。</p>
+<h2 id="深拷贝不同方法的性能对比"><a href="#深拷贝不同方法的性能对比" class="headerlink" title="深拷贝不同方法的性能对比"></a>深拷贝不同方法的性能对比</h2><h3 id="一维"><a href="#一维" class="headerlink" title="一维"></a>一维</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = [];<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>    obj[i] = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>();<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;assign&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, obj);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;assign&quot;</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;JSON.parse(JSON.stringify())&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(obj));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;JSON.parse(JSON.stringify())&quot;</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;$.extend&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = $.<span class="hljs-title function_">extend</span>(<span class="hljs-literal">true</span>, &#123;&#125;, obj);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;$.extend&quot;</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;Loadsh.cloneDeep&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = _.<span class="hljs-title function_">cloneDeep</span>(obj);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;Loadsh.cloneDeep&quot;</span>);<br></code></pre>
+
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/f5e8276c-4c20-4db3-9a62-d7ffcd6c7e85-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/f5e8276c-4c20-4db3-9a62-d7ffcd6c7e85-3807603.jpg"></p>
+<p>经过多次实验分析发现，一维数据结构的深拷贝方法性能最佳的为Object.assign()；</p>
+<h3 id="二维"><a href="#二维" class="headerlink" title="二维"></a>二维</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = [];<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>    obj[i] = &#123;&#125;;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; <span class="hljs-number">100</span>; j++) &#123;<br>        obj[i][j] = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>();<br>    &#125;<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;JSON.parse(JSON.stringify())&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(obj));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;JSON.parse(JSON.stringify())&quot;</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;$.extend&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = $.<span class="hljs-title function_">extend</span>(<span class="hljs-literal">true</span>, &#123;&#125;, obj);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;$.extend&quot;</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">time</span>(<span class="hljs-string">&quot;Loadsh.cloneDeep&quot;</span>);<br><span class="hljs-keyword">var</span> newObj = _.<span class="hljs-title function_">cloneDeep</span>(obj);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">timeEnd</span>(<span class="hljs-string">&quot;Loadsh.cloneDeep&quot;</span>);<br></code></pre>
+
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/24e64f9d-22d3-47e2-8472-dac58d08603a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/24e64f9d-22d3-47e2-8472-dac58d08603a-3807603.jpg"></p>
+<p>经过多次实验分析发现，二维数据结构的深拷贝方法性能最佳的为JSON.parse(JSON.stringify())；</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一维数据结构的深拷贝方法建议使用：Object.assign()；</p>
+<p>二维数据结构及以上的深拷贝方法建议使用：JSON.parse(JSON.stringify())；</p>
+<p>特别复杂的数据结构的深拷贝方法建议使用：Loadsh.cloneDeep()；</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903871433687048">一文彻底理解JavaScript的深拷贝与浅拷贝</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/29/22092608/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Vue事件总线（EventBus）使用详细介绍 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/29/22092610/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">探索parseInt() 的神秘行为：parseInt(0.0000005) =＞ 5 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A4%E8%AF%86%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">认识深拷贝和浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="toc-text">深拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%B8%80%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89%EF%BC%9A"><span class="toc-text">简单深拷贝常用的方法如下（一维的数据结构）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%BA%8C%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E4%BB%A5%E4%B8%8A%EF%BC%89%EF%BC%9A"><span class="toc-text">复杂深拷贝常用的方法如下（二维的数据结构及以上）：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-text">深拷贝不同方法的性能对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-text">二维</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A4%E8%AF%86%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">认识深拷贝和浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="toc-text">浅拷贝</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D"><span class="toc-text">深拷贝</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E5%8D%95%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%B8%80%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%89%EF%BC%9A"><span class="toc-text">简单深拷贝常用的方法如下（一维的数据结构）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95%E5%A6%82%E4%B8%8B%EF%BC%88%E4%BA%8C%E7%BB%B4%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%8A%E4%BB%A5%E4%B8%8A%EF%BC%89%EF%BC%9A"><span class="toc-text">复杂深拷贝常用的方法如下（二维的数据结构及以上）：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E4%B8%8D%E5%90%8C%E6%96%B9%E6%B3%95%E7%9A%84%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="toc-text">深拷贝不同方法的性能对比</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E7%BB%B4"><span class="toc-text">一维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4"><span class="toc-text">二维</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>手摸手带你理解Vue的Computed原理</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="手摸手带你理解Vue的Computed原理">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/29/22092706/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络原理">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>240</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>49</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed-%E7%94%A8%E6%B3%95"><span class="toc-text">computed 用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%EF%BC%9A"><span class="toc-text">入口文件：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#init"><span class="toc-text">_init:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initState"><span class="toc-text">initState:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initComputed"><span class="toc-text">initComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#defineComputed"><span class="toc-text">defineComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#createComputedGetter"><span class="toc-text">createComputedGetter:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E7%BC%93%E5%AD%98%E5%8F%8A%E6%9B%B4%E6%96%B0"><span class="toc-text">计算属性缓存及更新</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98"><span class="toc-text">缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0"><span class="toc-text">更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="toc-text">依赖属性收集依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7Watcher"><span class="toc-text">收集计算属性Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">收集渲染Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E8%A6%81%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">为什么依赖属性要收集渲染Watcher</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">211</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      手摸手带你理解Vue的Computed原理
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092706.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-29T05:55:51.435Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-29</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+            class="post-meta-link">
+            网络原理
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>computed 在 Vue 中是很常用的属性配置，它能够随着依赖属性的变化而变化，为我们带来很大便利。那么本文就来带大家全面理解 computed 的内部原理以及工作流程。</p>
+<p>在这之前，希望你能够对响应式原理有一些理解，因为 computed 是基于响应式原理进行工作。</p>
+<h2 id="computed-用法"><a href="#computed-用法" class="headerlink" title="computed 用法"></a>computed 用法</h2><p>想要理解原理，最基本就是要知道如何使用，这对于后面的理解有一定的帮助。</p>
+<p>第一种，函数声明：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> vm = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vue</span>(&#123;<br>  <span class="hljs-attr">el</span>: <span class="hljs-string">&#x27;#example&#x27;</span>,<br>  <span class="hljs-attr">data</span>: &#123;<br>    <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;Hello&#x27;</span><br>  &#125;,<br>  <span class="hljs-attr">computed</span>: &#123;<br>    <span class="hljs-comment">// 计算属性的 getter</span><br>    <span class="hljs-attr">reversedMessage</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-comment">// `this` 指向 vm 实例</span><br>      <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">message</span>.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27;&#x27;</span>).<span class="hljs-title function_">reverse</span>().<span class="hljs-title function_">join</span>(<span class="hljs-string">&#x27;&#x27;</span>)<br>    &#125;<br>  &#125;<br>&#125;)<br></code></pre>
+<p>第二种，对象声明：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">computed</span>: &#123;<br>  <span class="hljs-attr">fullName</span>: &#123;<br>    <span class="hljs-comment">// getter</span><br>    <span class="hljs-attr">get</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> + <span class="hljs-string">&#x27; &#x27;</span> + <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span><br>    &#125;,<br>    <span class="hljs-comment">// setter</span><br>    <span class="hljs-attr">set</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">newValue</span>) &#123;<br>      <span class="hljs-keyword">var</span> names = newValue.<span class="hljs-title function_">split</span>(<span class="hljs-string">&#x27; &#x27;</span>)<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">firstName</span> = names[<span class="hljs-number">0</span>]<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastName</span> = names[names.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>]<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>温馨提示：computed 内使用的 data 属性，下文统称为“依赖属性”</p>
+<h2 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h2><p>先来了解下 computed 的大概流程，看看计算属性的核心点是什么。</p>
+<h3 id="入口文件："><a href="#入口文件：" class="headerlink" title="入口文件："></a>入口文件：</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/index.js</span><br><span class="hljs-keyword">import</span> &#123; initMixin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./init&#x27;</span><br><span class="hljs-keyword">import</span> &#123; stateMixin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./state&#x27;</span><br><span class="hljs-keyword">import</span> &#123; renderMixin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./render&#x27;</span><br><span class="hljs-keyword">import</span> &#123; eventsMixin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./events&#x27;</span><br><span class="hljs-keyword">import</span> &#123; lifecycleMixin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./lifecycle&#x27;</span><br><span class="hljs-keyword">import</span> &#123; warn &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../util/index&#x27;</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Vue</span> (options) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">_init</span>(options)<br>&#125;<br><br><span class="hljs-title function_">initMixin</span>(<span class="hljs-title class_">Vue</span>)<br><span class="hljs-title function_">stateMixin</span>(<span class="hljs-title class_">Vue</span>)<br><span class="hljs-title function_">eventsMixin</span>(<span class="hljs-title class_">Vue</span>)<br><span class="hljs-title function_">lifecycleMixin</span>(<span class="hljs-title class_">Vue</span>)<br><span class="hljs-title function_">renderMixin</span>(<span class="hljs-title class_">Vue</span>)<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">Vue</span><br></code></pre>
+
+<h3 id="init"><a href="#init" class="headerlink" title="_init:"></a>_init:</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/init.js</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">initMixin</span> (<span class="hljs-title class_">Vue</span>: <span class="hljs-title class_">Class</span>&lt;<span class="hljs-title class_">Component</span>&gt;) &#123;<br>  <span class="hljs-title class_">Vue</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">_init</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params">options?: <span class="hljs-built_in">Object</span></span>) &#123;<br>    <span class="hljs-keyword">const</span> <span class="hljs-attr">vm</span>: <span class="hljs-title class_">Component</span> = <span class="hljs-variable language_">this</span><br>    <span class="hljs-comment">// a uid</span><br>    vm.<span class="hljs-property">_uid</span> = uid++<br><br>    <span class="hljs-comment">// merge options</span><br>    <span class="hljs-keyword">if</span> (options &amp;&amp; options.<span class="hljs-property">_isComponent</span>) &#123;<br>      <span class="hljs-comment">// optimize internal component instantiation</span><br>      <span class="hljs-comment">// since dynamic options merging is pretty slow, and none of the</span><br>      <span class="hljs-comment">// internal component options needs special treatment.</span><br>      <span class="hljs-title function_">initInternalComponent</span>(vm, options)<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-comment">// mergeOptions 对 mixin 选项和 new Vue 传入的 options 选项进行合并</span><br>      vm.<span class="hljs-property">$options</span> = <span class="hljs-title function_">mergeOptions</span>(<br>        <span class="hljs-title function_">resolveConstructorOptions</span>(vm.<span class="hljs-property">constructor</span>),<br>        options || &#123;&#125;,<br>        vm<br>      )<br>    &#125;<br><br>    <span class="hljs-comment">// expose real self</span><br>    vm.<span class="hljs-property">_self</span> = vm<br>    <span class="hljs-title function_">initLifecycle</span>(vm)<br>    <span class="hljs-title function_">initEvents</span>(vm)<br>    <span class="hljs-title function_">initRender</span>(vm)<br>    <span class="hljs-title function_">callHook</span>(vm, <span class="hljs-string">&#x27;beforeCreate&#x27;</span>)<br>    <span class="hljs-title function_">initInjections</span>(vm) <span class="hljs-comment">// resolve injections before data/props</span><br>    <span class="hljs-comment">// 初始化数据</span><br>    <span class="hljs-title function_">initState</span>(vm)<br>    <span class="hljs-title function_">initProvide</span>(vm) <span class="hljs-comment">// resolve provide after data/props</span><br>    <span class="hljs-title function_">callHook</span>(vm, <span class="hljs-string">&#x27;created&#x27;</span>)<br><br>    <span class="hljs-keyword">if</span> (vm.<span class="hljs-property">$options</span>.<span class="hljs-property">el</span>) &#123;<br>      vm.$mount(vm.<span class="hljs-property">$options</span>.<span class="hljs-property">el</span>)<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+
+<h3 id="initState"><a href="#initState" class="headerlink" title="initState:"></a>initState:</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/state.js </span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">initState</span> (<span class="hljs-attr">vm</span>: <span class="hljs-title class_">Component</span>) &#123;<br>  vm.<span class="hljs-property">_watchers</span> = []<br>  <span class="hljs-keyword">const</span> opts = vm.<span class="hljs-property">$options</span><br>  <span class="hljs-keyword">if</span> (opts.<span class="hljs-property">props</span>) <span class="hljs-title function_">initProps</span>(vm, opts.<span class="hljs-property">props</span>)<br>  <span class="hljs-keyword">if</span> (opts.<span class="hljs-property">methods</span>) <span class="hljs-title function_">initMethods</span>(vm, opts.<span class="hljs-property">methods</span>)<br>  <span class="hljs-keyword">if</span> (opts.<span class="hljs-property">data</span>) &#123;<br>    <span class="hljs-title function_">initData</span>(vm)<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-title function_">observe</span>(vm.<span class="hljs-property">_data</span> = &#123;&#125;, <span class="hljs-literal">true</span> <span class="hljs-comment">/* asRootData */</span>)<br>  &#125;<br>  <span class="hljs-comment">// 这里会初始化 Computed</span><br>  <span class="hljs-keyword">if</span> (opts.<span class="hljs-property">computed</span>) <span class="hljs-title function_">initComputed</span>(vm, opts.<span class="hljs-property">computed</span>)<br>  <span class="hljs-keyword">if</span> (opts.<span class="hljs-property">watch</span> &amp;&amp; opts.<span class="hljs-property">watch</span> !== nativeWatch) &#123;<br>    <span class="hljs-title function_">initWatch</span>(vm, opts.<span class="hljs-property">watch</span>)<br>  &#125;<br>&#125;<br></code></pre>
+
+<h3 id="initComputed"><a href="#initComputed" class="headerlink" title="initComputed:"></a>initComputed:</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/state.js </span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">initComputed</span> (<span class="hljs-attr">vm</span>: <span class="hljs-title class_">Component</span>, <span class="hljs-attr">computed</span>: <span class="hljs-title class_">Object</span>) &#123;<br>  <span class="hljs-comment">// $flow-disable-line</span><br>  <span class="hljs-comment">// 1</span><br>  <span class="hljs-keyword">const</span> watchers = vm.<span class="hljs-property">_computedWatchers</span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>)<br>  <span class="hljs-comment">// computed properties are just getters during SSR</span><br>  <span class="hljs-keyword">const</span> isSSR = <span class="hljs-title function_">isServerRendering</span>()<br>    <br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> key <span class="hljs-keyword">in</span> computed) &#123;<br>    <span class="hljs-keyword">const</span> userDef = computed[key]<br>    <span class="hljs-comment">// 2</span><br>    <span class="hljs-keyword">const</span> getter = <span class="hljs-keyword">typeof</span> userDef === <span class="hljs-string">&#x27;function&#x27;</span> ? userDef : userDef.<span class="hljs-property">get</span><br><br>    <span class="hljs-keyword">if</span> (!isSSR) &#123;<br>      <span class="hljs-comment">// create internal watcher for the computed property.</span><br>      <span class="hljs-comment">// 3</span><br>      watchers[key] = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Watcher</span>(<br>        vm,<br>        getter || noop,<br>        noop,<br>        &#123; <span class="hljs-attr">lazy</span>: <span class="hljs-literal">true</span> &#125;<br>      )<br>    &#125;<br><br>    <span class="hljs-comment">// component-defined computed properties are already defined on the</span><br>    <span class="hljs-comment">// component prototype. We only need to define computed properties defined</span><br>    <span class="hljs-comment">// at instantiation here.</span><br>    <span class="hljs-keyword">if</span> (!(key <span class="hljs-keyword">in</span> vm)) &#123;<br>      <span class="hljs-comment">// 4</span><br>      <span class="hljs-title function_">defineComputed</span>(vm, key, userDef)<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+
+<ol>
+<li>实例上定义 _computedWatchers 对象，用于存储“计算属性Watcher”</li>
+<li>获取计算属性的 getter，需要判断是函数声明还是对象声明</li>
+<li>创建“计算属性Watcher”，getter 作为参数传入，它会在依赖属性更新时进行调用，并对计算属性重新取值。需要注意 Watcher 的 lazy 配置，这是实现缓存的标识</li>
+<li>defineComputed 对计算属性进行数据劫持</li>
+</ol>
+<h3 id="defineComputed"><a href="#defineComputed" class="headerlink" title="defineComputed:"></a>defineComputed:</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/state.js </span><br><span class="hljs-keyword">const</span> noop = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;&#125;<br><span class="hljs-comment">// 1</span><br><span class="hljs-keyword">const</span> sharedPropertyDefinition = &#123;<br>  <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">get</span>: noop,<br>  <span class="hljs-attr">set</span>: noop<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">defineComputed</span> (<br>  <span class="hljs-attr">target</span>: any,<br>  <span class="hljs-attr">key</span>: string,<br>  <span class="hljs-attr">userDef</span>: <span class="hljs-title class_">Object</span> | <span class="hljs-title class_">Function</span><br>) &#123;<br>  <span class="hljs-comment">// 判断是否为服务端渲染</span><br>  <span class="hljs-keyword">const</span> shouldCache = !<span class="hljs-title function_">isServerRendering</span>()<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> userDef === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>    <span class="hljs-comment">// 2</span><br>    sharedPropertyDefinition.<span class="hljs-property">get</span> = shouldCache<br>      ? <span class="hljs-title function_">createComputedGetter</span>(key)<br>      : <span class="hljs-title function_">createGetterInvoker</span>(userDef)<br>    sharedPropertyDefinition.<span class="hljs-property">set</span> = noop<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-comment">// 3</span><br>    sharedPropertyDefinition.<span class="hljs-property">get</span> = userDef.<span class="hljs-property">get</span><br>      ? shouldCache &amp;&amp; userDef.<span class="hljs-property">cache</span> !== <span class="hljs-literal">false</span><br>        ? <span class="hljs-title function_">createComputedGetter</span>(key)<br>        : <span class="hljs-title function_">createGetterInvoker</span>(userDef.<span class="hljs-property">get</span>)<br>      : noop<br>    sharedPropertyDefinition.<span class="hljs-property">set</span> = userDef.<span class="hljs-property">set</span> || noop<br>  &#125;<br>  <span class="hljs-comment">// 4</span><br>  <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(target, key, sharedPropertyDefinition)<br>&#125;<br></code></pre>
+
+<ol>
+<li>sharedPropertyDefinition 是计算属性初始的属性描述对象</li>
+<li>计算属性使用函数声明时，设置属性描述对象的 get 和 set</li>
+<li>计算属性使用对象声明时，设置属性描述对象的 get 和 set</li>
+<li>对计算属性进行数据劫持，sharedPropertyDefinition 作为第三个给参数传入</li>
+</ol>
+<p>客户端渲染使用 createComputedGetter 创建 get，服务端渲染使用 createGetterInvoker 创建 get。它们两者有很大的不同，服务端渲染不会对计算属性缓存，而是直接求值：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createGetterInvoker</span>(<span class="hljs-params">fn</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">computedGetter</span> () &#123;<br>    <span class="hljs-keyword">return</span> fn.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>, <span class="hljs-variable language_">this</span>)<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>但我们平常更多的是讨论客户端渲染，下面看看 createComputedGetter 的实现。</p>
+<h3 id="createComputedGetter"><a href="#createComputedGetter" class="headerlink" title="createComputedGetter:"></a>createComputedGetter:</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 源码位置：/src/core/instance/state.js</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">createComputedGetter</span> (key) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">computedGetter</span> () &#123;<br>    <span class="hljs-comment">// 1</span><br>    <span class="hljs-keyword">const</span> watcher = <span class="hljs-variable language_">this</span>.<span class="hljs-property">_computedWatchers</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">_computedWatchers</span>[key]<br>    <span class="hljs-keyword">if</span> (watcher) &#123;<br>      <span class="hljs-comment">// 2</span><br>      <span class="hljs-keyword">if</span> (watcher.<span class="hljs-property">dirty</span>) &#123;<br>        watcher.evaluate()<br>      &#125;<br>      <span class="hljs-comment">// 3</span><br>      <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span>) &#123;<br>        watcher.<span class="hljs-title function_">depend</span>()<br>      &#125;<br>      <span class="hljs-comment">// 4</span><br>      <span class="hljs-keyword">return</span> watcher.<span class="hljs-property">value</span><br>    &#125;<br>  &#125;<br>&#125;<br></code></pre>
+<p>这里就是计算属性的实现核心，computedGetter 也就是计算属性进行数据劫持时触发的 get。</p>
+<ol>
+<li>在上面的 initComputed 函数中，“计算属性Watcher”就存储在实例的_computedWatchers上，这里取出对应的“计算属性Watcher”</li>
+<li>watcher.dirty 是实现计算属性缓存的触发点，watcher.evaluate 对计算属性重新求值</li>
+<li>依赖属性收集“渲染Watcher”</li>
+<li>计算属性求值后会将值存储在 value 中，get 返回计算属性的值</li>
+</ol>
+<h2 id="计算属性缓存及更新"><a href="#计算属性缓存及更新" class="headerlink" title="计算属性缓存及更新"></a>计算属性缓存及更新</h2><h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><p>下面我们来将 createComputedGetter 拆分，分析它们单独的工作流程。这是缓存的触发点：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (watcher.<span class="hljs-property">dirty</span>) &#123;<br>  watcher.evaluate()<br>&#125;<br></code></pre>
+
+<p>接下来看看 Watcher 相关实现：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Watcher</span> &#123;<br>  <span class="hljs-attr">vm</span>: <span class="hljs-title class_">Component</span>;<br>  <span class="hljs-attr">expression</span>: string;<br>  <span class="hljs-attr">cb</span>: <span class="hljs-title class_">Function</span>;<br>  <span class="hljs-attr">id</span>: number;<br>  <span class="hljs-attr">deep</span>: boolean;<br>  <span class="hljs-attr">user</span>: boolean;<br>  <span class="hljs-attr">lazy</span>: boolean;<br>  <span class="hljs-attr">sync</span>: boolean;<br>  <span class="hljs-attr">dirty</span>: boolean;<br>  <span class="hljs-attr">active</span>: boolean;<br>  <span class="hljs-attr">deps</span>: <span class="hljs-title class_">Array</span>&lt;<span class="hljs-title class_">Dep</span>&gt;;<br>  <span class="hljs-attr">newDeps</span>: <span class="hljs-title class_">Array</span>&lt;<span class="hljs-title class_">Dep</span>&gt;;<br>  <span class="hljs-attr">depIds</span>: <span class="hljs-title class_">SimpleSet</span>;<br>  <span class="hljs-attr">newDepIds</span>: <span class="hljs-title class_">SimpleSet</span>;<br>  <span class="hljs-attr">before</span>: ?<span class="hljs-title class_">Function</span>;<br>  <span class="hljs-attr">getter</span>: <span class="hljs-title class_">Function</span>;<br>  <span class="hljs-attr">value</span>: any;<br><br>  <span class="hljs-title function_">constructor</span> (<br>    <span class="hljs-attr">vm</span>: <span class="hljs-title class_">Component</span>,<br>    <span class="hljs-attr">expOrFn</span>: string | <span class="hljs-title class_">Function</span>,<br>    <span class="hljs-attr">cb</span>: <span class="hljs-title class_">Function</span>,<br>    options?: ?<span class="hljs-title class_">Object</span>,<br>    isRenderWatcher?: boolean<br>  ) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">vm</span> = vm<br>    <span class="hljs-comment">// options</span><br>    <span class="hljs-keyword">if</span> (options) &#123;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">deep</span> = !!options.<span class="hljs-property">deep</span><br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">user</span> = !!options.<span class="hljs-property">user</span><br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">lazy</span> = !!options.<span class="hljs-property">lazy</span><br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">sync</span> = !!options.<span class="hljs-property">sync</span><br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">before</span> = options.<span class="hljs-property">before</span><br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">deep</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">user</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">lazy</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">sync</span> = <span class="hljs-literal">false</span><br>    &#125;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">cb</span> = cb<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span> = ++uid <span class="hljs-comment">// uid for batching</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">active</span> = <span class="hljs-literal">true</span><br>    <span class="hljs-comment">// dirty 初始值等同于 lazy</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">dirty</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">lazy</span> <span class="hljs-comment">// for lazy watchers</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">deps</span> = []<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">newDeps</span> = []<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">depIds</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>()<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">newDepIds</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>()<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">lazy</span><br>      ? <span class="hljs-literal">undefined</span><br>      : <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>()<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>还记得创建“计算属性Watcher”，配置的 lazy 为 true。dirty 的初始值等同于 lazy。所以在初始化页面渲染，对计算属性进行取值时，会执行一次 watcher.evaluate。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">evaluate</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">get</span>()<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">dirty</span> = <span class="hljs-literal">false</span><br>&#125;<br></code></pre>
+
+<p>求值后将值赋给 this.value，上面 createComputedGetter 内的 watcher.value 就是在这里更新。接着 dirty 置为 false，如果依赖属性没有变化，下一次取值时，是不会执行 watcher.evaluate 的， 而是直接就返回 watcher.value，这样就实现了缓存机制。</p>
+<h3 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h3><p>依赖属性在更新时，会调用 dep.notify:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">notify</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">subs</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">watcher</span> =&gt;</span> watcher.<span class="hljs-title function_">update</span>())<br>&#125;<br></code></pre>
+
+<p>然后执行 watcher.update:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">update</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">lazy</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">dirty</span> = <span class="hljs-literal">true</span><br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">sync</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">run</span>()<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-title function_">queueWatcher</span>(<span class="hljs-variable language_">this</span>)<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>由于“计算属性Watcher”的 lazy 为 true，这里 dirty 会置为 true。等到页面渲染对计算属性取值时，符合触发点条件，执行 watcher.evaluate 重新求值，计算属性随之更新。</p>
+<h2 id="依赖属性收集依赖"><a href="#依赖属性收集依赖" class="headerlink" title="依赖属性收集依赖"></a>依赖属性收集依赖</h2><h3 id="收集计算属性Watcher"><a href="#收集计算属性Watcher" class="headerlink" title="收集计算属性Watcher"></a>收集计算属性Watcher</h3><p>初始化时，页面渲染会将“渲染Watcher”入栈，并挂载到Dep.target</p>
+<p>在页面渲染过程中遇到计算属性，对其取值，因此执行 watcher.evaluate 的逻辑，接着调用 this.get:</p>
+<pre class="highlight"><code class="hljs javascript">get () &#123;<br>  <span class="hljs-comment">// 1</span><br>  <span class="hljs-title function_">pushTarget</span>(<span class="hljs-variable language_">this</span>)<br>  <span class="hljs-keyword">let</span> value<br>  <span class="hljs-keyword">const</span> vm = <span class="hljs-variable language_">this</span>.<span class="hljs-property">vm</span><br>  <span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-comment">// 2</span><br>    value = <span class="hljs-variable language_">this</span>.<span class="hljs-property">getter</span>.<span class="hljs-title function_">call</span>(vm, vm) <span class="hljs-comment">// 计算属性求值</span><br>  &#125; <span class="hljs-keyword">catch</span> (e) &#123;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">user</span>) &#123;<br>      <span class="hljs-title function_">handleError</span>(e, vm, <span class="hljs-string">`getter for watcher &quot;<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.expression&#125;</span>&quot;`</span>)<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-keyword">throw</span> e<br>    &#125;<br>  &#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-title function_">popTarget</span>()<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">cleanupDeps</span>()<br>  &#125;<br>  <span class="hljs-keyword">return</span> value<br>&#125;<br><span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> = <span class="hljs-literal">null</span><br><span class="hljs-keyword">let</span> stack = []  <span class="hljs-comment">// 存储 watcher 的栈</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">pushTarget</span>(<span class="hljs-params">watcher</span>) &#123;<br>  stack.<span class="hljs-title function_">push</span>(watcher)<br>  <span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> = watcher<br>&#125; <br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">popTarget</span>(<span class="hljs-params"></span>)&#123;<br>  stack.<span class="hljs-title function_">pop</span>()<br>  <span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span> = stack[stack.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>]<br>&#125;<br></code></pre>
+
+<p>pushTarget 轮到“计算属性Watcher”入栈，并挂载到Dep.target，此时栈中为 [渲染Watcher, 计算属性Watcher]</p>
+<p>this.getter 对计算属性求值，在获取依赖属性时，触发依赖属性的 数据劫持get，执行 dep.depend 收集依赖（“计算属性Watcher”）</p>
+<h3 id="收集渲染Watcher"><a href="#收集渲染Watcher" class="headerlink" title="收集渲染Watcher"></a>收集渲染Watcher</h3><p>this.getter 求值完成后popTragte，“计算属性Watcher”出栈，Dep.target 设置为“渲染Watcher”，此时的 Dep.target 是“渲染Watcher”</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (<span class="hljs-title class_">Dep</span>.<span class="hljs-property">target</span>) &#123;<br>  watcher.<span class="hljs-title function_">depend</span>()<br>&#125;<br></code></pre>
+
+<p>watcher.depend 收集依赖：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">depend</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> i = <span class="hljs-variable language_">this</span>.<span class="hljs-property">deps</span>.<span class="hljs-property">length</span><br>  <span class="hljs-keyword">while</span> (i--) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">deps</span>[i].<span class="hljs-title function_">depend</span>()<br>  &#125;<br>&#125;<br></code></pre>
+<p>deps 内存储的是依赖属性的 dep，这一步是依赖属性收集依赖（“渲染Watcher”）</p>
+<p>经过上面两次收集依赖后，依赖属性的 subs 存储两个 Watcher，[计算属性Watcher，渲染Watcher]</p>
+<h3 id="为什么依赖属性要收集渲染Watcher"><a href="#为什么依赖属性要收集渲染Watcher" class="headerlink" title="为什么依赖属性要收集渲染Watcher"></a>为什么依赖属性要收集渲染Watcher</h3><p>我在初次阅读源码时，很奇怪的是依赖属性收集到“计算属性Watcher”不就好了吗？为什么依赖属性还要收集“渲染Watcher”？</p>
+<p>第一种场景：模板里同时用到依赖属性和计算属性</p>
+<template>
+  <div> </div>
+</template>
+
+<p>export default {<br>  data(){<br>    return {<br>      msg: ‘hello’<br>    }<br>  },<br>  computed:{<br>    msg1(){<br>      return this.msg + ‘ world’<br>    }<br>  }<br>}<br>模板有用到依赖属性，在页面渲染对依赖属性取值时，依赖属性就存储了“渲染Watcher”，所以 watcher.depend 这步是属于重复收集的，但 watcher 内部会去重。</p>
+<p>这也是我为什么会产生疑问的点，Vue 作为一个优秀的框架，这么做肯定有它的道理。于是我想到了另一个场景能合理解释 watcher.depend 的作用。</p>
+<p>第二种场景：模板内只用到计算属性</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>&#123;&#123;msg1&#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">  <span class="hljs-title function_">data</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">    <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">      <span class="hljs-attr">msg</span>: <span class="hljs-string">&#x27;hello&#x27;</span></span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;,</span><br><span class="language-javascript">  <span class="hljs-attr">computed</span>:&#123;</span><br><span class="language-javascript">    <span class="hljs-title function_">msg1</span>(<span class="hljs-params"></span>)&#123;</span><br><span class="language-javascript">      <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">msg</span> + <span class="hljs-string">&#x27; world&#x27;</span>      </span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript">&#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+<p>模板上没有使用到依赖属性，页面渲染时，那么依赖属性是不会收集 “渲染Watcher”的。此时依赖属性里只会有“计算属性Watcher”，当依赖属性被修改，只会触发“计算属性Watcher”的 update。而计算属性的 update 里仅仅是将 dirty 设置为 true，并没有立刻求值，那么计算属性也不会被更新。</p>
+<p>所以需要收集“渲染Watcher”，在执行完“计算属性Watcher”后，再执行“渲染Watcher”。页面渲染对计算属性取值，执行 watcher.evaluate 才会重新计算求值，页面计算属性更新。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>计算属性原理和响应式原理都是大同小异的，同样的是使用数据劫持以及依赖收集，不同的是计算属性有做缓存优化，只有在依赖属性变化时才会重新求值，其它情况都是直接返回缓存值。服务端不对计算属性缓存。</p>
+<p>计算属性更新的前提需要“渲染Watcher”的配合，因此依赖属性的 subs 中至少会存储两个 Watcher。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904199596015624">手摸手带你理解Vue的Computed原理</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/29/22092705/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">JavaScript中的Event Loop（事件循环）机制 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/29/22092801/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">前端需要了解的9种设计模式 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed-%E7%94%A8%E6%B3%95"><span class="toc-text">computed 用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%EF%BC%9A"><span class="toc-text">入口文件：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#init"><span class="toc-text">_init:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initState"><span class="toc-text">initState:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initComputed"><span class="toc-text">initComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#defineComputed"><span class="toc-text">defineComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#createComputedGetter"><span class="toc-text">createComputedGetter:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E7%BC%93%E5%AD%98%E5%8F%8A%E6%9B%B4%E6%96%B0"><span class="toc-text">计算属性缓存及更新</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98"><span class="toc-text">缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0"><span class="toc-text">更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="toc-text">依赖属性收集依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7Watcher"><span class="toc-text">收集计算属性Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">收集渲染Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E8%A6%81%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">为什么依赖属性要收集渲染Watcher</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#computed-%E7%94%A8%E6%B3%95"><span class="toc-text">computed 用法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">工作流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A5%E5%8F%A3%E6%96%87%E4%BB%B6%EF%BC%9A"><span class="toc-text">入口文件：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#init"><span class="toc-text">_init:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initState"><span class="toc-text">initState:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#initComputed"><span class="toc-text">initComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#defineComputed"><span class="toc-text">defineComputed:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#createComputedGetter"><span class="toc-text">createComputedGetter:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7%E7%BC%93%E5%AD%98%E5%8F%8A%E6%9B%B4%E6%96%B0"><span class="toc-text">计算属性缓存及更新</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98"><span class="toc-text">缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0"><span class="toc-text">更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="toc-text">依赖属性收集依赖</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7Watcher"><span class="toc-text">收集计算属性Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">收集渲染Watcher</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BE%9D%E8%B5%96%E5%B1%9E%E6%80%A7%E8%A6%81%E6%94%B6%E9%9B%86%E6%B8%B2%E6%9F%93Watcher"><span class="toc-text">为什么依赖属性要收集渲染Watcher</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

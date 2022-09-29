@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>深入理解http2.0协议</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="深入理解http2.0协议">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/29/22092703/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-29">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络原理">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>240</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>49</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E8%AF%BB"><span class="toc-text">导读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFhttp2-0%E5%8D%8F%E8%AE%AE%EF%BC%9F"><span class="toc-text">什么是http2.0协议？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http2-0%E4%BC%98%E5%8C%96%E5%86%85%E5%AE%B9"><span class="toc-text">http2.0优化内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E5%B8%A7%EF%BC%88Binary-Format%EF%BC%89-http2-0%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-text">二进制分帧（Binary Format）- http2.0的基石</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8-Multiplexing-x2F-%E8%BF%9E%E6%8E%A5%E5%85%B1%E4%BA%AB"><span class="toc-text">多路复用 (Multiplexing) &#x2F; 连接共享</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9%EF%BC%88Header-Compression%EF%BC%89"><span class="toc-text">头部压缩（Header Compression）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%8E%9F%E7%90%86"><span class="toc-text">压缩原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88Request-Priorities%EF%BC%89"><span class="toc-text">请求优先级（Request Priorities）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A8%E9%80%81%EF%BC%88Server-Push%EF%BC%89"><span class="toc-text">服务端推送（Server Push）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">211</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+      <a 
+        href="/tags/debug/" 
+        title="debug">
+        <div class="tags-list-item">debug</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      深入理解http2.0协议
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092703.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-29T05:55:51.435Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-29</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>3.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+            class="post-meta-link">
+            网络原理
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="导读"><a href="#导读" class="headerlink" title="导读"></a>导读</h2><p>http2.0是一种安全高效的下一代http传输协议。安全是因为http2.0建立在https协议的基础上，高效是因为它是通过二进制分帧来进行数据传输。正因为这些特性，http2.0协议也在被越来越多的网站支持。据统计，截止至2018年8月，已经有27.9%的网站支持http2.0。</p>
+<p>本文将从概述、原理、实战及检测等方面来详细介绍http2.0，希望能够加深你的理解。</p>
+<h2 id="什么是http2-0协议？"><a href="#什么是http2-0协议？" class="headerlink" title="什么是http2.0协议？"></a>什么是http2.0协议？</h2><p>在http2.0官网的描述是：</p>
+<pre class="highlight"><code class="hljs pgsql">http/<span class="hljs-number">2</span> <span class="hljs-keyword">is</span> a replacement <span class="hljs-keyword">for</span> how http <span class="hljs-keyword">is</span> expressed “<span class="hljs-keyword">on</span> the wire.” It <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> a ground-up rewrite <span class="hljs-keyword">of</span> the protocol; http methods, status codes <span class="hljs-keyword">and</span> semantics are the same, <span class="hljs-keyword">and</span> it should be possible <span class="hljs-keyword">to</span> use the same APIs <span class="hljs-keyword">as</span> http/<span class="hljs-number">1.</span>x (possibly <span class="hljs-keyword">with</span> <span class="hljs-keyword">some</span> small additions) <span class="hljs-keyword">to</span> represent the protocol.<br>The focus <span class="hljs-keyword">of</span> the protocol <span class="hljs-keyword">is</span> <span class="hljs-keyword">on</span> performance; specifically, <span class="hljs-keyword">end</span>-<span class="hljs-keyword">user</span> perceived latency, network <span class="hljs-keyword">and</span> <span class="hljs-keyword">server</span> resource <span class="hljs-keyword">usage</span>. One major goal <span class="hljs-keyword">is</span> <span class="hljs-keyword">to</span> allow the use <span class="hljs-keyword">of</span> a single <span class="hljs-keyword">connection</span> <span class="hljs-keyword">from</span> browsers <span class="hljs-keyword">to</span> a Web site.<br>The basis <span class="hljs-keyword">of</span> the <span class="hljs-keyword">work</span> was SPDY, but http/<span class="hljs-number">2</span> has evolved <span class="hljs-keyword">to</span> take the community’s <span class="hljs-keyword">input</span> <span class="hljs-keyword">into</span> account, incorporating several improvements <span class="hljs-keyword">in</span> the process.<br></code></pre>
+<p>中文总结一下就是：</p>
+<ul>
+<li>对1.x协议语意的完全兼容<br>2.0协议是在1.x基础上的升级而不是重写，1.x协议的方法，状态及api在2.0协议里是一样的。</li>
+<li>性能的大幅提升<br>2.0协议重点是对终端用户的感知延迟、网络及服务器资源的使用等性能的优化。</li>
+</ul>
+<h2 id="http2-0优化内容"><a href="#http2-0优化内容" class="headerlink" title="http2.0优化内容"></a>http2.0优化内容</h2><h3 id="二进制分帧（Binary-Format）-http2-0的基石"><a href="#二进制分帧（Binary-Format）-http2-0的基石" class="headerlink" title="二进制分帧（Binary Format）- http2.0的基石"></a>二进制分帧（Binary Format）- http2.0的基石</h3><p>http2.0之所以能够突破http1.X标准的性能限制，改进传输性能，实现低延迟和高吞吐量，就是因为其新增了二进制分帧层。</p>
+<blockquote>
+<p>帧(frame)包含部分：类型Type, 长度Length, 标记Flags, 流标识Stream和frame payload有效载荷。<br>消息(message)：一个完整的请求或者响应，比如请求、响应等，由一个或多个 Frame 组成。<br>流是连接中的一个虚拟信道，可以承载双向消息传输。每个流有唯一整数标识符。为了防止两端流ID冲突，客户端发起的流具有奇数ID，服务器端发起的流具有偶数ID。<br>流标识是描述二进制frame的格式，使得每个frame能够基于http2发送，与流标识联系的是一个流，每个流是一个逻辑联系，一个独立的双向的frame存在于客户端和服务器端之间的http2连接中。一个http2连接上可包含多个并发打开的流，这个并发流的数量能够由客户端设置。</p>
+</blockquote>
+<p>在二进制分帧层上，http2.0会将所有传输信息分割为更小的消息和帧，并对它们采用二进制格式的编码将其封装，新增的二进制分帧层同时也能够保证http的各种动词，方法，首部都不受影响，兼容上一代http标准。其中，http1.X中的首部信息header封装到Headers帧中，而request body将被封装到Data帧中。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/17daea5c-971d-439c-8e29-1e0edd5214c6-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/17daea5c-971d-439c-8e29-1e0edd5214c6-3807603.jpg"></p>
+<h3 id="多路复用-Multiplexing-x2F-连接共享"><a href="#多路复用-Multiplexing-x2F-连接共享" class="headerlink" title="多路复用 (Multiplexing) &#x2F; 连接共享"></a>多路复用 (Multiplexing) &#x2F; 连接共享</h3><p>在http1.1中，浏览器客户端在同一时间，针对同一域名下的请求有一定数量的限制，超过限制数目的请求会被阻塞。这也是为何一些站点会有多个静态资源 CDN 域名的原因之一。</p>
+<p>而http2.0中的多路复用优化了这一性能。多路复用允许同时通过单一的http&#x2F;2 连接发起多重的请求-响应消息。有了新的分帧机制后，http&#x2F;2 不再依赖多个TCP连接去实现多流并行了。每个数据流都拆分成很多互不依赖的帧，而这些帧可以交错（乱序发送），还可以分优先级，最后再在另一端把它们重新组合起来。</p>
+<p>http 2.0 连接都是持久化的，而且客户端与服务器之间也只需要一个连接（每个域名一个连接）即可。http2连接可以承载数十或数百个流的复用，多路复用意味着来自很多流的数据包能够混合在一起通过同样连接传输。当到达终点时，再根据不同帧首部的流标识符重新连接将不同的数据流进行组装。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/214289ca-ebcc-4a35-8775-02d3fe971806-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/214289ca-ebcc-4a35-8775-02d3fe971806-3807603.jpg"></p>
+<p>上图展示了一个连接上的多个传输数据流：客户端向服务端传输数据帧stream5，同时服务端向客户端乱序发送stream1和stream3。这次连接上有三个响应请求乱序并行交换。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/45a4bc84-ecfd-4d88-8c51-816d4c1ac262-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/45a4bc84-ecfd-4d88-8c51-816d4c1ac262-3807603.jpg"></p>
+<p>上图就是http1.X和http2.0在传输数据时的区别。以货物运输为例再现http1.1与http2.0的场景：</p>
+<blockquote>
+<p>http1.1过程：货轮1从A地到B地去取货物，取到货物后，从B地返回，然后货轮2在A返回并卸下货物后才开始再从A地出发取货返回，如此有序往返。<br>http2.0过程：货轮1、2、3、4、5从A地无序全部出发，取货后返回，然后根据货轮号牌卸载对应货物。</p>
+</blockquote>
+<p>显然，第二种方式运输货物多，河道的利用率高。</p>
+<h3 id="头部压缩（Header-Compression）"><a href="#头部压缩（Header-Compression）" class="headerlink" title="头部压缩（Header Compression）"></a>头部压缩（Header Compression）</h3><p>http1.x的头带有大量信息，而且每次都要重复发送。http&#x2F;2使用encoder来减少需要传输的header大小，通讯双方各自缓存一份头部字段表，既避免了重复header的传输，又减小了需要传输的大小。</p>
+<p>对于相同的数据，不再通过每次请求和响应发送，通信期间几乎不会改变通用键-值对(用户代理、可接受的媒体类型，等等)只需发送一次。</p>
+<p>事实上,如果请求中不包含首部(例如对同一资源的轮询请求)，那么，首部开销就是零字节，此时所有首部都自动使用之前请求发送的首部。</p>
+<p>如果首部发生了变化，则只需将变化的部分加入到header帧中，改变的部分会加入到头部字段表中，首部表在 http 2.0 的连接存续期内始终存在，由客户端和服务器共同渐进地更新。</p>
+<p>需要注意的是，http 2.0关注的是首部压缩，而我们常用的gzip等是报文内容（body）的压缩，二者不仅不冲突，且能够一起达到更好的压缩效果。</p>
+<p>http&#x2F;2使用的是专门为首部压缩而设计的HPACK算法。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/5fae927e-3f2b-4a8f-800b-ece3c985e6a5-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/5fae927e-3f2b-4a8f-800b-ece3c985e6a5-3807603.jpg"></p>
+<p>从上图可以看到http1.X不支持首部压缩，而http2.0的压缩算法效果最好，发送和接受的数据量都是最少的。</p>
+<h3 id="压缩原理"><a href="#压缩原理" class="headerlink" title="压缩原理"></a>压缩原理</h3><p>用header字段表里的索引代替实际的header。</p>
+<p>http&#x2F;2的HPACK算法使用一份索引表来定义常用的http Header，把常用的 http Header 存放在表里，请求的时候便只需要发送在表里的索引位置即可。</p>
+<p>例如 :method&#x3D;GET 使用索引值 2 表示，:path&#x3D;&#x2F;index.html 使用索引值 5 表示，如下图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/4925a039-33b2-45a4-aff4-ecfc8fdd4063-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/4925a039-33b2-45a4-aff4-ecfc8fdd4063-3807603.jpg"></p>
+<p>完整的列表参考：HPACK Static Table。</p>
+<p>只要给服务端发送一个 Frame，该 Frame 的 Payload 部分存储 0x8285，Frame 的 Type 设置为 Header 类型，便可表示这个 Frame 属于 http Header，请求的内容是：</p>
+<pre class="highlight"><code class="hljs pgsql"><span class="hljs-keyword">GET</span> /<span class="hljs-keyword">index</span>.html<br></code></pre>
+
+<p>为什么是 0x8285，而不是 0x0205？这是因为高位设置为 1 表示这个字节是一个完全索引值（key 和 value 都在索引中）。</p>
+<p>类似的，通过高位的标志位可以区分出这个字节是属于一个完全索引值，还是仅索引了 key，还是 key和value 都没有索引(参见：HTTP&#x2F;2首部压缩的OkHttp3实现④)。</p>
+<p>因为索引表的大小的是有限的，它仅保存了一些常用的 http Header，同时每次请求还可以在表的末尾动态追加新的 http Header 缓存，动态部分称之为 Dynamic Table。Static Table 和 Dynamic Table 在一起组合成了索引表：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/d3d75c85-8d3e-4cff-99e2-6734c683c001-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/d3d75c85-8d3e-4cff-99e2-6734c683c001-3807603.jpg"></p>
+<p>HPACK 不仅仅通过索引键值对来降低数据量，同时还会将字符串进行霍夫曼编码来压缩字符串大小。</p>
+<p>以常用的 User-Agent 为例，它在静态表中的索引值是 58，它的值是不存在表中的，因为它的值是多变的。第一次请求的时候它的 key 用 58 表示，表示这是一个 User-Agent ，它的值部分会进行霍夫曼编码（如果编码后的字符串变更长了，则不采用霍夫曼编码）。</p>
+<p>服务端收到请求后，会将这个 User-Agent 添加到 Dynamic Table 缓存起来，分配一个新的索引值。客户端下一次请求时，假设上次请求User-Agent的在表中的索引位置是 62， 此时只需要发送 0xBE（同样的，高位置 1），便可以代表：User-Agent: Mozilla&#x2F;5.0 (Windows NT 6.1; WOW64) AppleWebKit&#x2F;537.36 (KHTML, like Gecko) Chrome&#x2F;33.0.1750.146 Safari&#x2F;537.36。</p>
+<p>其过程如下图所示：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2fb8b83c-a5ff-4b44-b75f-1d0f63b004e6-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2fb8b83c-a5ff-4b44-b75f-1d0f63b004e6-3807603.jpg"></p>
+<p>最终，相同的 Header 只需要发送索引值，新的 Header 会重新加入 Dynamic Table。</p>
+<h3 id="请求优先级（Request-Priorities）"><a href="#请求优先级（Request-Priorities）" class="headerlink" title="请求优先级（Request Priorities）"></a>请求优先级（Request Priorities）</h3><p>把http消息分为很多独立帧之后，就可以通过优化这些帧的交错和传输顺序进一步优化性能。每个流都可以带有一个31比特的优先值：0 表示最高优先级；2的31次方-1 表示最低优先级。</p>
+<p>服务器可以根据流的优先级，控制资源分配（CPU、内存、带宽），而在响应数据准备好之后，优先将最高优先级的帧发送给客户端。高优先级的流都应该优先发送，但又不会绝对的。绝对地准守，可能又会引入首队阻塞的问题：高优先级的请求慢导致阻塞其他资源交付。</p>
+<p>分配处理资源和客户端与服务器间的带宽，不同优先级的混合也是必须的。客户端会指定哪个流是最重要的，有一些依赖参数，这样一个流可以依赖另外一个流。优先级别可以在运行时动态改变，当用户滚动页面时，可以告诉浏览器哪个图像是最重要的，你也可以在一组流中进行优先筛选，能够突然抓住重点流。</p>
+<ul>
+<li>优先级最高：主要的html</li>
+<li>优先级高：CSS文件</li>
+<li>优先级中：js文件</li>
+<li>优先级低：图片</li>
+</ul>
+<h3 id="服务端推送（Server-Push）"><a href="#服务端推送（Server-Push）" class="headerlink" title="服务端推送（Server Push）"></a>服务端推送（Server Push）</h3><p>服务器可以对一个客户端请求发送多个响应，服务器向客户端推送资源无需客户端明确地请求。并且，服务端推送能把客户端所需要的资源伴随着index.html一起发送到客户端，省去了客户端重复请求的步骤。</p>
+<p>正因为没有发起请求，建立连接等操作，所以静态资源通过服务端推送的方式可以极大地提升速度。Server Push 让 http1.x 时代使用内嵌资源的优化手段变得没有意义；如果一个请求是由你的主页发起的，服务器很可能会响应主页内容、logo 以及样式表，因为它知道客户端会用到这些东西，这相当于在一个 HTML 文档内集合了所有的资源。</p>
+<p>不过与之相比，服务器推送还有一个很大的优势：可以缓存！也让在遵循同源的情况下，不同页面之间可以共享缓存资源成为可能。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/391b3ec4-df1f-4405-a4a0-09f5278e598e-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/391b3ec4-df1f-4405-a4a0-09f5278e598e-3807603.jpg"></p>
+<p>注意两点：</p>
+<ol>
+<li>推送遵循同源策略；</li>
+<li>这种服务端的推送是基于客户端的请求响应来确定的。</li>
+</ol>
+<p>当服务端需要主动推送某个资源时，便会发送一个 Frame Type 为 PUSH_PROMISE 的 Frame，里面带了 PUSH 需要新建的 Stream ID。意思是告诉客户端：接下来我要用这个 ID 向你发送东西，客户端准备好接着。客户端解析 Frame 时，发现它是一个 PUSH_PROMISE 类型，便会准备接收服务端要推送的流。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ">深入理解http2.0协议，看这篇就够了！</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/29/22092702/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">浅说 XSS 和 CSRF </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/29/22092704/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">MVVM原理 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E8%AF%BB"><span class="toc-text">导读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFhttp2-0%E5%8D%8F%E8%AE%AE%EF%BC%9F"><span class="toc-text">什么是http2.0协议？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http2-0%E4%BC%98%E5%8C%96%E5%86%85%E5%AE%B9"><span class="toc-text">http2.0优化内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E5%B8%A7%EF%BC%88Binary-Format%EF%BC%89-http2-0%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-text">二进制分帧（Binary Format）- http2.0的基石</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8-Multiplexing-x2F-%E8%BF%9E%E6%8E%A5%E5%85%B1%E4%BA%AB"><span class="toc-text">多路复用 (Multiplexing) &#x2F; 连接共享</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9%EF%BC%88Header-Compression%EF%BC%89"><span class="toc-text">头部压缩（Header Compression）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%8E%9F%E7%90%86"><span class="toc-text">压缩原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88Request-Priorities%EF%BC%89"><span class="toc-text">请求优先级（Request Priorities）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A8%E9%80%81%EF%BC%88Server-Push%EF%BC%89"><span class="toc-text">服务端推送（Server Push）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BC%E8%AF%BB"><span class="toc-text">导读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFhttp2-0%E5%8D%8F%E8%AE%AE%EF%BC%9F"><span class="toc-text">什么是http2.0协议？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http2-0%E4%BC%98%E5%8C%96%E5%86%85%E5%AE%B9"><span class="toc-text">http2.0优化内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%88%86%E5%B8%A7%EF%BC%88Binary-Format%EF%BC%89-http2-0%E7%9A%84%E5%9F%BA%E7%9F%B3"><span class="toc-text">二进制分帧（Binary Format）- http2.0的基石</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8-Multiplexing-x2F-%E8%BF%9E%E6%8E%A5%E5%85%B1%E4%BA%AB"><span class="toc-text">多路复用 (Multiplexing) &#x2F; 连接共享</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9%EF%BC%88Header-Compression%EF%BC%89"><span class="toc-text">头部压缩（Header Compression）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%8E%9F%E7%90%86"><span class="toc-text">压缩原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%88Request-Priorities%EF%BC%89"><span class="toc-text">请求优先级（Request Priorities）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E6%8E%A8%E9%80%81%EF%BC%88Server-Push%EF%BC%89"><span class="toc-text">服务端推送（Server Push）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-29</div>
+        <a href="/2022/09/29/understandTheBrowsersCachingMechanism/"><div class="recent-posts-item-content">彻底理解浏览器的缓存机制</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
