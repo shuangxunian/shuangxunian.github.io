@@ -1,6 +1,7 @@
 ---
 title: 伪类和伪元素
 excerpt: 本文介绍什么是伪类、什么是伪元素以及几个常用的css伪类。
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

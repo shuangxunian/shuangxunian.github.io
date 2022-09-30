@@ -1,6 +1,7 @@
 ---
 title: 常见的跨域解决方案(全)
 excerpt: 如题目~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 第一次练习比赛一
 excerpt: SAU第一次练习比赛一
+date: 2022-09-30
 categories:
 - 算法
 tags:

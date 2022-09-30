@@ -1,6 +1,7 @@
 ---
 title: 快速排序详解
 excerpt: 从头讲述快速排序
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

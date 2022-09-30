@@ -1,6 +1,7 @@
 ---
 title: 如何使用CSS画 0.5px 边框
 excerpt: 几种画0.5边框的demo
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

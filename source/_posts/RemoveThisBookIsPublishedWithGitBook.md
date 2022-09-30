@@ -1,6 +1,7 @@
 ---
 title: 移除GitBook目录下方的“本书使用GitBook发布”字样
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

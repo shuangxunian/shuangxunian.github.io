@@ -1,6 +1,7 @@
 ---
 title: 文件下载
 excerpt: 一个关于通过ajax下载文件的轮子
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

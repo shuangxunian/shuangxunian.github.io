@@ -1,6 +1,7 @@
 ---
 title: 技术大佬们都是怎么学习的？
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

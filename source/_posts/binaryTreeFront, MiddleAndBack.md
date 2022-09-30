@@ -1,6 +1,7 @@
 ---
 title: 二叉树前序、中序、后序遍历相互求法
 excerpt: 已知两个遍历，如何求第三种遍历方法
+date: 2022-09-30
 categories:
 - 算法
 tags:

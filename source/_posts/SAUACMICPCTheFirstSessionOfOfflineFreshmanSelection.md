@@ -1,6 +1,7 @@
 ---
 title: ACM-ICPC 2020 线下新生选拔赛第一场
 excerpt: SAU ACM-ICPC 2020 线下新生选拔赛第一场
+date: 2022-09-30
 categories:
 - 算法
 tags:

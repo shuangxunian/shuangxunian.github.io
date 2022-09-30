@@ -1,6 +1,7 @@
 ---
 title: 小爱课程表~
 excerpt: MIUI12以上的小米自带课程表
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

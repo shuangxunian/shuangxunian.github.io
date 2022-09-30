@@ -1,6 +1,7 @@
 ---
 title: Javscript数组快速填充数据的8种方法
 excerpt: 如何快速造数据
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

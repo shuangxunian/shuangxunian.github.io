@@ -1,6 +1,7 @@
 ---
 title: 洪泛式拒绝服务攻击
 excerpt: 简单说一下PING/ICMP 洪泛攻击、SYN洪泛攻击、TCP连接耗尽攻击与Naptha、UDP洪泛攻击、HTTP洪泛攻击
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

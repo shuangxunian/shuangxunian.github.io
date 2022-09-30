@@ -1,6 +1,7 @@
 ---
 title: 判断JS数据类型的四种方法
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

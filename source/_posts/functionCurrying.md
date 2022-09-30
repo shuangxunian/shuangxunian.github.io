@@ -1,6 +1,7 @@
 ---
 title: JS函数柯里化
 excerpt: 关于js函数柯里化的文章
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

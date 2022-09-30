@@ -1,6 +1,7 @@
 ---
 title: HTTP基础题
 excerpt: 一些基础，如果感觉答案有问题请联系我
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 如何维护更新日志
 excerpt: 更新日志绝对不应该是git日志的堆砌物
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

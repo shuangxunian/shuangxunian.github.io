@@ -1,6 +1,7 @@
 ---
 title: git之忽略文件
 excerpt: 讲一下如何忽略文件~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

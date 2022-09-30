@@ -1,6 +1,7 @@
 ---
 title: 操作系统期末考试——0
 excerpt: 本文涉及到操作系统引论、进程管理
+date: 2022-09-30
 categories:
 - 考试
 tags:

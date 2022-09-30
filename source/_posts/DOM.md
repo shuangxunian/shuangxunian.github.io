@@ -1,6 +1,7 @@
 ---
 title: DOM~
 excerpt: 本文将从什么是DOM，BOM入手，讲述什么是DOM、BOM，什么是虚拟DOM，什么是diff算法~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

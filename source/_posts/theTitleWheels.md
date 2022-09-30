@@ -1,6 +1,7 @@
 ---
 title: 一个浮动的标题
 excerpt: 做项目遇到的一个需求
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

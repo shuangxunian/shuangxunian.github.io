@@ -1,6 +1,7 @@
 ---
 title: js之数组降维
 excerpt: 一道办公面试常常会遇到的问题
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 前端性能优化
 excerpt: 一个关于前端性能优化的方法
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

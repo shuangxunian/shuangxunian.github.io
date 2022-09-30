@@ -1,6 +1,7 @@
 ---
 title: 物理实验系统的设计方案
 excerpt: 一个系统的设计方案
+date: 2022-09-30
 categories:
 - 其他
 tags:

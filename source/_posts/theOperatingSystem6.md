@@ -1,6 +1,7 @@
 ---
 title: 操作系统期末考试——6
 excerpt: 本文涉及到磁盘存储器管理、操作系统接口
+date: 2022-09-30
 categories:
 - 考试
 tags:

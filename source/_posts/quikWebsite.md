@@ -2,6 +2,7 @@
 title: 基于hexo+gitee快速建站
 banner_img: https://api2.mubu.com/v3/document_image/bdc5425b-8fcc-424f-a94f-0c4b375f528c-3807603.jpg
 excerpt: 如何创建一个个人网站
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

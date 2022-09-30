@@ -1,6 +1,7 @@
 ---
 title: 终身学习者必看！系统性梳理并解决你的读书难题【潇洒一辣】
 excerpt: B站up齐天大肾余潇洒的视频总结
+date: 2022-09-30
 categories:
 - 阅读
 tags:

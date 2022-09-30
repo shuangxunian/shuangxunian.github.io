@@ -1,6 +1,7 @@
 ---
 title: 十大经典排序算法
 excerpt: 本文介绍常见的排序算法
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

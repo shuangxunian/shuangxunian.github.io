@@ -1,6 +1,7 @@
 ---
 title: JavaScript实现类与继承的方法
 excerpt: 关于js类与继承方法实现的文章
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

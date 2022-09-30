@@ -1,6 +1,7 @@
 ---
 title: 关于大学奖状的一些事
 excerpt: 就是一篇奖状归档文章，没啥看的必要~
+date: 2022-09-30
 categories:
 - 其他
 tags:

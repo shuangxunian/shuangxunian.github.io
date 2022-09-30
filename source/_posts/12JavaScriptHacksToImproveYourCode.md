@@ -1,6 +1,7 @@
 ---
 title: 12个 Javascript 小技巧帮你提升代码质量
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

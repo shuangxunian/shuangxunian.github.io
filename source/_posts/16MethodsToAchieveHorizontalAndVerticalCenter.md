@@ -1,6 +1,7 @@
 ---
 title: 16种方法实现水平居中垂直居中
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

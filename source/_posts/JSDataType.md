@@ -1,6 +1,7 @@
 ---
 title: JS数据类型
 excerpt: JS的8种数据类型
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

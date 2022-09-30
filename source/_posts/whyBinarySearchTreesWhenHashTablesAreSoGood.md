@@ -1,6 +1,7 @@
 ---
 title: 散列表那么优秀，为什么还要二叉查找树？
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

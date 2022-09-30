@@ -1,6 +1,7 @@
 ---
 title: js之异步操作入门
 excerpt: 关于js异步的简单理解
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

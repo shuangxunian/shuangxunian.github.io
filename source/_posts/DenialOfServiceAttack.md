@@ -1,6 +1,7 @@
 ---
 title: 基于漏洞的拒绝服务攻击
 excerpt: 简单说一下碎片(Teardrop)攻击、LAND攻击、Ping of Death攻击
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

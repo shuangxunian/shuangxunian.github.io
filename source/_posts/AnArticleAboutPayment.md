@@ -1,6 +1,7 @@
 ---
 title: 一篇关于支付的文章
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

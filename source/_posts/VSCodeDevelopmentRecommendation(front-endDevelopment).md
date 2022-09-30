@@ -1,6 +1,7 @@
 ---
 title: VSCode拓展推荐（前端开发）
 excerpt: 一篇关于前端拓展插件推荐的文章
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

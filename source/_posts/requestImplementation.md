@@ -1,6 +1,7 @@
 ---
 title: js之Promise封装nodejs的request实现
 excerpt: 如题目~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

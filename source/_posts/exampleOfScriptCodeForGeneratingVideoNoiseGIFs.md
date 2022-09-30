@@ -1,6 +1,7 @@
 ---
 title: 客户端网页/屏幕生成视频噪音动图的脚本代码例子
 excerpt: 一个小demo
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

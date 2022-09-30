@@ -1,6 +1,7 @@
 ---
 title: 从V8源码分析一个JS数组的内存占用问题
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

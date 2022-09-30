@@ -1,6 +1,7 @@
 ---
 title: CSS-水平居中、垂直居中、水平垂直居中
 excerpt: 本文介绍几种常用的居中方法。
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

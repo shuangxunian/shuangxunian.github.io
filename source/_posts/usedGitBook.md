@@ -1,6 +1,7 @@
 ---
 title: GitBook 使用教程
 excerpt: 如题目~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

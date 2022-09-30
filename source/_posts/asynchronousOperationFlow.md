@@ -1,6 +1,7 @@
 ---
 title: 异步操作的流程控制
 excerpt: 异步任务应该如何安排操作流程
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

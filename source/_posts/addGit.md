@@ -1,6 +1,7 @@
 ---
 title: git初使用
 excerpt: 一篇git入门的文章，内容不多好理解，但不能作为精通git的文章
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 重学 JS：为啥 await 不能用在 forEach 中
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 曾经我也想过一了百了歌词
 excerpt: 翻唱 贪玩歌姬小宁子 feat. 绝之望的马沙
+date: 2022-09-30
 categories:
 - 其他
 tags:

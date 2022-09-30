@@ -1,6 +1,7 @@
 ---
 title: Vue高频面试题
 excerpt: 此篇是Vue3.0以下的高频面试题，3.0的内容还不是很充分
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

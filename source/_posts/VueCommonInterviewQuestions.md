@@ -1,6 +1,7 @@
 ---
 title: Vue几道常见的面试题
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

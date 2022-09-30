@@ -1,6 +1,7 @@
 ---
 title: 人生无限公司
 excerpt: 关于人生无限公司的碎碎念
+date: 2022-09-30
 categories:
 - 其他
 tags:

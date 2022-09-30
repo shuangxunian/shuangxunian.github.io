@@ -1,6 +1,7 @@
 ---
 title: Node方法
 excerpt: 关于Node方法的文章
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

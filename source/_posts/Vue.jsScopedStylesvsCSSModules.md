@@ -1,6 +1,7 @@
 ---
 title: Vue scoped 样式与 CSS Module 对比
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

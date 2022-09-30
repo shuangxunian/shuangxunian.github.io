@@ -1,6 +1,7 @@
 ---
 title: 操作系统期末考试——1
 excerpt: 本文涉及到处理机调度与死锁
+date: 2022-09-30
 categories:
 - 考试
 tags:

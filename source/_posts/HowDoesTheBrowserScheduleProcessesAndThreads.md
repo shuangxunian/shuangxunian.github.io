@@ -1,6 +1,7 @@
 ---
 title: 浏览器是如何调度进程和线程的？
 excerpt: 如题目~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

@@ -1,6 +1,7 @@
 ---
 title: 新的浏览器缓存策略变更：舍弃性能、确保安全
 excerpt: 如题目
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

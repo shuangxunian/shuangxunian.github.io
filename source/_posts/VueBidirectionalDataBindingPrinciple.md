@@ -1,6 +1,7 @@
 ---
 title: vue双向数据绑定原理
 excerpt: 剖析Vue实现原理 - 如何实现双向绑定mvvm
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

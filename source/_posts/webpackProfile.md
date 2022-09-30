@@ -1,6 +1,7 @@
 ---
 title: Webpack简介
 excerpt: 本文简单介绍一下什么是webpack以及简单的使用
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

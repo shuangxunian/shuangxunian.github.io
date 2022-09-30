@@ -2,6 +2,7 @@
 title: 基于hexo+gitee更换主题
 banner_img: https://api2.mubu.com/v3/document_image/bdc5425b-8fcc-424f-a94f-0c4b375f528c-3807603.jpg
 excerpt: 如何更换个人网站的主题
+date: 2022-09-30
 categories:
 - 技术文章
 tags:
@@ -42,6 +43,7 @@ tags:
 title: 标题
 banner_img: 首页图
 excerpt: 简介
+date: 2022-09-30
 categories:
 - 分类
 tags:

@@ -2,6 +2,7 @@
 title: 沈航新生问题汇总
 banner_img: https://api2.mubu.com/v3/document_image/1239d557-d45d-4cc9-aba8-3a4860137b8e-3807603.jpg
 excerpt: 我谨代表Q群128887010全体学长学姐，欢迎新生~
+date: 2022-09-30
 categories:
 - 其他
 tags:

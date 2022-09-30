@@ -1,6 +1,7 @@
 ---
 title: 深入理解 promise、generator+co、async/await 用法
 excerpt: 如题目~
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

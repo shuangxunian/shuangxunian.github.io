@@ -1,6 +1,7 @@
 ---
 title: 为什么计算机时间要从1970年1月1日开始算起
 excerpt: 奇怪的冷知识又增加了
+date: 2022-09-30
 categories:
 - 其他
 tags:

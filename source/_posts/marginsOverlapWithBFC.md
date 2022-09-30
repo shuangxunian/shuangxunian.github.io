@@ -1,6 +1,7 @@
 ---
 title: 边距重叠与BFC
 excerpt: 本文介绍盒模型，JS设置盒模型的宽高，BFC
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

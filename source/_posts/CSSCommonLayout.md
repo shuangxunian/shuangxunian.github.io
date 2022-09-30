@@ -1,6 +1,7 @@
 ---
 title: CSS 常见布局方式
 excerpt: 本文较长，图片较多，主要是介绍 flex 布局和 grid 布局
+date: 2022-09-30
 categories:
 - 技术文章
 tags:

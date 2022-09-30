@@ -1,6 +1,7 @@
 ---
 title: 哈夫曼树
 excerpt: 一篇关于哈夫曼树的详细文章
+date: 2022-09-30
 categories:
 - 算法
 tags:

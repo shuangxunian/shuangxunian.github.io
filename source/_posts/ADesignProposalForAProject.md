@@ -1,6 +1,7 @@
 ---
 title: 一个项目的设计方案
 excerpt: 某项目的设计方案
+date: 2022-09-30
 categories:
 - 其他
 tags:
