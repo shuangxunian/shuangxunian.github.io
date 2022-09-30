@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>CSS-水平居中、垂直居中、水平垂直居中</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="CSS-水平居中、垂直居中、水平垂直居中">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/threeCSSLayouts/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="本文介绍几种常用的居中方法。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="css">
+        
+          <meta 
+            property="og:article:tag" 
+            content="html">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>244</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>50</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E5%86%85%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">行内元素水平居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">定宽块级元素水平居中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">不定宽块级元素水平居中</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">单行文本垂直居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">多行文本垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E4%B8%8D%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度不固定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度固定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9Aflex%E5%B8%83%E5%B1%80"><span class="toc-text">方法1：flex布局</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8C%E8%B4%9Fmargin%EF%BC%88%E9%9C%80%E7%9F%A5%E5%AE%BD%E9%AB%98%EF%BC%89"><span class="toc-text">利用position和top和负margin（需知宽高）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop-x2F-bottom%E5%92%8Cmargin-auto"><span class="toc-text">利用position和top&#x2F;bottom和margin:auto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8Ctransform"><span class="toc-text">利用position和top和transform</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">水平垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-margin-auto"><span class="toc-text">方法1：绝对定位+margin:auto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-%E8%B4%9Fmargin"><span class="toc-text">绝对定位+负margin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-transform"><span class="toc-text">绝对定位+transform</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex%E5%B8%83%E5%B1%80"><span class="toc-text">flex布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#table-cell%E5%AE%9E%E7%8E%B0%E5%B1%85%E4%B8%AD"><span class="toc-text">table-cell实现居中</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">215</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/npm/" 
+        title="npm">
+        <div class="tags-list-item">npm</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%8B%8F%E5%B7%9E/" 
+        title="苏州">
+        <div class="tags-list-item">苏州</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%97%85%E6%B8%B8/" 
+        title="旅游">
+        <div class="tags-list-item">旅游</div>
+      </a>
+    
+      <a 
+        href="/tags/indexedDB/" 
+        title="indexedDB">
+        <div class="tags-list-item">indexedDB</div>
+      </a>
+    
+      <a 
+        href="/tags/react/" 
+        title="react">
+        <div class="tags-list-item">react</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/cookie/" 
+        title="cookie">
+        <div class="tags-list-item">cookie</div>
+      </a>
+    
+      <a 
+        href="/tags/storage/" 
+        title="storage">
+        <div class="tags-list-item">storage</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      CSS-水平居中、垂直居中、水平垂直居中
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/threeCSSLayouts.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T01:32:52.763Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/css/" 
+            class="post-meta-link">
+            css
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/html/" 
+            class="post-meta-link">
+            html
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="水平居中"><a href="#水平居中" class="headerlink" title="水平居中"></a>水平居中</h2><p>水平居中可分为行内元素水平居中和块级元素水平居中</p>
+<h3 id="行内元素水平居中"><a href="#行内元素水平居中" class="headerlink" title="行内元素水平居中"></a>行内元素水平居中</h3><p>这里行内元素是指文本text、图像img、按钮超链接等，只需给父元素设置text-align:center即可实现。</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-selector-class">.center</span>&#123;<br>    <span class="hljs-attribute">text-align</span>:center;<br>&#125;<br></code></pre>
+
+<h3 id="块级元素水平居中"><a href="#块级元素水平居中" class="headerlink" title="块级元素水平居中"></a>块级元素水平居中</h3><h4 id="定宽块级元素水平居中"><a href="#定宽块级元素水平居中" class="headerlink" title="定宽块级元素水平居中"></a>定宽块级元素水平居中</h4><p>只需给需要居中的块级元素加margin:0 auto即可，但这里需要注意的是，这里块状元素的宽度width值一定要有。</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-selector-class">.center</span>&#123;<br>    <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;<br>    <span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span> auto;<br>    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> solid red;<br>&#125;<br></code></pre>
+
+<h4 id="不定宽块级元素水平居中"><a href="#不定宽块级元素水平居中" class="headerlink" title="不定宽块级元素水平居中"></a>不定宽块级元素水平居中</h4><p>不定宽，即块级元素宽度不固定</p>
+<p><strong>方法1：设置table</strong><br>通过给要居中显示的元素，设置display:table，然后设置margin:0 auto来实现</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-selector-class">.center</span>&#123;<br>    <span class="hljs-attribute">display</span>:table;<br>    <span class="hljs-attribute">margin</span>:<span class="hljs-number">0</span> auto;<br>    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> solid red;<br>&#125;<br></code></pre>
+
+<p><strong>方法2：设置inline-block</strong><br>子元素设置inline-block，同时父元素设置text-align:center</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.center</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">text-align</span>:center;</span><br><span class="language-css">&#125;</span><br><span class="language-css"><span class="hljs-selector-class">.inlineblock-div</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">display</span>:inline-block;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;center&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inlineblock-div&quot;</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inlineblock-div&quot;</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<p><strong>方法3：设置flex布局</strong><br>只需把要处理的块状元素的父元素设置display:flex,justify-content:center;</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.center</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">display</span>:flex;</span><br><span class="language-css">    <span class="hljs-attribute">justify-content</span>:center;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;center&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;flex-div&quot;</span>&gt;</span>1<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;flex-div&quot;</span>&gt;</span>2<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<p><strong>方法4：position + 负margin；</strong><br><strong>方法5：position + margin：auto；</strong><br><strong>方法6：position + transform；</strong><br><strong>注</strong>：这里方法4、5、6同下面垂直居中一样的道理，只不过需要把top&#x2F;bottom改为left&#x2F;right，在垂直居中部分会详细讲述。</p>
+<h2 id="垂直居中"><a href="#垂直居中" class="headerlink" title="垂直居中"></a>垂直居中</h2><h3 id="单行文本垂直居中"><a href="#单行文本垂直居中" class="headerlink" title="单行文本垂直居中"></a>单行文本垂直居中</h3><p>对于单行文本，我们只需要将文本行高(line-height)和所在区域高度(height)设为一致即可：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-id">#div1</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>: <span class="hljs-number">300px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>: <span class="hljs-number">100px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin</span>: <span class="hljs-number">50px</span> auto;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>: <span class="hljs-number">1px</span> solid red;</span><br><span class="language-css">    <span class="hljs-attribute">line-height</span>: <span class="hljs-number">100px</span>; <span class="hljs-comment">/*设置line-height与父级元素的height相等*/</span></span><br><span class="language-css">    <span class="hljs-attribute">text-align</span>: center; <span class="hljs-comment">/*设置文本水平居中*/</span></span><br><span class="language-css">    <span class="hljs-attribute">overflow</span>: hidden; <span class="hljs-comment">/*防止内容超出容器或者产生自动换行*/</span></span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;div1&quot;</span>&gt;</span><br>    这是单行文本垂直居中<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+<h3 id="多行文本垂直居中"><a href="#多行文本垂直居中" class="headerlink" title="多行文本垂直居中"></a>多行文本垂直居中</h3><p>多行文本垂直居中分为两种情况，一个是父级元素高度不固定，随着内容变化；另一个是父级元素高度固定。</p>
+<h4 id="父级元素高度不固定"><a href="#父级元素高度不固定" class="headerlink" title="父级元素高度不固定"></a>父级元素高度不固定</h4><p>父级高度不固定的时，高度只能通过内部文本来撑开。这样，我们可以通过设置内填充（padding）的值来使文本看起来垂直居中，只需设置padding-top和padding-bottom的值相等：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-id">#div1</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>: <span class="hljs-number">300px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin</span>: <span class="hljs-number">50px</span> auto;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>: <span class="hljs-number">1px</span> solid red;</span><br><span class="language-css">    <span class="hljs-attribute">text-align</span>: center; <span class="hljs-comment">/*设置文本水平居中*/</span></span><br><span class="language-css">    <span class="hljs-comment">/*       上下  左右   */</span></span><br><span class="language-css">    <span class="hljs-attribute">padding</span>: <span class="hljs-number">50px</span> <span class="hljs-number">20px</span>;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;div1&quot;</span>&gt;</span><br>        这是多行文本垂直居中，<br>        这是多行文本垂直居中，<br>        这是多行文本垂直居中，<br>        这是多行文本垂直居中。<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<h4 id="父级元素高度固定"><a href="#父级元素高度固定" class="headerlink" title="父级元素高度固定"></a>父级元素高度固定</h4><p>本文一开始就提到css中的vertical-align属性，但是它只对拥有valign特性的元素才生效，结合display: table;，可以使得div模拟table属性。因此我们可以设置父级div的display属性：display: table;；然后再添加一个div包含文本内容，设置其display:table-cell;和vertical-align:middle;。具体代码如下：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-id">#outer</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>: <span class="hljs-number">400px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin</span>: <span class="hljs-number">50px</span> auto;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>: <span class="hljs-number">1px</span> solid red;</span><br><span class="language-css">    <span class="hljs-attribute">display</span>: table;</span><br><span class="language-css">&#125;</span><br><span class="language-css"><span class="hljs-selector-id">#middle</span>&#123; </span><br><span class="language-css">    <span class="hljs-attribute">display</span>:table-cell; </span><br><span class="language-css">    <span class="hljs-attribute">vertical-align</span>:middle;  </span><br><span class="language-css">    <span class="hljs-attribute">text-align</span>: center; <span class="hljs-comment">/*设置文本水平居中*/</span>  </span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">100%</span>;   </span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;outer&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;middle&quot;</span>&gt;</span><br>        这是固定高度多行文本垂直居中，<br>        这是固定高度多行文本垂直居中，<br>        这是固定高度多行文本垂直居中，<br>        这是固定高度多行文本垂直居中。<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<p><strong>注：</strong>IE7及以下会效果失效。</p>
+<h3 id="块级元素垂直居中"><a href="#块级元素垂直居中" class="headerlink" title="块级元素垂直居中"></a>块级元素垂直居中</h3><h4 id="方法1：flex布局"><a href="#方法1：flex布局" class="headerlink" title="方法1：flex布局"></a>方法1：flex布局</h4><p>在需要垂直居中的父元素上，设置display:flex和align-items：center<br><strong>要求：</strong>父元素必须显示设置height值</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.center</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">300px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">display</span>:flex;</span><br><span class="language-css">    <span class="hljs-attribute">align-items</span>:center;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>:<span class="hljs-number">2px</span> solid blue;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;center&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>垂直居中<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<h4 id="利用position和top和负margin（需知宽高）"><a href="#利用position和top和负margin（需知宽高）" class="headerlink" title="利用position和top和负margin（需知宽高）"></a>利用position和top和负margin（需知宽高）</h4><p>设置元素为absolute&#x2F;relative&#x2F;fixed<br>margin&#x3D;负一半</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.parent</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:relative;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> solid blue;</span><br><span class="language-css">&#125;</span><br><span class="language-css"><span class="hljs-selector-class">.child</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:absolute;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">100px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">150px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">top</span>:<span class="hljs-number">50px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin-top</span>:-<span class="hljs-number">50px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">line-height</span>:<span class="hljs-number">100px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">background-color</span>:red;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;parent&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;child&quot;</span>&gt;</span>已知高度垂直居中<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<h4 id="利用position和top-x2F-bottom和margin-auto"><a href="#利用position和top-x2F-bottom和margin-auto" class="headerlink" title="利用position和top&#x2F;bottom和margin:auto"></a>利用position和top&#x2F;bottom和margin:auto</h4><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.parent</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:relative;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> solid blue;</span><br><span class="language-css">&#125;</span><br><span class="language-css"><span class="hljs-selector-class">.child</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:absolute;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">10px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">150px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">top</span>:<span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">bottom</span>:<span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin</span>:auto;</span><br><span class="language-css">    <span class="hljs-attribute">line-height</span>:<span class="hljs-number">100px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">background-color</span>:red;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;parent&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;child&quot;</span>&gt;</span>已知高度垂直居中<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<h4 id="利用position和top和transform"><a href="#利用position和top和transform" class="headerlink" title="利用position和top和transform"></a>利用position和top和transform</h4><p>transform中translate偏移的百分比就是相对于元素自身的尺寸而言的。</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-class">.parent</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:relative;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">border</span>:<span class="hljs-number">1px</span> solid blue;</span><br><span class="language-css">&#125;</span><br><span class="language-css"><span class="hljs-selector-class">.child</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">position</span>:absolute;</span><br><span class="language-css">    <span class="hljs-attribute">top</span>:<span class="hljs-number">50%</span>;</span><br><span class="language-css">    <span class="hljs-attribute">transform</span>:<span class="hljs-built_in">translate</span>(<span class="hljs-number">0</span>,-<span class="hljs-number">50%</span>);</span><br><span class="language-css">    <span class="hljs-attribute">line-height</span>:<span class="hljs-number">100px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">background-color</span>:red;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;parent&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;child&quot;</span>&gt;</span>已知高度垂直居中<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+
+<p><strong>注：</strong></p>
+<ul>
+<li>上述的块级垂直居中方法，稍加改动，即可成为块级水平居中方法，如top&#x2F;bottom换成left&#x2F;right</li>
+<li>transform方法，可用于未知元素大小的居中</li>
+</ul>
+<h2 id="水平垂直居中"><a href="#水平垂直居中" class="headerlink" title="水平垂直居中"></a>水平垂直居中</h2><h3 id="方法1：绝对定位-margin-auto"><a href="#方法1：绝对定位-margin-auto" class="headerlink" title="方法1：绝对定位+margin:auto"></a>方法1：绝对定位+margin:auto</h3><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css"><span class="hljs-selector-tag">div</span>&#123;</span><br><span class="language-css">    <span class="hljs-attribute">width</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">    <span class="hljs-attribute">background</span>: green;</span><br><span class="language-css">    </span><br><span class="language-css">    <span class="hljs-attribute">position</span>:absolute;</span><br><span class="language-css">    <span class="hljs-attribute">left</span>:<span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">top</span>: <span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">bottom</span>: <span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">right</span>: <span class="hljs-number">0</span>;</span><br><span class="language-css">    <span class="hljs-attribute">margin</span>: auto;</span><br><span class="language-css">&#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h3 id="绝对定位-负margin"><a href="#绝对定位-负margin" class="headerlink" title="绝对定位+负margin"></a>绝对定位+负margin</h3><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">    <span class="hljs-selector-tag">div</span>&#123;</span><br><span class="language-css">        <span class="hljs-attribute">width</span>:<span class="hljs-number">200px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">background</span>:green;</span><br><span class="language-css">        </span><br><span class="language-css">        <span class="hljs-attribute">position</span>: absolute;</span><br><span class="language-css">        <span class="hljs-attribute">left</span>:<span class="hljs-number">50%</span>;</span><br><span class="language-css">        <span class="hljs-attribute">top</span>:<span class="hljs-number">50%</span>;</span><br><span class="language-css">        <span class="hljs-attribute">margin-left</span>:-<span class="hljs-number">100px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">margin-top</span>:-<span class="hljs-number">100px</span>;</span><br><span class="language-css">    &#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h3 id="绝对定位-transform"><a href="#绝对定位-transform" class="headerlink" title="绝对定位+transform"></a>绝对定位+transform</h3><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">    <span class="hljs-selector-tag">div</span>&#123;</span><br><span class="language-css">        <span class="hljs-attribute">width</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">background</span>: green;</span><br><span class="language-css">        </span><br><span class="language-css">        <span class="hljs-attribute">position</span>:absolute;</span><br><span class="language-css">        <span class="hljs-attribute">left</span>:<span class="hljs-number">50%</span>;    <span class="hljs-comment">/* 定位父级的50% */</span></span><br><span class="language-css">        <span class="hljs-attribute">top</span>:<span class="hljs-number">50%</span>;</span><br><span class="language-css">        <span class="hljs-attribute">transform</span>: <span class="hljs-built_in">translate</span>(-<span class="hljs-number">50%</span>,-<span class="hljs-number">50%</span>); <span class="hljs-comment">/*自己的50% */</span></span><br><span class="language-css">    &#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h3 id="flex布局"><a href="#flex布局" class="headerlink" title="flex布局"></a>flex布局</h3><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">   <span class="hljs-selector-class">.box</span>&#123;</span><br><span class="language-css">         <span class="hljs-attribute">height</span>:<span class="hljs-number">600px</span>;  </span><br><span class="language-css">         </span><br><span class="language-css">         <span class="hljs-attribute">display</span>:flex;</span><br><span class="language-css">         <span class="hljs-attribute">justify-content</span>:center;  //子元素水平居中</span><br><span class="language-css">         <span class="hljs-attribute">align-items</span>:center;      //子元素垂直居中</span><br><span class="language-css">           <span class="hljs-comment">/* aa只要三句话就可以实现不定宽高水平垂直居中。 */</span></span><br><span class="language-css">    &#125;</span><br><span class="language-css">    <span class="hljs-selector-class">.box</span>&gt;<span class="hljs-selector-tag">div</span>&#123;</span><br><span class="language-css">        <span class="hljs-attribute">background</span>: green;</span><br><span class="language-css">        <span class="hljs-attribute">width</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">        <span class="hljs-attribute">height</span>: <span class="hljs-number">200px</span>;</span><br><span class="language-css">    &#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h3 id="table-cell实现居中"><a href="#table-cell实现居中" class="headerlink" title="table-cell实现居中"></a>table-cell实现居中</h3><pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">    <span class="hljs-selector-tag">div</span>&#123;</span><br><span class="language-css">        <span class="hljs-attribute">display</span>:table-cell;</span><br><span class="language-css">        <span class="hljs-attribute">text-align</span>:center;</span><br><span class="language-css">        <span class="hljs-attribute">vertical-align</span>: middle;</span><br><span class="language-css">    &#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000014116655">CSS-水平居中、垂直居中、水平垂直居中</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u014607184/article/details/51820508">css 文本和div垂直居中方法汇总</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/thisScopeDetail/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">javascript中的this作用域详解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/TokenAPopularSchemeForServerAuthentication/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Token - 服务端身份验证的流行方案 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E5%86%85%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">行内元素水平居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">定宽块级元素水平居中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">不定宽块级元素水平居中</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">单行文本垂直居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">多行文本垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E4%B8%8D%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度不固定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度固定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9Aflex%E5%B8%83%E5%B1%80"><span class="toc-text">方法1：flex布局</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8C%E8%B4%9Fmargin%EF%BC%88%E9%9C%80%E7%9F%A5%E5%AE%BD%E9%AB%98%EF%BC%89"><span class="toc-text">利用position和top和负margin（需知宽高）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop-x2F-bottom%E5%92%8Cmargin-auto"><span class="toc-text">利用position和top&#x2F;bottom和margin:auto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8Ctransform"><span class="toc-text">利用position和top和transform</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">水平垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-margin-auto"><span class="toc-text">方法1：绝对定位+margin:auto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-%E8%B4%9Fmargin"><span class="toc-text">绝对定位+负margin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-transform"><span class="toc-text">绝对定位+transform</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex%E5%B8%83%E5%B1%80"><span class="toc-text">flex布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#table-cell%E5%AE%9E%E7%8E%B0%E5%B1%85%E4%B8%AD"><span class="toc-text">table-cell实现居中</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E5%86%85%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">行内元素水平居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素水平居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">定宽块级元素水平居中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8D%E5%AE%9A%E5%AE%BD%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E6%B0%B4%E5%B9%B3%E5%B1%85%E4%B8%AD"><span class="toc-text">不定宽块级元素水平居中</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">单行文本垂直居中</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E8%A1%8C%E6%96%87%E6%9C%AC%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">多行文本垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E4%B8%8D%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度不固定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%B6%E7%BA%A7%E5%85%83%E7%B4%A0%E9%AB%98%E5%BA%A6%E5%9B%BA%E5%AE%9A"><span class="toc-text">父级元素高度固定</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%97%E7%BA%A7%E5%85%83%E7%B4%A0%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">块级元素垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9Aflex%E5%B8%83%E5%B1%80"><span class="toc-text">方法1：flex布局</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8C%E8%B4%9Fmargin%EF%BC%88%E9%9C%80%E7%9F%A5%E5%AE%BD%E9%AB%98%EF%BC%89"><span class="toc-text">利用position和top和负margin（需知宽高）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop-x2F-bottom%E5%92%8Cmargin-auto"><span class="toc-text">利用position和top&#x2F;bottom和margin:auto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A9%E7%94%A8position%E5%92%8Ctop%E5%92%8Ctransform"><span class="toc-text">利用position和top和transform</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B4%E5%B9%B3%E5%9E%82%E7%9B%B4%E5%B1%85%E4%B8%AD"><span class="toc-text">水平垂直居中</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%951%EF%BC%9A%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-margin-auto"><span class="toc-text">方法1：绝对定位+margin:auto</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-%E8%B4%9Fmargin"><span class="toc-text">绝对定位+负margin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9D%E5%AF%B9%E5%AE%9A%E4%BD%8D-transform"><span class="toc-text">绝对定位+transform</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex%E5%B8%83%E5%B1%80"><span class="toc-text">flex布局</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#table-cell%E5%AE%9E%E7%8E%B0%E5%B1%85%E4%B8%AD"><span class="toc-text">table-cell实现居中</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

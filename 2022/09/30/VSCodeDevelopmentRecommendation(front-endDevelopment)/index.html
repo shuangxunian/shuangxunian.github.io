@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>VSCode拓展推荐（前端开发）</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="VSCode拓展推荐（前端开发）">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/VSCodeDevelopmentRecommendation(front-endDevelopment)/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="一篇关于前端拓展插件推荐的文章">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="工具">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>244</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>50</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-text">拓展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A2%98"><span class="toc-text">主题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E9%A6%96%E9%80%89%E9%A1%B9%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%85%E4%BE%9B%E5%8F%82%E8%80%83%EF%BC%89"><span class="toc-text">个人首选项配置（仅供参考）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">215</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/npm/" 
+        title="npm">
+        <div class="tags-list-item">npm</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%8B%8F%E5%B7%9E/" 
+        title="苏州">
+        <div class="tags-list-item">苏州</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%97%85%E6%B8%B8/" 
+        title="旅游">
+        <div class="tags-list-item">旅游</div>
+      </a>
+    
+      <a 
+        href="/tags/indexedDB/" 
+        title="indexedDB">
+        <div class="tags-list-item">indexedDB</div>
+      </a>
+    
+      <a 
+        href="/tags/react/" 
+        title="react">
+        <div class="tags-list-item">react</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/cookie/" 
+        title="cookie">
+        <div class="tags-list-item">cookie</div>
+      </a>
+    
+      <a 
+        href="/tags/storage/" 
+        title="storage">
+        <div class="tags-list-item">storage</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      VSCode拓展推荐（前端开发）
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/VSCodeDevelopmentRecommendation(front-endDevelopment).md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T01:32:52.759Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%B7%A5%E5%85%B7/" 
+            class="post-meta-link">
+            工具
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>相似功能的插件，不推荐全都装上，请挑选一个使用；本列表所有插件均已测试使用过，但不代表不存在问题；任何插件本身的问题，请到对于代码仓库提交issue</p>
+<h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>简述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-close-tag">Auto Close Tag</a></td>
+<td>自动闭合HTML标签</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=steoates.autoimport">Auto Import</a></td>
+<td>import提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag">Auto Rename Tag</a></td>
+<td>修改HTML标签时，自动修改匹配的标签</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mgmcdermott.vscode-language-babel">Babel JavaScript</a></td>
+<td>babel插件，语法高亮</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=waderyan.babelrc">Babelrc</a></td>
+<td>.babelrc文件高亮提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=michelemelluso.code-beautifier">Beautify css&#x2F;sass&#x2F;scss&#x2F;less</a></td>
+<td>css&#x2F;sass&#x2F;less格式化</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=wwm.better-align">Better Align</a></td>
+<td>对齐赋值符号和注释</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments">Better Comments</a></td>
+<td>编写更加人性化的注释</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=alefragnani.Bookmarks">Bookmarks</a></td>
+<td>添加行书签</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=CoenraadS.bracket-pair-colorizer">Bracket Pair Colorizer</a></td>
+<td>用不同颜色高亮显示匹配的括号</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=akamud.vscode-caniuse">Can I Use</a></td>
+<td>HTML5、CSS3、SVG的浏览器兼容性检查</td>
+</tr>
+<tr>
+<td><del><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=patrys.vscode-code-outline">Code Outline</a></del></td>
+<td><del>展示代码结构树</del></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=formulahendry.code-runner">Code Runner</a></td>
+<td>运行选中代码段（支持多数语言）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker">Code Spell checker</a></td>
+<td>单词拼写检查</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=SirTobi.code-bing">CodeBing</a></td>
+<td>快速打开Bing并搜索，可配置搜索引擎</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=naumovs.color-highlight">Color Highlight</a></td>
+<td>颜色值在代码中高亮显示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=bierner.color-info">Color Info</a></td>
+<td>小窗口显示颜色值，rgb,hsl,cmyk,hex等等</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=anseki.vscode-color">Color Picker</a></td>
+<td>拾色器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=paulmolluzzo.convert-css-in-js">CSS-in-JS</a></td>
+<td>CSS-in-JS高亮提示和转换</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=deerawan.vscode-dash">Dash</a></td>
+<td>集成Dash</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome">Debugger for Chrome</a></td>
+<td>调试Chrome</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=joelday.docthis">Document This</a></td>
+<td>注释文档生成</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mikestead.dotenv">DotENV</a></td>
+<td>.env文件高亮</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig">EditorConfig for VS Code</a></td>
+<td>EditorConfig插件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Perkovec.emoji">Emoji</a></td>
+<td>在代码中输入emoji</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=c75.endy">endy</a></td>
+<td>将输入光标跳转到当前行最后面</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint">ESLint</a></td>
+<td>ESLint插件，高亮提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=abierbaum.vscode-file-peek">File Peek</a></td>
+<td>根据路径字符串，快速定位到文件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mkxml.vscode-filesize">filesize</a></td>
+<td>状态栏显示当前文件大小</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mksafi.find-jump">Find-Jump</a></td>
+<td>快速跳转到指定单词位置</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=medzhidov.font-awesome-codes-html">Font-awesome codes for html</a></td>
+<td>FontAwesome提示代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=lukasz-wronski.ftp-sync">ftp-sync</a></td>
+<td>同步文件到ftp</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=waderyan.gitblame">Git Blame</a></td>
+<td>在状态栏显示当前行的Git信息</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=donjayamanne.githistory">Git History(git log)</a></td>
+<td>查看git log</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=codezombiech.gitignore">gitignore</a></td>
+<td>.gitignore文件语法</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens">GitLens</a></td>
+<td>显示文件最近的commit和作者，显示当前行commit信息</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=kumar-harsh.graphql-for-vscode">GraphQL for VSCode</a></td>
+<td>graphql高亮和提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=spywhere.guides">Guides</a></td>
+<td>高亮缩进基准线</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=tanato.vscode-gulp">Gulp Snippets</a></td>
+<td>Gulp代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion">HTML CSS Class Completion</a></td>
+<td>CSS class提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ecmel.vscode-html-css">HTML CSS Support</a></td>
+<td>css提示（支持vue）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mkaufman.HTMLHint">HTMLHint</a></td>
+<td>HTML格式提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=bradgashler.htmltagwrap">htmltagwrap</a></td>
+<td>快捷包裹html标签</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=bradgashler.htmltagwrap">htmltagwrap</a></td>
+<td>包裹HTML</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=varharrie.import-beautify">Import Beautify</a></td>
+<td>import分组、排序、格式化</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost">Import Cost</a></td>
+<td>行内显示导入（import&#x2F;require）的包的大小</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=SirTori.indenticator">Indenticator</a></td>
+<td>缩进高亮</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion">IntelliSense for css class names</a></td>
+<td>css class输入提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=xabikos.JavaScriptSnippets">JavaScript (ES6) code snippets</a></td>
+<td>ES6语法代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=chenxsan.vscode-standardjs">JavaScript Standard Style</a></td>
+<td>Standard风格</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=cmstead.jsrefactor">JS Refactor</a></td>
+<td>代码重构工具，提取函数、变量重命名等等</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=MariusAlchimavicius.json-to-ts">JSON to TS</a></td>
+<td>JSON结构转化为typescript的interface</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=eriklynd.json-tools">JSON Tools</a></td>
+<td>格式化和压缩JSON</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=wmaurer.vscode-jumpy">jumpy</a></td>
+<td>快速跳转到指定单词位置</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=sysoev.language-stylus">language-stylus</a></td>
+<td>Stylus语法高亮和提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-less">Less IntelliSense</a></td>
+<td>less变量与混合提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=oysun.Lodash">Lodash</a></td>
+<td>Lodash代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=chrisvltn.log-wrapper-for-vscode">Log Wrapper</a></td>
+<td>生产打印选中变量的代码</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint">markdownlint</a></td>
+<td>Markdown格式提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Alan.MochaSnippets">MochaSnippets</a></td>
+<td>Mocha代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=naumovs.node-modules-resolve">Node modules resolve</a></td>
+<td>快速导航到Node模块</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=fknop.vscode-npm">npm</a></td>
+<td>运行npm命令</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=christian-kohler.npm-intellisense">npm Intellisense</a></td>
+<td>导入模块时，提示已安装模块名称</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=IBM.output-colorizer">Output Colorizer</a></td>
+<td>彩色输出信息</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ryu1kn.partial-diff">Partial Diff</a></td>
+<td>对比两段代码或文件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ionutvmi.path-autocomplete">Path Autocomplete</a></td>
+<td>路径完成提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense">Path Intellisense</a></td>
+<td>另一个路径完成提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=pnp.polacode">Polacode</a></td>
+<td>将代码生成图片</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mrmlnc.vscode-postcss-sorting">PostCss Sorting</a></td>
+<td>css排序</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode">Prettier - Code formatter</a></td>
+<td>prettier官方插件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mohsen1.prettify-json">Prettify JSON</a></td>
+<td>格式化JSON</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=alefragnani.project-manager">Project Manager</a></td>
+<td>快速切换项目</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=WallabyJs.quokka-vscode">Quokka.js</a></td>
+<td>不需要手动运行，行内显示变量结果</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Orta.vscode-react-native-storybooks">React Native Storybooks</a></td>
+<td>storybook预览插件，支持react</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=wmira.react-playground-vscode">React Playground</a></td>
+<td>为编辑器提供一个react组件运行环境，方便调试</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=TimonVS.ReactSnippetsStandard">React Standard Style code snippets</a></td>
+<td>react standar风格代码块</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=humao.rest-client">REST Client</a></td>
+<td>发送REST风格的HTTP请求</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=robinbentley.sass-indented">Sass</a></td>
+<td>sass插件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync">Settings Sync</a></td>
+<td>VSCode设置同步到Gist</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=Tyriar.sort-lines">Sort lines</a></td>
+<td>排序选中行</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=miclo.sort-typescript-imports">Sort Typescript Imports</a></td>
+<td>typescript的import排序</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=marclipovsky.string-manipulation">String Manipulation</a></td>
+<td>字符串转换处理（驼峰、大写开头、下划线等等）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=shinnn.stylelint">stylelint</a></td>
+<td>css&#x2F;sass&#x2F;less代码风格</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=cssho.vscode-svgviewer">SVG Viewer</a></td>
+<td>SVG查看器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=nonoroazoro.syncing">Syncing</a></td>
+<td>vscode设置同步到gist</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=rintoj.chai-spec-generator">Test Spec Generator</a></td>
+<td>测试用例生成（支持chai、should、jasmine）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=minhthai.vscode-todo-parser">TODO Parser</a></td>
+<td>Todo管理</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ipatalas.vscode-postfix-ts">TS&#x2F;JS postfix completion</a></td>
+<td>ts&#x2F;js后缀提示</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=eg2.tslint">TSLint</a></td>
+<td>TypeScript语法检查</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=jvitor83.types-autoinstaller">Types auto installer</a></td>
+<td>自动安装<a target="_blank" rel="noopener" href="https://github.com/types">@types</a>声明依赖</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=rbbit.typescript-hero">TypeScript Hero</a></td>
+<td>TypeScript辅助插件，管理import、outline等等</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=kevinmcgowan.TypeScriptImport">TypeScript Import</a></td>
+<td>TS自动import</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=mike-co.import-sorter">TypeScript Import Sorter</a></td>
+<td>import整理排序</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=infeng.vscode-react-typescript">Typescript React code snippets</a></td>
+<td>React Typescript代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=lucasschejtman.vscode-typesearch">TypeSearch</a></td>
+<td>TS声明文件搜索</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=pflannery.vscode-versionlens">Version Lens</a></td>
+<td>package.json文件显示模块当前版本和最新版本</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=octref.vetur">vetur</a></td>
+<td>目前比较好的Vue语法高亮</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=dkundel.vscode-npm-source">View Node Package</a></td>
+<td>快速打开选中模块的主页和代码仓库</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ms-vsliveshare.vsliveshare">VS Live Share</a></td>
+<td>实时多人协助</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=emmanuelbeziat.vscode-great-icons">VSCode Great Icons</a></td>
+<td>文件图标拓展</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=bajdzis.vscode-database">vscode-database</a></td>
+<td>操作数据库，支持mysql和postgres</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=robertohuertasm.vscode-icons">vscode-icons</a></td>
+<td>文件图标，方便定位文件</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=jrebocho.vscode-random">vscode-random</a></td>
+<td>随机字符串生成器</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=shyykoserhiy.vscode-spotify">vscode-spotify</a></td>
+<td>集成spotify，播放音乐</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=jpoissonnier.vscode-styled-components">vscode-styled-components</a></td>
+<td>styled-components高亮支持</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=blanu.vscode-styled-jsx">vscode-styled-jsx</a></td>
+<td>styled-jsx高亮支持</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ducksoupdev.Vue2">Vue TypeScript Snippets</a></td>
+<td>Vue Typescript代码段</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=oysun.vuehelper">VueHelper</a></td>
+<td>Vue2代码段（包括Vue2 api、vue-router2、vuex2）</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=WallabyJs.wallaby-vscode">Wallaby.js</a></td>
+<td>实时测试插件</td>
+</tr>
+</tbody></table>
+<h2 id="主题"><a href="#主题" class="headerlink" title="主题"></a>主题</h2><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>预览</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=akamud.vscode-theme-onelight">Atom One Light Theme</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/akamud/vscode-theme-onelight/master/screenshots/preview.png"><img src="https://raw.githubusercontent.com/akamud/vscode-theme-onelight/master/screenshots/preview.png" alt="Atom One Light Theme" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/akamud/vscode-theme-onelight/master/screenshots/preview.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=uloco.theme-bluloco-dark">bluloco-dark</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/uloco/theme-bluloco-dark/master/screenshots/ts.png"><img src="https://raw.githubusercontent.com/uloco/theme-bluloco-dark/master/screenshots/ts.png" alt="bluloco-dark" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/uloco/theme-bluloco-dark/master/screenshots/ts.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=uloco.theme-bluloco-light">bluloco-light</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/uloco/theme-bluloco-light/master/screenshots/js.png"><img src="https://raw.githubusercontent.com/uloco/theme-bluloco-light/master/screenshots/js.png" alt="bluloco-light" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/uloco/theme-bluloco-light/master/screenshots/js.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=dorelljames.enki-theme-vscode">Enki Theme</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/dorelljames/enki-theme-vscode/master/static/images/react.png"><img src="https://raw.githubusercontent.com/dorelljames/enki-theme-vscode/master/static/images/react.png" alt="Enki Theme" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/dorelljames/enki-theme-vscode/master/static/images/react.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=eppz.eppz-code">eppz! (C# theme for Unity)</a></td>
+<td><a target="_blank" rel="noopener" href="https://github.com/eppz/VSCode.Extension.eppz_Code/raw/master/images/eppz-Code_3_727px.png"><img src="https://github.com/eppz/VSCode.Extension.eppz_Code/raw/master/images/eppz-Code_3_727px.png" alt="eppz! (C# theme for Unity)" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://github.com/eppz/VSCode.Extension.eppz_Code/raw/master/images/eppz-Code_3_727px.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=lkytal.FlatUI">Flat UI</a></td>
+<td><a target="_blank" rel="noopener" href="https://github.com/lkytal/vscode-theme-flatui/raw/master/images/preview.png"><img src="https://github.com/lkytal/vscode-theme-flatui/raw/master/images/preview.png" alt="Flat UI" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://github.com/lkytal/vscode-theme-flatui/raw/master/images/preview.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=monokai.theme-monokai-pro-vscode">Monokai Pro</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/Monokai/monokai-pro-vscode/master/img/monokai-pro.png"><img src="https://raw.githubusercontent.com/Monokai/monokai-pro-vscode/master/img/monokai-pro.png" alt="Monokai Pro" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/Monokai/monokai-pro-vscode/master/img/monokai-pro.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=ionutvmi.spacegray-vscode">spacegray-vscode</a></td>
+<td><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/ionutvmi/spacegray-vscode/master/screenshots/eighties.png"><img src="https://raw.githubusercontent.com/ionutvmi/spacegray-vscode/master/screenshots/eighties.png" alt="spacegray-vscode" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://raw.githubusercontent.com/ionutvmi/spacegray-vscode/master/screenshots/eighties.png" class="lozad post-image"></a></td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://marketplace.visualstudio.com/items?itemName=zrachod.splus-theme">Splus</a></td>
+<td><a target="_blank" rel="noopener" href="https://camo.githubusercontent.com/ddce1554886df3577f5f090638335e71da1d9f60/68747470733a2f2f692e696d6775722e636f6d2f444861777671782e706e67"><img src="/VSCodeDevelopmentRecommendation(front-endDevelopment).assets/68747470733a2f2f692e696d6775722e636f6d2f444861777671782e706e67.png" alt="Splus" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/VSCodeDevelopmentRecommendation(front-endDevelopment).assets/68747470733a2f2f692e696d6775722e636f6d2f444861777671782e706e67.png" class="lozad post-image"></a></td>
+</tr>
+</tbody></table>
+<h2 id="个人首选项配置（仅供参考）"><a href="#个人首选项配置（仅供参考）" class="headerlink" title="个人首选项配置（仅供参考）"></a>个人首选项配置（仅供参考）</h2><pre class="highlight"><code class="hljs javascript">&#123;<br>  <span class="hljs-string">&quot;breadcrumbs.enabled&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;editor.tabSize&quot;</span>: <span class="hljs-number">2</span>,<br>  <span class="hljs-string">&quot;editor.renderWhitespace&quot;</span>: <span class="hljs-string">&quot;boundary&quot;</span>,<br>  <span class="hljs-string">&quot;editor.cursorBlinking&quot;</span>: <span class="hljs-string">&quot;smooth&quot;</span>,<br>  <span class="hljs-string">&quot;editor.minimap.renderCharacters&quot;</span>: <span class="hljs-literal">false</span>,<br>  <span class="hljs-string">&quot;editor.fontFamily&quot;</span>: <span class="hljs-string">&quot;&#x27;Fira Code&#x27;, &#x27;Droid Sans Mono&#x27;, &#x27;Courier New&#x27;, monospace, &#x27;Droid Sans Fallback&#x27;&quot;</span>,<br>  <span class="hljs-string">&quot;editor.fontLigatures&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;explorer.confirmDragAndDrop&quot;</span>: <span class="hljs-literal">false</span>,<br>  <span class="hljs-string">&quot;extensions.autoUpdate&quot;</span>: <span class="hljs-literal">false</span>,<br>  <span class="hljs-string">&quot;files.insertFinalNewline&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;git.autofetch&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;git.path&quot;</span>: <span class="hljs-string">&quot;F:\\Program Files\\Git\\cmd\\git.exe&quot;</span>,<br>  <span class="hljs-string">&quot;search.exclude&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;**/node_modules&quot;</span>: <span class="hljs-literal">true</span>,<br>    <span class="hljs-string">&quot;**/dist&quot;</span>: <span class="hljs-literal">true</span><br>  &#125;,<br>  <span class="hljs-string">&quot;typescript.locale&quot;</span>: <span class="hljs-string">&quot;en&quot;</span>,<br>  <span class="hljs-string">&quot;window.titleBarStyle&quot;</span>: <span class="hljs-string">&quot;custom&quot;</span>,<br>  <span class="hljs-string">&quot;window.title&quot;</span>: <span class="hljs-string">&quot;$&#123;dirty&#125;$&#123;activeEditorMedium&#125;$&#123;separator&#125;$&#123;rootName&#125;&quot;</span>,<br>  <span class="hljs-string">&quot;window.zoomLevel&quot;</span>: <span class="hljs-number">1</span>,<br>  <span class="hljs-string">&quot;workbench.activityBar.visible&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;workbench.colorTheme&quot;</span>: <span class="hljs-string">&quot;Plastic - deprioritised punctuation&quot;</span>,<br>  <span class="hljs-string">&quot;workbench.iconTheme&quot;</span>: <span class="hljs-string">&quot;vscode-great-icons&quot;</span>,<br>  <span class="hljs-string">&quot;workbench.startupEditor&quot;</span>: <span class="hljs-string">&quot;newUntitledFile&quot;</span>,<br>  <span class="hljs-string">&quot;eslint.autoFixOnSave&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;eslint.validate&quot;</span>: [<span class="hljs-string">&quot;javascript&quot;</span>, <span class="hljs-string">&quot;javascriptreact&quot;</span>, <span class="hljs-string">&quot;vue&quot;</span>],<br>  <span class="hljs-string">&quot;vsicons.projectDetection.autoReload&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;vsicons.dontShowNewVersionMessage&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;tslint.autoFixOnSave&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;debugwrapper.wrappers&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;default&quot;</span>: <span class="hljs-string">&quot;console.log(&#x27;$eSEL&#x27;, $SEL)&quot;</span><br>  &#125;,<br>  <span class="hljs-string">&quot;prettier.tslintIntegration&quot;</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-string">&quot;cSpell.userWords&quot;</span>: [<br>    <span class="hljs-string">&quot;Unmount&quot;</span><br>  ],<br>  <span class="hljs-string">&quot;jest.autoEnable&quot;</span>: <span class="hljs-literal">false</span>,<br>&#125;<br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://github.com/varHarrie/varharrie.github.io/issues/10">VSCode拓展推荐（前端开发）</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/TokenAPopularSchemeForServerAuthentication/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Token - 服务端身份验证的流行方案 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/Vue.jsScopedStylesvsCSSModules/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Vue scoped 样式与 CSS Module 对比 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-text">拓展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A2%98"><span class="toc-text">主题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E9%A6%96%E9%80%89%E9%A1%B9%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%85%E4%BE%9B%E5%8F%82%E8%80%83%EF%BC%89"><span class="toc-text">个人首选项配置（仅供参考）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-text">拓展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E9%A2%98"><span class="toc-text">主题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AA%E4%BA%BA%E9%A6%96%E9%80%89%E9%A1%B9%E9%85%8D%E7%BD%AE%EF%BC%88%E4%BB%85%E4%BE%9B%E5%8F%82%E8%80%83%EF%BC%89"><span class="toc-text">个人首选项配置（仅供参考）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

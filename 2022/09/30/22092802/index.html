@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>v-model源码解析(超详细)</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="v-model源码解析(超详细)">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/22092802/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>244</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>50</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%9B%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-text">抛出问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E9%87%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">问题重现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E7%8C%9C%E6%83%B3"><span class="toc-text">问题引发的猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2%E7%9C%9F%E7%9B%B8-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">探索真相-源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E6%9C%BA%E5%88%B6"><span class="toc-text">v-model实现机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">v-model实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDirectives"><span class="toc-text">genDirectives</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#model"><span class="toc-text">model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDefaultModel"><span class="toc-text">genDefaultModel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genAssignmentCode"><span class="toc-text">genAssignmentCode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#event-target-composing"><span class="toc-text">$event.target.composing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addProp"><span class="toc-text">addProp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addHandler"><span class="toc-text">addHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#render"><span class="toc-text">render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%8C%9C%E6%83%B3"><span class="toc-text">验证猜想</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%84%8F%E5%A4%96%E7%9A%84%E5%8F%91%E7%8E%B0"><span class="toc-text">一个意外的发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">215</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/npm/" 
+        title="npm">
+        <div class="tags-list-item">npm</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%8B%8F%E5%B7%9E/" 
+        title="苏州">
+        <div class="tags-list-item">苏州</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%97%85%E6%B8%B8/" 
+        title="旅游">
+        <div class="tags-list-item">旅游</div>
+      </a>
+    
+      <a 
+        href="/tags/indexedDB/" 
+        title="indexedDB">
+        <div class="tags-list-item">indexedDB</div>
+      </a>
+    
+      <a 
+        href="/tags/react/" 
+        title="react">
+        <div class="tags-list-item">react</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/cookie/" 
+        title="cookie">
+        <div class="tags-list-item">cookie</div>
+      </a>
+    
+      <a 
+        href="/tags/storage/" 
+        title="storage">
+        <div class="tags-list-item">storage</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      v-model源码解析(超详细)
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092802.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T01:32:52.751Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="抛出问题"><a href="#抛出问题" class="headerlink" title="抛出问题"></a>抛出问题</h2><p>我们先来看一下下面这段代码</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;message&quot;</span>&gt;</span>&#123;&#123; info.message &#125;&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;info.message&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;change&quot;</span>&gt;</span>click<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="language-javascript">    data () &#123;</span><br><span class="language-javascript">      <span class="hljs-keyword">return</span> &#123;</span><br><span class="language-javascript">        <span class="hljs-attr">info</span>: &#123;&#125;</span><br><span class="language-javascript">      &#125;</span><br><span class="language-javascript">    &#125;,</span><br><span class="language-javascript">    <span class="hljs-attr">methods</span>: &#123;</span><br><span class="language-javascript">      change () &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">this</span>.<span class="hljs-property">info</span>.<span class="hljs-property">message</span> = <span class="hljs-string">&#x27;hello world&#x27;</span></span><br><span class="language-javascript">      &#125;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">  &#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre>
+
+<p>上述代码很简单，就不做过多的解释了。</p>
+<h2 id="问题重现步骤"><a href="#问题重现步骤" class="headerlink" title="问题重现步骤"></a>问题重现步骤</h2><p>我现在对上述代码做两种操作：</p>
+<ol>
+<li>一进页面先在输入框中输入hello vue</li>
+<li>一进页面先点击 click 按钮进行赋值操作，再在输入框中输入hello vue</li>
+</ol>
+<p>上述两种情况分别会出现什么现象呢？</p>
+<p>第一种操作，当我们在输入框中输入hello vue的时候，class 为 message 的 div 中会联动出现hello vue，也就是说 info 中的message属性是响应式的</p>
+<p>第二种操作，当我们先进行赋值操作，之后无论在输入框中输入什么内容，class 为message的 div 中都不会联动出现任何值，也就是说 info 中的 message 属性非响应式的</p>
+<h2 id="问题引发的猜想"><a href="#问题引发的猜想" class="headerlink" title="问题引发的猜想"></a>问题引发的猜想</h2><p>查阅 vue 官方文档我们得知 vue 在初始化的时候会对 data 中所有已经定义的对象及其子属性进行遍历，给他们添加 getter 和 setter，使得他们变成响应式的（关于响应式这块之后会单开文章进行解析），但是 vue 不能检测对象属性的添加或删除。但是，可以使用 Vue.set(object, propertyName, value) 方法向嵌套对象添加响应式属性</p>
+<p>基于上述描述，我们先看第一种操作。直接在输入框中输入hello vue，class 为 message 的 div 中会联动出现hello vue。但是我们看 data 中只定义了 info 对象，其中并没有定义 message 属性，message 属于新增属性。根据 vue 官方文档中说的，vue 不能检测对象属性的添加或删除，所以我猜测 vue 底层在解析 v-model 指令的时候,每当触发表单元素的监听事件(例如 input 事件)，就会有 Vue.set() 操作，从而触发 setter</p>
+<p>带着这个猜测，我们来看第二种操作。一进页面先点击 click 按钮，对 info.message 进行赋值，message 属于新增属性，根据官方文档中说的，此时 message 并不是响应式的，没问题。但是我们接着在 input 输入框中输入值，class 为message的 div 中没有联动出现任何值，根据我们对于第一种情况的猜测，当输入框监听到 input 事件的时候，会对 info 中的 message 进行 Vue.set() 操作，所以理论上就算一开始 click 中是对新增属性 message 直接赋值的，导致该属性并非响应式的，在经过输入框 input 事件中的 Vue.set() 操作之后，应该会变成响应式的，而现在呈现出来的情况并不是这样的啊，这是为什么呢？</p>
+<p>聪明的你们应该已经猜到在 Vue.set() 底层源码中，应该是会判断 message 属性是否一开始就在 info 中，如果存在就只是进行单纯的赋值，不存在的话在进行响应式操作，绑定 getter 和 setter</p>
+<p>但是光猜测肯定是不够的，我们要用事实说话，做到有理有据。接下来我们就去看下 vue 源码中 v-model 这块，看看是不是如我们猜想的一样</p>
+<h2 id="探索真相-源码分析"><a href="#探索真相-源码分析" class="headerlink" title="探索真相-源码分析"></a>探索真相-源码分析</h2><p>v-model 指令使用分为两种情况：一种是在表单元素上使用，另外一种是在组件上使用。我们今天分析的是第一种情况，也就是在表单元素上使用</p>
+<h2 id="v-model实现机制"><a href="#v-model实现机制" class="headerlink" title="v-model实现机制"></a>v-model实现机制</h2><p>我们先简单说下 v-model 的机制：v-model 会把它关联的响应式数据（如 info.message ），动态地绑定到表单元素的 value 属性上，然后监听表单元素的 input 事件：当 v-model 绑定的响应数据发生变化时，表单元素的 value 值也会同步变化；当表单元素接受用户的输入时，input 事件会触发，input 的回调逻辑会把表单元素 value 最新值同步赋值给 v-model 绑定的响应式数据。</p>
+<h2 id="v-model实现原理"><a href="#v-model实现原理" class="headerlink" title="v-model实现原理"></a>v-model实现原理</h2><p>我用来分析的源码是在vue官网安装模块里面下载的开发版本(2.6.10)，便于调试</p>
+<h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>我们今天讲的内容其实就是把模版编译成 render 函数的一个流程，这里不会对每步流程都展开讲解，我可以给出一个步骤实现的流程，大家有兴趣的话可以根据这个流程来阅读代码，提高效率<br><code>$mount()-&gt;compileToFunctions()-&gt;compile()-&gt;baseCompile()</code></p>
+<p>真正的编译过程都是在这个 baseCompile() 里面执行，执行步骤可以分为三个过程</p>
+<ol>
+<li>解析模版字符串生成AST：<code>const ast = parse(template.trim(), options)</code></li>
+<li>优化语法树：<code>optimize(ast, options)</code></li>
+<li>生成代码：<code>const code = generate(ast, options)</code></li>
+</ol>
+<p>然后我们看下generate里面的代码，这也是我们今天讲的重点</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">generate</span> (<br>  ast,<br>  options<br>) &#123;<br>  <span class="hljs-keyword">var</span> state = <span class="hljs-keyword">new</span> <span class="hljs-title class_">CodegenState</span>(options);<br>  <span class="hljs-keyword">var</span> code = ast ? <span class="hljs-title function_">genElement</span>(ast, state) : <span class="hljs-string">&#x27;_c(&quot;div&quot;)&#x27;</span>;<br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-attr">render</span>: (<span class="hljs-string">&quot;with(this)&#123;return &quot;</span> + code + <span class="hljs-string">&quot;&#125;&quot;</span>),<br>    <span class="hljs-attr">staticRenderFns</span>: state.<span class="hljs-property">staticRenderFns</span><br>  &#125;<br>&#125;<br></code></pre>
+<p>generate() 首先通过 <code>genElement()-&gt;genData$2()-&gt;genDirectives()</code> 生成 code，再把 code 用 <code>with(this)&#123;return $&#123;code&#125;&#125;&#125;</code> 包裹起来,最终的到 render 函数。<br>接下来我们从genDirectives()开始讲解</p>
+<h3 id="genDirectives"><a href="#genDirectives" class="headerlink" title="genDirectives"></a>genDirectives</h3><p>在模板的编译阶段，v-model 跟其他指令一样，会被解析到 el.directives 中，之后会通过genDirectives方法处理这些指令，我们这里从genDirectives()重点开始讲，至于怎么到这步，如果大家感兴趣的话，可以从generate()开始看</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">genDirectives</span> (el, state) &#123;<br>  <span class="hljs-keyword">var</span> dirs = el.<span class="hljs-property">directives</span>;<br>  <span class="hljs-keyword">if</span> (!dirs) &#123; <span class="hljs-keyword">return</span> &#125;<br>  <span class="hljs-keyword">var</span> res = <span class="hljs-string">&#x27;directives:[&#x27;</span>;<br>  <span class="hljs-keyword">var</span> hasRuntime = <span class="hljs-literal">false</span>;<br>  <span class="hljs-keyword">var</span> i, l, dir, needRuntime;<br>  <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>, l = dirs.<span class="hljs-property">length</span>; i &lt; l; i++) &#123;<br>    dir = dirs[i];<br>    needRuntime = <span class="hljs-literal">true</span>;<br>    <span class="hljs-keyword">var</span> gen = state.<span class="hljs-property">directives</span>[dir.<span class="hljs-property">name</span>];<br>    <span class="hljs-keyword">if</span> (gen) &#123;<br>      <span class="hljs-comment">// compile-time directive that manipulates AST.</span><br>      <span class="hljs-comment">// returns true if it also needs a runtime counterpart.</span><br>      needRuntime = !!<span class="hljs-title function_">gen</span>(el, dir, state.<span class="hljs-property">warn</span>);<br>    &#125;<br>    <span class="hljs-keyword">if</span> (needRuntime) &#123;<br>      hasRuntime = <span class="hljs-literal">true</span>;<br>      res += <span class="hljs-string">&quot;&#123;name:\&quot;&quot;</span> + (dir.<span class="hljs-property">name</span>) + <span class="hljs-string">&quot;\&quot;,rawName:\&quot;&quot;</span> + (dir.<span class="hljs-property">rawName</span>) + <span class="hljs-string">&quot;\&quot;&quot;</span> + (dir.<span class="hljs-property">value</span> ? (<span class="hljs-string">&quot;,value:(&quot;</span> + (dir.<span class="hljs-property">value</span>) + <span class="hljs-string">&quot;),expression:&quot;</span> + (<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(dir.<span class="hljs-property">value</span>))) : <span class="hljs-string">&#x27;&#x27;</span>) + (dir.<span class="hljs-property">arg</span> ? (<span class="hljs-string">&quot;,arg:&quot;</span> + (dir.<span class="hljs-property">isDynamicArg</span> ? dir.<span class="hljs-property">arg</span> : (<span class="hljs-string">&quot;\&quot;&quot;</span> + (dir.<span class="hljs-property">arg</span>) + <span class="hljs-string">&quot;\&quot;&quot;</span>))) : <span class="hljs-string">&#x27;&#x27;</span>) + (dir.<span class="hljs-property">modifiers</span> ? (<span class="hljs-string">&quot;,modifiers:&quot;</span> + (<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(dir.<span class="hljs-property">modifiers</span>))) : <span class="hljs-string">&#x27;&#x27;</span>) + <span class="hljs-string">&quot;&#125;,&quot;</span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (hasRuntime) &#123;<br>    <span class="hljs-keyword">return</span> res.<span class="hljs-title function_">slice</span>(<span class="hljs-number">0</span>, -<span class="hljs-number">1</span>) + <span class="hljs-string">&#x27;]&#x27;</span><br>  &#125;<br>&#125;<br></code></pre>
+
+<p>我对上面这个代码打个断点，结合我们上面的代码例子，这样子看的更清楚，如下图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/17f04b1d-8f4a-4e8c-af4c-0ee49247f5ef-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/17f04b1d-8f4a-4e8c-af4c-0ee49247f5ef-3807603.jpg"></p>
+<p>我们可以看到传进来的el是Ast语法树，el.directives是el上的指令，在我们这里就是el-model的相关参数,然后赋值给变量dirs</p>
+<p>往下看代码，for循环中有段代码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> gen = state.<span class="hljs-property">directives</span>[dir.<span class="hljs-property">name</span>];<br><span class="hljs-keyword">if</span> (gen) &#123;<br>  <span class="hljs-comment">// compile-time directive that manipulates AST.</span><br>  <span class="hljs-comment">// returns true if it also needs a runtime counterpart.</span><br>  needRuntime = !!<span class="hljs-title function_">gen</span>(el, dir, state.<span class="hljs-property">warn</span>);<br>&#125;<br></code></pre>
+
+<p>这里面的state.dirctives是什么呢？打个断点看一下，如下图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/3a1b4b1e-bd87-423d-9515-40ced534dcc0-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/3a1b4b1e-bd87-423d-9515-40ced534dcc0-3807603.jpg"></p>
+<p>我们可以看到state.directives里面包含了很多指令方法，model 就在其中，</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> gen = state.<span class="hljs-property">directives</span>[dir.<span class="hljs-property">name</span>];<br></code></pre>
+
+<p>其实就是等价于</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> gen = state.<span class="hljs-property">directives</span>[model];<br></code></pre>
+
+<p>所以代码中的变量 gen 得到的是model()</p>
+<pre class="highlight"><code class="hljs javascript">needRuntime = !!<span class="hljs-title function_">gen</span>(el, dir, state.<span class="hljs-property">warn</span>);<br></code></pre>
+
+<p>其实就是执行了model()</p>
+<h3 id="model"><a href="#model" class="headerlink" title="model"></a>model</h3><p>那我们再来看看model这个方法里面做了些什么事情，先上model的代码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">model</span> (el,dir,_warn) &#123;<br>  warn$<span class="hljs-number">1</span> = _warn;<br>  <span class="hljs-keyword">var</span> value = dir.<span class="hljs-property">value</span>;<br>  <span class="hljs-keyword">var</span> modifiers = dir.<span class="hljs-property">modifiers</span>;<br>  <span class="hljs-keyword">var</span> tag = el.<span class="hljs-property">tag</span>;<br>  <span class="hljs-keyword">var</span> type = el.<span class="hljs-property">attrsMap</span>.<span class="hljs-property">type</span>;<br><br>  &#123;<br>    <span class="hljs-comment">// inputs with type=&quot;file&quot; are read only and setting the input&#x27;s</span><br>    <span class="hljs-comment">// value will throw an error.</span><br>    <span class="hljs-keyword">if</span> (tag === <span class="hljs-string">&#x27;input&#x27;</span> &amp;&amp; type === <span class="hljs-string">&#x27;file&#x27;</span>) &#123;<br>      <span class="hljs-title function_">warn$1</span>(<br>        <span class="hljs-string">&quot;&lt;&quot;</span> + (el.<span class="hljs-property">tag</span>) + <span class="hljs-string">&quot; v-model=\&quot;&quot;</span> + value + <span class="hljs-string">&quot;\&quot; type=\&quot;file\&quot;&gt;:\n&quot;</span> +<br>        <span class="hljs-string">&quot;File inputs are read only. Use a v-on:change listener instead.&quot;</span>,<br>        el.<span class="hljs-property">rawAttrsMap</span>[<span class="hljs-string">&#x27;v-model&#x27;</span>]<br>      );<br>    &#125;<br>  &#125;<br><br>  <span class="hljs-keyword">if</span> (el.<span class="hljs-property">component</span>) &#123;<br>    <span class="hljs-title function_">genComponentModel</span>(el, value, modifiers);<br>    <span class="hljs-comment">// component v-model doesn&#x27;t need extra runtime</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tag === <span class="hljs-string">&#x27;select&#x27;</span>) &#123;<br>    <span class="hljs-title function_">genSelect</span>(el, value, modifiers);<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tag === <span class="hljs-string">&#x27;input&#x27;</span> &amp;&amp; type === <span class="hljs-string">&#x27;checkbox&#x27;</span>) &#123;<br>    <span class="hljs-title function_">genCheckboxModel</span>(el, value, modifiers);<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tag === <span class="hljs-string">&#x27;input&#x27;</span> &amp;&amp; type === <span class="hljs-string">&#x27;radio&#x27;</span>) &#123;<br>    <span class="hljs-title function_">genRadioModel</span>(el, value, modifiers);<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (tag === <span class="hljs-string">&#x27;input&#x27;</span> || tag === <span class="hljs-string">&#x27;textarea&#x27;</span>) &#123;<br>    <span class="hljs-title function_">genDefaultModel</span>(el, value, modifiers);<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!config.<span class="hljs-title function_">isReservedTag</span>(tag)) &#123;<br>    <span class="hljs-title function_">genComponentModel</span>(el, value, modifiers);<br>    <span class="hljs-comment">// component v-model doesn&#x27;t need extra runtime</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-title function_">warn$1</span>(<br>      <span class="hljs-string">&quot;&lt;&quot;</span> + (el.<span class="hljs-property">tag</span>) + <span class="hljs-string">&quot; v-model=\&quot;&quot;</span> + value + <span class="hljs-string">&quot;\&quot;&gt;: &quot;</span> +<br>      <span class="hljs-string">&quot;v-model is not supported on this element type. &quot;</span> +<br>      <span class="hljs-string">&#x27;If you are working with contenteditable, it\&#x27;s recommended to &#x27;</span> +<br>      <span class="hljs-string">&#x27;wrap a library dedicated for that purpose inside a custom component.&#x27;</span>,<br>      el.<span class="hljs-property">rawAttrsMap</span>[<span class="hljs-string">&#x27;v-model&#x27;</span>]<br>    );<br>  &#125;<br><br>  <span class="hljs-comment">// ensure runtime directive metadata</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>&#125;<br></code></pre>
+
+<p>model 方法根据传入的参数对 tag 的类型进行判断，调用不同的处理逻辑，本 demo 中 tag 的类型为 input，所以会执行genDefaultModel方法</p>
+<h3 id="genDefaultModel"><a href="#genDefaultModel" class="headerlink" title="genDefaultModel"></a>genDefaultModel</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">genDefaultModel</span> (el,value,modifiers) &#123;<br>  <span class="hljs-keyword">var</span> type = el.<span class="hljs-property">attrsMap</span>.<span class="hljs-property">type</span>;<br>  &#123;<br>    <span class="hljs-keyword">var</span> value$<span class="hljs-number">1</span> = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:value&#x27;</span>] || el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;:value&#x27;</span>];<br>    <span class="hljs-keyword">var</span> typeBinding = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:type&#x27;</span>] || el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;:type&#x27;</span>];<br>    <span class="hljs-keyword">if</span> (value$<span class="hljs-number">1</span> &amp;&amp; !typeBinding) &#123;<br>      <span class="hljs-keyword">var</span> binding = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:value&#x27;</span>] ? <span class="hljs-string">&#x27;v-bind:value&#x27;</span> : <span class="hljs-string">&#x27;:value&#x27;</span>;<br>      <span class="hljs-title function_">warn$1</span>(<br>        binding + <span class="hljs-string">&quot;=\&quot;&quot;</span> + value$<span class="hljs-number">1</span> + <span class="hljs-string">&quot;\&quot; conflicts with v-model on the same element &quot;</span> +<br>        <span class="hljs-string">&#x27;because the latter already expands to a value binding internally&#x27;</span>,<br>        el.<span class="hljs-property">rawAttrsMap</span>[binding]<br>      );<br>    &#125;<br>  &#125;<br><br>  <span class="hljs-keyword">var</span> ref = modifiers || &#123;&#125;;<br>  <span class="hljs-keyword">var</span> lazy = ref.<span class="hljs-property">lazy</span>;<br>  <span class="hljs-keyword">var</span> number = ref.<span class="hljs-property">number</span>;<br>  <span class="hljs-keyword">var</span> trim = ref.<span class="hljs-property">trim</span>;<br>  <span class="hljs-keyword">var</span> needCompositionGuard = !lazy &amp;&amp; type !== <span class="hljs-string">&#x27;range&#x27;</span>;<br>  <span class="hljs-keyword">var</span> event = lazy<br>    ? <span class="hljs-string">&#x27;change&#x27;</span><br>    : type === <span class="hljs-string">&#x27;range&#x27;</span><br>      ? <span class="hljs-variable constant_">RANGE_TOKEN</span><br>      : <span class="hljs-string">&#x27;input&#x27;</span>;<br><br>  <span class="hljs-keyword">var</span> valueExpression = <span class="hljs-string">&#x27;$event.target.value&#x27;</span>;<br>  <span class="hljs-keyword">if</span> (trim) &#123;<br>    valueExpression = <span class="hljs-string">&quot;$event.target.value.trim()&quot;</span>;<br>  &#125;<br>  <span class="hljs-keyword">if</span> (number) &#123;<br>    valueExpression = <span class="hljs-string">&quot;_n(&quot;</span> + valueExpression + <span class="hljs-string">&quot;)&quot;</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">var</span> code = <span class="hljs-title function_">genAssignmentCode</span>(value, valueExpression);<br>  <span class="hljs-keyword">if</span> (needCompositionGuard) &#123;<br>    code = <span class="hljs-string">&quot;if($event.target.composing)return;&quot;</span> + code;<br>  &#125;<br><br>  <span class="hljs-title function_">addProp</span>(el, <span class="hljs-string">&#x27;value&#x27;</span>, (<span class="hljs-string">&quot;(&quot;</span> + value + <span class="hljs-string">&quot;)&quot;</span>));<br>  <span class="hljs-title function_">addHandler</span>(el, event, code, <span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>);<br>  <span class="hljs-keyword">if</span> (trim || number) &#123;<br>    <span class="hljs-title function_">addHandler</span>(el, <span class="hljs-string">&#x27;blur&#x27;</span>, <span class="hljs-string">&#x27;$forceUpdate()&#x27;</span>);<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>我们对genDefaultModel()中的代码进行分块解析，首先看下面这段代码：</p>
+<p>是否同时具有指令v-model和v-bind</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> value$<span class="hljs-number">1</span> = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:value&#x27;</span>] || el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;:value&#x27;</span>];<br><span class="hljs-keyword">var</span> typeBinding = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:type&#x27;</span>] || el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;:type&#x27;</span>];<br><span class="hljs-keyword">if</span> (value$<span class="hljs-number">1</span> &amp;&amp; !typeBinding) &#123;<br>  <span class="hljs-keyword">var</span> binding = el.<span class="hljs-property">attrsMap</span>[<span class="hljs-string">&#x27;v-bind:value&#x27;</span>] ? <span class="hljs-string">&#x27;v-bind:value&#x27;</span> : <span class="hljs-string">&#x27;:value&#x27;</span>;<br>  <span class="hljs-title function_">warn$1</span>(<br>    binding + <span class="hljs-string">&quot;=\&quot;&quot;</span> + value$<span class="hljs-number">1</span> + <span class="hljs-string">&quot;\&quot; conflicts with v-model on the same element &quot;</span> +<br>    <span class="hljs-string">&#x27;because the latter already expands to a value binding internally&#x27;</span>,<br>    el.<span class="hljs-property">rawAttrsMap</span>[binding]<br>  );<br>&#125;<br></code></pre>
+
+<p>这块代码其实就是解释表单元素是否同时有指令v-model和v-bind</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> ref = modifiers || &#123;&#125;;<br><span class="hljs-keyword">var</span> lazy = ref.<span class="hljs-property">lazy</span>;<br><span class="hljs-keyword">var</span> number = ref.<span class="hljs-property">number</span>;<br><span class="hljs-keyword">var</span> trim = ref.<span class="hljs-property">trim</span>;<br></code></pre>
+
+<p>修饰符: 这段代码就是获取修饰符 lazy, number 及 trim</p>
+<ul>
+<li>.lazy 取代 input 监听 change 事件</li>
+<li>.number 输入字符串转为数字</li>
+<li>.trim 输入首尾空格过滤</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> needCompositionGuard = !lazy &amp;&amp; type !== <span class="hljs-string">&#x27;range&#x27;</span>;<br></code></pre>
+
+<p>这里的needCompositionGuard后面再说有什么用，现在只用知道默认是 true 就行了</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> event = lazy<br>  ? <span class="hljs-string">&#x27;change&#x27;</span><br>  : type === <span class="hljs-string">&#x27;range&#x27;</span><br>    ? <span class="hljs-variable constant_">RANGE_TOKEN</span><br>    : <span class="hljs-string">&#x27;input&#x27;</span>;<br><br><span class="hljs-keyword">var</span> valueExpression = <span class="hljs-string">&#x27;$event.target.value&#x27;</span>;<br><span class="hljs-keyword">if</span> (trim) &#123;<br>  valueExpression = <span class="hljs-string">&quot;$event.target.value.trim()&quot;</span>;<br>&#125;<br><span class="hljs-keyword">if</span> (number) &#123;<br>  valueExpression = <span class="hljs-string">&quot;_n(&quot;</span> + valueExpression + <span class="hljs-string">&quot;)&quot;</span>;<br>&#125;<br></code></pre>
+
+<p>上面这段代码中，event &#x3D; ‘input’,定义变量 valueExpression，修饰符 trim 和 number 在我们这个 demo 中默认都没有，所以跳过往下看</p>
+<h3 id="genAssignmentCode"><a href="#genAssignmentCode" class="headerlink" title="genAssignmentCode"></a>genAssignmentCode</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> code = <span class="hljs-title function_">genAssignmentCode</span>(value, valueExpression);<br><span class="hljs-keyword">if</span> (needCompositionGuard) &#123;<br>  code = <span class="hljs-string">&quot;if($event.target.composing)return;&quot;</span> + code;<br>&#125;<br></code></pre>
+
+<p>这里涉及到一个函数 genAssignmentCode,上源码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">genAssignmentCode</span> (<br>  value,<br>  assignment<br>) &#123;<br>  <span class="hljs-keyword">var</span> res = <span class="hljs-title function_">parseModel</span>(value);<br>  <span class="hljs-keyword">if</span> (res.<span class="hljs-property">key</span> === <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">return</span> (value + <span class="hljs-string">&quot;=&quot;</span> + assignment)<br>  &#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">return</span> (<span class="hljs-string">&quot;$set(&quot;</span> + (res.<span class="hljs-property">exp</span>) + <span class="hljs-string">&quot;, &quot;</span> + (res.<span class="hljs-property">key</span>) + <span class="hljs-string">&quot;, &quot;</span> + assignment + <span class="hljs-string">&quot;)&quot;</span>)<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>这段代码是生成v-model绑定的value的值，看到这段代码，我们就知道离真相不远了，因为我们看到了$set()。现在我们通过断点具体分析下，如下图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b366198f-7c22-4cc3-8972-2a9f59661a23-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b366198f-7c22-4cc3-8972-2a9f59661a23-3807603.jpg"></p>
+<p>通过断点我们可以很清楚的看到我们先执行parseModel(‘info.message’)获取到一个对象 res，由于我们的 demo 中绑定的值是路径形式的对象，即 info.message，所以此时 res 通过 parseModel 解析出来就是{exp: “info”, key: “message”}。那下面的判断就进入 else，即：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">return</span> (<span class="hljs-string">&quot;$set(&quot;</span> + (res.<span class="hljs-property">exp</span>) + <span class="hljs-string">&quot;, &quot;</span> + (res.<span class="hljs-property">key</span>) + <span class="hljs-string">&quot;, &quot;</span> + assignment + <span class="hljs-string">&quot;)&quot;</span>)<br></code></pre>
+
+<p>回到上面的getDefaultModel()中</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> code = <span class="hljs-title function_">genAssignmentCode</span>(value, valueExpression);<br><span class="hljs-keyword">if</span> (needCompositionGuard) &#123;<br>  code = <span class="hljs-string">&quot;if($event.target.composing)return;&quot;</span> + code;<br>&#125;<br></code></pre>
+
+<p>此时 code 获取到genAssignmentCode()返回的字符串值”$set(info, “message”, $event.target.value)”</p>
+<h3 id="event-target-composing"><a href="#event-target-composing" class="headerlink" title="$event.target.composing"></a>$event.target.composing</h3><p>上面我说的到变量needCompositionGuard &#x3D; true，经过拼接，最终code &#x3D; “if($event.target.composing)return;$set(info, “message”, $event.target.value)”</p>
+<p>这里的$event.target.composing有什么用呢？其实就是用于判断此次 input 事件是否是 IME 构成触发的，如果是 IME 构成，直接 return。IME 是输入法编辑器(Input Method Editor) 的英文缩写，IME 构成指我们在输入文字时，处于未确认状态的文字。如图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/1d9ffc36-bd0e-47bb-9989-1668765c5aa6-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/1d9ffc36-bd0e-47bb-9989-1668765c5aa6-3807603.jpg"></p>
+<p>带下划线的ceshi就属于IME构成，它会同样会触发input事件，但不会触发v-model更新数据。</p>
+<p>继续往下看</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">addProp</span>(el, <span class="hljs-string">&#x27;value&#x27;</span>, (<span class="hljs-string">&quot;(&quot;</span> + value + <span class="hljs-string">&quot;)&quot;</span>));<br><span class="hljs-title function_">addHandler</span>(el, event, code, <span class="hljs-literal">null</span>, <span class="hljs-literal">true</span>);<br><span class="hljs-keyword">if</span> (trim || number) &#123;<br>  <span class="hljs-title function_">addHandler</span>(el, <span class="hljs-string">&#x27;blur&#x27;</span>, <span class="hljs-string">&#x27;$forceUpdate()&#x27;</span>);<br>&#125;<br></code></pre>
+
+<h3 id="addProp"><a href="#addProp" class="headerlink" title="addProp"></a>addProp</h3><p>先说下addProp(el, ‘value’, (“(“ + value + “)”))，</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">addProp</span> (el, name, value, range, dynamic) &#123;<br>  (el.<span class="hljs-property">props</span> || (el.<span class="hljs-property">props</span> = [])).<span class="hljs-title function_">push</span>(<span class="hljs-title function_">rangeSetItem</span>(&#123; <span class="hljs-attr">name</span>: name, <span class="hljs-attr">value</span>: value, <span class="hljs-attr">dynamic</span>: dynamic &#125;, range));<br>  el.<span class="hljs-property">plain</span> = <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre>
+
+<p>照常打个断点看下：如下图</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ec580c4e-2912-4584-9111-cd1fd6cb10ef-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/ec580c4e-2912-4584-9111-cd1fd6cb10ef-3807603.jpg"></p>
+<p>可以看到此方法的功能为给 el 添加 props，首先判断 el 上有没有 props，如果没有的话创建 props 并赋值为一个空数组，随后拼接对象并推到 props 中，代码在此 demo 中相当于push{name: “value”, value: “(info.message)”}</p>
+<p>如果一直往下追，可以看到这个方法其实是在 input 输入框上绑定了 value，对照我们的 demo 来看，就是将<input v-model=”info.message” type=”text”>变成<input v-bind:value=”info.message” type=”text”></p>
+<h3 id="addHandler"><a href="#addHandler" class="headerlink" title="addHandler"></a>addHandler</h3><p>同样的，addHandler()相当于在input上绑定了input事件，最终我们demo的模版就会被编译成</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">v-bind:value</span>=<span class="hljs-string">&quot;info.message&quot;</span> <span class="hljs-attr">v-on:input</span>=<span class="hljs-string">&quot;info.message=$event.target.value&quot;</span>&gt;</span><br></code></pre>
+
+<h3 id="render"><a href="#render" class="headerlink" title="render"></a>render</h3><p>后续再根据一些指令拼接，我们最终的到的render如下：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">with</span>(<span class="hljs-params"><span class="hljs-variable language_">this</span></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-title function_">_c</span>(<span class="hljs-string">&#x27;div&#x27;</span>, &#123;<br>    <span class="hljs-attr">attrs</span>: &#123;<br>      <span class="hljs-string">&quot;id&quot;</span>: <span class="hljs-string">&quot;app-2&quot;</span><br>    &#125;<br>  &#125;, [<span class="hljs-title function_">_c</span>(<span class="hljs-string">&#x27;div&#x27;</span>, [<span class="hljs-title function_">_v</span>(<span class="hljs-title function_">_s</span>(info.<span class="hljs-property">message</span>))]), <span class="hljs-title function_">_v</span>(<span class="hljs-string">&quot; &quot;</span>), <span class="hljs-title function_">_c</span>(<span class="hljs-string">&#x27;div&#x27;</span>, [<span class="hljs-title function_">_c</span>(<span class="hljs-string">&#x27;input&#x27;</span>, &#123;<br>    <span class="hljs-attr">directives</span>: [&#123;<br>      <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;model&quot;</span>,<br>      <span class="hljs-attr">rawName</span>: <span class="hljs-string">&quot;v-model&quot;</span>,<br>      <span class="hljs-attr">value</span>: (info.<span class="hljs-property">message</span>),<br>      <span class="hljs-attr">expression</span>: <span class="hljs-string">&quot;info.message&quot;</span><br>    &#125;],<br>    <span class="hljs-attr">attrs</span>: &#123;<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;text&quot;</span><br>    &#125;,<br>    <span class="hljs-attr">domProps</span>: &#123;<br>      <span class="hljs-string">&quot;value&quot;</span>: (info.<span class="hljs-property">message</span>)<br>    &#125;,<br>    <span class="hljs-attr">on</span>: &#123;<br>      <span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">$event</span>) &#123;<br>          <span class="hljs-keyword">if</span> ($event.<span class="hljs-property">target</span>.<span class="hljs-property">composing</span>) <span class="hljs-keyword">return</span>;<br>          $set(info, <span class="hljs-string">&quot;message&quot;</span>, $event.<span class="hljs-property">target</span>.<span class="hljs-property">value</span>)<br>      &#125;<br>    &#125;<br>  &#125;)]), <span class="hljs-title function_">_v</span>(<span class="hljs-string">&quot; &quot;</span>), <span class="hljs-title function_">_c</span>(<span class="hljs-string">&#x27;button&#x27;</span>, &#123;<br>    <span class="hljs-attr">on</span>: &#123;<br>        <span class="hljs-string">&quot;click&quot;</span>: change<br>    &#125;<br>  &#125;, [<span class="hljs-title function_">_v</span>(<span class="hljs-string">&quot;click&quot;</span>)])])<br>&#125;<br></code></pre>
+
+<p>最后通过createFunction()把 render 代码串通过 new Function 的方式转换成可执行的函数，赋值给 vm.options.render，这样当组件通过vm._render的时候，就会执行这个 render 函数</p>
+<p>至此，针对表单元素上的 v-model 指令从开始编译到最终生成render()并执行的过程就讲解完了，我们验证了在编译阶段，v-model 会在监听到 input 事件时对我们绑定的 value 进行Vue.$set()操作</p>
+<p>还记得我们上面说的对 demo 第二种操作情况么？先进行 click 操作赋值，那 v-model 中的Vue.$set()操作似乎没有作用了。我们当时猜测的是Vue.$set()底层源码中有应该是会判断 message 属性是否一开始就在 info 中，如果存在就只是进行单纯的赋值，不存在的话在进行响应式操作，绑定 getter 和 setter</p>
+<p>现在我们就去Vue.$set()中看一下</p>
+<h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><p>先上代码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">/**</span><br><span class="hljs-comment">   * Set a property on an object. Adds the new property and</span><br><span class="hljs-comment">   * triggers change notification if the property doesn&#x27;t</span><br><span class="hljs-comment">   * already exist.</span><br><span class="hljs-comment">   */</span><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">set</span> (target, key, val) &#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isUndef</span>(target) || <span class="hljs-title function_">isPrimitive</span>(target)<br>  ) &#123;<br>    <span class="hljs-title function_">warn</span>((<span class="hljs-string">&quot;Cannot set reactive property on undefined, null, or primitive value: &quot;</span> + ((target))));<br>  &#125;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(target) &amp;&amp; <span class="hljs-title function_">isValidArrayIndex</span>(key)) &#123;<br>    target.<span class="hljs-property">length</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(target.<span class="hljs-property">length</span>, key);<br>    target.<span class="hljs-title function_">splice</span>(key, <span class="hljs-number">1</span>, val);<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">if</span> (key <span class="hljs-keyword">in</span> target &amp;&amp; !(key <span class="hljs-keyword">in</span> <span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>)) &#123;<br>    target[key] = val;<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">var</span> ob = (target).<span class="hljs-property">__ob__</span>;<br>  <span class="hljs-keyword">if</span> (target.<span class="hljs-property">_isVue</span> || (ob &amp;&amp; ob.<span class="hljs-property">vmCount</span>)) &#123;<br>    <span class="hljs-title function_">warn</span>(<br>      <span class="hljs-string">&#x27;Avoid adding reactive properties to a Vue instance or its root $data &#x27;</span> +<br>      <span class="hljs-string">&#x27;at runtime - declare it upfront in the data option.&#x27;</span><br>    );<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">if</span> (!ob) &#123;<br>    target[key] = val;<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-title function_">defineReactive$$1</span>(ob.<span class="hljs-property">value</span>, key, val);<br>  ob.<span class="hljs-property">dep</span>.<span class="hljs-title function_">notify</span>();<br>  <span class="hljs-keyword">return</span> val<br>&#125;<br></code></pre>
+
+<p>看到这句代码了么？这就是证据，验证我们猜想的证据</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (key <span class="hljs-keyword">in</span> target &amp;&amp; !(key <span class="hljs-keyword">in</span> <span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>)) &#123;<br>  target[key] = val;<br>  <span class="hljs-keyword">return</span> val<br>&#125;<br></code></pre>
+
+<h3 id="验证猜想"><a href="#验证猜想" class="headerlink" title="验证猜想"></a>验证猜想</h3><p>当我们首先点击 click 的时候，执行this.info.message &#x3D; ‘hello world’,此时 info 对象中新增了一个 message 属性。当我们在 input 框中输入值并触发Vue.$set()时，key in target为true，并且 message 又不是 Object 原型上的属性，所以!(key in Object.prototype)也为 true，此时 message 属性并不是响应式属性，没有绑定 setter，所以仅仅进行了单纯的赋值操作。</p>
+<p>而当我们一进页面首次在 input 中执行输入操作时，根据上面我们的分析 input 框监听到了 input 事件，先执行了Vue.$set()操作，因为时首次，所以 info 中还没有 message 属性，所以上面的key in target 为 false，跳过了赋值操作，到了下面的</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">defineReactive$$1</span>(ob.<span class="hljs-property">value</span>, key, val);<br>ob.<span class="hljs-property">dep</span>.<span class="hljs-title function_">notify</span>();<br></code></pre>
+
+<p>这个 defineReactive 的作用就是为 message 绑定了getter()和setter()，之后再对 message 的赋值操作都会直接进入自身绑定的 setter 中进行响应式操作</p>
+<h2 id="一个意外的发现"><a href="#一个意外的发现" class="headerlink" title="一个意外的发现"></a>一个意外的发现</h2><p>我突然奇想把 vue 的版本换到了 2.3.0，发现 v-model 不能对 demo 中的 message 属性实现响应化，跑去看了下 vue 更新日志，发现在 2.5.0 版本中，有这么一句话<br>now creates non-existent properties as reactive (non-recursive) e1da0d5, closes #5932 (See reasoning behind this change)<br>上面这句话的意思是从 2.5.0 版本开始支持将不存在的属性响应化，非递归的。<br>因为 message 属性一开始在info中并没有定义，在 2.3.0 中，还不支持将不存在的属性响应化的操作，所以对 demo 无效</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，我们这篇文章就结束了 里面有一些细节如果大家有兴趣的话可以自己再去深究一下。有时候很小的一个问题，背后牵扯到的知识点也是很多的，尽量把每个不懂背后的逻辑搞清楚，才能尽快的成为你想成为的人</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000021039085">v-model源码解析(超详细)</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/22092801/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">前端需要了解的9种设计模式 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/22092803/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">手摸手带你理解Vue响应式原理 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%9B%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-text">抛出问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E9%87%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">问题重现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E7%8C%9C%E6%83%B3"><span class="toc-text">问题引发的猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2%E7%9C%9F%E7%9B%B8-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">探索真相-源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E6%9C%BA%E5%88%B6"><span class="toc-text">v-model实现机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">v-model实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDirectives"><span class="toc-text">genDirectives</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#model"><span class="toc-text">model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDefaultModel"><span class="toc-text">genDefaultModel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genAssignmentCode"><span class="toc-text">genAssignmentCode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#event-target-composing"><span class="toc-text">$event.target.composing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addProp"><span class="toc-text">addProp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addHandler"><span class="toc-text">addHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#render"><span class="toc-text">render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%8C%9C%E6%83%B3"><span class="toc-text">验证猜想</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%84%8F%E5%A4%96%E7%9A%84%E5%8F%91%E7%8E%B0"><span class="toc-text">一个意外的发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%9B%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-text">抛出问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E9%87%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">问题重现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%BC%95%E5%8F%91%E7%9A%84%E7%8C%9C%E6%83%B3"><span class="toc-text">问题引发的猜想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A2%E7%B4%A2%E7%9C%9F%E7%9B%B8-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-text">探索真相-源码分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E6%9C%BA%E5%88%B6"><span class="toc-text">v-model实现机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#v-model%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">v-model实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91"><span class="toc-text">编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDirectives"><span class="toc-text">genDirectives</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#model"><span class="toc-text">model</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genDefaultModel"><span class="toc-text">genDefaultModel</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#genAssignmentCode"><span class="toc-text">genAssignmentCode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#event-target-composing"><span class="toc-text">$event.target.composing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addProp"><span class="toc-text">addProp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#addHandler"><span class="toc-text">addHandler</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#render"><span class="toc-text">render</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#set"><span class="toc-text">set</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E7%8C%9C%E6%83%B3"><span class="toc-text">验证猜想</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%84%8F%E5%A4%96%E7%9A%84%E5%8F%91%E7%8E%B0"><span class="toc-text">一个意外的发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

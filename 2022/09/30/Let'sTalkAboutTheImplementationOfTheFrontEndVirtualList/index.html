@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>再谈前端虚拟列表的实现</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="再谈前端虚拟列表的实现">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/Let&#39;sTalkAboutTheImplementationOfTheFrontEndVirtualList/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>244</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>50</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="toc-text">实现思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">最简单的例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E6%8E%89%E9%AB%98%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-text">去掉高度限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%AE%A1%E7%AE%97%E7%BB%93%E6%9E%9C"><span class="toc-text">缓存计算结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-contentHeight-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-text">优化 contentHeight 的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%B7%B2%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化已缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%9C%AA%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化未缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">215</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/npm/" 
+        title="npm">
+        <div class="tags-list-item">npm</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%8B%8F%E5%B7%9E/" 
+        title="苏州">
+        <div class="tags-list-item">苏州</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%97%85%E6%B8%B8/" 
+        title="旅游">
+        <div class="tags-list-item">旅游</div>
+      </a>
+    
+      <a 
+        href="/tags/indexedDB/" 
+        title="indexedDB">
+        <div class="tags-list-item">indexedDB</div>
+      </a>
+    
+      <a 
+        href="/tags/react/" 
+        title="react">
+        <div class="tags-list-item">react</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/cookie/" 
+        title="cookie">
+        <div class="tags-list-item">cookie</div>
+      </a>
+    
+      <a 
+        href="/tags/storage/" 
+        title="storage">
+        <div class="tags-list-item">storage</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      再谈前端虚拟列表的实现
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/Let'sTalkAboutTheImplementationOfTheFrontEndVirtualList.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T01:32:52.755Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>3.2k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>书接上文，在之前的 聊聊前端开发中的长列表 中，笔者对「可视区域渲染」的列表进行了介绍，并写了一个简化的例子来展现如何实现。这种列表一般叫做 Virtual List，在本文中会使用「虚拟列表」来指代。在本文中，笔者会把上篇文章中的简化例子一步步强化成一个相对通用、性能优异的虚拟列表组件，旨在讲清楚虚拟列表的实现思路。阅读本文不需要阅读上一篇文章，但代码是使用 Vue.js 来实现的，所以你需要有 Vue.js 的使用经验。另外，提供了各个步骤的 JSFiddle，如果有不懂的地方，建议通过修改 JSFiddle 在线运行调试。</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>在讲解下面的内容之前，先对虚拟列表做一个简单的定义。</p>
+<p>因为 DOM 元素的创建和渲染需要的时间成本很高，在大数据的情况下，完整渲染列表所需要的时间不可接收。其中一个解决思路就是在任何情况下只对「可见区域」进行渲染，可以达到极高的初次渲染性能。</p>
+<p>虚拟列表指的就是「可视区域渲染」的列表，重要的基本就是两个概念：</p>
+<ul>
+<li>可滚动区域：假设有 1000 条数据，每个列表项的高度是 30，那么可滚动的区域的高度就是 1000 * 30。当用户改变列表的滚动条的当前滚动值的时候，会造成可见区域的内容的变更。</li>
+<li>可见区域：比如列表的高度是 300，右侧有纵向滚动条可以滚动，那么视觉可见的区域就是可见区域。</li>
+</ul>
+<p>实现虚拟列表就是处理滚动条滚动后的可见区域的变更，其中具体步骤如下：</p>
+<ol>
+<li>计算当前可见区域起始数据的 startIndex</li>
+<li>计算当前可见区域结束数据的 endIndex</li>
+<li>计算当前可见区域的数据，并渲染到页面中</li>
+<li>计算 startIndex 对应的数据在整个列表中的偏移位置 startOffset，并设置到列表上</li>
+</ol>
+<p>建议参考下图理解一下上面的步骤：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/4d11d252-aa63-47f6-8baa-fcea6fcc17b0-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/4d11d252-aa63-47f6-8baa-fcea6fcc17b0-3807603.jpg"></p>
+<h2 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h2><p>这个章节会讲述如何把上面步骤变成代码，让这个逻辑在浏览器里真正的运行起来。</p>
+<p>为了让这个例子足够简单，做了一个设定：每个列表项的高度都是 30px。在这个约定下，核心 JavaScript 代码不超过 10 行，但是可以完整的实现可见区域的渲染和更新。</p>
+<p>我们首先要考虑的是虚拟列表的 HTML、CSS 如何实现，添加了这么几个样式：</p>
+<ul>
+<li>列表元素（.list-view）使用相对定位</li>
+<li>使用一个不可见元素（.list-view-phantom）撑起这个列表，让列表的滚动条出现</li>
+<li>列表的可见元素（.list-view-content）使用绝对定位，left、right、top 设置为 0</li>
+</ul>
+<pre class="highlight"><code class="hljs vue">&lt;template&gt;<br>  &lt;div <br>    class=&quot;list-view&quot; <br>    @scroll=&quot;handleScroll&quot;&gt;<br>    &lt;div<br>      class=&quot;list-view-phantom&quot;       <br>      :style=&quot;&#123;<br>         height: contentHeight<br>      &#125;&quot;&gt;<br>    &lt;/div&gt;<br>    &lt;div<br>      ref=&quot;content&quot;<br>      class=&quot;list-view-content&quot;&gt;<br>      &lt;div<br>        class=&quot;list-view-item&quot;<br>        :style=&quot;&#123;<br>          height: itemHeight + &#x27;px&#x27;<br>        &#125;&quot;<br>        v-for=&quot;item in visibleData&quot;&gt;<br>        &#123;&#123; item.value &#125;&#125;<br>      &lt;/div&gt;<br>    &lt;/div&gt;<br>  &lt;/div&gt;<br>&lt;/template&gt;<br>​<br>&lt;style&gt;<br>.list-view &#123;<br>  height: 400px;<br>  overflow: auto;<br>  position: relative;<br>  border: 1px solid #aaa;<br>&#125;<br><br>.list-view-phantom &#123;<br>  position: absolute;<br>  left: 0;<br>  top: 0;<br>  right: 0;<br>  z-index: -1;<br>&#125;<br><br>.list-view-content &#123;<br>  left: 0;<br>  right: 0;<br>  top: 0;<br>  position: absolute;<br>&#125;<br><br>.list-view-item &#123;<br>  padding: 5px;<br>  color: #666;<br>  line-height: 30px;<br>  box-sizing: border-box;<br>&#125;<br>&lt;/style&gt;<br>​<br>&lt;script&gt;<br>export default &#123;<br>    name: &#x27;ListView&#x27;,<br>    <br>    props: &#123;<br>    data: &#123;<br>        type: Array,<br>      required: true<br>    &#125;,<br><br>    itemHeight: &#123;<br>      type: Number,<br>      default: 30<br>    &#125;<br>  &#125;,<br>  <br>  computed: &#123;<br>    contentHeight() &#123;<br>        return this.data.length * this.itemHeight + &#x27;px&#x27;;<br>    &#125;<br>  &#125;,<br><br>  mounted() &#123;<br>    this.updateVisibleData();<br>  &#125;,<br><br>  data() &#123;<br>    return &#123;<br>      visibleData: []<br>    &#125;;<br>  &#125;,<br><br>  methods: &#123;<br>    updateVisibleData(scrollTop) &#123;<br>        scrollTop = scrollTop || 0;<br>        const visibleCount = Math.ceil(this.$el.clientHeight / this.itemHeight);<br>      const start = Math.floor(scrollTop / this.itemHeight);<br>      const end = start + visibleCount;<br>      this.visibleData = this.data.slice(start, end);<br>      this.$refs.content.style.webkitTransform = `translate3d(0, $&#123; start * this.itemHeight &#125;px, 0)`;<br>    &#125;,<br><br>    handleScroll() &#123;<br>      const scrollTop = this.$el.scrollTop;<br>      this.updateVisibleData(scrollTop);<br>    &#125;<br>  &#125;<br>&#125;<br>&lt;/script&gt;<br></code></pre>
+
+<ol>
+<li>渲染可见区域的数据是 Vue.js 完成的，使用的是 visibleData 这个数组中的元素</li>
+<li>其中虚拟列表的更新逻辑是 updateVisibleData 这个方法，笔者对这个方法加了一些注释： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">updateVisibleData</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    scrollTop = scrollTop || <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">const</span> visibleCount = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">ceil</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$el</span>.<span class="hljs-property">clientHeight</span> / <span class="hljs-variable language_">this</span>.<span class="hljs-property">itemHeight</span>); <span class="hljs-comment">// 取得可见区域的可见列表项数量</span><br>    <span class="hljs-keyword">const</span> start = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(scrollTop / <span class="hljs-variable language_">this</span>.<span class="hljs-property">itemHeight</span>); <span class="hljs-comment">// 取得可见区域的起始数据索引</span><br>    <span class="hljs-keyword">const</span> end = start + visibleCount; <span class="hljs-comment">// 取得可见区域的结束数据索引</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">visibleData</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">slice</span>(start, end); <span class="hljs-comment">// 计算出可见区域对应的数据，让 Vue.js 更新</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>.<span class="hljs-property">content</span>.<span class="hljs-property">style</span>.<span class="hljs-property">webkitTransform</span> = <span class="hljs-string">`translate3d(0, <span class="hljs-subst">$&#123; start * <span class="hljs-variable language_">this</span>.itemHeight &#125;</span>px, 0)`</span>; <span class="hljs-comment">// 把可见区域的 top 设置为起始元素在整个列表中的位置（使用 transform 是为了更好的性能）</span><br>&#125;<br></code></pre></li>
+<li>为了让虚拟列表可以正确的出现滚动条，使用了 Vue.js 的计算属性 contentHeight 来计算滚动区域的真正高度</li>
+</ol>
+<h2 id="去掉高度限制"><a href="#去掉高度限制" class="headerlink" title="去掉高度限制"></a>去掉高度限制</h2><p>最简单实现中存在每个元素高度相同的限制，如果打破这个限制，代码该如何实现？</p>
+<p>例子中使用了 itemHeight 属性来决定列表项的高度，有两个选择可以实现列表项的动态高度：</p>
+<ol>
+<li>添加一个数组类型的 prop，每个列表项的高度通过索引来获得</li>
+<li>添加一个获取列表项高度的方法，给这个方法传入 item 和 index ，返回对应列表项的高度</li>
+</ol>
+<p>很明显第二种方案更灵活一点，所以增加了一个 itemSizeGetter 属性，用来获取每个列表项的高度。</p>
+<ol>
+<li>增加 itemSizeGetter 属性，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">itemSizeGetter</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">Function</span><br>&#125;<br></code></pre></li>
+<li>因为每一行的高度是不一样的，所以 contentHeight 的算法需要进行更新，更新后的代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">contentHeight</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, j = data.<span class="hljs-property">length</span>; i &lt; j; i++) &#123;<br>        total += itemSizeGetter.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>, data[i], i);<br>    &#125;<br>    <span class="hljs-keyword">return</span> total;<br>&#125;<br></code></pre></li>
+<li>上一个例子中，计算可是区域的起始索引和结束索引只需要使用 itemHeight 进行一些简单的计算。在这个例子里面，需要通过 scrollTop 来计算出这个位置的元素索引，所以增加了一个方法叫 findNearestItemIndex，实现代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">findNearestItemIndex</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, j = data.<span class="hljs-property">length</span>; i &lt; j; i++) &#123;<br>        <span class="hljs-keyword">const</span> size = itemSizeGetter.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>, data[i], i);<br>        total += size;<br>        <span class="hljs-keyword">if</span> (total &gt;= scrollTop || i === j -<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">return</span> i;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></li>
+<li>同理，某个列表项在列表中的 top 之前也可以通过索引简单的计算出来，现在需要增加一个方法来计算，实现代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">getItemSizeAndOffset</span>(<span class="hljs-params">index</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(index, data.<span class="hljs-property">length</span> - <span class="hljs-number">1</span>); i &lt;= j; i++) &#123;<br>        <span class="hljs-keyword">const</span> size = itemSizeGetter.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>, data[i], i);<br><br>        <span class="hljs-keyword">if</span> (i === j) &#123;<br>        <span class="hljs-keyword">return</span> &#123;<br>            <span class="hljs-attr">offset</span>: total,<br>            size<br>        &#125;;<br>        &#125;<br>        total += size;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">offset</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-attr">size</span>: <span class="hljs-number">0</span><br>    &#125;;<br>&#125;<br></code></pre></li>
+<li>updateVisibleData 方法根据上面的修改做了一个简单的更新，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">updateVisibleData</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    scrollTop = scrollTop || <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">const</span> start = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">findNearestItemIndex</span>(scrollTop);<br>    <span class="hljs-keyword">const</span> end = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">findNearestItemIndex</span>(scrollTop + <span class="hljs-variable language_">this</span>.<span class="hljs-property">$el</span>.<span class="hljs-property">clientHeight</span>);<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">visibleData</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-title function_">slice</span>(start, <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(end + <span class="hljs-number">1</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>.<span class="hljs-property">length</span>));<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">$refs</span>.<span class="hljs-property">content</span>.<span class="hljs-property">style</span>.<span class="hljs-property">webkitTransform</span> = <span class="hljs-string">`translate3d(0, <span class="hljs-subst">$&#123; <span class="hljs-variable language_">this</span>.getItemSizeAndOffset(start).offset &#125;</span>px, 0)`</span>;<br>&#125;<br></code></pre></li>
+</ol>
+<h2 id="缓存计算结果"><a href="#缓存计算结果" class="headerlink" title="缓存计算结果"></a>缓存计算结果</h2><p>虽然上个例子实现了列表项的动态高度，但是每个列表项目的尺寸、偏移计算没有任何缓存，在初次渲染、滚动更新时 itemSizeGetter 会被重复调用，性能并不理想。为了优这个性能，需要把尺寸、偏移信息进行一个缓存，在下次时候的时候直接从缓存中取得结果。</p>
+<p>在常规情况下，用户的滚动是从顶部开始的，并且是连续的。可以采取一个非常简单的缓存策略，记录最后一次计算尺寸、偏移的 index 。</p>
+<ol>
+<li>把这个变量叫做 lastMeasuredIndex，默认值为 -1；存储缓存结果的变量叫做 sizeAndOffsetCahce，类型为对象，实现代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">data</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">lastMeasuredIndex</span>: -<span class="hljs-number">1</span>,<br>        <span class="hljs-attr">startIndex</span>: <span class="hljs-number">0</span>,<br>        <span class="hljs-attr">sizeAndOffsetCahce</span>: &#123;&#125;,<br>        ...<br>    &#125;;<br>&#125;<br></code></pre></li>
+<li>缓存列表项高度的计算结果主要是修改 getItemSizeAndOffset 这个方法，增加缓存后的代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">getItemSizeAndOffset</span>(<span class="hljs-params">index</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; lastMeasuredIndex, sizeAndOffsetCahce, data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">if</span> (lastMeasuredIndex &gt;= index) &#123;<br>        <span class="hljs-keyword">return</span> sizeAndOffsetCahce[index];<br>    &#125;<br>    <span class="hljs-keyword">let</span> offset = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">if</span> (lastMeasuredIndex &gt;= <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">const</span> lastMeasured = sizeAndOffsetCahce[lastMeasuredIndex];<br>        <span class="hljs-keyword">if</span> (lastMeasured) &#123;<br>        offset = lastMeasured.<span class="hljs-property">offset</span> + lastMeasured.<span class="hljs-property">size</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = lastMeasuredIndex + <span class="hljs-number">1</span>; i &lt;= index; i++) &#123;<br>        <span class="hljs-keyword">const</span> item = data[i];<br>        <span class="hljs-keyword">const</span> size = itemSizeGetter.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>, item, i);<br>        sizeAndOffsetCahce[i] = &#123;<br>        size,<br>        offset<br>        &#125;;<br>        offset += size;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (index &gt; lastMeasuredIndex) &#123;<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span> = index;<br>    &#125;<br>    <span class="hljs-keyword">return</span> sizeAndOffsetCahce[index];<br>&#125;<br></code></pre></li>
+<li>findNearestItemIndex 方法中的还在使用 itemSizeGetter 来获取元素大小，我们在这里可以修改成使用 getItemSizeAndOffset 来获取，修改后的代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">findNearestItemIndex</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>, j = data.<span class="hljs-property">length</span>; i &lt; j; i++) &#123;<br>        <span class="hljs-keyword">const</span> size = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getItemSizeAndOffset</span>(i).<span class="hljs-property">size</span>;<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></li>
+</ol>
+<p>如果觉得性能并没有明显的改进，可以把数组的大小改成 20000 或者 50000 试试。</p>
+<h2 id="优化-contentHeight-的计算"><a href="#优化-contentHeight-的计算" class="headerlink" title="优化 contentHeight 的计算"></a>优化 contentHeight 的计算</h2><p>如果你给 itemSizeGetter 加入一行 console.log，你会发现初次渲染的时候 contentHeight 会在第一次把所有列表项的 itemSizeGetter 执行一遍。</p>
+<p>为了解决这个问题，需要引入另外一个属性 estimatedItemSize。这个属性的含义是为那些还没计算高度的元素进行一个预估，那么 contentHeight 就等于缓存过的列表项的高度和 + 未缓存过的列表项的数量 * estimatedItemSize。</p>
+<ol>
+<li>首先需要为组件增加这个属性，默认值为 30，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">estimatedItemSize</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">Number</span>,<br>    <span class="hljs-attr">default</span>: <span class="hljs-number">30</span><br>&#125;<br></code></pre></li>
+<li>因为需要得知计算过高度的列表项的高度和，需要增加方法 getLastMeasuredSizeAndOffset，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">getLastMeasuredSizeAndOffset</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span> &gt;= <span class="hljs-number">0</span> ? <span class="hljs-variable language_">this</span>.<span class="hljs-property">sizeAndOffsetCahce</span>[<span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span>] : &#123; <span class="hljs-attr">offset</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">size</span>: <span class="hljs-number">0</span> &#125;;<br>&#125;<br></code></pre></li>
+<li>根据上面的算法修改后的代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">contentHeight</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, lastMeasuredIndex, estimatedItemSize &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">let</span> itemCount = data.<span class="hljs-property">length</span>;<br>    <span class="hljs-keyword">if</span> (lastMeasuredIndex &gt;= <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-keyword">const</span> lastMeasuredSizeAndOffset = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getLastMeasuredSizeAndOffset</span>();<br>        <span class="hljs-keyword">return</span> lastMeasuredSizeAndOffset.<span class="hljs-property">offset</span> + lastMeasuredSizeAndOffset.<span class="hljs-property">size</span> + (itemCount - <span class="hljs-number">1</span> - lastMeasuredIndex) * estimatedItemSize;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> itemCount * estimatedItemSize;<br>    &#125;<br>&#125;<br></code></pre></li>
+</ol>
+<p>你可以为 itemSizeGetter 属性增加 console.log，来查看 itemSizeGetter 是如何运行的。</p>
+<h2 id="优化已缓存结果的搜索性能"><a href="#优化已缓存结果的搜索性能" class="headerlink" title="优化已缓存结果的搜索性能"></a>优化已缓存结果的搜索性能</h2><p>使用过缓存的虚拟列表实际上还有优化的空间，比如 findNearestItemIndex 的搜索方式是顺序查找的，时间复杂度为 O(N)。实际上列表项的计算结果天然就是一个有序的数组，可以使用二分查找来优化已缓存的结果的搜索性能，把时间复杂度降低到 O(lgN) 。</p>
+<ol>
+<li>为组件增加 binarySearch 方法，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">binarySearch</span>(<span class="hljs-params">low, high, offset</span>) &#123;<br>    <span class="hljs-keyword">let</span> index;<br>    <span class="hljs-keyword">while</span> (low &lt;= high) &#123;<br>        <span class="hljs-keyword">const</span> middle = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>((low + high) / <span class="hljs-number">2</span>);<br>        <span class="hljs-keyword">const</span> middleOffset = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getItemSizeAndOffset</span>(middle).<span class="hljs-property">offset</span>;<br>        <span class="hljs-keyword">if</span> (middleOffset === offset) &#123;<br>        index = middle;<br>        <span class="hljs-keyword">break</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (middleOffset &gt; offset) &#123;<br>        high = middle - <span class="hljs-number">1</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>        low = middle + <span class="hljs-number">1</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (low &gt; <span class="hljs-number">0</span>) &#123;<br>        index = low - <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> index === <span class="hljs-string">&#x27;undefined&#x27;</span>) &#123;<br>        index = <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> index;<br>&#125;<br></code></pre>
+ 这个二分查找和普通的二分查找略有不同，区别在于在任何情况下都不会返回 -1，可以思考下为什么这个逻辑会是这样。</li>
+<li>修改 findNearestItemIndex 方法，对于已缓存的结果使用二分查找，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">findNearestItemIndex</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">const</span> lastMeasuredOffset = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getLastMeasuredSizeAndOffset</span>().<span class="hljs-property">offset</span>;<br>    <span class="hljs-keyword">if</span> (lastMeasuredOffset &gt; scrollTop) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">binarySearch</span>(<span class="hljs-number">0</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span>, scrollTop);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// ...</span><br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></li>
+</ol>
+<h2 id="优化未缓存结果的搜索性能"><a href="#优化未缓存结果的搜索性能" class="headerlink" title="优化未缓存结果的搜索性能"></a>优化未缓存结果的搜索性能</h2><p>未缓存过的结果的搜索依然是顺序搜索的，对于未缓存过的结果的搜索优化有两个思路：</p>
+<ol>
+<li>一次查找多条的数量，一个合理的数值是 contentHeight &#x2F; estimatedSize ，找到超过自己查找结果的 index，然后使用二分查找</li>
+<li>按指数数量查找，比如 1、2、4、8、16、32… 的顺序来查找范围，然后使用二分查找</li>
+</ol>
+<p>笔者选择了第二种方式，这个搜索算法的名称为 Exponential Search，这个算法的搜索过程可以参考下图：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/171c72b8-14db-471f-9e12-8b55ff95aaad-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/171c72b8-14db-471f-9e12-8b55ff95aaad-3807603.jpg"></p>
+<ol>
+<li>增加 exponentialSearch 方法，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">exponentialSearch</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    <span class="hljs-keyword">let</span> bound = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">const</span> data = <span class="hljs-variable language_">this</span>.<span class="hljs-property">data</span>;<br>    <span class="hljs-keyword">const</span> start = <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span> &gt;= <span class="hljs-number">0</span> ? <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span> : <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (start + bound &lt; data.<span class="hljs-property">length</span> &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getItemSizeAndOffset</span>(start + bound).<span class="hljs-property">offset</span> &lt; scrollTop) &#123;<br>        bound = bound * <span class="hljs-number">2</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">binarySearch</span>(start + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">floor</span>(bound / <span class="hljs-number">2</span>), <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(start + bound, data.<span class="hljs-property">length</span>), scrollTop);<br>&#125;<br></code></pre>
+ 这个算法与标准的 Exponential Search 也略有不同，主要的区别是不会从头进行搜索，会从 lastMeasuredIndex 的位置开始搜索。</li>
+<li>修改 findNearestItemIndex 方法，代码如下： <pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">findNearestItemIndex</span>(<span class="hljs-params">scrollTop</span>) &#123;<br>    <span class="hljs-keyword">const</span> &#123; data, itemSizeGetter &#125; = <span class="hljs-variable language_">this</span>;<br>    <span class="hljs-keyword">const</span> lastMeasuredOffset = <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">getLastMeasuredSizeAndOffset</span>().<span class="hljs-property">offset</span>;<br>    <span class="hljs-keyword">if</span> (lastMeasuredOffset &gt; scrollTop) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">binarySearch</span>(<span class="hljs-number">0</span>, <span class="hljs-variable language_">this</span>.<span class="hljs-property">lastMeasuredIndex</span>, scrollTop);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">exponentialSearch</span>(scrollTop);<br>    &#125;<br>&#125;<br></code></pre></li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/34585166">再谈前端虚拟列表的实现</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/JSONWebToken/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">JSON Web Token - 在Web应用间安全地传递信息 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/MIAIsCurriculum/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">小爱课程表~ </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="toc-text">实现思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">最简单的例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E6%8E%89%E9%AB%98%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-text">去掉高度限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%AE%A1%E7%AE%97%E7%BB%93%E6%9E%9C"><span class="toc-text">缓存计算结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-contentHeight-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-text">优化 contentHeight 的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%B7%B2%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化已缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%9C%AA%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化未缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="toc-text">实现思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-text">最简单的例子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E6%8E%89%E9%AB%98%E5%BA%A6%E9%99%90%E5%88%B6"><span class="toc-text">去掉高度限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%AE%A1%E7%AE%97%E7%BB%93%E6%9E%9C"><span class="toc-text">缓存计算结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96-contentHeight-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="toc-text">优化 contentHeight 的计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%B7%B2%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化已缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%9C%AA%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%9C%E7%9A%84%E6%90%9C%E7%B4%A2%E6%80%A7%E8%83%BD"><span class="toc-text">优化未缓存结果的搜索性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>深入 vue.js 异步响应队列</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="深入 vue.js 异步响应队列">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/22092701/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>244</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>50</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Event-Loop"><span class="toc-text">Event Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97"><span class="toc-text">异步更新队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-set"><span class="toc-text">Vue.set</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">215</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">12</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/npm/" 
+        title="npm">
+        <div class="tags-list-item">npm</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%8B%8F%E5%B7%9E/" 
+        title="苏州">
+        <div class="tags-list-item">苏州</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%97%85%E6%B8%B8/" 
+        title="旅游">
+        <div class="tags-list-item">旅游</div>
+      </a>
+    
+      <a 
+        href="/tags/indexedDB/" 
+        title="indexedDB">
+        <div class="tags-list-item">indexedDB</div>
+      </a>
+    
+      <a 
+        href="/tags/react/" 
+        title="react">
+        <div class="tags-list-item">react</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%95%B0%E5%AD%A6/" 
+        title="数学">
+        <div class="tags-list-item">数学</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/cookie/" 
+        title="cookie">
+        <div class="tags-list-item">cookie</div>
+      </a>
+    
+      <a 
+        href="/tags/storage/" 
+        title="storage">
+        <div class="tags-list-item">storage</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      深入 vue.js 异步响应队列
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092701.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T01:32:52.751Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文将介绍 Vue.js 在派发通知获取回调后渲染 DOM 的策略，其内部如何实现异步任务队列，以及Vue.set 如何使新增加的属性也能获得响应</p>
+<h2 id="Event-Loop"><a href="#Event-Loop" class="headerlink" title="Event Loop"></a>Event Loop</h2><p>事件循环机制和消息队列 的维护由事件触发线程控制的，事件触发线程同时维护一个 消息队列，JS 引擎线程遇到异步任务（DOM 事件监听、网络请求、setTimeout 计时器等…），会交给相应的线程单独去维护，等待某个时机（计时器结束、网络请求成功、用户点击 DOM），然后由事件触发线程将异步对应的 回调函数 加入到消息队列中，消息队列中的回调函数等待被执行。</p>
+<p>同时，JS 引擎线程会维护一个执行栈，同步代码会依次加入执行栈然后执行，结束会退出执行栈。如果执行栈里的任务执行完成，即执行栈为空的时候（即 JS 引擎线程空闲），事件触发线程才会从消息队列取出一个任务（即异步的回调函数）放入执行栈中执行。执行完了后，执行栈再次为空，事件触发线程会重复上一步操作，再取出一个消息队列中的任务。</p>
+<p>主线程的执行过程就是一个 tick，而所有的异步结果都是通过 “任务队列” 来调度。 消息队列中存放的是任务（task），task 分为 Marcotasks 和 Microtasks，微任务为在当前正在执行的脚本之后立即发生的事情安排，微任务在每一个宏任务结束后清空</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">for</span> (macroTask <span class="hljs-keyword">of</span> macroTaskQueue) &#123;<br>    <span class="hljs-comment">// 1. Handle current MACRO-TASK</span><br>    <span class="hljs-title function_">handleMacroTask</span>();<br><br>    <span class="hljs-comment">// 2. Handle all MICRO-TASK</span><br>    <span class="hljs-keyword">for</span> (microTask <span class="hljs-keyword">of</span> microTaskQueue) &#123;<br>        <span class="hljs-title function_">handleMicroTask</span>(microTask);<br>    &#125;<br>&#125;<br></code></pre>
+
+<h2 id="异步更新队列"><a href="#异步更新队列" class="headerlink" title="异步更新队列"></a>异步更新队列</h2><p>在实际开发中，你可能会遇到更新数据后的操作无法获取到新的数据，这是因为 Vue 在更新 DOM 时是异步执行的。在下一个 tick 异步更新队列的主要目的是在缓冲区对数据去重，避免同一个 Watcher 被多次触发造成浪费。Vue.js 在其他地方也有类似的考虑，比如在上一篇中响应式对象在收集依赖和重新渲染时对依赖去重，设置 deep Watcher 对对象做深度递归遍历时记录遍历过程中的子响应对象的 dep id 避免重复访问，生成子组件构造函数时对 Sub 构造函数做缓存，避免重复构造等等</p>
+<p><strong>nextTick</strong><br>Vue 在内部对异步队列尝试使用原生的 Promise.then、MutationObserver 和 setImmediate，如果执行环境不支持，则会采用 setTimeout(fn, 0) 代替</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; noop &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;shared/util&#x27;</span><br><span class="hljs-keyword">import</span> &#123; handleError &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./error&#x27;</span><br><span class="hljs-keyword">import</span> &#123; isIOS, isNative &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./env&#x27;</span><br><br><span class="hljs-keyword">const</span> callbacks = []<br><span class="hljs-keyword">let</span> pending = <span class="hljs-literal">false</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">flushCallbacks</span> () &#123;<br>  pending = <span class="hljs-literal">false</span><br>  <span class="hljs-keyword">const</span> copies = callbacks.<span class="hljs-title function_">slice</span>(<span class="hljs-number">0</span>)<br>  callbacks.<span class="hljs-property">length</span> = <span class="hljs-number">0</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; copies.<span class="hljs-property">length</span>; i++) &#123;<br>    copies[i]()<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// Here we have async deferring wrappers using both microtasks and (macro) tasks.</span><br><span class="hljs-comment">// In &lt; 2.4 we used microtasks everywhere, but there are some scenarios where</span><br><span class="hljs-comment">// microtasks have too high a priority and fire in between supposedly</span><br><span class="hljs-comment">// sequential events (e.g. #4521, #6690) or even between bubbling of the same</span><br><span class="hljs-comment">// event (#6566). However, using (macro) tasks everywhere also has subtle problems</span><br><span class="hljs-comment">// when state is changed right before repaint (e.g. #6813, out-in transitions).</span><br><span class="hljs-comment">// Here we use microtask by default, but expose a way to force (macro) task when</span><br><span class="hljs-comment">// needed (e.g. in event handlers attached by v-on).</span><br><span class="hljs-keyword">let</span> microTimerFunc<br><span class="hljs-keyword">let</span> macroTimerFunc<br><span class="hljs-keyword">let</span> useMacroTask = <span class="hljs-literal">false</span><br><br><span class="hljs-comment">// Determine (macro) task defer implementation.</span><br><span class="hljs-comment">// Technically setImmediate should be the ideal choice, but it&#x27;s only available</span><br><span class="hljs-comment">// in IE. The only polyfill that consistently queues the callback after all DOM</span><br><span class="hljs-comment">// events triggered in the same loop is by using MessageChannel.</span><br><span class="hljs-comment">/* istanbul ignore if */</span><br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> setImmediate !== <span class="hljs-string">&#x27;undefined&#x27;</span> &amp;&amp; <span class="hljs-title function_">isNative</span>(setImmediate)) &#123;<br>  macroTimerFunc = <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-title function_">setImmediate</span>(flushCallbacks)<br>  &#125;<br>&#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-title class_">MessageChannel</span> !== <span class="hljs-string">&#x27;undefined&#x27;</span> &amp;&amp; (<br>  <span class="hljs-title function_">isNative</span>(<span class="hljs-title class_">MessageChannel</span>) ||<br>  <span class="hljs-comment">// PhantomJS</span><br>  <span class="hljs-title class_">MessageChannel</span>.<span class="hljs-title function_">toString</span>() === <span class="hljs-string">&#x27;[object MessageChannelConstructor]&#x27;</span><br>)) &#123;<br>  <span class="hljs-keyword">const</span> channel = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MessageChannel</span>()<br>  <span class="hljs-keyword">const</span> port = channel.<span class="hljs-property">port2</span><br>  channel.<span class="hljs-property">port1</span>.<span class="hljs-property">onmessage</span> = flushCallbacks<br>  macroTimerFunc = <span class="hljs-function">() =&gt;</span> &#123;<br>    port.<span class="hljs-title function_">postMessage</span>(<span class="hljs-number">1</span>)<br>  &#125;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-comment">/* istanbul ignore next */</span><br>  macroTimerFunc = <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-built_in">setTimeout</span>(flushCallbacks, <span class="hljs-number">0</span>)<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// Determine microtask defer implementation.</span><br><span class="hljs-comment">/* istanbul ignore next, $flow-disable-line */</span><br><span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> <span class="hljs-title class_">Promise</span> !== <span class="hljs-string">&#x27;undefined&#x27;</span> &amp;&amp; <span class="hljs-title function_">isNative</span>(<span class="hljs-title class_">Promise</span>)) &#123;<br>  <span class="hljs-keyword">const</span> p = <span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>()<br>  microTimerFunc = <span class="hljs-function">() =&gt;</span> &#123;<br>    p.<span class="hljs-title function_">then</span>(flushCallbacks)<br>    <span class="hljs-comment">// in problematic UIWebViews, Promise.then doesn&#x27;t completely break, but</span><br>    <span class="hljs-comment">// it can get stuck in a weird state where callbacks are pushed into the</span><br>    <span class="hljs-comment">// microtask queue but the queue isn&#x27;t being flushed, until the browser</span><br>    <span class="hljs-comment">// needs to do some other work, e.g. handle a timer. Therefore we can</span><br>    <span class="hljs-comment">// &quot;force&quot; the microtask queue to be flushed by adding an empty timer.</span><br>    <span class="hljs-keyword">if</span> (isIOS) <span class="hljs-built_in">setTimeout</span>(noop)<br>  &#125;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-comment">// fallback to macro</span><br>  microTimerFunc = macroTimerFunc<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Wrap a function so that if any code inside triggers state change,</span><br><span class="hljs-comment"> * the changes are queued using a (macro) task instead of a microtask.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">withMacroTask</span> (<span class="hljs-attr">fn</span>: <span class="hljs-title class_">Function</span>): <span class="hljs-title class_">Function</span> &#123;<br>  <span class="hljs-keyword">return</span> fn.<span class="hljs-property">_withTask</span> || (fn.<span class="hljs-property">_withTask</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    useMacroTask = <span class="hljs-literal">true</span><br>    <span class="hljs-keyword">const</span> res = fn.<span class="hljs-title function_">apply</span>(<span class="hljs-literal">null</span>, <span class="hljs-variable language_">arguments</span>)<br>    useMacroTask = <span class="hljs-literal">false</span><br>    <span class="hljs-keyword">return</span> res<br>  &#125;)<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">nextTick</span> (cb?: <span class="hljs-title class_">Function</span>, ctx?: <span class="hljs-title class_">Object</span>) &#123;<br>  <span class="hljs-keyword">let</span> _resolve<br>  callbacks.<span class="hljs-title function_">push</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (cb) &#123;<br>      <span class="hljs-keyword">try</span> &#123;<br>        cb.<span class="hljs-title function_">call</span>(ctx)<br>      &#125; <span class="hljs-keyword">catch</span> (e) &#123;<br>        <span class="hljs-title function_">handleError</span>(e, ctx, <span class="hljs-string">&#x27;nextTick&#x27;</span>)<br>      &#125;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (_resolve) &#123;<br>      <span class="hljs-title function_">_resolve</span>(ctx)<br>    &#125;<br>  &#125;)<br>  <span class="hljs-keyword">if</span> (!pending) &#123;<br>    pending = <span class="hljs-literal">true</span><br>    <span class="hljs-keyword">if</span> (useMacroTask) &#123;<br>      <span class="hljs-title function_">macroTimerFunc</span>()<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-title function_">microTimerFunc</span>()<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">// $flow-disable-line</span><br>  <span class="hljs-keyword">if</span> (!cb &amp;&amp; <span class="hljs-keyword">typeof</span> <span class="hljs-title class_">Promise</span> !== <span class="hljs-string">&#x27;undefined&#x27;</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> &#123;<br>      _resolve = resolve<br>    &#125;)<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>nextTick 内部声明 microTimerFunc 和 macroTimerFunc 变量分别实现 microTasks 和 macroTasks，且他们都会在下一个 tick 执行 flushCallbacks，flushCallbacks 则遍历执行 callbacks 数组</p>
+<p>如果不传 cb，nextTick() 返回一个 Promise</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-attr">methods</span>: &#123;<br>  <span class="hljs-attr">updateMessage</span>: <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">message</span> = <span class="hljs-string">&#x27;已更新&#x27;</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$el</span>.<span class="hljs-property">textContent</span>) <span class="hljs-comment">// =&gt; &#x27;未更新&#x27;</span><br>    <span class="hljs-keyword">await</span> <span class="hljs-variable language_">this</span>.$nextTick()<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">$el</span>.<span class="hljs-property">textContent</span>) <span class="hljs-comment">// =&gt; &#x27;已更新&#x27;</span><br>  &#125;<br>&#125;<br></code></pre>
+
+<h2 id="Vue-set"><a href="#Vue-set" class="headerlink" title="Vue.set"></a>Vue.set</h2><p>由于 Object.defineProperty 的限制，给对象添加新的属性不能触发它的 setter。使用全局的 API Vue.set，向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">set</span> (<span class="hljs-attr">target</span>: <span class="hljs-title class_">Array</span>&lt;any&gt; | <span class="hljs-title class_">Object</span>, <span class="hljs-attr">key</span>: any, <span class="hljs-attr">val</span>: any): any &#123;<br>  <span class="hljs-keyword">if</span> (process.<span class="hljs-property">env</span>.<span class="hljs-property">NODE_ENV</span> !== <span class="hljs-string">&#x27;production&#x27;</span> &amp;&amp;<br>    (<span class="hljs-title function_">isUndef</span>(target) || <span class="hljs-title function_">isPrimitive</span>(target))<br>  ) &#123;<br>    <span class="hljs-title function_">warn</span>(<span class="hljs-string">`Cannot set reactive property on undefined, null, or primitive value: <span class="hljs-subst">$&#123;(target: any)&#125;</span>`</span>)<br>  &#125;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(target) &amp;&amp; <span class="hljs-title function_">isValidArrayIndex</span>(key)) &#123;<br>    target.<span class="hljs-property">length</span> = <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(target.<span class="hljs-property">length</span>, key)<br>    target.<span class="hljs-title function_">splice</span>(key, <span class="hljs-number">1</span>, val)<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">if</span> (key <span class="hljs-keyword">in</span> target &amp;&amp; !(key <span class="hljs-keyword">in</span> <span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>)) &#123;<br>    target[key] = val<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">const</span> ob = (<span class="hljs-attr">target</span>: any).<span class="hljs-property">__ob__</span><br>  <span class="hljs-keyword">if</span> (target.<span class="hljs-property">_isVue</span> || (ob &amp;&amp; ob.<span class="hljs-property">vmCount</span>)) &#123;<br>    process.<span class="hljs-property">env</span>.<span class="hljs-property">NODE_ENV</span> !== <span class="hljs-string">&#x27;production&#x27;</span> &amp;&amp; <span class="hljs-title function_">warn</span>(<br>      <span class="hljs-string">&#x27;Avoid adding reactive properties to a Vue instance or its root $data &#x27;</span> +<br>      <span class="hljs-string">&#x27;at runtime - declare it upfront in the data option.&#x27;</span><br>    )<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-keyword">if</span> (!ob) &#123;<br>    target[key] = val<br>    <span class="hljs-keyword">return</span> val<br>  &#125;<br>  <span class="hljs-title function_">defineReactive</span>(ob.<span class="hljs-property">value</span>, key, val)<br>  ob.<span class="hljs-property">dep</span>.<span class="hljs-title function_">notify</span>()<br>  <span class="hljs-keyword">return</span> val<br>&#125;<br></code></pre>
+
+<p>set 函数在一系列判断条件后获取 target.<strong>ob</strong> 即响应式对象的 Observer，通过 defineReactive(ob.value, key, val) 将新增属性变成响应式，最后手动ob.dep.notify() 触发更新，这里能够让新增的属性也能派发更新得益于在初始化过程中对 childOb 的深度绑定依赖</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (childOb) &#123;<br>  childOb.<span class="hljs-property">dep</span>.<span class="hljs-title function_">depend</span>()<br>  <span class="hljs-keyword">if</span> (<span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArray</span>(value)) &#123;<br>    <span class="hljs-title function_">dependArray</span>(value)<br>  &#125;<br>&#125;<br></code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/22092626/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">都9102年了，还问GET和POST的区别 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/22092702/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">浅说 XSS 和 CSRF </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Event-Loop"><span class="toc-text">Event Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97"><span class="toc-text">异步更新队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-set"><span class="toc-text">Vue.set</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Event-Loop"><span class="toc-text">Event Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0%E9%98%9F%E5%88%97"><span class="toc-text">异步更新队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue-set"><span class="toc-text">Vue.set</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/"><div class="recent-posts-item-content">vue操作dom元素的三种方法介绍和分析</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/topk/"><div class="recent-posts-item-content">topk的五种求法</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/undefinedAndNull/"><div class="recent-posts-item-content">undefined与null</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-09-30</div>
+        <a href="/2022/09/30/understandHTMLAnchors/"><div class="recent-posts-item-content">了解HTML锚点</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
