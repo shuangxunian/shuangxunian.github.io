@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>topk的五种求法</title>
+  <title>关于玩原神需要掌握的学科</title>
   
     
       <meta 
         property="og:title" 
-        content="topk的五种求法">
+        content="关于玩原神需要掌握的学科">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2022/09/30/topk/index.html">
+        content="http://example.com/2022/10/17/22101702/index.html">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="排序，局部排序，堆，基于快排，魔法">
+        content="如题目">
     
     
       <meta 
@@ -46,10 +46,10 @@
         content="article">
       <meta 
         property="og:article:published_time" 
-        content="2022-09-30">
+        content="2022-10-17">
       <meta 
         property="og:article:modified_time" 
-        content="2022-09-30">
+        content="2022-10-17">
       <meta 
         property="og:article:author" 
         content="霜序廿">
@@ -57,7 +57,7 @@
         
           <meta 
             property="og:article:tag" 
-            content="面试">
+            content="原神">
         
       
     
@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-text">排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%83%A8%E6%8E%92%E5%BA%8F"><span class="toc-text">局部排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A0%86"><span class="toc-text">堆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%BF%AB%E6%8E%92"><span class="toc-text">基于快排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AD%94%E6%B3%95"><span class="toc-text">魔法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
       </div>
     </article>
   
@@ -528,33 +528,33 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      topk的五种求法
+      关于玩原神需要掌握的学科
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/topk.md" target="_blank">编辑原文</a>
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22101702.md" target="_blank">编辑原文</a>
   </div>
   <div class="post-meta post-show-meta">
-    <time datetime="2022-09-30T00:00:00.000Z">
+    <time datetime="2022-10-17T00:00:00.000Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
       </i>
-      <span>2022-09-30</span>
+      <span>2022-10-17</span>
     </time>
     
       <span class="dot"></span>
       
         <a 
-          href="/categories/%E7%AE%97%E6%B3%95/" 
+          href="/categories/%E6%B8%B8%E6%88%8F/" 
           class="post-meta-link">
-          算法
+          游戏
         </a>
       
     
     
       <span class="dot"></span>
-      <span>997 字</span>
+      <span>0 字</span>
     
   </div>
   
@@ -569,9 +569,9 @@
         
           
           <a 
-            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            href="/tags/%E5%8E%9F%E7%A5%9E/" 
             class="post-meta-link">
-            面试
+            原神
           </a>
         
       </div>
@@ -581,23 +581,7 @@
   <div 
     id="section" 
     class="post-content">
-    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>昨天lc的每日一题是一道topk，用的最小堆，总觉得不止一个解决方法，昨天问问队友查查资料发现果然不是，这里做一下记录。</p>
-<p>这里用lc一道典型题做例子：输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/">题目点此</a></p>
-<h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>没啥好说的，直接上代码：</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> getLeastNumbers = <span class="hljs-keyword">function</span>(<span class="hljs-params">arr, k</span>) &#123;<br>    <span class="hljs-keyword">return</span> arr.<span class="hljs-title function_">sort</span>(<span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> a - b).<span class="hljs-title function_">slice</span>(<span class="hljs-number">0</span>, k);<br>&#125;;<br></code></pre>
-
-<h2 id="局部排序"><a href="#局部排序" class="headerlink" title="局部排序"></a>局部排序</h2><p>我们只要前k个，上个方法我们是把所有的全排序输出了，因此又能引出这个思路，只冒泡前k个，这里只留思路不留代码</p>
-<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><p>思路是只找到TopK，不排序TopK。先用前k个元素生成一个小顶堆，这个小顶堆用于存储当前的k个元素。接着，从第k+1个元素开始扫描，和堆顶(堆中最小的元素)比较，如果被扫描的元素大于堆顶，则替换堆顶的元素，并调整堆，以保证堆内的k个元素，总是当前最小的k个元素。直到扫描完所有n-k个元素，最终堆中的k个元素，就是用堆求的TopK，说白了就是把冒泡的TopK排序优化为了TopK不排序，节省了计算资源。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> getLeastNumbers = <span class="hljs-keyword">function</span>(<span class="hljs-params">arr, k</span>) &#123;<br>    <span class="hljs-keyword">let</span> len = arr.<span class="hljs-property">length</span><br>    <span class="hljs-keyword">if</span> (!len || !k) <span class="hljs-keyword">return</span> []<br>    <span class="hljs-keyword">let</span> heap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Heap</span>()<br>        <span class="hljs-comment">// 建立最小堆，O(N) 复杂度</span><br>    heap.<span class="hljs-title function_">init</span>(arr)<br>    <span class="hljs-keyword">let</span> res = []<br>    <span class="hljs-keyword">while</span> (k) &#123;<br>        <span class="hljs-comment">// 依次从堆顶弹出最小元素，O(logN) 复杂度</span><br>        res.<span class="hljs-title function_">push</span>(heap.<span class="hljs-title function_">delete</span>())<br>        k--<br>    &#125;<br>    <span class="hljs-keyword">return</span> res<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Heap</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span> = [-<span class="hljs-title class_">Infinity</span>]<br>&#125;<br><span class="hljs-title class_">Heap</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">init</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">arr</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span> = [-<span class="hljs-title class_">Infinity</span>]<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>.<span class="hljs-title function_">push</span>(...arr)<br>    <span class="hljs-keyword">let</span> size = arr.<span class="hljs-property">length</span><br>        <span class="hljs-comment">// 从最后一个元素的父节点开始实现最小堆，类似删除操作中将最后一个元素放在堆顶进行调整。</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> pos = <span class="hljs-built_in">parseInt</span>(size / <span class="hljs-number">2</span>); pos &gt; <span class="hljs-number">0</span>; pos--) &#123;<br>        <span class="hljs-keyword">let</span> tmp = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[pos]<br>        <span class="hljs-keyword">let</span> parent, child<br>        <span class="hljs-keyword">for</span> (parent = pos; parent * <span class="hljs-number">2</span> &lt;= size; parent = child) &#123;<br>            child = parent * <span class="hljs-number">2</span><br>            <span class="hljs-keyword">if</span> (child + <span class="hljs-number">1</span> &lt;= size &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child + <span class="hljs-number">1</span>] &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]) child++<br>                <span class="hljs-keyword">if</span> (tmp &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]) <span class="hljs-keyword">break</span><br>                <span class="hljs-keyword">else</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[parent] = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]<br>        &#125;<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[parent] = tmp<br>    &#125;<br>&#125;<br><span class="hljs-title class_">Heap</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">delete</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">let</span> size = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>.<span class="hljs-property">length</span> - <span class="hljs-number">1</span><br>    <span class="hljs-keyword">let</span> res = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[<span class="hljs-number">1</span>]<br>        <span class="hljs-comment">// 拿到最后一个元素</span><br>    <span class="hljs-keyword">let</span> tmp = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[size]<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>.<span class="hljs-property">length</span>--<br>        size--<br>        <span class="hljs-comment">// 将最后一个元素放在堆顶，并调整最小堆</span><br>        <span class="hljs-keyword">let</span> parent, child<br>    <span class="hljs-keyword">for</span> (parent = <span class="hljs-number">1</span>; parent * <span class="hljs-number">2</span> &lt;= size; parent = child) &#123;<br>        child = parent * <span class="hljs-number">2</span><br>        <span class="hljs-keyword">if</span> (child + <span class="hljs-number">1</span> &lt;= size &amp;&amp; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child + <span class="hljs-number">1</span>] &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]) child++<br>            <span class="hljs-keyword">if</span> (tmp &lt; <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]) <span class="hljs-keyword">break</span><br>            <span class="hljs-keyword">else</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[parent] = <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[child]<br>    &#125;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">heap</span>[parent] = tmp<br>    <span class="hljs-keyword">return</span> res<br>&#125;<br></code></pre>
-
-<h2 id="基于快排"><a href="#基于快排" class="headerlink" title="基于快排"></a>基于快排</h2><p>根据快排的思路，不断分治，如果我们不分治到最后求排序结果，只是划分到当当前的k大于等于当前数组的长度时，这个数组一定是满足要求的数组，直接将此数组返回即可。</p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">partition</span>(<span class="hljs-params">arr, start, end</span>) &#123;<br>    <span class="hljs-keyword">const</span> k = arr[start];<br>    <span class="hljs-keyword">let</span> left = start + <span class="hljs-number">1</span>,<br>        right = end;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-keyword">while</span> (left &lt;= end &amp;&amp; arr[left] &lt;= k) ++left;<br>        <span class="hljs-keyword">while</span> (right &gt;= start + <span class="hljs-number">1</span> &amp;&amp; arr[right] &gt;= k) --right;<br><br>        <span class="hljs-keyword">if</span> (left &gt;= right) &#123;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br><br>        [arr[left], arr[right]] = [arr[right], arr[left]];<br>        ++left;<br>        --right;<br>    &#125;<br>    [arr[right], arr[start]] = [arr[start], arr[right]];<br>    <span class="hljs-keyword">return</span> right;<br>&#125;<br><br><span class="hljs-keyword">var</span> getLeastNumbers = <span class="hljs-keyword">function</span>(<span class="hljs-params">arr, k</span>) &#123;<br>    <span class="hljs-keyword">const</span> length = arr.<span class="hljs-property">length</span>;<br>    <span class="hljs-keyword">if</span> (k &gt;= length) <span class="hljs-keyword">return</span> arr;<br>    <span class="hljs-keyword">let</span> left = <span class="hljs-number">0</span>,<br>        right = length - <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">let</span> index = <span class="hljs-title function_">partition</span>(arr, left, right);<br>    <span class="hljs-keyword">while</span> (index !== k) &#123;<br>        <span class="hljs-keyword">if</span> (index &lt; k) &#123;<br>            left = index + <span class="hljs-number">1</span>;<br>            index = <span class="hljs-title function_">partition</span>(arr, left, right);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (index &gt; k) &#123;<br>            right = index - <span class="hljs-number">1</span>;<br>            index = <span class="hljs-title function_">partition</span>(arr, left, right);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> arr.<span class="hljs-title function_">slice</span>(<span class="hljs-number">0</span>, k);<br>&#125;;<br></code></pre>
-
-<h2 id="魔法"><a href="#魔法" class="headerlink" title="魔法"></a>魔法</h2><p>这个是别人发给我的，找不到具体链接，如果读者有链接可以联系我~</p>
-<pre class="highlight"><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">findKthLargest</span><span class="hljs-params">(vector&lt;<span class="hljs-type">int</span>&gt;&amp; nums, <span class="hljs-type">int</span> k)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">auto</span> minmax = <span class="hljs-built_in">minmax_element</span>(nums.<span class="hljs-built_in">begin</span>(), nums.<span class="hljs-built_in">end</span>());<br>	<span class="hljs-type">int</span> left = *minmax.first;<br>	<span class="hljs-type">int</span> right = *minmax.second;<br>	<span class="hljs-type">int</span> mid;<br>	<span class="hljs-type">int</span> countGreat;<br>	<span class="hljs-keyword">while</span> (left &lt; right)<br>	&#123;<br>		mid = left + (right - left) / <span class="hljs-number">2</span>;<br>		countGreat = <span class="hljs-built_in">count_if</span>(nums.<span class="hljs-built_in">begin</span>(), nums.<span class="hljs-built_in">end</span>(), [mid](<span class="hljs-type">int</span> n) &#123; <span class="hljs-keyword">return</span> n&gt; mid;&#125;);<br>		<span class="hljs-keyword">if</span> (countGreat &gt;= k)<br>		&#123;<br>			left = mid + <span class="hljs-number">1</span>;<br>		&#125;<br>		<span class="hljs-keyword">else</span><br>		&#123;<br>			right = mid;<br>		&#125;<br>	&#125;<br>	<span class="hljs-keyword">return</span> left;<br>&#125;<br></code></pre>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/zui-xiao-de-kge-shu-lcof/solution/zui-xiao-de-kge-shu-by-leetcode-solution/">最小的k个数</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.51cto.com/art/201809/584259.htm">拜托，面试别再问我TopK了</a></p>
-
+    
   </div>
   <div>
     
@@ -607,13 +591,13 @@
   
     <div class="nav-item-prev">
       <a 
-        href="/2022/09/30/threeMethodsForVueToManipulateDOMElementsAreDescribedAndAnalyzed/" 
+        href="/2022/10/17/22101701/" 
         class="nav-link">
         <i class="iconfont icon-left nav-prev-icon"></i>
         <div>
           <div class="nav-label">上一篇</div>
           
-            <div class="nav-title">vue操作dom元素的三种方法介绍和分析 </div>
+            <div class="nav-title">关于玩原神需要掌握的学科 </div>
           
         </div>
       </a>
@@ -622,12 +606,12 @@
   
     <div class="nav-item-next">
       <a 
-        href="/2022/09/30/undefinedAndNull/" 
+        href="/2022/09/30/12JavaScriptHacksToImproveYourCode/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">undefined与null </div>
+            <div class="nav-title">12个 Javascript 小技巧帮你提升代码质量 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -645,7 +629,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-text">排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%83%A8%E6%8E%92%E5%BA%8F"><span class="toc-text">局部排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A0%86"><span class="toc-text">堆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%BF%AB%E6%8E%92"><span class="toc-text">基于快排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AD%94%E6%B3%95"><span class="toc-text">魔法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
 </div>
 
             </main>
@@ -660,7 +644,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-text">排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%80%E9%83%A8%E6%8E%92%E5%BA%8F"><span class="toc-text">局部排序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A0%86"><span class="toc-text">堆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E5%BF%AB%E6%8E%92"><span class="toc-text">基于快排</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AD%94%E6%B3%95"><span class="toc-text">魔法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-text">参考</span></a></li></ol>
+
     </article>
   
   
