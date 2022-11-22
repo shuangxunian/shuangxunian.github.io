@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>原生js实现图片懒加载（lazyLoad）</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="原生js实现图片懒加载（lazyLoad）">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/11/22/22112202/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="关于懒加载的一些知识点">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-11-22">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-11-22">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>267</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>53</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">什么是懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">为什么要懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-text">三.懒加载的实现原理？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4%E5%8F%8ADemo"><span class="toc-text">四.实现步骤及Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E4%BB%8B%E7%BB%8D%E5%87%A0%E4%B8%AA%E5%92%8C%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9B%B8%E5%85%B3%E7%9A%84API"><span class="toc-text">先介绍几个和懒加载相关的API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text">代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E5%8A%A0%E6%96%B9%E4%BE%BF%E5%BF%AB%E6%8D%B7%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">更加方便快捷的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%AAAPI"><span class="toc-text">了解一个API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">实现方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">232</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      原生js实现图片懒加载（lazyLoad）
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22112202.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-11-22T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-11-22</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.8k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="什么是懒加载？"><a href="#什么是懒加载？" class="headerlink" title="什么是懒加载？"></a>什么是懒加载？</h2><p>懒加载突出一个“懒”字，懒就是拖延迟的意思，所以“懒加载”说白了就是延迟加载，比如我们加载一个页面，这个页面很长很长，长到我们的浏览器可视区域装不下，那么懒加载就是优先加载可视区域的内容，其他部分等进入了可视区域在加载。</p>
+<h2 id="为什么要懒加载？"><a href="#为什么要懒加载？" class="headerlink" title="为什么要懒加载？"></a>为什么要懒加载？</h2><p>懒加载是一种网页性能优化的方式，它能极大的提升用户体验。就比如说图片，图片一直是影响网页性能的主要元凶，现在一张图片超过几兆已经是很经常的事了。如果每次进入页面就请求所有的图片资源，那么可能等图片加载出来用户也早就走了。所以，我们需要懒加载，进入页面的时候，只请求可视区域的图片资源。</p>
+<p>总结出来就两个点：</p>
+<ol>
+<li>全部加载的话会影响用户体验</li>
+<li>浪费用户的流量，有些用户并不像全部看完，全部加载会耗费大量流量。</li>
+</ol>
+<h2 id="三-懒加载的实现原理？"><a href="#三-懒加载的实现原理？" class="headerlink" title="三.懒加载的实现原理？"></a>三.懒加载的实现原理？</h2><p>由于网页中占用资源较多的一般是图片，所以我们一般实施懒加载都是对图片资源而言的，所以这里的实现原理主要是针对图片。</p>
+<p>大家都知道，一张图片就是一个<img>标签，而图片的来源主要是src属性。浏览器是否发起亲求就是根据是否有src属性决定的。</p>
+<p>既然这样，那么我们就要对<img>标签的src属性下手了，在没进入可视区域的时候，我们先不给这个<img>标签赋src属性，这样岂不是浏览器就不会发送请求了。</p>
+<p>总结：我们知道了从<img>标签下手，那么更重要的就是可视区域的判断了，这就是整篇文章的核心之处了。</p>
+<h2 id="四-实现步骤及Demo"><a href="#四-实现步骤及Demo" class="headerlink" title="四.实现步骤及Demo"></a>四.实现步骤及Demo</h2><h3 id="先介绍几个和懒加载相关的API"><a href="#先介绍几个和懒加载相关的API" class="headerlink" title="先介绍几个和懒加载相关的API"></a>先介绍几个和懒加载相关的API</h3><ol>
+<li>document.documentElement.clientHeight</li>
+</ol>
+<ul>
+<li>获取屏幕可视区域的高度，该属性是一个只读属性，它返回该元素的像素高度，高度包含内边距（padding），不包含边框（border），外边距（margin）和滚动条，是一个整数，单位是像素 px。</li>
+</ul>
+<ol start="2">
+<li>element.offsetTop</li>
+</ol>
+<ul>
+<li>获取元素相对于文档顶部的高度，该属性是一个只读属性，返回当前元素相对于 offsetParent 节点顶部边界的偏移像素值。返回值包含元素顶部偏移的像素值，元素的外边距（margin），以及offsetParent 元素的顶部内边距（padding）、边框（border）及滚动条</li>
+</ul>
+<ol start="3">
+<li>document.documentElement.scrollTop</li>
+</ol>
+<ul>
+<li>获取浏览器窗口顶部与文档顶部之间的距离，也就是滚动条滚动的距离，该属性可以获取或设置一个元素的内容垂直滚动的像素数。一个元素的 scrollTop 值是这个元素的内容顶部（卷起来的）到它的视口可见内容（的顶部）的距离的度量。当一个元素的内容没有产生垂直方向的滚动条，那么它的 scrollTop 值为0。</li>
+</ul>
+<p>通过上面三个API，我们获得了三个值：可视区高度、元素相对于其父元素容器顶部的距离、浏览器窗口顶部与容器元素顶部的距离也就是滚动条滚动的高度。</p>
+<p>如果：offsetTop-scroolTop&lt;clientHeight，则图片进入了可视区内，则被请求。</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>下面的代码就是根据以上公式实现的：</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;ie=edge&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>图片懒加载<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">        <span class="hljs-selector-tag">img</span> &#123;</span><br><span class="language-css">            <span class="hljs-attribute">display</span>: block;</span><br><span class="language-css">            <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;</span><br><span class="language-css">            <span class="hljs-attribute">height</span>: <span class="hljs-number">300px</span>;</span><br><span class="language-css">            <span class="hljs-attribute">margin-bottom</span>: <span class="hljs-number">20px</span>;</span><br><span class="language-css">        &#125;</span><br><span class="language-css">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/1.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/2.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/3.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/4.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/5.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/6.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/7.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/8.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/9.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/10.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/1.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">data-src</span>=<span class="hljs-string">&quot;./images/2.jpg&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-keyword">var</span> imgs = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&#x27;img&#x27;</span>);</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-comment">//offsetTop是元素与offsetParent的距离，循环获取直到页面顶部</span></span><br><span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">getTop</span>(<span class="hljs-params">e</span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> T = e.<span class="hljs-property">offsetTop</span>;</span><br><span class="language-javascript">            <span class="hljs-keyword">while</span>(e = e.<span class="hljs-property">offsetParent</span>) &#123;</span><br><span class="language-javascript">                T += e.<span class="hljs-property">offsetTop</span>;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">            <span class="hljs-keyword">return</span> T;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-keyword">function</span> <span class="hljs-title function_">lazyLoad</span>(<span class="hljs-params">imgs</span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> H = <span class="hljs-variable language_">document</span>.<span class="hljs-property">documentElement</span>.<span class="hljs-property">clientHeight</span>;<span class="hljs-comment">//获取可视区域高度</span></span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> S = <span class="hljs-variable language_">document</span>.<span class="hljs-property">documentElement</span>.<span class="hljs-property">scrollTop</span> || <span class="hljs-variable language_">document</span>.<span class="hljs-property">body</span>.<span class="hljs-property">scrollTop</span>;</span><br><span class="language-javascript">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; imgs.<span class="hljs-property">length</span>; i++) &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">if</span> (H + S &gt; <span class="hljs-title function_">getTop</span>(imgs[i])) &#123;</span><br><span class="language-javascript">                    imgs[i].<span class="hljs-property">src</span> = imgs[i].<span class="hljs-title function_">getAttribute</span>(<span class="hljs-string">&#x27;data-src&#x27;</span>);</span><br><span class="language-javascript">                &#125;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-variable language_">window</span>.<span class="hljs-property">onload</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-property">onscroll</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123; <span class="hljs-comment">//onscroll()在滚动条滚动的时候触发</span></span><br><span class="language-javascript">            <span class="hljs-title function_">lazyLoad</span>(imgs);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre>
+
+<p>注意：offsetTop是相对于父元素的，所以上面带吗有一个offsetParent。</p>
+<h2 id="更加方便快捷的实现方式"><a href="#更加方便快捷的实现方式" class="headerlink" title="更加方便快捷的实现方式"></a>更加方便快捷的实现方式</h2><h3 id="了解一个API"><a href="#了解一个API" class="headerlink" title="了解一个API"></a>了解一个API</h3><p>这种实现方式我们只需要了解一个API就行了：</p>
+<p><strong>getBoundingClientRect()</strong><br>获取元素的大小及位置，该方法返回一个 DOMRect 对象，其提供了元素的大小及其相对于视口的位置。</p>
+<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><p>通过上面的实验我们都知道，懒加载的一个重点就是要知道什么时候图片是进入了可视区内，那么就上面这张图而言，我们有什么方法判断图片进入了可视区呢。其实很简单，我们先获取图片到可视区顶部的距离,并获取到可视区的高度：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> bound = el.<span class="hljs-title function_">getBoundingClientRect</span>();<br><span class="hljs-keyword">var</span> clientHeight = <span class="hljs-variable language_">window</span>.<span class="hljs-property">innerHeight</span>;<span class="hljs-comment">//这个和前面获取可视区高度的效果一样，只是兼容性问题</span><br></code></pre>
+
+<p>然后我们继续思考，当我们滚动条向下滚动的时候，bound.top值会变得越来越小，也就是图片到可视区顶部的距离也越来越小，所以当bound.top &#x3D;&#x3D; clientHeight时，说明图片马上就要进入可视区了，只要我们在滚动，图片就会进入可视区，那么就需要请求资源了。也就是说，在bound.top&lt;&#x3D;clientHeight时，图片是在可视区域内的。</p>
+<p>经过上面的思考，我们大致明白了如何实现，那么就来编写我们的代码了吧：</p>
+<p>只需要把我们的js代码换成如下即可：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> imgs = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">querySelectorAll</span>(<span class="hljs-string">&#x27;img&#x27;</span>);<br><span class="hljs-comment">//用来判断bound.top&lt;=clientHeight的函数，返回一个bool值</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">isIn</span>(<span class="hljs-params">el</span>) &#123;<br>  <span class="hljs-keyword">var</span> bound = el.<span class="hljs-title function_">getBoundingClientRect</span>();<br>  <span class="hljs-keyword">var</span> clientHeight = <span class="hljs-variable language_">window</span>.<span class="hljs-property">innerHeight</span>;<br>  <span class="hljs-keyword">return</span> bound.<span class="hljs-property">top</span> &lt;= clientHeight;<br>&#125; <br><span class="hljs-comment">//检查图片是否在可视区内，如果不在，则加载</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">check</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(imgs).<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">el</span>)&#123;<br>    <span class="hljs-keyword">if</span>(<span class="hljs-title function_">isIn</span>(el))&#123;<br>      <span class="hljs-title function_">loadImg</span>(el);<br>    &#125;<br>  &#125;)<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">loadImg</span>(<span class="hljs-params">el</span>) &#123;<br>  <span class="hljs-keyword">if</span>(!el.<span class="hljs-property">src</span>)&#123;<br>    <span class="hljs-keyword">var</span> source = el.<span class="hljs-property">dataset</span>.<span class="hljs-property">src</span>;<br>    el.<span class="hljs-property">src</span> = source;<br>  &#125;<br>&#125;<br><br><span class="hljs-comment">// onscroll()在滚动条滚动的时候触发</span><br><span class="hljs-variable language_">window</span>.<span class="hljs-property">onload</span> = <span class="hljs-variable language_">window</span>.<span class="hljs-property">onscroll</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-title function_">check</span>();<br>&#125;<br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/55311726">原生js实现图片懒加载（lazyLoad）</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/11/21/22112101/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">CentOS 8 升级Python3.6到Python3.9 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">什么是懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">为什么要懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-text">三.懒加载的实现原理？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4%E5%8F%8ADemo"><span class="toc-text">四.实现步骤及Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E4%BB%8B%E7%BB%8D%E5%87%A0%E4%B8%AA%E5%92%8C%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9B%B8%E5%85%B3%E7%9A%84API"><span class="toc-text">先介绍几个和懒加载相关的API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text">代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E5%8A%A0%E6%96%B9%E4%BE%BF%E5%BF%AB%E6%8D%B7%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">更加方便快捷的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%AAAPI"><span class="toc-text">了解一个API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">实现方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">什么是懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%87%92%E5%8A%A0%E8%BD%BD%EF%BC%9F"><span class="toc-text">为什么要懒加载？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89-%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="toc-text">三.懒加载的实现原理？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B-%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4%E5%8F%8ADemo"><span class="toc-text">四.实现步骤及Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%88%E4%BB%8B%E7%BB%8D%E5%87%A0%E4%B8%AA%E5%92%8C%E6%87%92%E5%8A%A0%E8%BD%BD%E7%9B%B8%E5%85%B3%E7%9A%84API"><span class="toc-text">先介绍几个和懒加载相关的API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text">代码实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E5%8A%A0%E6%96%B9%E4%BE%BF%E5%BF%AB%E6%8D%B7%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">更加方便快捷的实现方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%AAAPI"><span class="toc-text">了解一个API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="toc-text">实现方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-22</div>
+        <a href="/2022/11/22/22112202/"><div class="recent-posts-item-content">原生js实现图片懒加载（lazyLoad）</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-21</div>
+        <a href="/2022/11/21/22112101/"><div class="recent-posts-item-content">CentOS 8 升级Python3.6到Python3.9</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-21</div>
+        <a href="/2022/11/21/22112102/"><div class="recent-posts-item-content">JSON Web Token 入门教程</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-21</div>
+        <a href="/2022/11/21/22112201/"><div class="recent-posts-item-content">Python 函数装饰器</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
