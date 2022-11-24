@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>原神机器人使用帮助</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="原神机器人使用帮助">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/11/24/22112401/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="关于云崽机器人的使用帮助">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-11-24">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-11-24">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="原神">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>269</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>54</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%B8%AE%E5%8A%A9"><span class="toc-text">使用帮助</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Auid"><span class="toc-text">绑定uid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Ack"><span class="toc-text">绑定ck</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E9%9D%A2%E6%9D%BF"><span class="toc-text">更新面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E9%83%A8%E6%8C%87%E4%BB%A4"><span class="toc-text">全部指令</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">233</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AE%E5%AD%90/" 
+        title="轮子">
+        <div class="tags-list-item">轮子</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      原神机器人使用帮助
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22112401.md" target="_blank">编辑原文</a>
+  </div>
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-11-24T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-11-24</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%B8%B8%E6%88%8F/" 
+          class="post-meta-link">
+          游戏
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%8E%9F%E7%A5%9E/" 
+            class="post-meta-link">
+            原神
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="使用帮助"><a href="#使用帮助" class="headerlink" title="使用帮助"></a>使用帮助</h2><h3 id="绑定uid"><a href="#绑定uid" class="headerlink" title="绑定uid"></a>绑定uid</h3><p>在第一次使用时请输入，<code>#绑定uid你的uid</code>，并把其中你的uid换成你本人的uid，此时就能使用基本米游社查询指令了。</p>
+<h3 id="绑定ck"><a href="#绑定ck" class="headerlink" title="绑定ck"></a>绑定ck</h3><p>如果你想查询体力，签到等需要你绑定ck，请按照以下方法绑定：</p>
+<ol>
+<li>电脑端打开网页版米游社 <a target="_blank" rel="noopener" href="https://bbs.mihoyo.com/ys/">https://bbs.mihoyo.com/ys/</a></li>
+<li>输入你的账号密码，然后按F12</li>
+<li>此时右边为，请点击console：</li>
+</ol>
+<ul>
+<li><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a288e09c-341d-4094-80d4-bc9cd53b3f6f-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a288e09c-341d-4094-80d4-bc9cd53b3f6f-3807603.jpg"></li>
+</ul>
+<ol start="4">
+<li>然后在框里面输入如下代码，然后回车</li>
+</ol>
+<ul>
+<li><code>copy(document.cookie.replace(&#39;smid&#39;,&#39;&#39;))</code></li>
+</ul>
+<ol start="5">
+<li>添加机器人好友，并且直接按ctrl+v，发送内容即可</li>
+</ol>
+<h3 id="更新面板"><a href="#更新面板" class="headerlink" title="更新面板"></a>更新面板</h3><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8620839b-6609-414a-8867-8cd1b03f7cda-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8620839b-6609-414a-8867-8cd1b03f7cda-3807603.jpg"></p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/0d28f502-166b-42fb-b324-a0a7f27a8770-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/0d28f502-166b-42fb-b324-a0a7f27a8770-3807603.jpg"></p>
+<h2 id="全部指令"><a href="#全部指令" class="headerlink" title="全部指令"></a>全部指令</h2><table>
+<thead>
+<tr>
+<th align="left">米游社查询指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">#角色</td>
+<td>米游社角色数据查询</td>
+</tr>
+<tr>
+<td align="left">#探险</td>
+<td>米游社角色数据查询</td>
+</tr>
+<tr>
+<td align="left">#角色卡片</td>
+<td>米游社角色数据查询</td>
+</tr>
+<tr>
+<td align="left">#刻晴</td>
+<td>米游社角色详情查询</td>
+</tr>
+<tr>
+<td align="left">#武器</td>
+<td>米游社角色详情武器查询</td>
+</tr>
+<tr>
+<td align="left">#五星，#四星，#角色背包</td>
+<td>米游社角色详情背包</td>
+</tr>
+<tr>
+<td align="left">#深渊</td>
+<td>米游社深渊查询</td>
+</tr>
+<tr>
+<td align="left">#深渊十二层</td>
+<td>米游社深渊层数查询</td>
+</tr>
+<tr>
+<td align="left">#刻晴突破，#刻晴素材</td>
+<td>米游社友人A的角色突破素材图</td>
+</tr>
+<tr>
+<td align="left">#刻晴攻略</td>
+<td>米游社西风攻略</td>
+</tr>
+<tr>
+<td align="left">#练度统计，#五星列表，#天赋列表</td>
+<td>米游社角色详情列表</td>
+</tr>
+<tr>
+<td align="left">#体力</td>
+<td>原神体力查询</td>
+</tr>
+<tr>
+<td align="left">#签到</td>
+<td>米游社原神签到，自动签到</td>
+</tr>
+<tr>
+<td align="left">#开启、关闭签到</td>
+<td>开启或关闭原神自动签到</td>
+</tr>
+<tr>
+<td align="left">#全部签到</td>
+<td>签到全部ck</td>
+</tr>
+<tr>
+<td align="left">#原石、#原石七月</td>
+<td>查询米游社原石札记</td>
+</tr>
+<tr>
+<td align="left">#原石统计</td>
+<td>查询米游社原石札记，会自动保存数据</td>
+</tr>
+<tr>
+<td align="left">#原石任务</td>
+<td>保存米游社原石札记数据</td>
+</tr>
+<tr>
+<td align="left">#今日素材</td>
+<td>按已拥有角色查询今日素材</td>
+</tr>
+<tr>
+<td align="left">#公告，#公告2，#资讯，#活动</td>
+<td>米游社原神最新20条公告资讯</td>
+</tr>
+<tr>
+<td align="left">#米游社xxx</td>
+<td>米游社原神帖子搜索，如#米游社七七</td>
+</tr>
+<tr>
+<td align="left">#开启、关闭公告推送，#开启、关闭资讯推送</td>
+<td>米游社原神公告资讯推送</td>
+</tr>
+<tr>
+<td align="left">#原石预估</td>
+<td>新版本可获取原石数量预估</td>
+</tr>
+<tr>
+<td align="left">#xx图鉴</td>
+<td>获取武器，角色信息，格式固定，只能替换xx</td>
+</tr>
+<tr>
+<td align="left">#xx在哪里</td>
+<td>获取动植物在哪里，格式固定，只能替换xx</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">抽卡指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">#十连</td>
+<td>原神模拟十连抽卡，角色池，默认每日一次，四点更新</td>
+</tr>
+<tr>
+<td align="left">#十连武器</td>
+<td>原神模拟十连抽卡</td>
+</tr>
+<tr>
+<td align="left">#十连常驻</td>
+<td>原神模拟十连抽卡</td>
+</tr>
+<tr>
+<td align="left">#定轨</td>
+<td>武器池定轨</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">ck指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">体力帮助，cookie帮助</td>
+<td>cookie绑定教程</td>
+</tr>
+<tr>
+<td align="left">cookie代码</td>
+<td>获取cookie的js代码</td>
+</tr>
+<tr>
+<td align="left">#绑定cookie</td>
+<td>绑定米游社cookie</td>
+</tr>
+<tr>
+<td align="left">#删除cookie</td>
+<td>删除绑定的cookie</td>
+</tr>
+<tr>
+<td align="left">#绑定uid</td>
+<td>绑定游戏的uid</td>
+</tr>
+<tr>
+<td align="left">#uid</td>
+<td>显示已绑定cookie的uid</td>
+</tr>
+<tr>
+<td align="left">#我的ck</td>
+<td>当前绑定的主cookie</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">抽卡记录指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">抽卡记录链接</td>
+<td>发送链接，导入抽卡记录</td>
+</tr>
+<tr>
+<td align="left">#角色记录</td>
+<td>统计抽卡数据</td>
+</tr>
+<tr>
+<td align="left">#武器记录</td>
+<td>统计抽卡数据</td>
+</tr>
+<tr>
+<td align="left">#常驻记录</td>
+<td>统计抽卡数据</td>
+</tr>
+<tr>
+<td align="left">#角色统计</td>
+<td>统计抽卡数据，按卡池统计</td>
+</tr>
+<tr>
+<td align="left">#武器统计</td>
+<td>统计抽卡数据，按卡池统计</td>
+</tr>
+<tr>
+<td align="left">#常驻统计</td>
+<td>统计抽卡数据，按卡池统计</td>
+</tr>
+<tr>
+<td align="left">#记录帮助</td>
+<td>抽卡记录导入说明</td>
+</tr>
+<tr>
+<td align="left">#导出记录</td>
+<td>抽卡记录xlsx导出</td>
+</tr>
+<tr>
+<td align="left">#导出记录json</td>
+<td>抽卡记录json导出</td>
+</tr>
+<tr>
+<td align="left">xlsx文件导入</td>
+<td>xlsx导入，统一可交换祈愿记录v2.2，需要加好友</td>
+</tr>
+<tr>
+<td align="left">json文件导入</td>
+<td>json导入，统一可交换祈愿记录v2.2，需要加好友</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">其他指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">#帮助</td>
+<td>帮助命令说明</td>
+</tr>
+<tr>
+<td align="left">#状态</td>
+<td>查询发送消息数据，群聊则发送群数据</td>
+</tr>
+<tr>
+<td align="left">#重启</td>
+<td>重新启动</td>
+</tr>
+<tr>
+<td align="left">#日志</td>
+<td>查看运行日志</td>
+</tr>
+<tr>
+<td align="left">#错误日志</td>
+<td>查看错误日志</td>
+</tr>
+<tr>
+<td align="left">#日志关键词</td>
+<td>搜索日志</td>
+</tr>
+<tr>
+<td align="left">#更新</td>
+<td>执行git pull拉取更新</td>
+</tr>
+<tr>
+<td align="left">#强制更新</td>
+<td>放弃本地修改，强制拉取</td>
+</tr>
+<tr>
+<td align="left">#全部更新</td>
+<td>全部插件更新</td>
+</tr>
+<tr>
+<td align="left">#更新日志</td>
+<td>最近50条commit记录</td>
+</tr>
+<tr>
+<td align="left">#添加xxx</td>
+<td>添加表情，文字等内容，支持多个</td>
+</tr>
+<tr>
+<td align="left">#添加图片</td>
+<td>添加图片默认为表情，大图显示请用添加图片</td>
+</tr>
+<tr>
+<td align="left">#删除xxx</td>
+<td>删除已添加表情</td>
+</tr>
+<tr>
+<td align="left">#删除全部</td>
+<td>删除全部表情</td>
+</tr>
+<tr>
+<td align="left">#表情列表</td>
+<td>显示已添加内容</td>
+</tr>
+<tr>
+<td align="left">#表情xxx</td>
+<td>搜索已添加内容</td>
+</tr>
+<tr>
+<td align="left">#设置刻晴别名</td>
+<td>自定义别名</td>
+</tr>
+<tr>
+<td align="left">#删除别名龟龟</td>
+<td>删除设置的别名</td>
+</tr>
+<tr>
+<td align="left">#刻晴别名</td>
+<td>别名列表</td>
+</tr>
+<tr>
+<td align="left">#配置ck</td>
+<td>添加公共查询ck</td>
+</tr>
+<tr>
+<td align="left">#使用用户ck</td>
+<td>将用户ck加入到公共查询ck池</td>
+</tr>
+</tbody></table>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/11/22/22112202/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">原生js实现图片懒加载（lazyLoad） </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%B8%AE%E5%8A%A9"><span class="toc-text">使用帮助</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Auid"><span class="toc-text">绑定uid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Ack"><span class="toc-text">绑定ck</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E9%9D%A2%E6%9D%BF"><span class="toc-text">更新面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E9%83%A8%E6%8C%87%E4%BB%A4"><span class="toc-text">全部指令</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%B8%AE%E5%8A%A9"><span class="toc-text">使用帮助</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Auid"><span class="toc-text">绑定uid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%91%E5%AE%9Ack"><span class="toc-text">绑定ck</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E9%9D%A2%E6%9D%BF"><span class="toc-text">更新面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E9%83%A8%E6%8C%87%E4%BB%A4"><span class="toc-text">全部指令</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-24</div>
+        <a href="/2022/11/24/22112401/"><div class="recent-posts-item-content">原神机器人使用帮助</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-22</div>
+        <a href="/2022/11/22/22112202/"><div class="recent-posts-item-content">原生js实现图片懒加载（lazyLoad）</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-22</div>
+        <a href="/2022/11/22/22112203/"><div class="recent-posts-item-content">Windows的Flask怎样让局域网的同事访问到</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-11-21</div>
+        <a href="/2022/11/21/22112101/"><div class="recent-posts-item-content">CentOS 8 升级Python3.6到Python3.9</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
