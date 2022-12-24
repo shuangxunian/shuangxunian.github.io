@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>抗打断和冲击效果的原理</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="抗打断和冲击效果的原理">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/10/21/22102103/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="还是泥潭的老哥写的文章，泥潭的老哥是真强">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-10-21">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-10-21">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="原神">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>280</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>56</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%97%E6%89%93%E6%96%AD"><span class="toc-text">抗打断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%A7%E6%80%A7%E7%B1%BB%E5%9E%8B"><span class="toc-text">韧性类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E4%BD%9C%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0%E4%B8%8E%E6%8A%80%E8%83%BD%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0"><span class="toc-text">动作霸体系数与技能霸体系数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%BB%E7%BB%93%E4%B8%8E%E7%9F%B3%E5%8C%96"><span class="toc-text">冻结与石化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E6%9C%BA%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%95%8C%E4%BA%BA%E9%9F%A7%E6%80%A7%E6%9D%A1%E7%9A%84%E5%AE%9E%E9%99%85%E9%95%BF%E5%BA%A6"><span class="toc-text">联机模式下敌人韧性条的实际长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E7%BA%A7%E5%8E%8B%E5%88%B6%E5%BD%B1%E5%93%8D%E5%89%8A%E9%9F%A7"><span class="toc-text">等级压制影响削韧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E6%95%88%E6%9E%9C"><span class="toc-text">冲击效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E7%B1%BB%E5%9E%8B"><span class="toc-text">冲击类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E6%95%88%E6%9E%9C%E7%9A%84%E8%A7%A6%E5%8F%91%E5%88%A4%E5%AE%9A"><span class="toc-text">硬直效果的触发判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E5%85%8D%E7%96%AB"><span class="toc-text">硬直免疫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%A3%E6%89%8E%E7%8A%B6%E6%80%81"><span class="toc-text">挣扎状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">244</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      抗打断和冲击效果的原理
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22102103.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-10-21T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-10-21</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%B8%B8%E6%88%8F/" 
+          class="post-meta-link">
+          游戏
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%8E%9F%E7%A5%9E/" 
+            class="post-meta-link">
+            原神
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="抗打断"><a href="#抗打断" class="headerlink" title="抗打断"></a>抗打断</h2><h3 id="韧性类型"><a href="#韧性类型" class="headerlink" title="韧性类型"></a>韧性类型</h3><p>韧性类型用于体现防守者基本的抗打断能力，它有4个参数。</p>
+<p>韧性条标准长度：韧性条的标准容纳量。该参数也能从侧面体现目标承受削韧的能力。<br>在游戏中， 存在隐藏的韧性条。韧性条从0开始，会被相应的削韧不断填充。<br>当韧性条充满，防守者就会进入失衡状态，才能触发相应的效果(打断、硬直和冲击力)。<br>因为硬直效果的判定在韧性之后，所以将韧性条打满那下攻击，就能触发对应的效果。<br>单机模式下，敌方韧性条的实际长度等于韧性条的标准长度；但在联机模式下，敌方韧性条的实际长度会大于韧性条的标准长度。<br>相关内容将会在后面阐述。</p>
+<p>韧性条衰减速度：韧性条随时间缓慢清空的速度。该参数也能从侧面体现目标恢复韧性的能力。<br>在游戏中，防守者未进入失衡状态时，每一帧中，韧性条中积攒的削韧会不断清除。<br>某一帧内的衰减量 &#x3D; 衰减速度 * 帧的时长<br>比如，游戏一直稳定在 60 帧，则 每帧的恢复速度 &#x3D; 每秒的恢复速度 * (1&#x2F;60)</p>
+<p>耐力系数：一种常态效果，能影响对应攻击带来的削韧效果。该参数也能从侧面体现目标抵抗削韧的能力。<br>后面会和韧性防御系数一起进行阐述</p>
+<p>韧性重置时间：大部分防守者进入失衡状态后，将韧性条瞬间变回 0 的所需时间。该参数也能从侧面体现目标失衡状态的持续时间<br>如果 韧性重置时间 &gt; 0，防守者进入失衡状态后，失衡状态会保持一段时间，韧性也不会恢复。持续时间结束，韧性条瞬间恢复为 0。<br>如果 韧性重置时间 &#x3D; 0，防守者进入失衡状态后，不会保持失衡状态，韧性依然会缓慢恢复。</p>
+<h3 id="动作霸体系数与技能霸体系数"><a href="#动作霸体系数与技能霸体系数" class="headerlink" title="动作霸体系数与技能霸体系数"></a>动作霸体系数与技能霸体系数</h3><p>动作霸体系数是一种系数。对应角色或敌人的部分动作状态存在动作霸体系数，能影响对应攻击带来的削韧效果。<br>动作霸体系数的功能是增强对应动作下的抗打断能力，使施法者能不被干扰地释放对应技能。</p>
+<p>技能霸体系数也是一种系数。它是游戏中 “增强抗打断能力” 技能效果的实现方式，也能影响对应攻击带来的削韧效果。<br>技能霸体系数的功能是增强对应情况下的抗打断能力，使施法者在对应情况下能更好地输出，不被敌方的攻击干扰。</p>
+<p>攻击带来的实际削韧效果，其计算公式如下：<br>防守方实际受到的削韧 &#x3D; 攻击的削韧 * 耐力系数 * 动作霸体系数 * 等级压制的韧性系数 * 技能霸体系数1 * 技能霸体系数2 * 技能霸体系数3 * …</p>
+<p>等级压制的韧性系数在下面会提及</p>
+<h3 id="冻结与石化"><a href="#冻结与石化" class="headerlink" title="冻结与石化"></a>冻结与石化</h3><p>当防守者处于冻结或石化状态时，防守者的韧性系统依然正常运作。<br>即韧性能恢复，敌人也能进入并保持失衡状态。</p>
+<p>但冻结会提供 数值为0的技能霸体系数，导致攻击者产生的削韧失去作用。</p>
+<h3 id="联机模式下敌人韧性条的实际长度"><a href="#联机模式下敌人韧性条的实际长度" class="headerlink" title="联机模式下敌人韧性条的实际长度"></a>联机模式下敌人韧性条的实际长度</h3><p>在单机模式下，敌方韧性条的实际长度 &#x3D; 韧性条的标准长度<br>在联机模式下，敌人韧性条的实际长度 &#x3D; 韧性条的标准长度 * 联机增强系数。</p>
+<p>一般情况下，联机增强系数与玩家数的计算公式如下：<br>联机增强系数 &#x3D; 玩家数<br>即 2 个玩家时，敌人的韧性变成原来的 2 倍；3 个玩家时，3 倍；4 个玩家时，4 倍</p>
+<h3 id="等级压制影响削韧"><a href="#等级压制影响削韧" class="headerlink" title="等级压制影响削韧"></a>等级压制影响削韧</h3><p>防守方和攻击方的等效等级之差，能影响对应攻击带来的削韧效果。</p>
+<p>相关计算如下：<br>等效等级 &#x3D; min{ 80，当前等级 }<br>即等效等级最高取 80 。</p>
+<p>等级差 &#x3D; 防守者等效等级 - 攻击者等效等级</p>
+<p>当 等级差 &gt; 30，等级压制的韧性系数 &#x3D; 0.5<br>当 等级差 &lt;&#x3D; 30，等级压制的韧性系数 &#x3D; 1</p>
+<h2 id="冲击效果"><a href="#冲击效果" class="headerlink" title="冲击效果"></a>冲击效果</h2><h3 id="冲击类型"><a href="#冲击类型" class="headerlink" title="冲击类型"></a>冲击类型</h3><p>一个冲击类型包含硬直等级、水平冲击力和竖直冲击力</p>
+<p>硬直等级能影响硬直效果和打断效果<br>注意：后一次攻击的硬直效果能覆盖前一次的硬直效果<br>比如，第一次能触发击飞的攻击命中敌人，敌人就会进入击飞动画<br>第二次能触发击退的攻击命中在空中的敌人，敌人就会进入击退动画，立马回到地面<br>(这部分内容有待验证)</p>
+<p>硬直等级的顺序为<br>*等级 &#x3D; 0，无影响<br>*等级 &#x3D; 1，微颤<br>*等级 &#x3D; 2，击打<br>*等级 &#x3D; 3，击退<br>*等级 &#x3D; 4，击飞</p>
+<p>无影响和微颤不能打断敌人的动作。<br>击打、击退和击飞可以打断敌人的动作。</p>
+<p>冲击力能影响对应的硬直效果是否触发，也能影响硬直效果的位移。<br>水平冲击力影响水平方向的位移，竖直冲击力影响竖直方向的位移。</p>
+<p>大部分攻击采用对应的常用冲击类型，来实现常见的硬直效果。<br>个别攻击则单独填写数值，来实现特定的硬直效果。</p>
+<p>注：防守者韧性条被打满，进入失衡状态后，才能触发相应的效果(打断、硬直和冲击力)。</p>
+<h3 id="硬直效果的触发判定"><a href="#硬直效果的触发判定" class="headerlink" title="硬直效果的触发判定"></a>硬直效果的触发判定</h3><p>角色或敌人在地面时的判定流程：<br>若攻击的硬直等级为击飞时，<br>满足 攻击的竖直力 &gt;&#x3D; (5.5 * 敌人的重量) 才能触发击飞；<br>否则，只触发击退。</p>
+<p>若攻击的硬直等级为击退或轻击时，<br>满足 攻击的水平力 &gt;&#x3D; (2 * 敌人的重量) 才能触发击退或轻击；<br>否则，只触发微颤。</p>
+<p>角色或敌人在空中或攀爬时的判定流程：<br>若 攻击的硬直等级 &gt; 微颤 时，触发击飞；<br>否则，只触发微颤。</p>
+<h3 id="硬直免疫"><a href="#硬直免疫" class="headerlink" title="硬直免疫"></a>硬直免疫</h3><p>硬直免疫有两种实现方式，一种是无敌状态，另一种是冲击力免疫</p>
+<p>角色在大招动画期间，部分敌人在特定情况下都处于无敌状态<br>无敌状态下，即使处于失衡状态，也不会受到硬直效果</p>
+<p>部分敌人存在对相应冲击力的免疫，从而防止被击退或击飞。<br>比如深渊使徒和深渊咏者，免疫击飞冲击力；周本公子第三阶段，同时免疫击退冲击力和击飞冲击力</p>
+<h3 id="挣扎状态"><a href="#挣扎状态" class="headerlink" title="挣扎状态"></a>挣扎状态</h3><p>部分技能可以让满足条件的目标进入挣扎状态，在空中手足无措。<br>比如温迪大招的风眼，莫娜大招的泡影，深渊水法师的大型泡泡，都能让 重量 &lt;&#x3D; 100 的目标进入挣扎状态。</p>
+<p>但是是否能施加挣扎状态受双方等级差影响。<br>相关计算如下：</p>
+<p>等级差 &#x3D; 防守者等级 - 攻击者等级</p>
+<p>当 等级差 &gt; 20，不能施加挣扎状态<br>当 等级差 &lt;&#x3D; 20，能施加挣扎状态</p>
+<p>此外，角色和敌人在特定情况下，能获得挣扎状态免疫效果，防止进入挣扎状态</p>
+<p>比如角色在大招动画期间，周本中公子在所有阶段，都能获得挣扎状态免疫效果</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://nga.178.com/read.php?tid=31352168">[数据讨论]《韧性力学》第三版 - 抗打断和冲击效果的原理</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/10/21/22102102/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">伤害乘区论 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/10/21/22102104/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">国家队配对需求以及输出 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%97%E6%89%93%E6%96%AD"><span class="toc-text">抗打断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%A7%E6%80%A7%E7%B1%BB%E5%9E%8B"><span class="toc-text">韧性类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E4%BD%9C%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0%E4%B8%8E%E6%8A%80%E8%83%BD%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0"><span class="toc-text">动作霸体系数与技能霸体系数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%BB%E7%BB%93%E4%B8%8E%E7%9F%B3%E5%8C%96"><span class="toc-text">冻结与石化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E6%9C%BA%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%95%8C%E4%BA%BA%E9%9F%A7%E6%80%A7%E6%9D%A1%E7%9A%84%E5%AE%9E%E9%99%85%E9%95%BF%E5%BA%A6"><span class="toc-text">联机模式下敌人韧性条的实际长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E7%BA%A7%E5%8E%8B%E5%88%B6%E5%BD%B1%E5%93%8D%E5%89%8A%E9%9F%A7"><span class="toc-text">等级压制影响削韧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E6%95%88%E6%9E%9C"><span class="toc-text">冲击效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E7%B1%BB%E5%9E%8B"><span class="toc-text">冲击类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E6%95%88%E6%9E%9C%E7%9A%84%E8%A7%A6%E5%8F%91%E5%88%A4%E5%AE%9A"><span class="toc-text">硬直效果的触发判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E5%85%8D%E7%96%AB"><span class="toc-text">硬直免疫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%A3%E6%89%8E%E7%8A%B6%E6%80%81"><span class="toc-text">挣扎状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%97%E6%89%93%E6%96%AD"><span class="toc-text">抗打断</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9F%A7%E6%80%A7%E7%B1%BB%E5%9E%8B"><span class="toc-text">韧性类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E4%BD%9C%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0%E4%B8%8E%E6%8A%80%E8%83%BD%E9%9C%B8%E4%BD%93%E7%B3%BB%E6%95%B0"><span class="toc-text">动作霸体系数与技能霸体系数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%BB%E7%BB%93%E4%B8%8E%E7%9F%B3%E5%8C%96"><span class="toc-text">冻结与石化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%94%E6%9C%BA%E6%A8%A1%E5%BC%8F%E4%B8%8B%E6%95%8C%E4%BA%BA%E9%9F%A7%E6%80%A7%E6%9D%A1%E7%9A%84%E5%AE%9E%E9%99%85%E9%95%BF%E5%BA%A6"><span class="toc-text">联机模式下敌人韧性条的实际长度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%89%E7%BA%A7%E5%8E%8B%E5%88%B6%E5%BD%B1%E5%93%8D%E5%89%8A%E9%9F%A7"><span class="toc-text">等级压制影响削韧</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E6%95%88%E6%9E%9C"><span class="toc-text">冲击效果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%B2%E5%87%BB%E7%B1%BB%E5%9E%8B"><span class="toc-text">冲击类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E6%95%88%E6%9E%9C%E7%9A%84%E8%A7%A6%E5%8F%91%E5%88%A4%E5%AE%9A"><span class="toc-text">硬直效果的触发判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AC%E7%9B%B4%E5%85%8D%E7%96%AB"><span class="toc-text">硬直免疫</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%A3%E6%89%8E%E7%8A%B6%E6%80%81"><span class="toc-text">挣扎状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-24</div>
+        <a href="/2022/12/24/22122401/"><div class="recent-posts-item-content">github简易建站</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121901/"><div class="recent-posts-item-content">元素的属性以及嵌套</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121902/"><div class="recent-posts-item-content">关于注释</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-09</div>
+        <a href="/2022/12/09/22120901/"><div class="recent-posts-item-content">反向代理</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

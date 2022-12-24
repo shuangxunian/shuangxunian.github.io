@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>基于漏洞的拒绝服务攻击</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="基于漏洞的拒绝服务攻击">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/DenialOfServiceAttack/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="简单说一下碎片(Teardrop)攻击、LAND攻击、Ping of Death攻击">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>280</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>56</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%89%87-Teardrop-%E6%94%BB%E5%87%BB"><span class="toc-text">碎片(Teardrop)攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LAND%E6%94%BB%E5%87%BB"><span class="toc-text">LAND攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ping-of-Death%E6%94%BB%E5%87%BB"><span class="toc-text">Ping of Death攻击</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">244</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      基于漏洞的拒绝服务攻击
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/DenialOfServiceAttack.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C/" 
+            class="post-meta-link">
+            网络
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>基于漏洞的拒绝服务攻击主要是利用协议设计本身的缺陷，或者协议实现的漏洞，通过一些非正常的数据报使得受害主机在处理这些时出现异常，甚至导致受害主机崩溃。由于这类攻击主要是利用协议或其实现的漏洞来达到攻击效果，因此有时也称其为协议攻击。此类攻击一般可以通过打补丁或者在防火墙处过滤特定的异常数据报文等方式进行防御。</p>
+<h2 id="碎片-Teardrop-攻击"><a href="#碎片-Teardrop-攻击" class="headerlink" title="碎片(Teardrop)攻击"></a>碎片(Teardrop)攻击</h2><p>国内有些文献把这种攻击称为泪滴攻击。当数据报在不同的网络介质之间传输时，由于不同的网络介质及其链路层协议允许传输的数据报的最大长度不同，即最大传输单元MTU可能是不同的，当数据报从一个MTU较大的物理子网进入一个MTU相对较小的物理子网的时候，为了确保数据报能顺利到达目的地，就需要对原有的数据报进行分片。因此分片是IP协议实现中必须具备的功能。<br>很显然，有分片就必须有重组，因为数据报被分片以后，不同的片段会在网络中被独立转发，然而对于上层应用来说，还是希望得到原来完整的数据报。为了使得同数据报的不同分片能够在其目的端顺利重组，每个分片必须留下重组的线索，即必须遵从以下规则。</p>
+<ol>
+<li>同一数据报的所有分片的标识号(即IP ID )必须相同。</li>
+<li>每个分片必须指明其在原完整数据报中的相对位置，即偏移位置(Offset)。</li>
+<li>每个分片必须指明其数据的长度。</li>
+<li>每个分片必须说明其是否是最后一个分片，即其后是否还有其他的分片。</li>
+</ol>
+<p>所有这些信息都包含在IP分组头中。<br>如果所有数据通信的参与方都完全按照上面的规范进行分片和重组则完全没有问题，但如果不是，如有意让不同分片的偏移位置有重叠的部分，可能问题就来了。碎片攻击的依据正是这里。<br>Teardrop本是一段用于拒绝服务攻击的程序名，该程序利用Windows 95、Windows NT、Windows3.1和低版本Linux中处理IP分片的漏洞，向受害者发送偏移地址重叠的UDP数据报分片，使得目标主机在将分片重组时出现异常错误，导致目标系统崩溃或重启。<br>假设原始数据报有1600字节数据(不含IP包头)，以太网的MTU为1500字节，该数据报经过以太网传输时会被分成两个分片，第一个分片为1480字节(考虑20字节的IP头)，偏移为0；第二个分片为120字节，偏移应该为1480字节。当接收方收到数据长度为1480字节的第一个分片数据包以后，如果收到第二个数据长度为120字节、偏移为1480字节的分片时，则将第二个数据包的数据长度和偏移加起来，作为两个数据分片的总长度(即1600字节)。由于已经复制了第一个分片的1480字节，因此系统从第二个分片中再复制1600-1 480&#x3D;120字节数据到为重组开设的缓冲区中。<br>但是如果攻击者刻意修改第二个数据包的分片信息，比如，将偏移量设置为1200（分片长度仍为1200字节），那么结果就不一样了。在收到第一个分片后，如果接受者收到第二个偏移为1200、数据长度为120的分片时，系统计算1200+120&#x3D;1320作为两个数据分片的总长度。为了确定应该从第二个分片中复制多少字节，系统需要用总长度减去第一个分片中已经复制的1480字节，结果得到1 320-1480&#x3D;-160字节。由于系统采用的是无符号整数，则160相当于一个很大的整数，这时候系统处理就出现异常了。根据系统不同，出现异常的情况也不一样，但通常会导致堆栈损坏、IP 模块不可用和系统挂起等。老版本的Linux内核(1.x~2.0.x)和Windows操作系统( Win NT等)在处理这种重叠分片的时候都存在问题。<br>碎片攻击也有其他的变种，其中一种基于微小分片的攻击主要用于穿透防火墙，其基本思路为:假设防火墙只通过检查数据包的第一个分片来确定是否放行某个数据报，攻击者就可以通过IP分片技术将用户数据报(如TCP报文)切分为很小的片段，使TCP报头信息被分到两个分片中，比如将TCP的标志信息等划入后一个分片中，从而使得一些通过检查这些标志位进行过滤的防火墙因找不到标志位而放行这些数据分组。对付这种攻击可以采用的一个策略是在防火墙处设置分片数据包长度的下限，确保第一个分片中包含所有必需的头信息;或者防火墙在检测时进行数据包的重组，仅当重组后的数据包符合放行条件时，才放行相关的数据包分片。当然这种做法本身又为攻击者攻击防火墙创造了条件。</p>
+<h2 id="LAND攻击"><a href="#LAND攻击" class="headerlink" title="LAND攻击"></a>LAND攻击</h2><p>LAND原是一段C语言编写的程序，该程序用于向受害者主机发送TCP SYN分组，这些分组的源IP地址和目的IP地址都被伪造成同一IP地址，即受害者的IP地址、源端口和目的端口被设置为相同的。这样，受害者收到来自攻击者的请求分组后，就会持续不断地给自己发送响应分组，最终导致受害者主机挂起、崩溃或者重启。所以LAND攻击也被命名为局域网拒绝（Local Area Network Denial，LAND）攻击。一些TCP&#x2F;IP的早期实现版本容易受到LAND攻击的影响，不过总体而言，这是一个比较老旧（约在1997年出现）的攻击，现如今，绝大部分系统都已经修补了这个漏洞。此外，这种攻击也可以通过过滤伪造IP分组的方法进行有效防御。需要注意的是，LAND攻击和TCP SYN Flooding泛洪攻击是不同的</p>
+<h2 id="Ping-of-Death攻击"><a href="#Ping-of-Death攻击" class="headerlink" title="Ping of Death攻击"></a>Ping of Death攻击</h2><p>根据RFC791规范，IPv4版本协议的分组（包括分组头在内）的最大长度是65535字节（即2^16-1字节），该限制主要是源于IP头有一个描述分组总长度的字段，该字段的长度正是16比特。<br>另一方面，受物理网络MTU的限制，比如以太网的MTU是1500字节，当一个大的IP分组在经由数据链路层向另一个物理网络传输的时候往往需要被分割为多个IP分组（即IP分片），以确保每一个IP分片都不至于超过所在物理网络的MTU。在接收端再对这些IP分片进行重组。<br>每个IP报头的IP标识号和偏移量（Offset）字段用于支持分段的重组，其中IP标识号在每个分片中都一样，偏移量则定义了当前这个分片在原数据报中的相对位置。在IP报头中Offset字段的长度为13bit,Offset字段以8字节为一个单位，因此理论上最大的偏移为65528字节(即(2^13-1)×8字节）。这也就意味着，当一个IP分片的Offset字段设置为最大值的时候，它的数据载荷至多只能是7字节（65535-65528&#x3D;7字节），否则原IP数据报就会超过IP分组的最大长度。<br>一个恶意的用户可以向受害者主机发送Offset字段设置为最大值、同时数据载荷又超过8字节的IP分片。当接收方重组所有IP分片的时候，将得到一个长度超过65535字节的IP分组，这将有可能导致接收方系统分配给该IP分组用于重组的内存缓冲区溢出，进而引起一系列其他的问题，如系统崩溃、死机或重启等。</p>
+<p>Ping of Death攻击就是利用了IP实现时的这个漏洞，向受害者发送超长的Ping数据包，导致受害者系统异常。Ping命令是基于ICMP实现的，而ICMP是基于IP实现的，即ICMP报文要封装到IP分组中进行转发，考虑到IP报头20字节和ICMP报头8字节，那么正常情况下,一个ICMP报文的数据载荷应该不超过65535-20-8&#x3D;65507字节。 Ping of Death通过向受害者主机发送一系列超过65507字节的Ping数据包导致系统拒绝服务。尽管现在绝大部分操作系统都已经修复了这个漏洞，恶意人员通过执行简单的Ping命令已经不足以使目标系统瘫痪，但经过精心设计的ICMP的实现还是有可能导致系统异常的。<br>值得一提的是，Ping of Death攻击，虽然源于Ping数据包的恶意发送，但实际上却和ICMP没多大关系，在这里ICMP只是数据载荷，其问题的根源还是IP分段重组的过程，因此其他所有基于IP进行数据转发的协议，诸如TCP、UDP和IGMP等都是有可能导致类似的攻击的。<br>2013年，微软的操作系统也发现了IPv6的Ping of Death漏洞，Windows操作系统的TCP&#x2F;IP协议栈在处理到达的记性IMC Pv6数据报时，没能正确地处理好其内存分配事宜，可导致远程的DoS攻击。当年8月，微软官方修复了这个漏洞。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/DOM/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">DOM~ </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/ES6TheDifferenceBetweenArrowFunctionsAndNormalFunctions/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">ES6 - 箭头函数、箭头函数与普通函数的区别 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%89%87-Teardrop-%E6%94%BB%E5%87%BB"><span class="toc-text">碎片(Teardrop)攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LAND%E6%94%BB%E5%87%BB"><span class="toc-text">LAND攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ping-of-Death%E6%94%BB%E5%87%BB"><span class="toc-text">Ping of Death攻击</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A2%8E%E7%89%87-Teardrop-%E6%94%BB%E5%87%BB"><span class="toc-text">碎片(Teardrop)攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LAND%E6%94%BB%E5%87%BB"><span class="toc-text">LAND攻击</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Ping-of-Death%E6%94%BB%E5%87%BB"><span class="toc-text">Ping of Death攻击</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-24</div>
+        <a href="/2022/12/24/22122401/"><div class="recent-posts-item-content">github简易建站</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121901/"><div class="recent-posts-item-content">元素的属性以及嵌套</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121902/"><div class="recent-posts-item-content">关于注释</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-09</div>
+        <a href="/2022/12/09/22120901/"><div class="recent-posts-item-content">反向代理</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

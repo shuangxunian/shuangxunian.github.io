@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>生成浏览器唯一稳定 ID 的探索</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="生成浏览器唯一稳定 ID 的探索">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/22092904/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目，为了确定用户的，对于本人来说仅是来学习的，我无法说明这么做到底是好是坏">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="浏览器">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>280</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>56</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E7%BB%B4%E5%BA%A6"><span class="toc-text">一些参考维度</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MAC-%E5%9C%B0%E5%9D%80"><span class="toc-text">MAC 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-%E5%9C%B0%E5%9D%80"><span class="toc-text">IP 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cookie"><span class="toc-text">Cookie</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#User-Agent"><span class="toc-text">User Agent</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FingerprintJS"><span class="toc-text">FingerprintJS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E7%89%88%E6%9C%AC"><span class="toc-text">开源版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%94%AF%E4%B8%80%E6%80%A7%E5%92%8C%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-text">唯一性和稳定性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E6%8C%87%E6%A0%87"><span class="toc-text">一些有趣的指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pro-%E4%BB%98%E8%B4%B9%E7%89%88%E6%9C%AC"><span class="toc-text">Pro 付费版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%92%8C%E5%8F%91%E7%8E%B0"><span class="toc-text">分析和发现</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%87%E7%94%A8%E7%9A%84%E5%81%9A%E6%B3%95"><span class="toc-text">采用的做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8C%87%E7%BA%B9"><span class="toc-text">反浏览器指纹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">244</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      生成浏览器唯一稳定 ID 的探索
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22092904.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.8k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+            class="post-meta-link">
+            浏览器
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>项目的 PC Web 端在不同浏览器有不同的登录态，同一浏览器多个窗口多个 tab 共用一个登录态（隐身无痕模式除外）。为了能够实现 PC 浏览器端设备管理功能，让用户能看到自己在浏览器的多个登录态，并能选择踢掉其中的部分或全部，就需要一种能够区分不同浏览器的方法，这个在移动端 App 就是设备 ID, 我们可以迁移一下，在 PC 端，一个浏览器就好比移动端的一个手机设备，只要能够生成浏览器 ID，就能够区分不同的登录态。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/f55408a7-5780-4227-8610-6a5716cee96a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/f55408a7-5780-4227-8610-6a5716cee96a-3807603.jpg"></p>
+<p>这里说的浏览器 ID 在业界早有研究，叫浏览器指纹。浏览器指纹，是 EFF（电子前哨基金会）提出的一项追踪技术，通过浏览器对网站可见的配置来匿名识别浏览器，在 50 万份不同浏览器数据分析中，在某些场景下，94%的浏览器具有唯一的指纹。当时，EFF 通过提取浏览器的 8 个特征值，<code>&#123; user agent, plugins, fonts, video, supercookies, http accept, timezone, cookie enabled &#125;</code>, 综合起来哈希生成一个指纹值。每项浏览器特征都包含不同 bit 的信息熵，一个 bit 有两种可能性，2 bits 有四种，3 bits 就有八种，提取的八项特征共包含 18.1 bits 的信息，这意味着在 286,777 个指纹中才会出现一个与你重复的浏览器指纹[1]。</p>
+<p>浏览器指纹是无状态的，它无需用户授权便可收集信息，并且不会像 Cookie 一样会被用户禁止或清除，只要你的指纹是唯一的，你就能够被唯一识别和跟踪。当然，一个事物的好坏是取决于怎么使用它，浏览器指纹也可用于一些好的方面，比如：反欺诈，防止刷票、黄牛、机器人，异地或者可疑登录提示，多设备管理，或者在注重用户隐私的情况下，进行一些数据分析，提高用户体验。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/06ae422b-c34a-4353-bf9f-4c4621be99f5-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/06ae422b-c34a-4353-bf9f-4c4621be99f5-3807603.jpg"></p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>抛开业界已经存在的一些方案，我们可以先开点脑洞去分析。要实现的目标是给一个设备的一个浏览器生成一个唯一和稳定的 ID, 这里无非就是从硬件、操作系统、浏览器的维度去分析，看看有什么办法可以区分。</p>
+<h3 id="一些参考维度"><a href="#一些参考维度" class="headerlink" title="一些参考维度"></a>一些参考维度</h3><h4 id="MAC-地址"><a href="#MAC-地址" class="headerlink" title="MAC 地址"></a>MAC 地址</h4><p>MAC 地址又称为物理地址、硬件地址，它是一个用来确认网络设备位置的位址，在 OSI 七层模型中，第二层数据链路层负责 MAC 地址，网卡的 MAC 地址通常是由网卡厂家烧入网卡里的，能在网络中唯一标识一个网卡。</p>
+<p>如果我们能获得 MAC 地址，我们就能唯一标识一台电脑（一个网卡），这能在很大程度保证生成 ID 的唯一性和稳定性。但是想在浏览器端获取 MAC 地址基本是做不到的，如果是 Windows 用户，<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/5074139/how-to-get-mac-address-of-client-using-php">一种可能的方法</a>是让用户安装 ActiveX 控件。从服务端也很难操作，获取到的 MAC 地址可能是中间路由器的 MAC 地址，而不是浏览器设备的 MAC 地址。另外，MAC 地址也是可以伪造的。</p>
+<h4 id="IP-地址"><a href="#IP-地址" class="headerlink" title="IP 地址"></a>IP 地址</h4><p>当设备连接网络，设备将被分配一个 IP 地址，用作标识。IP 地址记录在 OSI 模型中的第三层网络层。服务端从 HTTP 请求中可以分析得到 IP 地址，浏览器端可以通过 WebRTC 网页实时通信技术 的 RTCPeerConnection 的 API, 获取到客户端的 IP 地址。IP 地址是可能重复的，可能有多个设备处在一个局域网下，共享一个公网 IP。 IP 地址也是多变的，计算机经常会在不同的网络和代理下使用。但是，IP 地址的唯一性比较强，两个设备的碰撞率是很低的，如果能利用 IP 地址去增强浏览器 ID 的唯一性是非常有价值的。</p>
+<h4 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h4><p>Cookie 是存在浏览器上的一段信息，并能在服务端和浏览器之间传递，一般用于维持登录态或者保存一些信息。Cookie 中保存的信息是可以标识用户的，甚至可以追踪用户的行为和隐私数据，进而为产品决策提供数据。虽然 Cookie 本身或者其他诸如 localStorage 等存储技术不能提供浏览器特征参数（判断是否禁用 Cookie 可以作为参数），但是可以作为辅助手段存储浏览器 ID，当用户登录态过期或者伪造浏览器特征时，我们可以从 Cookie 和其他存储中取到之前的 ID 继续使用。</p>
+<h4 id="User-Agent"><a href="#User-Agent" class="headerlink" title="User Agent"></a>User Agent</h4><p>User Agent, 用户代理，简称 UA，它是一个特殊字符串头，使得服务器能够识别客户使用的操作系统及版本、CPU 类型、浏览器及版本、浏览器渲染引擎、浏览器语言、浏览器插件等。一般稍微熟悉一点 Web 开发的都会自然想到 UA 能够作为特征生成浏览器 ID, 它大概包含 5.34 bits 的信息熵，具有一定的唯一性，但是稳定性较差，比如：用户可能很容易升级浏览器版本，这样 UA 就会发生变化，可行的解决思路是：只取浏览器型号，不取浏览器版本，这样比较稳定；因为 UA 比较容易伪造，也可通过其他维度去代替，当这些维度发生变化，可以认为 UA 发生了改变。</p>
+<p>可以看到，通过单一维度去生成 ID 是不太可靠的，唯一性和稳定性都无法保证，更有效的方式是通过多个维度组合起来形成一个综合指纹。通过调研，目前业界比较领先的开源库是 FingerprintJS, 现在已经更新到 v3.2.0 版本，也一直处于迭代状态。</p>
+<h3 id="FingerprintJS"><a href="#FingerprintJS" class="headerlink" title="FingerprintJS"></a>FingerprintJS</h3><p><a target="_blank" rel="noopener" href="https://github.com/fingerprintjs/fingerprintjs">FingerprintJS</a>（下文简称 FPJS）是一个浏览器指纹库，同时具有开源版和 Pro 版（付费版），可查询浏览器属性并从中计算出哈希值。与 Cookie 和本地存储不同，指纹在隐身模式下保持不变，甚至在浏览器数据清除时也是如此。</p>
+<p>它最早的灵感就是来源于 EFF 提出浏览器指纹的概念，在此基础上，又增加了许多特征参数，包括一些新型的识别技术，比如：Canvas、AudioContext 等，在不断地迭代中，优化这些参数，并用最快的方式生成指纹。</p>
+<h4 id="开源版本"><a href="#开源版本" class="headerlink" title="开源版本"></a>开源版本</h4><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/6702a47b-1117-473c-b431-d7b272dee50d-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/6702a47b-1117-473c-b431-d7b272dee50d-3807603.jpg"></p>
+<p>开源版本通过浏览器捕捉到各种指标并通过哈希算法组合成一个指纹，我把这些指标分成四类，浏览器特性、存储、媒体查询、其它。具体如上图所示。目前 GitHub Star 数有 14.1k, 并被 8000+ 网站使用。</p>
+<h4 id="唯一性和稳定性"><a href="#唯一性和稳定性" class="headerlink" title="唯一性和稳定性"></a>唯一性和稳定性</h4><p>到底什么样的指纹是唯一和稳定的？</p>
+<p>唯一性指在不同的设备，或者不同的浏览器上，每个指纹都是不同的。实际情况是，总会有各种指标都完全相同的用户，那么就会生成一样的指纹，比如唯一性能达到 95%，那 100 个指纹中，有 5 个是重复的。</p>
+<p>稳定性指用户每次打开相同设备的相同浏览器，生成的指纹是一样的。如果用户没有修改设备或者浏览器的设置，且浏览器没有升级，生成的 ID 是不会变的。但是在实际情况中，如果选用了一些不稳定的指标参与计算或者用户使用了一些反指纹手段，那么可能每次生成的都会不一样。</p>
+<p>为了提高唯一和稳定，我们的指纹不仅应该结合许多指标，还应该尽量筛选出区分度大和稳定性高的指标，需要找到平衡唯一和稳定的指标组合。在控制变量的情况下，随着指标的增多，唯一性增强，但同时稳定性会减弱。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ec01900a-f37c-45a1-b9cc-f63101e25ad7-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/ec01900a-f37c-45a1-b9cc-f63101e25ad7-3807603.jpg"></p>
+<p>在四象限中，我们优先抛弃那些唯一性和稳定性低的指标，比如图中的电池电量。其它的指标中，可以通过用各种组合进行数据采集和验证，迭代出最平衡的组合。</p>
+<h4 id="一些有趣的指标"><a href="#一些有趣的指标" class="headerlink" title="一些有趣的指标"></a>一些有趣的指标</h4><p><strong>Canvas 指纹</strong><br>Canvas（画布）是 HTML5 中的一种动态绘图标签，可以用它来绘制图片。在不同操作系统、不同浏览器上，Canvas 绘制的图像将以不同的方式呈现，具有很强的唯一性。原理是：在图片格式上，浏览器使用不同的图形处理引擎、图像导出选项、压缩级别，在系统层面，操作系统有不同的字体，它们使用不同的算法和设置来进行抗锯齿和子像素渲染。另外，Canvas 具有良好的兼容性，几乎被所有主流浏览器支持。</p>
+<p>在具体代码上，通过 Canvas 绘图 API 绘制文字或图形后，通过 canvas.toDataURL() 方法获得 base64 编码，根据需要可再 hash 成指纹。</p>
+<p><strong>判断是否包含某字体</strong><br>首先，前端不存在兼容性比较好的原生方法判断是否包含某字体，那么该怎么判断呢？</p>
+<p>不同字体显示相同的文案时，宽度是不同的。我们可以利用这一点，设置三种默认字体，’monospace’, ‘sans-serif’, ‘serif’, 新建一个 span 标签，设置 font-family 为当前字体和默认字体, 设置另外一个 span 为默认字体，如果存在当前字体，两个 span 的宽度或者高度是不一样的，如果完全一致，则代表不存在该字体，第一个 span 回退回默认字体。</p>
+<p><strong>Math 类几个函数精度不同</strong><br>不同的操作系统和架构，不同的浏览器的几个 Math 数学函数可能产生不同结果。比如 Math.sin(-1e300)，在不同的系统和浏览器上算出来的值可能是不同的。有趣的是，在代码注释中可以看到相关链接，是来自于 tor 浏览器，这是一个宣称保护隐私的浏览器，具备一定的反指纹策略。所以，有时候有效信息可以从对手那里获取。</p>
+<p><strong>音频指纹</strong><br><a target="_blank" rel="noopener" href="https://fingerprint.com/blog/audio-fingerprinting/">查看链接</a>，原理和 Canvas 类似，都是利用硬件和软件的差异，一个生成音频，一个生成图片。</p>
+<h4 id="Pro-付费版本"><a href="#Pro-付费版本" class="headerlink" title="Pro 付费版本"></a>Pro 付费版本</h4><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8bfe4bc4-b796-4eb8-b226-dbf2f3137236-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8bfe4bc4-b796-4eb8-b226-dbf2f3137236-3807603.jpg"></p>
+<p>开源版本和专业版主要区别在于，开源版本仅仅运行于浏览器端，浏览器通过 JS 获取到一系列指标后计算哈希值。当两个用户有同样的设备和浏览器时，他们可能生成同样的指纹，从而无法区分两个用户（从提取的指标来看，它们的确是相同的，只是有些业务场景需要更加细分的手段去区分用户）。专业版建立在开源版的基础上，并增加了很多服务器端的手段去辅助识别用户，比如：IP 地址、Cookie、本地存储、存储历史记录进行模糊匹配和处理浏览器升级、服务器端分析和机器学习，并最终由服务端生成指纹。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/5215884a-b930-45cf-883e-a9cc928f8d7b-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/5215884a-b930-45cf-883e-a9cc928f8d7b-3807603.jpg"></p>
+<p>可以看出，专业版增加了一些服务端检测技术后，在生成 ID 的唯一性和稳定性都有很大的提高，另外，ID 在服务端生成也更安全可靠。笔者曾试图调试研究专业版压缩混淆的代码，但能力和时间有限，只能看得出小部分。后来，尝试通过实验和对比的方法，了解专业版是怎么提高唯一性和稳定性的。</p>
+<h4 id="分析和发现"><a href="#分析和发现" class="headerlink" title="分析和发现"></a>分析和发现</h4><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7415292c-89e6-47dc-a57d-1c612c030ba7-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/7415292c-89e6-47dc-a57d-1c612c030ba7-3807603.jpg"><br><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/62b09928-a437-43ed-b623-7fcba8b4dc0a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/62b09928-a437-43ed-b623-7fcba8b4dc0a-3807603.jpg"></p>
+<p><strong>IP 是否会影响指纹</strong></p>
+<p>结果：通过 VPN 或者连接不同的网络，指纹的生成是稳定的，直接切换 IP 并不影响指纹。可以理解，因为 IP 是非常不稳定的，用户很容易切换 IP，导致指纹变化。个人看法，IP 只是作为辅助手段进行校验，比如曾经有使用某个 IP 的历史记录，就可以佐证是之前生成的某个指纹，即使某些指标发生异动。</p>
+<p><strong>伪造某些指标是否会影响指纹</strong></p>
+<p>开源版：只要修改了提取的某个参数值，生成的指纹就会改变。</p>
+<p>专业版：在 Chrome 的无痕模式下，通过插件（Fingerprint Spoofing）或者断点通过 Object.defineProperty 等方式修改某些指标的值是会影响指纹的。但在普通模式下，修改参数不会影响指纹。为什么呢，我们会很容易去想普通模式和隐身模式有什么不同。经过一些尝试后，笔者把目标锁定在 Cookie 、本地存储和缓存上，专业版生成指纹后，存储在 Cookie 和本地存储中，下一次生成指纹时，先判断是否已存在 Cookie，有且符合历史记录则直接取，没有再重新生成。</p>
+<p><strong>伪造某些指标并清除 Cookie 、本地存储和缓存后是否影响专业版指纹</strong></p>
+<p>结果：会影响，基本上可以实现随机指纹。所以，基本可以确认，当 Cookie 等内容存在时，能够匹配历史记录里的值就直接从里面取值，这样能在很大程度上保持指纹的稳定。在实验中，Cookie、本地存储和缓存都可以用于保持稳定。</p>
+<p><strong>其他发现：</strong></p>
+<ul>
+<li>当伪造的值不具有迷惑性时，可能绕不过服务端的分析。比如：我在 Win10 Chrome 上将 navigator.platform 修改为 MacIntel, 也就是 Mac 的标识时，指纹是稳定的。猜想服务端应该分析到这个指标与整个模型有偏差，所以矫正了该指标，依然使用了之前的指纹。</li>
+<li>另外发现 Pro 中引入了很多第三方分析，比如 GA 谷歌分析、linkedin 领英分析、Twitter 分析、FB 脸书分析，这些大公司为了推广广告营销等业务，可能在浏览器指纹上的造诣是很高的，Pro 版本可能利用了这些第三方分析的结果辅助指纹的唯一性和稳定性，当然，这些第三方分析同样也是利用 Cookie 等方式标记浏览器和用户，利用清除的方法可以规避追踪。</li>
+</ul>
+<h2 id="采用的做法"><a href="#采用的做法" class="headerlink" title="采用的做法"></a>采用的做法</h2><p>首先将 FPJS v3.0.6 在项目中打点测试，在几百万~几千万的独立用户数量级上，用独立用户数 &#x2F; 独立指纹数 约等于 1.3，这个在移动端 App 的数据大约是 1.1 ~ 1.2，一个用户可能有多个账号，可能用多个账号登录同一个浏览器，也可能同一个账号登录多个浏览器，是多对多的关系。在几百万到几千万的变化上，这个比例相对比较稳定，至少随着用户数的增加，稳定性不会降低；另外，这个比例跟移动端比没有偏差太多，还算合格，后面可以结合其他手段提高唯一性；其实在实现像设备管理这样的功能时，只需要保证同一用户在不同浏览器上生成不同的指纹即可。综上所述，可以采用 FPJS 作为前端生成指纹的选择，并结合 Cookie 等策略优化唯一和稳定。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/6c8ebd91-a0e8-4138-b617-d3ebe5c1ce3a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/6c8ebd91-a0e8-4138-b617-d3ebe5c1ce3a-3807603.jpg"></p>
+<p>具体做法：登录时，前端生成指纹通过 HTTP 请求传给后端，后端经过一些处理后，再 hash 以后生成一个值，通过 set cookie 返回前端，当前端传空值时，后端生成一个值返回前端。当用户再进行登录时，如果已存在 Cookie，则取 Cookie 的值，如果不存在，则根据前面逻辑生成新的。后续如用到指纹时，通过 HTTP 请求带上 Cookie 即可。</p>
+<p>后续如何优化：</p>
+<ul>
+<li>FPJS 目前已升级到 v3.2.0 版本，增加了一些指标维度，并优化了一些指标的具体使用，可以打点测试后，看看唯一性是否提高，如果可行，可以考虑新的指纹生成升级到新版本。</li>
+<li>目前没有历史记录，可以考虑记录历史指纹，帮助验证 Cookie 的有效性及辅助判断当前指纹是否异常等。</li>
+<li>通过历史 IP 辅助验证 Cookie 的有效性和唯一性。</li>
+</ul>
+<h2 id="反浏览器指纹"><a href="#反浏览器指纹" class="headerlink" title="反浏览器指纹"></a>反浏览器指纹</h2><p>禁用 Cookie 或 JS</p>
+<ul>
+<li>比较严格，应该可以防止大部分的浏览器指纹。但是，很多网站都需要依托 Cookie 维持登录态 和 JS 实现逻辑，禁用后可能没办法使用网站或者影响体验。</li>
+</ul>
+<p>隐身模式加随机身份</p>
+<ul>
+<li>这个组合可以保证大部分场景下生成随机的指纹，隐身模式下退出后会清理 Cookie、本地存储和缓存，随机的身份（指标组合）可以保证生成不了历史的指纹，从而不被跟踪。</li>
+</ul>
+<p>tor 浏览器</p>
+<ul>
+<li>tor 浏览器号称是最安全的浏览器，它在反指纹上做了很多工作，它的主要策略是让所有 tor 浏览器的用户都拥有完全相同的指纹，无论你是什么设备或者操作系统，尽量降低指纹的唯一性。另外，tor 天然就是隐身模式，可以更换身份以及可以隐藏真实 IP。当然，在使用体验上，tor 相对会慢一点，毕竟经历了这么多安全策略。</li>
+</ul>
+<p>攻与防</p>
+<ul>
+<li>浏览器指纹技术根植于 Web 诞生以来就存在的机制里，在可预见的未来，要完全摆脱它是很困难的。随着浏览器指纹攻防两端技术的不断提升，这种竞争可能愈演愈烈。试想，随着技术的不断提升，希望保护隐私的用户为了不被追踪就需要更高的防御手段，这势必会影响用户体验，造成两败俱伤的局面。 其实，就像上文说的，浏览器指纹只是一种技术，它的好与坏取决于你所身处的位置以及怎么使用它，笔者觉得，可以建立一种机制，允许它的合理存在，并合理地使用它，用于一些合法合规，并且对用户友好的场景。</li>
+</ul>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/400206593">生成浏览器唯一稳定 ID 的探索</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/22092903/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">特征向量的距离度量 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/22093001/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">神经网络中的注意力机制 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E7%BB%B4%E5%BA%A6"><span class="toc-text">一些参考维度</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MAC-%E5%9C%B0%E5%9D%80"><span class="toc-text">MAC 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-%E5%9C%B0%E5%9D%80"><span class="toc-text">IP 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cookie"><span class="toc-text">Cookie</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#User-Agent"><span class="toc-text">User Agent</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FingerprintJS"><span class="toc-text">FingerprintJS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E7%89%88%E6%9C%AC"><span class="toc-text">开源版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%94%AF%E4%B8%80%E6%80%A7%E5%92%8C%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-text">唯一性和稳定性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E6%8C%87%E6%A0%87"><span class="toc-text">一些有趣的指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pro-%E4%BB%98%E8%B4%B9%E7%89%88%E6%9C%AC"><span class="toc-text">Pro 付费版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%92%8C%E5%8F%91%E7%8E%B0"><span class="toc-text">分析和发现</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%87%E7%94%A8%E7%9A%84%E5%81%9A%E6%B3%95"><span class="toc-text">采用的做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8C%87%E7%BA%B9"><span class="toc-text">反浏览器指纹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E7%BB%B4%E5%BA%A6"><span class="toc-text">一些参考维度</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#MAC-%E5%9C%B0%E5%9D%80"><span class="toc-text">MAC 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IP-%E5%9C%B0%E5%9D%80"><span class="toc-text">IP 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Cookie"><span class="toc-text">Cookie</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#User-Agent"><span class="toc-text">User Agent</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FingerprintJS"><span class="toc-text">FingerprintJS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E6%BA%90%E7%89%88%E6%9C%AC"><span class="toc-text">开源版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%94%AF%E4%B8%80%E6%80%A7%E5%92%8C%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="toc-text">唯一性和稳定性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E6%8C%87%E6%A0%87"><span class="toc-text">一些有趣的指标</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pro-%E4%BB%98%E8%B4%B9%E7%89%88%E6%9C%AC"><span class="toc-text">Pro 付费版本</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E5%92%8C%E5%8F%91%E7%8E%B0"><span class="toc-text">分析和发现</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%87%E7%94%A8%E7%9A%84%E5%81%9A%E6%B3%95"><span class="toc-text">采用的做法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8C%87%E7%BA%B9"><span class="toc-text">反浏览器指纹</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-24</div>
+        <a href="/2022/12/24/22122401/"><div class="recent-posts-item-content">github简易建站</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121901/"><div class="recent-posts-item-content">元素的属性以及嵌套</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121902/"><div class="recent-posts-item-content">关于注释</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-09</div>
+        <a href="/2022/12/09/22120901/"><div class="recent-posts-item-content">反向代理</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

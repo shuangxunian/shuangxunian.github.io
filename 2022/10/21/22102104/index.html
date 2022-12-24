@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>国家队配对需求以及输出</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="国家队配对需求以及输出">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/10/21/22102104/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="三个队伍，平民国家队，雷神国家队，雷九万班">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-10-21">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-10-21">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="原神">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>280</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>56</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%B0%91%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">平民国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8F%AD%E5%B0%BC%E7%89%B9"><span class="toc-text">班尼特</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%99%E8%8F%B1"><span class="toc-text">香菱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E4%BA%91"><span class="toc-text">重云</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E7%A7%8B"><span class="toc-text">行秋</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E4%BA%8B%E9%A1%B9"><span class="toc-text">其它事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">雷神国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-1"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E"><span class="toc-text">雷神</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95"><span class="toc-text">输出手法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E4%B9%9D%E4%B8%87%E7%8F%AD"><span class="toc-text">雷九万班</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-2"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%9D%E6%9D%A1"><span class="toc-text">九条</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%87%E5%8F%B6"><span class="toc-text">万叶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95-1"><span class="toc-text">输出手法</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">244</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      国家队配对需求以及输出
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/22102104.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-10-21T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-10-21</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%B8%B8%E6%88%8F/" 
+          class="post-meta-link">
+          游戏
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%8E%9F%E7%A5%9E/" 
+            class="post-meta-link">
+            原神
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="平民国家队"><a href="#平民国家队" class="headerlink" title="平民国家队"></a>平民国家队</h2><p>四星国家队一般指班尼特、香菱、重云、行秋。依赖四个强力脱手副c，通过元素战技和爆发的不断循环来打出高额伤害。在深渊12层的高压环境中，表现优异。</p>
+<h3 id="命座"><a href="#命座" class="headerlink" title="命座"></a>命座</h3><p>最低最低要求：</p>
+<p>班尼特1命，其余零命即可。</p>
+<p>合格配置：</p>
+<p>班尼特1命、香菱4命、重云2名、行秋2命。</p>
+<p>高端配置：</p>
+<p>班尼特不点6命，其余命座越高越好。</p>
+<p>关键命座解读：</p>
+<p>班尼特一命：生命百分比低于80时，大招仍提供攻击力加成，提高全队伤害。</p>
+<p>香菱四命：大招持续时间延长百分之40，保证大招不断，进行持续输出。</p>
+<p>重云2命:在重云的e技能领域中，元素战技和爆发冷却时间减少百分之15。极大提高了队伍的技能循环速度。</p>
+<p>重云6命:大招伤害增幅很大。（不强求）</p>
+<p>行秋2、4、6命:都增强了输出能力。4命及以上，先q后e。</p>
+<h3 id="班尼特"><a href="#班尼特" class="headerlink" title="班尼特"></a>班尼特</h3><ul>
+<li>圣遗物：4宗室<ul>
+<li>充能沙、生命杯、治疗头；副词条：生命百分比、充能效率、双暴优先。</li>
+</ul>
+</li>
+<li>武器<ul>
+<li>五星：风鹰剑（高额白字，提供攻击加成）、磐岩结绿（提升生命值，确保治疗量）、天空之刃（高额的充能效率，对班尼特十分重要）</li>
+<li>四星：原木刀，暗巷闪光（高额白字）、腐殖之剑（充能效率）、试作斩岩（高额白字）、西风剑（充能效率）</li>
+</ul>
+</li>
+<li>天赋：主升q，输出流可升e。</li>
+<li>面板：充能效率200以上、血量不低于2万。</li>
+</ul>
+<h3 id="香菱"><a href="#香菱" class="headerlink" title="香菱"></a>香菱</h3><ul>
+<li>圣遗物：4绝缘&#x2F;2宗室2魔女&#x2F;2宗室2乐团&#x2F;2魔女2乐团&#x2F;4魔女；<ul>
+<li>充能沙、火伤杯、双爆头；副词条：双暴、精通、百分比攻击、充能效率优先。</li>
+</ul>
+</li>
+<li>武器<ul>
+<li>五星：薙刀、天空之脊（充能效率）（护摩和璞鸢也可以，不过有些奢侈）</li>
+<li>四星：渔获、西风枪（充能效率）、千岩枪（提高伤害）、决斗枪、（宗师黑岩匣里也能带，泛用行很广）</li>
+</ul>
+</li>
+<li>天赋：主升q，副升e。</li>
+<li>面板：充能150以上（多吃班尼特产的能量球）</li>
+</ul>
+<h3 id="重云"><a href="#重云" class="headerlink" title="重云"></a>重云</h3><ul>
+<li>圣遗物：2宗室2冰套&#x2F;2宗室2角斗<ul>
+<li>攻击沙漏、冰伤杯、暴击&#x2F;暴伤头。副词条：双暴、百分比攻击、精通、充能效率优先。</li>
+</ul>
+</li>
+<li>武器：<ul>
+<li>五星：天空之傲（充能效率）、狼末</li>
+<li>四星：祭礼大剑（充能效率，刷新技能）、西风大剑（充能效率）、螭骨剑、千岩古剑</li>
+</ul>
+</li>
+<li>天赋：主升q，副升e。</li>
+<li>面板：充能150即可。</li>
+</ul>
+<h3 id="行秋"><a href="#行秋" class="headerlink" title="行秋"></a>行秋</h3><ul>
+<li>圣遗物：4绝缘&#x2F;2宗室2水套&#x2F;2宗师2乐团<ul>
+<li>充能沙漏（武器副词条为充能效率，则带攻击沙漏）、水伤杯、暴击&#x2F;暴伤头。</li>
+<li>副词条：双暴、百分比攻击、充能效率优先。</li>
+</ul>
+</li>
+<li>武器：<ul>
+<li>五星：天空之刃（充能效率）（其余五星也能带，但可能不如部分四星）</li>
+<li>四星：祭礼剑（首选）、腐殖、西风</li>
+</ul>
+</li>
+<li>天赋：q、e对点（偏重q）。</li>
+<li>面板：充能180，六命170。</li>
+</ul>
+<p>除班尼特外，其余双暴不低于50&#x2F;100，攻击力不低于1200。</p>
+<p>强调：国家队中，充能效率是最重要的。应该优先保证充能，再去追求其它的面板。</p>
+<h3 id="其它事项"><a href="#其它事项" class="headerlink" title="其它事项"></a>其它事项</h3><p>大招释放频率高，可用无敌帧躲伤害班尼特大招起手，重云e和大接上。保证香菱和行秋长期吃到班尼特大招和重云e的加成。香菱大招在释放瞬间锁面板，最好在班尼特q中释放。班尼特e冷却很短，打出e后多切香菱吃能量。养了不亏，可打散进其它队伍。不存在资源浪费。</p>
+<h2 id="雷神国家队"><a href="#雷神国家队" class="headerlink" title="雷神国家队"></a>雷神国家队</h2><p>雷神换重云，其他不用变</p>
+<h3 id="命座-1"><a href="#命座-1" class="headerlink" title="命座"></a>命座</h3><p>0命就行</p>
+<h3 id="雷神"><a href="#雷神" class="headerlink" title="雷神"></a>雷神</h3><ul>
+<li>圣遗物：4绝缘<ul>
+<li>充能沙漏（武器副词条为充能效率，则带攻击沙漏）、雷伤杯、暴击&#x2F;暴伤头。</li>
+<li>副词条：双暴、充能效率、百分比攻击。</li>
+</ul>
+</li>
+<li>武器：<ul>
+<li>五星：薙刀、薄荷枪</li>
+<li>四星：渔获、西风</li>
+</ul>
+</li>
+<li>天赋：拉满。</li>
+<li>面板：攻击1400+，暴击50+，爆伤120+，充能240+</li>
+</ul>
+<h3 id="输出手法"><a href="#输出手法" class="headerlink" title="输出手法"></a>输出手法</h3><p>雷神先手e，切班尼特qe打出超载挂火，切香菱锁面板脱手qe，此时怪物身上还是火属性残留，接着切行秋qe打出蒸发，最后切出雷神q，普攻和重击回复能量，基本这一套下来可以进行无限循环模式。</p>
+<h2 id="雷九万班"><a href="#雷九万班" class="headerlink" title="雷九万班"></a>雷九万班</h2><p>这套阵容比较昂贵，不建议平民玩家冲</p>
+<h3 id="命座-2"><a href="#命座-2" class="headerlink" title="命座"></a>命座</h3><p>要求：雷神二命，九条六命，<br>班尼特不要点六命，万叶0命</p>
+<h3 id="九条"><a href="#九条" class="headerlink" title="九条"></a>九条</h3><ul>
+<li>圣遗物：4绝缘&#x2F;4宗室<ul>
+<li>充能沙、雷伤杯、暴击&#x2F;暴伤头。</li>
+<li>副词条：双暴、充能效率、百分比攻击。</li>
+</ul>
+</li>
+<li>武器：<ul>
+<li>五星：终末嗟叹之诗</li>
+<li>四星：祭礼弓</li>
+</ul>
+</li>
+<li>天赋：1 8 8。</li>
+<li>面板：充能200+，攻击1400+</li>
+</ul>
+<h3 id="万叶"><a href="#万叶" class="headerlink" title="万叶"></a>万叶</h3><ul>
+<li>圣遗物：4风<ul>
+<li>精通沙、精通杯、精通头。</li>
+<li>副词条：精通、充能效率、百分比攻击。</li>
+</ul>
+</li>
+<li>武器：<ul>
+<li>五星：苍古</li>
+<li>四星：铁蜂刺（拉等级，不要精炼）</li>
+</ul>
+</li>
+<li>天赋：1 8 8。</li>
+<li>面板：充能120+，精通800+</li>
+</ul>
+<h3 id="输出手法-1"><a href="#输出手法-1" class="headerlink" title="输出手法"></a>输出手法</h3><p>雷神E万叶EAQ班尼特QE九条QE雷神EQA</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/10/21/22102103/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">抗打断和冲击效果的原理 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/10/20/22102001/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">高等元素论二 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%B0%91%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">平民国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8F%AD%E5%B0%BC%E7%89%B9"><span class="toc-text">班尼特</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%99%E8%8F%B1"><span class="toc-text">香菱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E4%BA%91"><span class="toc-text">重云</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E7%A7%8B"><span class="toc-text">行秋</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E4%BA%8B%E9%A1%B9"><span class="toc-text">其它事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">雷神国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-1"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E"><span class="toc-text">雷神</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95"><span class="toc-text">输出手法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E4%B9%9D%E4%B8%87%E7%8F%AD"><span class="toc-text">雷九万班</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-2"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%9D%E6%9D%A1"><span class="toc-text">九条</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%87%E5%8F%B6"><span class="toc-text">万叶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95-1"><span class="toc-text">输出手法</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B9%B3%E6%B0%91%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">平民国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8F%AD%E5%B0%BC%E7%89%B9"><span class="toc-text">班尼特</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%99%E8%8F%B1"><span class="toc-text">香菱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E4%BA%91"><span class="toc-text">重云</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A1%8C%E7%A7%8B"><span class="toc-text">行秋</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E4%BA%8B%E9%A1%B9"><span class="toc-text">其它事项</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E%E5%9B%BD%E5%AE%B6%E9%98%9F"><span class="toc-text">雷神国家队</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-1"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%B7%E7%A5%9E"><span class="toc-text">雷神</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95"><span class="toc-text">输出手法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%B7%E4%B9%9D%E4%B8%87%E7%8F%AD"><span class="toc-text">雷九万班</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%BA%A7-2"><span class="toc-text">命座</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%9D%E6%9D%A1"><span class="toc-text">九条</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%87%E5%8F%B6"><span class="toc-text">万叶</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E6%89%8B%E6%B3%95-1"><span class="toc-text">输出手法</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-24</div>
+        <a href="/2022/12/24/22122401/"><div class="recent-posts-item-content">github简易建站</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121901/"><div class="recent-posts-item-content">元素的属性以及嵌套</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121902/"><div class="recent-posts-item-content">关于注释</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-09</div>
+        <a href="/2022/12/09/22120901/"><div class="recent-posts-item-content">反向代理</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

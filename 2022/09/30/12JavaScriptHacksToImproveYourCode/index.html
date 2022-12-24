@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>12个 Javascript 小技巧帮你提升代码质量</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="12个 Javascript 小技巧帮你提升代码质量">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/12JavaScriptHacksToImproveYourCode/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>280</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>56</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%82%BC%E5%87%BD%E6%95%B0"><span class="toc-text">提炼函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E9%87%8D%E5%A4%8D%E7%9A%84%E6%9D%A1%E4%BB%B6%E7%89%87%E6%AE%B5"><span class="toc-text">合并重复的条件片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%AF%AD%E5%8F%A5%E6%8F%90%E7%82%BC%E6%88%90%E5%87%BD%E6%95%B0"><span class="toc-text">把条件分支语句提炼成函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E5%BE%AA%E7%8E%AF"><span class="toc-text">合理使用循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E5%89%8D%E8%AE%A9%E5%87%BD%E6%95%B0%E9%80%80%E5%87%BA%E4%BB%A3%E6%9B%BF%E5%B5%8C%E5%A5%97%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF"><span class="toc-text">提前让函数退出代替嵌套条件分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1%E5%8F%82%E6%95%B0%E4%BB%A3%E6%9B%BF%E8%BF%87%E9%95%BF%E7%9A%84%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-text">传递对象参数代替过长的参数列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%91%E7%94%A8%E4%B8%89%E7%9B%AE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">少用三目运算符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="toc-text">合理使用链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E8%A7%A3%E5%A4%A7%E5%9E%8B%E7%B1%BB"><span class="toc-text">分解大型类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BB%E7%94%A8%E4%BD%8D%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">活用位操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%AF%E5%87%BD%E6%95%B0"><span class="toc-text">纯函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%98%A0%E5%B0%84%E4%BB%A3%E6%9B%BF%E9%87%8D%E5%A4%8D%E9%80%BB%E8%BE%91%E5%88%86%E6%94%AF"><span class="toc-text">用映射代替重复逻辑分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">244</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">11</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/DOM/" 
+        title="DOM">
+        <div class="tags-list-item">DOM</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      12个 Javascript 小技巧帮你提升代码质量
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/12JavaScriptHacksToImproveYourCode.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.2k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="提炼函数"><a href="#提炼函数" class="headerlink" title="提炼函数"></a>提炼函数</h2><p>好处：</p>
+<ul>
+<li>避免出现超大函数。</li>
+<li>独立出来的函数有助于代码复用。</li>
+<li>独立出来的函数更容易被覆写。</li>
+<li>独立出来的函数如果拥有一个良好的命名，它本身就起到了注释的作用。</li>
+<li>语义化将多段分离的逻辑放在不同的函数中实现，可以使代码逻辑清晰，清楚的看到每一步在做什么。</li>
+</ul>
+<p>代码举例：</p>
+<ul>
+<li>要求：实现获取数据，然后操作dom显示数据，最后添加事件</li>
+<li>函数提炼前  <pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 逻辑都写在一起，需要将所有逻辑看完才知道这段代码是干嘛的，局部逻辑无法复用</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) &#123;<br>    $.ajax.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">const</span> ul = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;ul&#x27;</span>);<br>        ul.<span class="hljs-property">innerHTML</span> = res.<span class="hljs-property">list</span>.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">text</span> =&gt;</span> <span class="hljs-string">`&lt;li class=&quot;li&quot;&gt;<span class="hljs-subst">$&#123;text&#125;</span>&lt;/li&gt;`</span>).<span class="hljs-title function_">join</span>(<span class="hljs-string">&#x27;\n&#x27;</span>);<br>        <span class="hljs-keyword">const</span> list = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByClassName</span>(<span class="hljs-string">&#x27;li&#x27;</span>);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; list.<span class="hljs-property">length</span>; i ++) &#123;<br>            list[i].<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;focus&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>                <span class="hljs-comment">// do something</span><br>            &#125;);<br>        &#125;<br>    &#125;);<br>&#125;<br></code></pre></li>
+<li>函数提炼后  <pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getData</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> $.ajax.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>).<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.<span class="hljs-property">data</span>.<span class="hljs-property">list</span>);<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">showList</span>(<span class="hljs-params">list</span>) &#123;<br>    <span class="hljs-keyword">const</span> ul = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;ul&#x27;</span>);<br>    ul.<span class="hljs-property">innerHTML</span> = list.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">text</span> =&gt;</span> <span class="hljs-string">`&lt;li class=&quot;li&quot;&gt;<span class="hljs-subst">$&#123;text&#125;</span>&lt;/li&gt;`</span>).<span class="hljs-title function_">join</span>(<span class="hljs-string">&#x27;\n&#x27;</span>);<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">addEvent</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> list = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByClassName</span>(<span class="hljs-string">&#x27;li&#x27;</span>);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; list.<span class="hljs-property">length</span>; i ++) &#123;<br>        list[i].<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;focus&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-comment">// do something</span><br>        &#125;);<br>    &#125;<br>&#125;<br><span class="hljs-comment">// 逻辑清晰，一眼读懂每一步在做什么，某些提炼出来的函数还可以被复用</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> list = <span class="hljs-keyword">await</span> <span class="hljs-title function_">getData</span>(); <span class="hljs-comment">// 获取数据</span><br>    <span class="hljs-title function_">showList</span>(list); <span class="hljs-comment">// 显示页面</span><br>    <span class="hljs-title function_">addEvent</span>(); <span class="hljs-comment">// 添加事件</span><br>&#125;<br></code></pre></li>
+</ul>
+<h2 id="合并重复的条件片段"><a href="#合并重复的条件片段" class="headerlink" title="合并重复的条件片段"></a>合并重复的条件片段</h2><p>如果一个函数体内有一些条件分支语句，而这些条件分支语句内部散布了一些重复的代码，那么就有必要进行合并去重工作。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 合并前</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"> currPage </span>)&#123;<br>    <span class="hljs-keyword">if</span> ( currPage &lt;= <span class="hljs-number">0</span> )&#123;<br>        currPage = <span class="hljs-number">0</span>;<br>        <span class="hljs-title function_">jump</span>( currPage ); <span class="hljs-comment">// 跳转</span><br>    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( currPage &gt;= totalPage )&#123;<br>        currPage = totalPage;<br>        <span class="hljs-title function_">jump</span>( currPage ); <span class="hljs-comment">// 跳转</span><br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        <span class="hljs-title function_">jump</span>( currPage ); <span class="hljs-comment">// 跳转</span><br>    &#125;<br>&#125;;<br><br><span class="hljs-comment">// 合并后</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span>(<span class="hljs-params"> currPage </span>)&#123;<br>    <span class="hljs-keyword">if</span> ( currPage &lt;= <span class="hljs-number">0</span> )&#123;<br>        currPage = <span class="hljs-number">0</span>;<br>    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( currPage &gt;= totalPage )&#123;<br>        currPage = totalPage;<br>    &#125;<br>    <span class="hljs-title function_">jump</span>( currPage ); <span class="hljs-comment">// 把jump 函数独立出来</span><br>&#125;;<br><br></code></pre>
+
+<h2 id="把条件分支语句提炼成函数"><a href="#把条件分支语句提炼成函数" class="headerlink" title="把条件分支语句提炼成函数"></a>把条件分支语句提炼成函数</h2><p>复杂的条件分支语句是导致程序难以阅读和理解的重要原因，而且容易导致一个庞大的函数。有时可以将条件分支语句提炼成语义化的函数，使代码更加直观，逻辑清晰。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 根据不同季节决定打折力度</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getPrice</span>(<span class="hljs-params"> price </span>)&#123;<br>    <span class="hljs-keyword">var</span> date = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>();<br>    <span class="hljs-keyword">if</span> ( date.<span class="hljs-title function_">getMonth</span>() &gt;= <span class="hljs-number">6</span> &amp;&amp; date.<span class="hljs-title function_">getMonth</span>() &lt;= <span class="hljs-number">9</span> )&#123; <span class="hljs-comment">// 夏天</span><br>        <span class="hljs-keyword">return</span> price * <span class="hljs-number">0.8</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> price;<br>&#125;;<br><br><br><span class="hljs-comment">// 是否是夏天</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">isSummer</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">var</span> date = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>();<br>    <span class="hljs-keyword">return</span> date.<span class="hljs-title function_">getMonth</span>() &gt;= <span class="hljs-number">6</span> &amp;&amp; date.<span class="hljs-title function_">getMonth</span>() &lt;= <span class="hljs-number">9</span>;<br>&#125;;<br><span class="hljs-comment">// 提炼条件后</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getPrice</span>(<span class="hljs-params"> price </span>)&#123;<br>    <span class="hljs-keyword">if</span> ( <span class="hljs-title function_">isSummer</span>() )&#123;<br>        <span class="hljs-keyword">return</span> price * <span class="hljs-number">0.8</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> price;<br>&#125;;<br></code></pre>
+
+<h2 id="合理使用循环"><a href="#合理使用循环" class="headerlink" title="合理使用循环"></a>合理使用循环</h2><p>如果多段代码实际上负责的是一些重复性的工作，那么可以用循环代替，使代码量更少。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 判断是什么浏览器</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getBrowser</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">const</span> str = navigator.<span class="hljs-property">userAgent</span>;<br>    <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;QQBrowser&#x27;</span>)) &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;qq&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;Chrome&#x27;</span>)) &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;chrome&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;Safari&#x27;</span>)) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;safri&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;Firefox&#x27;</span>)) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;firefox&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(explorer.<span class="hljs-title function_">indexOf</span>(<span class="hljs-string">&#x27;Opera&#x27;</span>) &gt;= <span class="hljs-number">0</span>)&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;opera&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(<span class="hljs-string">&#x27;msie&#x27;</span>)) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;ie&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;other&#x27;</span>;<br>    &#125;<br>&#125;;<br><span class="hljs-comment">// 循环判断，将对应关系抽象为配置，更加清晰明确</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getBrowser</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">const</span> str = navigator.<span class="hljs-property">userAgent</span>;<br>    <span class="hljs-keyword">const</span> list = [<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;QQBrowser&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;qq&#x27;</span>&#125;,<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;Chrome&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;chrome&#x27;</span>&#125;,<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;Safari&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;safari&#x27;</span>&#125;,<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;Firefox&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;firefox&#x27;</span>&#125;,<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;Opera&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;opera&#x27;</span>&#125;,<br>        &#123;<span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;msie&#x27;</span>, <span class="hljs-attr">browser</span>: <span class="hljs-string">&#x27;ie&#x27;</span>&#125;,<br>    ];<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; list.<span class="hljs-property">length</span>; i++) &#123;<br>        <span class="hljs-keyword">const</span> item = list[i];<br>        <span class="hljs-keyword">if</span> (str.<span class="hljs-title function_">includes</span>(item.<span class="hljs-property">key</span>)) &#123;<span class="hljs-keyword">return</span> item.<span class="hljs-property">browser</span>&#125;;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;other&#x27;</span>;<br>&#125;<br><br></code></pre>
+
+<h2 id="提前让函数退出代替嵌套条件分支"><a href="#提前让函数退出代替嵌套条件分支" class="headerlink" title="提前让函数退出代替嵌套条件分支"></a>提前让函数退出代替嵌套条件分支</h2><p>让函数变成多出口提前返回，替换嵌套条件分支。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">del</span>(<span class="hljs-params"> obj </span>)&#123;<br>    <span class="hljs-keyword">var</span> ret;<br>    <span class="hljs-keyword">if</span> ( !obj.<span class="hljs-property">isReadOnly</span> )&#123; <span class="hljs-comment">// 不为只读的才能被删除</span><br>        <span class="hljs-keyword">if</span> ( obj.<span class="hljs-property">isFolder</span> )&#123; <span class="hljs-comment">// 如果是文件夹</span><br>            ret = <span class="hljs-title function_">deleteFolder</span>( obj );<br>        &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ( obj.<span class="hljs-property">isFile</span> )&#123; <span class="hljs-comment">// 如果是文件</span><br>            ret = <span class="hljs-title function_">deleteFile</span>( obj );<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> ret;<br>&#125;;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">del</span>(<span class="hljs-params"> obj </span>)&#123;<br>    <span class="hljs-keyword">if</span> ( obj.<span class="hljs-property">isReadOnly</span> )&#123; <span class="hljs-comment">// 反转if 表达式</span><br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> ( obj.<span class="hljs-property">isFolder</span> )&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">deleteFolder</span>( obj );<br>    &#125;<br>    <span class="hljs-keyword">if</span> ( obj.<span class="hljs-property">isFile</span> )&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">deleteFile</span>( obj );<br>    &#125;<br>&#125;;<br></code></pre>
+
+<h2 id="传递对象参数代替过长的参数列表"><a href="#传递对象参数代替过长的参数列表" class="headerlink" title="传递对象参数代替过长的参数列表"></a>传递对象参数代替过长的参数列表</h2><p>函数参数过长那么就增加出错的风险，想保证传递的顺序正确就是一件麻烦的事，代码可读性也会变差，尽量保证函数的参数不会太长。如果必须传递多个参数的话，建议使用对象代替。</p>
+<p>一般来说，函数参数最好不要超过3个</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">setUserInfo</span>(<span class="hljs-params"> id, name, address, sex, mobile, qq </span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;id= &#x27;</span> + id );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;name= &#x27;</span> +name );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;address= &#x27;</span> + address );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;sex= &#x27;</span> + sex );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;mobile= &#x27;</span> + mobile );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;qq= &#x27;</span> + qq );<br>&#125;;<br><span class="hljs-title function_">setUserInfo</span>( <span class="hljs-number">1314</span>, <span class="hljs-string">&#x27;sven&#x27;</span>, <span class="hljs-string">&#x27;shenzhen&#x27;</span>, <span class="hljs-string">&#x27;male&#x27;</span>, <span class="hljs-string">&#x27;137********&#x27;</span>, <span class="hljs-number">123456</span> );<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">setUserInfo</span>(<span class="hljs-params"> obj </span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;id= &#x27;</span> + obj.<span class="hljs-property">id</span> );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;name= &#x27;</span> + obj.<span class="hljs-property">name</span> );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;address= &#x27;</span> + obj.<span class="hljs-property">address</span> );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;sex= &#x27;</span> + obj.<span class="hljs-property">sex</span> );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;mobile= &#x27;</span> + obj.<span class="hljs-property">mobile</span> );<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&#x27;qq= &#x27;</span> + obj.<span class="hljs-property">qq</span> );<br>&#125;;<br><span class="hljs-title function_">setUserInfo</span>(&#123;<br>    <span class="hljs-attr">id</span>: <span class="hljs-number">1314</span>,<br>    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;sven&#x27;</span>,<br>    <span class="hljs-attr">address</span>: <span class="hljs-string">&#x27;shenzhen&#x27;</span>,<br>    <span class="hljs-attr">sex</span>: <span class="hljs-string">&#x27;male&#x27;</span>,<br>    <span class="hljs-attr">mobile</span>: <span class="hljs-string">&#x27;137********&#x27;</span>,<br>    <span class="hljs-attr">qq</span>: <span class="hljs-number">123456</span><br>&#125;);<br></code></pre>
+
+<h2 id="少用三目运算符"><a href="#少用三目运算符" class="headerlink" title="少用三目运算符"></a>少用三目运算符</h2><p>三目运算符性能高，代码量少。<br>但不应该滥用三目运算符，我们应该在简单逻辑分支使用，在复杂逻辑分支避免使用。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 简单逻辑可以使用三目运算符</span><br><span class="hljs-keyword">var</span> <span class="hljs-variable language_">global</span> = <span class="hljs-keyword">typeof</span> <span class="hljs-variable language_">window</span> !== <span class="hljs-string">&quot;undefined&quot;</span> ? <span class="hljs-variable language_">window</span> : <span class="hljs-variable language_">this</span>;<br><br><span class="hljs-comment">// 复杂逻辑不适合使用</span><br><span class="hljs-keyword">var</span> ok = isString ? (isTooLang ? <span class="hljs-number">2</span> : (isTooShort ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>)) : -<span class="hljs-number">1</span>;<br></code></pre>
+
+<h2 id="合理使用链式调用"><a href="#合理使用链式调用" class="headerlink" title="合理使用链式调用"></a>合理使用链式调用</h2><p>优点：</p>
+<ul>
+<li>链式调用使用简单，代码量少。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>链式调用带来的坏处就是在调试不方便，如果我们知道一条链中有错误出现，必须得先把这条链拆开才能加上一些调试 log 或者增加断点，这样才能定位错误出现的地方。</li>
+</ul>
+<p>如果该链条的结构相对稳定，后期不易发生修改，可以使用链式。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-title class_">User</span> = &#123;<br>    <span class="hljs-attr">id</span>: <span class="hljs-literal">null</span>,<br>    <span class="hljs-attr">name</span>: <span class="hljs-literal">null</span>,<br>    <span class="hljs-attr">setId</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> id </span>)&#123;<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span> = id;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;<br>    &#125;,<br>    <span class="hljs-attr">setName</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"> name </span>)&#123;<br>        <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = name;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>;<br>    &#125;<br>&#125;;<br><span class="hljs-title class_">User</span><br>  .<span class="hljs-title function_">setId</span>( <span class="hljs-number">1314</span> )<br>  .<span class="hljs-title function_">setName</span>( <span class="hljs-string">&#x27;sven&#x27;</span> );<br><br><span class="hljs-keyword">var</span> user = <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();<br>user.<span class="hljs-title function_">setId</span>( <span class="hljs-number">1314</span> );<br>user.<span class="hljs-title function_">setName</span>( <span class="hljs-string">&#x27;sven&#x27;</span> );<br></code></pre>
+
+<h2 id="分解大型类"><a href="#分解大型类" class="headerlink" title="分解大型类"></a>分解大型类</h2><p>大型类的分解和函数的提炼很像，类太大会出现逻辑不清晰，难以理解和维护的问题。</p>
+<p>合理的大类分解可以使类的逻辑清晰，且子模块可以方便复用。</p>
+<h2 id="活用位操作符"><a href="#活用位操作符" class="headerlink" title="活用位操作符"></a>活用位操作符</h2><p>编程语言计算乘除的性能都不高，但是某些情况使用位操作符可以提升乘除等运算的性能。</p>
+<h2 id="纯函数"><a href="#纯函数" class="headerlink" title="纯函数"></a>纯函数</h2><p>纯函数是指不依赖于且不改变它作用域之外的变量状态的函数。</p>
+<p>纯函数的返回值只由它调用时的参数决定，它的执行不依赖于系统的状态（执行上下文）。</p>
+<p>相同的输入参数，一定会得到相同的输出，也就是内部不含有会影响输出的随机变量。</p>
+<p>不属于纯函数的特点：</p>
+<ul>
+<li>更改文件系统</li>
+<li>往数据库插入记录</li>
+<li>发送一个 http 请求</li>
+<li>可变数据</li>
+<li>打印&#x2F;log</li>
+<li>获取用户输入</li>
+<li>DOM 查询</li>
+<li>访问系统状态</li>
+</ul>
+<p>纯函数的作用：</p>
+<ul>
+<li>可靠性：函数返回永远和预期一致</li>
+<li>可缓存性：因为只要输入一样输出一定一样，因此可将输入作为key，输出作为值，使用对象缓存已经计算的结果</li>
+<li>可移植性：因为没有外部依赖，所以移植到任何环境都可正确运行</li>
+<li>可测试性：方便针对函数做单元测试</li>
+<li>可并行性：对一些复杂计算，可以并行计算（例如使用nodejs多个子进程同时并行计算多个任务，提高计算速度）</li>
+</ul>
+<p>应用场景：</p>
+<ul>
+<li>工具函数最好使用纯函数</li>
+<li>多平台使用的代码（nodejs、浏览器、微信小程序、native客户端等）</li>
+<li>相对独立的功能</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-number">1</span>;<br><span class="hljs-comment">// 非纯函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sum</span>(<span class="hljs-params">b</span>) &#123;<br>    <span class="hljs-keyword">return</span> a + b;<br>&#125;<br><span class="hljs-comment">// 非纯函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sum</span>(<span class="hljs-params">b</span>) &#123;<br>    a = <span class="hljs-number">2</span>;<br>    <span class="hljs-keyword">return</span> b;<br>&#125;<br><span class="hljs-comment">// 非纯函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sum</span>(<span class="hljs-params">b</span>) &#123;<br>    <span class="hljs-keyword">return</span> b + <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">random</span>();<br>&#125;<br><br><br><span class="hljs-comment">// 纯函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sum</span> (b, c) &#123;<br>    <span class="hljs-keyword">return</span> b + c;<br>&#125;<br></code></pre>
+
+<h2 id="用映射代替重复逻辑分支"><a href="#用映射代替重复逻辑分支" class="headerlink" title="用映射代替重复逻辑分支"></a>用映射代替重复逻辑分支</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 重复的逻辑分支</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">example</span>(<span class="hljs-params">type</span>) &#123;<br>    <span class="hljs-keyword">if</span> (type === <span class="hljs-string">&#x27;a&#x27;</span>) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;类型1&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type === <span class="hljs-string">&#x27;b&#x27;</span>)  &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;type 2&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type === <span class="hljs-string">&#x27;c&#x27;</span>)  &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;3&#x27;</span>;<br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (type === <span class="hljs-string">&#x27;d&#x27;</span>)  &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;4&#x27;</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 使用映射代替重复的逻辑分支</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">example</span>(<span class="hljs-params">type</span>) &#123;<br>    <span class="hljs-keyword">const</span> map = &#123;<br>        <span class="hljs-attr">a</span>: <span class="hljs-string">&#x27;类型1&#x27;</span>,<br>        <span class="hljs-attr">b</span>: <span class="hljs-string">&#x27;type 2&#x27;</span>,<br>        <span class="hljs-attr">c</span>: <span class="hljs-string">&#x27;3&#x27;</span>,<br>        <span class="hljs-attr">d</span>: <span class="hljs-string">&#x27;4&#x27;</span><br>    &#125;;<br>    <span class="hljs-keyword">return</span> map[type];<br>&#125;<br></code></pre>
+
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6909638377247604750">12个 Javascript 小技巧帮你提升代码质量</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/10/17/22101702/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">高等元素论一 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/22092001/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">JavaScript深入之继承的多种方式和优缺点 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%82%BC%E5%87%BD%E6%95%B0"><span class="toc-text">提炼函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E9%87%8D%E5%A4%8D%E7%9A%84%E6%9D%A1%E4%BB%B6%E7%89%87%E6%AE%B5"><span class="toc-text">合并重复的条件片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%AF%AD%E5%8F%A5%E6%8F%90%E7%82%BC%E6%88%90%E5%87%BD%E6%95%B0"><span class="toc-text">把条件分支语句提炼成函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E5%BE%AA%E7%8E%AF"><span class="toc-text">合理使用循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E5%89%8D%E8%AE%A9%E5%87%BD%E6%95%B0%E9%80%80%E5%87%BA%E4%BB%A3%E6%9B%BF%E5%B5%8C%E5%A5%97%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF"><span class="toc-text">提前让函数退出代替嵌套条件分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1%E5%8F%82%E6%95%B0%E4%BB%A3%E6%9B%BF%E8%BF%87%E9%95%BF%E7%9A%84%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-text">传递对象参数代替过长的参数列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%91%E7%94%A8%E4%B8%89%E7%9B%AE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">少用三目运算符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="toc-text">合理使用链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E8%A7%A3%E5%A4%A7%E5%9E%8B%E7%B1%BB"><span class="toc-text">分解大型类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BB%E7%94%A8%E4%BD%8D%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">活用位操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%AF%E5%87%BD%E6%95%B0"><span class="toc-text">纯函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%98%A0%E5%B0%84%E4%BB%A3%E6%9B%BF%E9%87%8D%E5%A4%8D%E9%80%BB%E8%BE%91%E5%88%86%E6%94%AF"><span class="toc-text">用映射代替重复逻辑分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%82%BC%E5%87%BD%E6%95%B0"><span class="toc-text">提炼函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E9%87%8D%E5%A4%8D%E7%9A%84%E6%9D%A1%E4%BB%B6%E7%89%87%E6%AE%B5"><span class="toc-text">合并重复的条件片段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%AF%AD%E5%8F%A5%E6%8F%90%E7%82%BC%E6%88%90%E5%87%BD%E6%95%B0"><span class="toc-text">把条件分支语句提炼成函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E5%BE%AA%E7%8E%AF"><span class="toc-text">合理使用循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E5%89%8D%E8%AE%A9%E5%87%BD%E6%95%B0%E9%80%80%E5%87%BA%E4%BB%A3%E6%9B%BF%E5%B5%8C%E5%A5%97%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF"><span class="toc-text">提前让函数退出代替嵌套条件分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1%E5%8F%82%E6%95%B0%E4%BB%A3%E6%9B%BF%E8%BF%87%E9%95%BF%E7%9A%84%E5%8F%82%E6%95%B0%E5%88%97%E8%A1%A8"><span class="toc-text">传递对象参数代替过长的参数列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%91%E7%94%A8%E4%B8%89%E7%9B%AE%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="toc-text">少用三目运算符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E7%90%86%E4%BD%BF%E7%94%A8%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="toc-text">合理使用链式调用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E8%A7%A3%E5%A4%A7%E5%9E%8B%E7%B1%BB"><span class="toc-text">分解大型类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B4%BB%E7%94%A8%E4%BD%8D%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">活用位操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%AF%E5%87%BD%E6%95%B0"><span class="toc-text">纯函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%98%A0%E5%B0%84%E4%BB%A3%E6%9B%BF%E9%87%8D%E5%A4%8D%E9%80%BB%E8%BE%91%E5%88%86%E6%94%AF"><span class="toc-text">用映射代替重复逻辑分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-24</div>
+        <a href="/2022/12/24/22122401/"><div class="recent-posts-item-content">github简易建站</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121901/"><div class="recent-posts-item-content">元素的属性以及嵌套</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-19</div>
+        <a href="/2022/12/19/22121902/"><div class="recent-posts-item-content">关于注释</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2022-12-09</div>
+        <a href="/2022/12/09/22120901/"><div class="recent-posts-item-content">反向代理</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <h1 style="padding-bottom: 12px;">关注嘉然！顿顿解馋！</h1>
+    <img src="https://api2.mubu.com/v3/document_image/2697c6ae-10ee-41a3-9099-304bdb252d31-3807603.jpg">
+  </article>
+</div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2022
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
