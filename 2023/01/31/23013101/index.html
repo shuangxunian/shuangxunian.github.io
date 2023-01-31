@@ -346,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css%E7%BB%91%E5%AE%9A%E5%88%B0%E6%89%80%E9%9C%80%E5%85%83%E7%B4%A0%E4%B8%8A"><span class="toc-text">css绑定到所需元素上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AAcss%E6%96%87%E4%BB%B6%E5%BC%95%E5%85%A5"><span class="toc-text">多个css文件引入</span></a></li></ol>
       </div>
     </article>
   
@@ -560,7 +560,7 @@
     
     
       <span class="dot"></span>
-      <span>35 字</span>
+      <span>330 字</span>
     
   </div>
   
@@ -597,6 +597,30 @@
     id="section" 
     class="post-content">
     <h2 id="什么是css"><a href="#什么是css" class="headerlink" title="什么是css"></a>什么是css</h2><p>如前文所说，css是高矮胖瘦，可以给页面进行布局，也可以对html添加各种样式。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p>css语法可以简单理解成：</p>
+<pre class="highlight"><code class="hljs">选择器 括号<br>  属性：值<br>括回<br></code></pre>
+
+<p>我们一个选择器可以有多个属性值，每个属性有特定的值，这个后续会讲一下常见的属性。</p>
+<p>我们从例子入手：</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-selector-tag">h1</span> &#123;<br>    <span class="hljs-attribute">color</span>: red;<br>    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">5em</span>;<br>&#125;<br></code></pre>
+
+<p>h1就是标题，括号内英文翻译过来就是，颜色：红色，字体大小：5em；因此这段代码表达的意义就是我把我h1的标题颜色改成红色，大小改成5em。</p>
+<h2 id="css绑定到所需元素上"><a href="#css绑定到所需元素上" class="headerlink" title="css绑定到所需元素上"></a>css绑定到所需元素上</h2><ul>
+<li><p>内联样式</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;color: red;&quot;</span>&gt;</span>这是内联样式<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><br></code></pre></li>
+<li><p>内部样式表</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">style</span>&gt;</span><span class="language-css"></span><br><span class="language-css">  <span class="hljs-selector-tag">div</span> &#123;</span><br><span class="language-css">    <span class="hljs-attribute">color</span>: green;</span><br><span class="language-css">  &#125;</span><br><span class="language-css">  <span class="hljs-selector-class">.only-one</span> &#123;</span><br><span class="language-css">    <span class="hljs-attribute">font-size</span>: <span class="hljs-number">40px</span>;</span><br><span class="language-css">  &#125;</span><br><span class="language-css"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>这是内部样式表<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;only-one&quot;</span>&gt;</span>这是内部样式表<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br></code></pre>
+</li>
+<li><p>外部样式表<br>直接通过<code>&lt;link rel=&quot;stylesheet&quot; href=&quot;&quot;&gt;</code>引入css文件，即可生效</p>
+</li>
+</ul>
+<h2 id="多个css文件引入"><a href="#多个css文件引入" class="headerlink" title="多个css文件引入"></a>多个css文件引入</h2><p>当一组文件需要引入多个外部css的时候，我们可以先合并到一起，然后在每个文件中直接引入一个：</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-keyword">@import</span> url(<span class="hljs-string">&#x27;./1.css&#x27;</span>)<br></code></pre>
+
+
+
+
+
 
   </div>
   <div>
@@ -631,7 +655,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css%E7%BB%91%E5%AE%9A%E5%88%B0%E6%89%80%E9%9C%80%E5%85%83%E7%B4%A0%E4%B8%8A"><span class="toc-text">css绑定到所需元素上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AAcss%E6%96%87%E4%BB%B6%E5%BC%95%E5%85%A5"><span class="toc-text">多个css文件引入</span></a></li></ol>
 </div>
 
             </main>
@@ -646,7 +670,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFcss"><span class="toc-text">什么是css</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AD%E6%B3%95"><span class="toc-text">语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#css%E7%BB%91%E5%AE%9A%E5%88%B0%E6%89%80%E9%9C%80%E5%85%83%E7%B4%A0%E4%B8%8A"><span class="toc-text">css绑定到所需元素上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AAcss%E6%96%87%E4%BB%B6%E5%BC%95%E5%85%A5"><span class="toc-text">多个css文件引入</span></a></li></ol>
     </article>
   
   
