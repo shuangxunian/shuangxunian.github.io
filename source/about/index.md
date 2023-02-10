@@ -7,7 +7,10 @@
 
 [从0开始学前端系列](https://shuangxunian.github.io/2022/11/06/22110603/)；
 
+[前端面试题](https://shuangxunian.github.io/2023/02/10/23021001/)
+
 如果您觉得我写的不错，欢迎请我喝蜜雪冰城~
 
 有问题只支持付费咨询，可以给我发邮件附上您的联系方式：shuangxunian@gmail.com，我会联系你
+
 
