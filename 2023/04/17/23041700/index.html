@@ -560,7 +560,7 @@
     
     
       <span class="dot"></span>
-      <span>362 字</span>
+      <span>514 字</span>
     
   </div>
   
@@ -602,6 +602,8 @@
 <h2 id="创建表"><a href="#创建表" class="headerlink" title="创建表"></a>创建表</h2><p>我们选择新建-&gt;新建表，这里再提醒一下注意切换到我们刚刚新建的数据库，在基本信息中添加表名，并把下边的字符集换成utf8mb4，然后在列信息创建对应的键。这里创建了int的id，char长度为8的name，char长度为16的nameadd，然后点击下面的提交即可。</p>
 <h2 id="进行通信"><a href="#进行通信" class="headerlink" title="进行通信"></a>进行通信</h2><p>我们新建文件夹，创建一个package，安装express和mysql：</p>
 <pre class="highlight"><code class="hljs coffeescript"><span class="hljs-built_in">npm</span> init<br><span class="hljs-built_in">npm</span> i express<br><span class="hljs-built_in">npm</span> i mysql<br></code></pre>
+
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;express&quot;</span>); <span class="hljs-comment">//引用外部模块接口，也就是获取模块对象</span><br><span class="hljs-keyword">var</span> router = express.<span class="hljs-title class_">Router</span>();<span class="hljs-comment">//创建路由实例</span><br><span class="hljs-comment">//调用mysql模块</span><br><span class="hljs-keyword">const</span> mysql = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;mysql&quot;</span>);<br><span class="hljs-comment">//配置本机mysql连接基本信息</span><br><span class="hljs-keyword">let</span> connectInfo = mysql.<span class="hljs-title function_">createConnection</span>(&#123;<br>	<span class="hljs-attr">host</span>: <span class="hljs-string">&#x27;&#x27;</span>,                   <span class="hljs-comment">// 刚刚在腾讯云开的外网，此链接一定不能让其他人看到</span><br>	<span class="hljs-attr">port</span>: <span class="hljs-number">29905</span>,<br>	<span class="hljs-attr">user</span>: <span class="hljs-string">&#x27;&#x27;</span>,                   <span class="hljs-comment">// 刚刚在腾讯云设置的用户名，记住不要泄露</span><br>	<span class="hljs-attr">password</span>: <span class="hljs-string">&#x27;&#x27;</span>,               <span class="hljs-comment">// 刚刚在腾讯云设置的密码，记住不要泄露</span><br>	<span class="hljs-attr">database</span>: <span class="hljs-string">&#x27;&#x27;</span>                <span class="hljs-comment">// 刚刚在腾讯云创建的数据库</span><br>&#125;)<br><span class="hljs-comment">//数据库建立连接</span><br>connectInfo.<span class="hljs-title function_">connect</span>();<br></code></pre>
 
 
 
