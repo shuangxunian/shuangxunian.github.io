@@ -346,7 +346,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">|| 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&amp;&amp; 操作符</span></a></li></ol>
       </div>
     </article>
   
@@ -560,7 +560,7 @@
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>537 字</span>
     
   </div>
   
@@ -596,7 +596,38 @@
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="操作符"><a href="#操作符" class="headerlink" title="|| 操作符"></a>|| 操作符</h2><ol>
+<li>只要有一个条件为 true 时，结果就为 true；</li>
+<li>当两个条件都为 false 时，结果才为 false；</li>
+<li>当一个条件为 true 时，后面的条件不再判断</li>
+</ol>
+<p>注意：当数值参与逻辑或运算时，结果为 true，会返回第一个为真的值；如果结果为 false，会返回第二个为假的值；</p>
+<h2 id="x3D-x3D-操作符"><a href="#x3D-x3D-操作符" class="headerlink" title="&#x3D;&#x3D; 操作符"></a>&#x3D;&#x3D; 操作符</h2><p>对于 &#x3D;&#x3D; 来说，如果对比双方的类型不一样的话，就会进行类型转换</p>
+<p>判断流程：</p>
+<ol>
+<li>首先会判断两者类型是否相同。相同的话就是比大小了</li>
+<li>类型不相同的话，那么就会进行类型转换</li>
+<li>会先判断是否在对比 null 和 undefined，是的话就会返回 true</li>
+<li>判断两者类型是否为 string 和 number，是的话就会将字符串转换为 number  <pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1</span> == <span class="hljs-string">&#x27;1&#x27;</span><br>      ↓<br><span class="hljs-number">1</span> ==  <span class="hljs-number">1</span><br></code></pre></li>
+<li>判断其中一方是否为 boolean，是的话就会把 boolean 转为 number 再进行判断  <pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;1&#x27;</span> == <span class="hljs-literal">true</span><br>        ↓<br><span class="hljs-string">&#x27;1&#x27;</span> ==  <span class="hljs-number">1</span><br>        ↓<br> <span class="hljs-number">1</span>  ==  <span class="hljs-number">1</span><br></code></pre></li>
+<li>判断其中一方是否为 object 且另一方为 string、number 或者 symbol，是的话就会把 object 转为原始类型再进行判断<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;1&#x27;</span> == &#123; <span class="hljs-attr">a</span>: <span class="hljs-string">&#x27;b&#x27;</span> &#125;<br>        ↓<br><span class="hljs-string">&#x27;1&#x27;</span> == <span class="hljs-string">&#x27;[object Object]&#x27;</span><br></code></pre></li>
+<li>两边都是对象的话，那么只要不是同一对象的不同引用，都为 false</li>
+</ol>
+<p>注意，只要出现 NaN，就一定是 false，因为就连 NaN 自己都不等于 NaN<br>对于 NaN，判断的方法是使用全局函数 <code>isNaN()</code></p>
+<h2 id="x3D-x3D-x3D-操作符"><a href="#x3D-x3D-x3D-操作符" class="headerlink" title="&#x3D;&#x3D;&#x3D; 操作符"></a>&#x3D;&#x3D;&#x3D; 操作符</h2><p>不转类型，直接判断类型和值是否相同。<br>但是 NaN &#x3D;&#x3D;&#x3D; NaN 还是 false</p>
+<h2 id="amp-amp-操作符"><a href="#amp-amp-操作符" class="headerlink" title="&amp;&amp; 操作符"></a>&amp;&amp; 操作符</h2><ol>
+<li>两边条件都为 true 时，结果才为 true；</li>
+<li>如果有一个为 false，结果就为 false；</li>
+<li>当第一个条件为 false 时，就不再判断后面的条件</li>
+</ol>
+<p>注意：当数值参与逻辑与运算时，结果为 true，那么会返回的会是第二个为真的值；如果结果为 false，返回的会是第一个为假的值。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-literal">false</span> &amp;&amp; <span class="hljs-string">&quot;adsf&quot;</span>&#125;</span>`</span>;<br><span class="hljs-comment">// -&gt; &quot;false&quot;</span><br><span class="hljs-literal">false</span> === (<span class="hljs-literal">false</span> &amp;&amp; <span class="hljs-string">&quot;a&quot;</span>);<br><span class="hljs-comment">// -&gt; true</span><br><span class="hljs-literal">true</span> &amp;&amp; <span class="hljs-number">3</span>;<br><span class="hljs-comment">// -&gt; 3</span><br><span class="hljs-literal">false</span> &amp;&amp; <span class="hljs-number">3</span>;<br><span class="hljs-comment">// -&gt; false</span><br></code></pre>
+
+
+
+
+
+
   </div>
   <div>
     
@@ -644,7 +675,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">|| 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&amp;&amp; 操作符</span></a></li></ol>
 </div>
 
             </main>
@@ -659,7 +690,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">|| 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&#x3D;&#x3D;&#x3D; 操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">&amp;&amp; 操作符</span></a></li></ol>
     </article>
   
   
