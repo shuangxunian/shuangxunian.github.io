@@ -342,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-text">中间件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#use"><span class="toc-text">use</span></a></li></ol>
       </div>
     </article>
   
@@ -556,7 +556,7 @@
     
     
       <span class="dot"></span>
-      <span>324 字</span>
+      <span>719 字</span>
     
   </div>
   
@@ -605,6 +605,23 @@
 <h2 id="新建请求"><a href="#新建请求" class="headerlink" title="新建请求"></a>新建请求</h2><pre class="highlight"><code class="hljs javascript">app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/menu&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req,res</span>) =&gt;</span> &#123;<br>  res.<span class="hljs-title function_">send</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;首页&#x27;</span>, <span class="hljs-attr">key</span>: <span class="hljs-number">1</span> &#125;)<br>&#125;)<br></code></pre>
 
 <p>我们访问<code>localhost:3000/menu</code>，即可在页面中看见<code>&#123;&quot;name&quot;:&quot;首页&quot;,&quot;key&quot;:1&#125;</code>。</p>
+<h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><p>当我们想在某个函数做判断是否符合规则，是否放行；对一个请求进行多次处理时就需要中间件。<br>默认情况下从上到下匹配，一但匹配成功终止匹配；我们可以通过next将请求交给下个中间件，直到结束请求的中间件。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 引入express</span><br><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express&#x27;</span>)<br><br><span class="hljs-comment">// 创建服务器</span><br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">express</span>()<br><br>app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/menu&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req,res,next</span>) =&gt;</span> &#123;<br>  req.<span class="hljs-property">name</span> = <span class="hljs-string">&#x27;test&#x27;</span><br>  <span class="hljs-title function_">next</span>()<br>&#125;)<br><br>app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/menu&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req,res</span>) =&gt;</span> &#123;<br>  res.<span class="hljs-title function_">send</span>(req.<span class="hljs-property">name</span>)<br>&#125;)<br><br><span class="hljs-comment">// 监听3000端口</span><br>app.<span class="hljs-title function_">listen</span>(<span class="hljs-number">3000</span>)<br><br></code></pre>
+
+<h2 id="use"><a href="#use" class="headerlink" title="use"></a>use</h2><p>中间件有什么用呢：</p>
+<ol>
+<li>路由保护，如果用户登录了，允许访问对应内容；如果用户没有登陆，直接拒绝。</li>
+<li>当我们想拦截所有请求时，如此时更新服务器，我们应该拦截住所有请求，统一返回禁止登录，就可以通过use去拦截住所有：</li>
+<li>自定义404页面</li>
+<li>错误处理</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript">app.<span class="hljs-title function_">use</span>(<span class="hljs-function">(<span class="hljs-params">req,res,next</span>) =&gt;</span> &#123;<br>  res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&#x27;禁止登录&#x27;</span>)<br>&#125;)<br></code></pre>
+
+<p>同样，我们可以匹配路由，如：</p>
+<pre class="highlight"><code class="hljs javascript">app.<span class="hljs-title function_">use</span>(<span class="hljs-string">&#x27;/menu&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">req,res,next</span>) =&gt;</span> &#123;<br>  res.<span class="hljs-title function_">send</span>(<span class="hljs-string">&#x27;禁止访问menu&#x27;</span>)<br>&#125;)<br></code></pre>
+
+<p><strong>注：</strong> 如果是404页面，由于前面说过处理是按照顺序来着，此时我们应该把此路由放在所有页面的最下面。</p>
+<p>在程序执行的过程中，不可避免的会出现一些无法预料的错误，比如文件读取失败，数据库连接失败；错误处理中间件就是一个集中处理错误的地方。</p>
 
   </div>
   <div>
@@ -653,7 +670,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-text">中间件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#use"><span class="toc-text">use</span></a></li></ol>
 </div>
 
             </main>
@@ -668,7 +685,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">express是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#express%E5%93%8D%E5%BA%94hello-world"><span class="toc-text">express响应hello world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="toc-text">新建请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="toc-text">中间件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#use"><span class="toc-text">use</span></a></li></ol>
     </article>
   
   
