@@ -18,12 +18,12 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>flex</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="flex">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="记录个人成长与生活，前端，算法，nlp">
+        content="遇事不决flex，写篇文章积累一下">
     
     
       <meta 
@@ -54,6 +54,10 @@
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="css">
         
       
     
@@ -338,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Flex-%E5%B8%83%E5%B1%80%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">Flex 布局是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">容器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-direction"><span class="toc-text">flex-direction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-wrap"><span class="toc-text">flex-wrap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-flow"><span class="toc-text">flex-flow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#justify-content"><span class="toc-text">justify-content</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-items"><span class="toc-text">align-items</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-content%E5%B1%9E%E6%80%A7"><span class="toc-text">align-content属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E5%B1%9E%E6%80%A7"><span class="toc-text">项目属性</span></a></li></ol>
       </div>
     </article>
   
@@ -356,7 +360,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">281</span>
+          <span class="categories-list-item-badge">282</span>
         </div>
       </a>
     
@@ -524,7 +528,7 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      flex
     </h1>
   </header>
   
@@ -533,7 +537,7 @@
     </div>
   
   <div class="post-meta post-show-meta">
-    <time datetime="2023-10-19T02:15:40.929Z">
+    <time datetime="2023-10-19T00:00:00.000Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
@@ -541,18 +545,98 @@
       <span>2023-10-19</span>
     </time>
     
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
     
       <span class="dot"></span>
-      <span>1 字</span>
+      <span>851 字</span>
     
   </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/css/" 
+            class="post-meta-link">
+            css
+          </a>
+        
+      </div>
+    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    <p>23</p>
+    <h2 id="Flex-布局是什么"><a href="#Flex-布局是什么" class="headerlink" title="Flex 布局是什么"></a>Flex 布局是什么</h2><p>Flex 是 Flexible Box 的缩写，意为”弹性布局”，用来为盒状模型提供最大的灵活性。任何一个容器都可以指定为 Flex 布局，只需要：</p>
+<pre class="highlight"><code class="hljs css"><span class="hljs-selector-class">.box</span>&#123;<br>  <span class="hljs-attribute">display</span>: flex;<br>&#125;<br></code></pre>
 
+<p><strong>注意</strong>：设为 Flex 布局以后，子元素的float、clear和vertical-align属性将失效。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>此节了解即可，没啥重难点。</p>
+<p>采用 Flex 布局的元素，称为 Flex 容器（flex container），简称”容器”。它的所有子元素自动成为容器成员，称为 Flex 项目（flex item），简称”项目”。</p>
+<p>容器默认存在两根轴：水平的主轴（main axis，横轴）和垂直的交叉轴（cross axis，纵轴）。主轴的开始位置（与边框的交叉点）叫做main start，结束位置叫做main end；交叉轴的开始位置叫做cross start，结束位置叫做cross end。</p>
+<p>项目默认沿主轴排列。单个项目占据的主轴空间叫做main size，占据的交叉轴空间叫做cross size。</p>
+<h2 id="容器属性"><a href="#容器属性" class="headerlink" title="容器属性"></a>容器属性</h2><h3 id="flex-direction"><a href="#flex-direction" class="headerlink" title="flex-direction"></a>flex-direction</h3><p>主轴的方向（即项目的排列方向），有四个值：</p>
+<ul>
+<li>row（默认）：主轴为水平方向，起点在左端。</li>
+<li>row-reverse：主轴为水平方向，起点在右端。</li>
+<li>column：主轴为垂直方向，起点在上沿。</li>
+<li>column-reverse：主轴为垂直方向，起点在下沿。</li>
+</ul>
+<p>一般都用默认值，所以省略不写。</p>
+<h3 id="flex-wrap"><a href="#flex-wrap" class="headerlink" title="flex-wrap"></a>flex-wrap</h3><p>如果一条轴线排不下，如何换行，有三个值：</p>
+<ul>
+<li>nowrap（默认）：不换行。</li>
+<li>wrap：换行，第一行在上方。</li>
+<li>wrap-reverse：换行，第一行在下方。</li>
+</ul>
+<p>一般都用默认值，所以省略不写。</p>
+<h3 id="flex-flow"><a href="#flex-flow" class="headerlink" title="flex-flow"></a>flex-flow</h3><p>flex-flow是flex-direction和flex-wrap的简写形式，默认值为row nowrap。</p>
+<p>如果当flex-direction和flex-wrap都不用默认值的时候，可以用此。</p>
+<h3 id="justify-content"><a href="#justify-content" class="headerlink" title="justify-content"></a>justify-content</h3><p>justify-content属性定义了项目在主轴上的对齐方式。</p>
+<ul>
+<li>flex-start（默认值）：左对齐</li>
+<li>flex-end：右对齐</li>
+<li>center： 居中</li>
+<li>space-between：两端对齐到边，项目之间的间隔都相等。</li>
+<li>space-around：每个项目两侧的间隔相等。所以，项目之间的间隔比项目与边框的间隔大一倍。</li>
+</ul>
+<p>一般来说，用space-between和space-around多一些，为了能均分，具体区别主要看两端需不需要额外留空。</p>
+<h3 id="align-items"><a href="#align-items" class="headerlink" title="align-items"></a>align-items</h3><p>align-items属性定义项目在交叉轴上如何对齐。它可能取5个值：</p>
+<ul>
+<li>stretch（默认值）：如果项目未设置高度或设为auto，将占满整个容器的高度。</li>
+<li>flex-start：交叉轴的起点对齐。</li>
+<li>flex-end：交叉轴的终点对齐。</li>
+<li>center：交叉轴的中点对齐。</li>
+<li>baseline: 项目的第一行文字的基线对齐。</li>
+</ul>
+<p>具体的对齐方式与交叉轴的方向有关，这个属性用的也不多，主要也是省略直接用默认值。</p>
+<h3 id="align-content属性"><a href="#align-content属性" class="headerlink" title="align-content属性"></a>align-content属性</h3><p>align-content属性定义了多根轴线的对齐方式。它可能取6个值：</p>
+<ul>
+<li>stretch（默认值）：轴线占满整个交叉轴。</li>
+<li>flex-start：与交叉轴的起点对齐。</li>
+<li>flex-end：与交叉轴的终点对齐。</li>
+<li>center：与交叉轴的中点对齐。</li>
+<li>space-between：与交叉轴两端对齐，轴线之间的间隔平均分布。</li>
+<li>space-around：每根轴线两侧的间隔都相等。所以，轴线之间的间隔比轴线与边框的间隔大一倍。</li>
+</ul>
+<p>这个属性一般用得不多，要注意：如果项目只有一根轴线，该属性不起作用。</p>
+<h2 id="项目属性"><a href="#项目属性" class="headerlink" title="项目属性"></a>项目属性</h2>
   </div>
   <div>
     
@@ -586,7 +670,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Flex-%E5%B8%83%E5%B1%80%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">Flex 布局是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">容器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-direction"><span class="toc-text">flex-direction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-wrap"><span class="toc-text">flex-wrap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-flow"><span class="toc-text">flex-flow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#justify-content"><span class="toc-text">justify-content</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-items"><span class="toc-text">align-items</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-content%E5%B1%9E%E6%80%A7"><span class="toc-text">align-content属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E5%B1%9E%E6%80%A7"><span class="toc-text">项目属性</span></a></li></ol>
 </div>
 
             </main>
@@ -601,7 +685,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Flex-%E5%B8%83%E5%B1%80%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">Flex 布局是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-text">基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">容器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-direction"><span class="toc-text">flex-direction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-wrap"><span class="toc-text">flex-wrap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#flex-flow"><span class="toc-text">flex-flow</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#justify-content"><span class="toc-text">justify-content</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-items"><span class="toc-text">align-items</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#align-content%E5%B1%9E%E6%80%A7"><span class="toc-text">align-content属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E5%B1%9E%E6%80%A7"><span class="toc-text">项目属性</span></a></li></ol>
     </article>
   
   
@@ -617,7 +701,7 @@
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2023-10-19</div>
-        <a href="/2023/10/19/23101900/"><div class="recent-posts-item-content"></div></a>
+        <a href="/2023/10/19/23101900/"><div class="recent-posts-item-content">flex</div></a>
       </div>
     
       <div class="recent-posts-item">
