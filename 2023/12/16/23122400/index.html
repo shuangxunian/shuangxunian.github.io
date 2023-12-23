@@ -18,17 +18,17 @@
   <link 
     rel="icon" 
     href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
-  <title>霜序廿的个人网站</title>
+  <title>vite 打包 + 自动部署</title>
   
     
       <meta 
         property="og:title" 
-        content="霜序廿的个人网站">
+        content="vite 打包 + 自动部署">
     
     
       <meta 
         property="og:url" 
-        content="http://example.com/2023/12/23/23122400/index.html">
+        content="http://example.com/2023/12/16/23122400/index.html">
     
     
       <meta 
@@ -38,7 +38,7 @@
     
       <meta 
         property="og:img" 
-        content="记录个人成长与生活，前端，算法，nlp">
+        content="使用 CI 打包推到github的vite代码">
     
     
       <meta 
@@ -46,14 +46,18 @@
         content="article">
       <meta 
         property="og:article:published_time" 
-        content="2023-12-23">
+        content="2023-12-16">
       <meta 
         property="og:article:modified_time" 
-        content="2023-12-23">
+        content="2023-12-16">
       <meta 
         property="og:article:author" 
         content="霜序廿">
       
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
         
       
     
@@ -338,7 +342,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B91"><span class="toc-text">注意点1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B92"><span class="toc-text">注意点2</span></a></li></ol>
       </div>
     </article>
   
@@ -356,7 +360,7 @@
       <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
         <div class="categories-list-item">
           技术文章
-          <span class="categories-list-item-badge">285</span>
+          <span class="categories-list-item-badge">286</span>
         </div>
       </a>
     
@@ -524,7 +528,7 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      
+      vite 打包 + 自动部署
     </h1>
   </header>
   
@@ -533,25 +537,60 @@
     </div>
   
   <div class="post-meta post-show-meta">
-    <time datetime="2023-12-23T16:04:34.657Z">
+    <time datetime="2023-12-16T00:00:00.000Z">
       <i 
         class="iconfont icon-calendar" 
         style="margin-right: 2px;">
       </i>
-      <span>2023-12-23</span>
+      <span>2023-12-16</span>
     </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
     
     
       <span class="dot"></span>
-      <span>0 字</span>
+      <span>412 字</span>
     
   </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+      </div>
+    </div>
   
   </header>
   <div 
     id="section" 
     class="post-content">
-    
+    <h2 id="注意点1"><a href="#注意点1" class="headerlink" title="注意点1"></a>注意点1</h2><p>如果说你的仓库是 你的名字&#x2F;xxx，此时一定要记得改 <code>vite.config.ts</code> 里面的路径，即在配置信息里面添加 <code>base: &#39;./&#39;,</code> ：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; defineConfig &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vite&#x27;</span><br><span class="hljs-keyword">import</span> vue <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@vitejs/plugin-vue&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">UnoCSS</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;unocss/vite&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">AutoImport</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;unplugin-auto-import/vite&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Components</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;unplugin-vue-components/vite&#x27;</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">ArcoResolver</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;unplugin-vue-components/resolvers&#x27;</span><br><span class="hljs-keyword">import</span> &#123; createSvgIconsPlugin &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vite-plugin-svg-icons&#x27;</span><br><span class="hljs-keyword">import</span> &#123; resolve &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;path&#x27;</span><br><span class="hljs-comment">// https://vitejs.dev/config/</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">config</span>=(<span class="hljs-params">&#123;mode&#125;</span>)=&gt;&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>        <span class="hljs-comment">// 注意修改路径为此！</span><br>        <span class="hljs-attr">base</span>: <span class="hljs-string">&#x27;./&#x27;</span>,<br>        <span class="hljs-attr">plugins</span>: [],<br>        <span class="hljs-attr">resolve</span>: &#123;&#125;,<br>    &#125;<br>&#125;<br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">defineConfig</span>(config)<br></code></pre>
+
+<h2 id="注意点2"><a href="#注意点2" class="headerlink" title="注意点2"></a>注意点2</h2><p>在仓库里面建一个文件：<code>.github/workflows/ci.yml</code> ，复制以下代码：</p>
+<pre class="highlight"><code class="hljs yaml"><span class="hljs-comment"># Simple workflow for deploying static content to GitHub Pages</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">Deploy</span> <span class="hljs-string">static</span> <span class="hljs-string">content</span> <span class="hljs-string">to</span> <span class="hljs-string">Pages</span><br><br><span class="hljs-attr">on:</span><br>  <span class="hljs-comment"># 仅在推送到默认分支时运行。</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> [<span class="hljs-string">&#x27;main&#x27;</span>]<br><br>  <span class="hljs-comment"># 这个选项可以使你手动在 Action tab 页面触发工作流</span><br>  <span class="hljs-attr">workflow_dispatch:</span>      <br><br><span class="hljs-comment"># 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages。</span><br><span class="hljs-attr">permissions:</span><br>  <span class="hljs-attr">contents:</span> <span class="hljs-string">read</span><br>  <span class="hljs-attr">pages:</span> <span class="hljs-string">write</span><br>  <span class="hljs-attr">id-token:</span> <span class="hljs-string">write</span><br><br><span class="hljs-comment"># 允许一个并发的部署</span><br><span class="hljs-attr">concurrency:</span><br>  <span class="hljs-attr">group:</span> <span class="hljs-string">&#x27;pages&#x27;</span><br>  <span class="hljs-attr">cancel-in-progress:</span> <span class="hljs-literal">true</span><br><br><span class="hljs-attr">jobs:</span><br>  <span class="hljs-comment"># 单次部署的工作描述</span><br>  <span class="hljs-attr">deploy:</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-attr">name:</span> <span class="hljs-string">github-pages</span><br>      <span class="hljs-attr">url:</span> <span class="hljs-string">$&#123;&#123;</span> <span class="hljs-string">steps.deployment.outputs.page_url</span> <span class="hljs-string">&#125;&#125;</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v3</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v3</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">node-version:</span> <span class="hljs-number">18</span><br>          <span class="hljs-attr">cache:</span> <span class="hljs-string">&#x27;npm&#x27;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Setup</span> <span class="hljs-string">Pages</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/configure-pages@v3</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Upload</span> <span class="hljs-string">artifact</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/upload-pages-artifact@v1</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-comment"># Upload dist repository</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">&#x27;./dist&#x27;</span><br>          <span class="hljs-attr">branch:</span> <span class="hljs-string">gh-pages</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Deploy</span> <span class="hljs-string">to</span> <span class="hljs-string">GitHub</span> <span class="hljs-string">Pages</span><br>        <span class="hljs-attr">id:</span> <span class="hljs-string">deployment</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/deploy-pages@v1</span><br></code></pre>
+
+<p>随便在main推点东西，我们即可看见仓库后面有黄点，然后等待几分钟变成绿点，代表你已经打包好了。</p>
+
   </div>
   <div>
     
@@ -559,15 +598,29 @@
 </article>
 <div class="nav">
   
+    <div class="nav-item-prev">
+      <a 
+        href="/2023/12/16/23121600/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">leafer目录 </div>
+          
+        </div>
+      </a>
+    </div>
+  
   
     <div class="nav-item-next">
       <a 
-        href="/2023/12/16/23121600/" 
+        href="/2023/12/01/23120100/" 
         class="nav-link">
         <div>
           <div class="nav-label">下一篇</div>
           
-            <div class="nav-title">leafer目录 </div>
+            <div class="nav-title">如何将你的身体恢复到最完美状态 </div>
           
         </div>
         <i class="iconfont icon-right nav-next-icon"></i>
@@ -585,7 +638,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B91"><span class="toc-text">注意点1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B92"><span class="toc-text">注意点2</span></a></li></ol>
 </div>
 
             </main>
@@ -600,7 +653,7 @@
     style="padding-right: 2px;">
   </i>目录
 </div>
-
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B91"><span class="toc-text">注意点1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E7%82%B92"><span class="toc-text">注意点2</span></a></li></ol>
     </article>
   
   
@@ -615,13 +668,13 @@
   <div class="recent-posts-list">
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2023-12-23</div>
-        <a href="/2023/12/23/23122400/"><div class="recent-posts-item-content"></div></a>
+        <div class="recent-posts-item-title">2023-12-16</div>
+        <a href="/2023/12/16/23121600/"><div class="recent-posts-item-content">leafer目录</div></a>
       </div>
     
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2023-12-16</div>
-        <a href="/2023/12/16/23121600/"><div class="recent-posts-item-content">leafer目录</div></a>
+        <a href="/2023/12/16/23122400/"><div class="recent-posts-item-content">vite 打包 + 自动部署</div></a>
       </div>
     
       <div class="recent-posts-item">
