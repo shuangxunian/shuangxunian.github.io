@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>TCP面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="TCP面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2022/09/30/TCPInterviewQuestions/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="一篇关于TCP的文章">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:modified_time" 
+        content="2022-09-30">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="网络">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>326</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>71</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#01-TCP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86"><span class="toc-text">01 TCP基本认识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E5%A4%B4%E6%A0%BC%E5%BC%8F"><span class="toc-text">TCP头格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TCP-%E5%8D%8F%E8%AE%AE%EF%BC%9F-TCP-%E5%B7%A5%E4%BD%9C%E5%9C%A8%E5%93%AA%E4%B8%80%E5%B1%82%EF%BC%9F"><span class="toc-text">为什么需要 TCP 协议？ TCP 工作在哪一层？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%EF%BC%9F"><span class="toc-text">什么是 TCP ？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%E8%BF%9E%E6%8E%A5%EF%BC%9F"><span class="toc-text">什么是 TCP 连接？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%94%AF%E4%B8%80%E7%A1%AE%E5%AE%9A%E4%B8%80%E4%B8%AA-TCP-%E8%BF%9E%E6%8E%A5%E5%91%A2%EF%BC%9F"><span class="toc-text">如何唯一确定一个 TCP 连接呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E4%B8%80%E4%B8%AA-IP-%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9B%91%E5%90%AC%E4%BA%86%E4%B8%80%E4%B8%AA%E7%AB%AF%E5%8F%A3%EF%BC%8C%E5%AE%83%E7%9A%84-TCP-%E7%9A%84%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="toc-text">有一个 IP 的服务器监听了一个端口，它的 TCP 的最大连接数是多少？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP-%E5%92%8C-TCP-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F%E5%88%86%E5%88%AB%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E6%98%AF%EF%BC%9F"><span class="toc-text">UDP 和 TCP 有什么区别呢？分别的应用场景是？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="toc-text">TCP 和 UDP 区别：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-text">TCP 和 UDP 应用场景：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%B2%A1%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E5%88%99%E6%B2%A1%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#02-TCP-%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B"><span class="toc-text">02 TCP 连接建立</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 三次握手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%9F%E4%B8%8D%E6%98%AF%E4%B8%A4%E6%AC%A1%E3%80%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么是三次握手？不是两次、四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%EF%BC%9F"><span class="toc-text">为什么客户端和服务端的初始序列号 ISN 是不相同的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E5%A6%82%E4%BD%95%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E7%9A%84%EF%BC%9F"><span class="toc-text">初始序列号 ISN 是如何随机产生的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A2%E7%84%B6-IP-%E5%B1%82%E4%BC%9A%E5%88%86%E7%89%87%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88-TCP-%E5%B1%82%E8%BF%98%E9%9C%80%E8%A6%81-MSS-%E5%91%A2%EF%BC%9F"><span class="toc-text">既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN-%E6%94%BB%E5%87%BB"><span class="toc-text">SYN 攻击</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#03-TCP-%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80"><span class="toc-text">03 TCP 连接断开</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 四次挥手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8C%A5%E6%89%8B%E9%9C%80%E8%A6%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么挥手需要四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-TIME-WAIT-%E7%AD%89%E5%BE%85%E7%9A%84%E6%97%B6%E9%97%B4%E6%98%AF-2MSL%EF%BC%9F"><span class="toc-text">为什么 TIME_WAIT 等待的时间是 2MSL？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TIME-WAIT-%E7%8A%B6%E6%80%81%EF%BC%9F"><span class="toc-text">为什么需要 TIME_WAIT 状态？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIME-WAIT-%E8%BF%87%E5%A4%9A%E6%9C%89%E4%BB%80%E4%B9%88%E5%8D%B1%E5%AE%B3%EF%BC%9F"><span class="toc-text">TIME_WAIT 过多有什么危害？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96-TIME-WAIT%EF%BC%9F"><span class="toc-text">如何优化 TIME_WAIT？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%B7%B2%E7%BB%8F%E5%BB%BA%E7%AB%8B%E4%BA%86%E8%BF%9E%E6%8E%A5%EF%BC%8C%E4%BD%86%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%AA%81%E7%84%B6%E5%87%BA%E7%8E%B0%E6%95%85%E9%9A%9C%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">如果已经建立了连接，但是客户端突然出现故障了怎么办？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#04-Socket-%E7%BC%96%E7%A8%8B"><span class="toc-text">04 Socket 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%88%E5%AF%B9-TCP-%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95-Socket-%E7%BC%96%E7%A8%8B%EF%BC%9F"><span class="toc-text">针对 TCP 应该如何 Socket 编程？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#listen-%E6%97%B6%E5%80%99%E5%8F%82%E6%95%B0-backlog-%E7%9A%84%E6%84%8F%E4%B9%89%EF%BC%9F"><span class="toc-text">listen 时候参数 backlog 的意义？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#accept-%E5%8F%91%E9%80%81%E5%9C%A8%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E5%93%AA%E4%B8%80%E6%AD%A5%EF%BC%9F"><span class="toc-text">accept 发送在三次握手的哪一步？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B0%83%E7%94%A8-close-%E4%BA%86%EF%BC%8C%E8%BF%9E%E6%8E%A5%E6%98%AF%E6%96%AD%E5%BC%80%E7%9A%84%E6%B5%81%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">客户端调用 close 了，连接是断开的流程是什么？</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">286</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">13</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      TCP面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/TCPInterviewQuestions.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2022-09-30T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2022-09-30</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>9.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E7%BD%91%E7%BB%9C/" 
+            class="post-meta-link">
+            网络
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="01-TCP基本认识"><a href="#01-TCP基本认识" class="headerlink" title="01 TCP基本认识"></a>01 TCP基本认识</h2><h3 id="TCP头格式"><a href="#TCP头格式" class="headerlink" title="TCP头格式"></a>TCP头格式</h3><p>我们先来看看 TCP 头的格式，标注颜色的表示与本文关联比较大的字段，其他字段不做详细阐述。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/1483020c-7aad-4526-b956-1ab813075e6c-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/1483020c-7aad-4526-b956-1ab813075e6c-3807603.jpg"></p>
+<p><strong>序列号：</strong>在建立连接时由计算机生成的随机数作为其初始值，通过 SYN 包传给接收端主机，每发送一次数据，就「累加」一次该「数据字节数」的大小。用来解决网络包乱序问题。</p>
+<p><strong>确认应答号：</strong>指下一次「期望」收到的数据的序列号，发送端收到这个确认应答以后可以认为在这个序号以前的数据都已经被正常接收。用来解决不丢包的问题。</p>
+<p><strong>控制位：</strong></p>
+<ul>
+<li>ACK：该位为 1 时，「确认应答」的字段变为有效，TCP 规定除了最初建立连接时的 SYN 包之外该位必须设置为 1 。</li>
+<li>RST：该位为 1 时，表示 TCP 连接中出现异常必须强制断开连接。</li>
+<li>SYC：该位为 1 时，表示希望建立连，并在其「序列号」的字段进行序列号初始值的设定。</li>
+<li>FIN：该位为 1 时，表示今后不会再有数据发送，希望断开连接。当通信结束希望断开连接时，通信双方的主机之间就可以相互交换 FIN 位置为 1 的 TCP 段。</li>
+</ul>
+<h3 id="为什么需要-TCP-协议？-TCP-工作在哪一层？"><a href="#为什么需要-TCP-协议？-TCP-工作在哪一层？" class="headerlink" title="为什么需要 TCP 协议？ TCP 工作在哪一层？"></a>为什么需要 TCP 协议？ TCP 工作在哪一层？</h3><p>IP 层是「不可靠」的，它不保证网络包的交付、不保证网络包的按序交付、也不保证网络包中的数据的完整性。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/ecf77072-dd31-4d11-a4d8-1adc2ad50a33-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/ecf77072-dd31-4d11-a4d8-1adc2ad50a33-3807603.jpg"></p>
+<p>如果需要保障网络数据包的可靠性，那么就需要由上层（传输层）的 TCP 协议来负责。</p>
+<p>因为 TCP 是一个工作在传输层的可靠数据传输的服务，它能确保接收端接收的网络包是无损坏、无间隔、非冗余和按序的。</p>
+<h3 id="什么是-TCP-？"><a href="#什么是-TCP-？" class="headerlink" title="什么是 TCP ？"></a>什么是 TCP ？</h3><p>TCP 是面向连接的、可靠的、基于字节流的传输层通信协议。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/1d3a4fbb-11d7-4fcd-9b0c-adb1c188323a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/1d3a4fbb-11d7-4fcd-9b0c-adb1c188323a-3807603.jpg"></p>
+<p><strong>面向连接</strong>：一定是「一对一」才能连接，不能像 UDP 协议 可以一个主机同时向多个主机发送消息，也就是一对多是无法做到的；<br><strong>可靠的</strong>：无论的网络链路中出现了怎样的链路变化，TCP 都可以保证一个报文一定能够到达接收端；<br><strong>字节流</strong>：消息是「没有边界」的，所以无论我们消息有多大都可以进行传输。并且消息是「有序的」，当「前一个」消息没有收到的时候，即使它先收到了后面的字节已经收到，那么也不能扔给应用层去处理，同时对「重复」的报文会自动丢弃。</p>
+<h3 id="什么是-TCP-连接？"><a href="#什么是-TCP-连接？" class="headerlink" title="什么是 TCP 连接？"></a>什么是 TCP 连接？</h3><p>简单来说就是，用于保证可靠性和流量控制维护的某些状态信息，这些信息的组合，包括Socket、序列号和窗口大小称为连接。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/fe45c733-5fcd-42bd-a066-1e262e47dc74-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/fe45c733-5fcd-42bd-a066-1e262e47dc74-3807603.jpg"></p>
+<p>所以我们可以知道，建立一个 TCP 连接是需要客户端与服务器端达成上述三个信息的共识。</p>
+<ul>
+<li><strong>Socket：</strong>由 IP 地址和端口号组成</li>
+<li><strong>序列号：</strong>用来解决乱序问题等</li>
+<li><strong>窗口大小：</strong>用来做流量控制</li>
+</ul>
+<h3 id="如何唯一确定一个-TCP-连接呢？"><a href="#如何唯一确定一个-TCP-连接呢？" class="headerlink" title="如何唯一确定一个 TCP 连接呢？"></a>如何唯一确定一个 TCP 连接呢？</h3><p>TCP 四元组可以唯一的确定一个连接，四元组包括如下：</p>
+<ul>
+<li>源地址</li>
+<li>源端口</li>
+<li>目的地址</li>
+<li>目的端口</li>
+</ul>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/37966c12-5496-4659-8785-d99f7228955a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/37966c12-5496-4659-8785-d99f7228955a-3807603.jpg"></p>
+<p>源地址和目的地址的字段（32位）是在 IP 头部中，作用是通过 IP 协议发送报文给对方主机。</p>
+<p>源端口和目的端口的字段（16位）是在 TCP 头部中，作用是告诉 TCP 协议应该把报文发给哪个进程。</p>
+<h3 id="有一个-IP-的服务器监听了一个端口，它的-TCP-的最大连接数是多少？"><a href="#有一个-IP-的服务器监听了一个端口，它的-TCP-的最大连接数是多少？" class="headerlink" title="有一个 IP 的服务器监听了一个端口，它的 TCP 的最大连接数是多少？"></a>有一个 IP 的服务器监听了一个端口，它的 TCP 的最大连接数是多少？</h3><p>服务器通常固定在某个本地端口上监听，等待客户端的连接请求。</p>
+<p>因此，客户端 IP 和 端口是可变的，其理论值计算公式如下:</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/51b7cec6-34f7-4f9d-8157-e980bc59495f-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/51b7cec6-34f7-4f9d-8157-e980bc59495f-3807603.jpg"></p>
+<p>对 IPv4，客户端的 IP 数最多为 2 的 32 次方，客户端的端口数最多为 2 的 16 次方，也就是服务端单机最大 TCP 连接数，约为 2 的 48 次方。</p>
+<p>当然，服务端最大并发 TCP 连接数远不能达到理论上限。</p>
+<ul>
+<li>首先主要是文件描述符限制，Socket 都是文件，所以首先要通过 ulimit 配置文件描述符的数目；</li>
+<li>另一个是内存限制，每个 TCP 连接都要占用一定内存，操作系统是有限的。</li>
+</ul>
+<h3 id="UDP-和-TCP-有什么区别呢？分别的应用场景是？"><a href="#UDP-和-TCP-有什么区别呢？分别的应用场景是？" class="headerlink" title="UDP 和 TCP 有什么区别呢？分别的应用场景是？"></a>UDP 和 TCP 有什么区别呢？分别的应用场景是？</h3><p>UDP 不提供复杂的控制机制，利用 IP 提供面向「无连接」的通信服务。</p>
+<p>UDP 协议真的非常简，头部只有 8 个字节（ 64 位），UDP 的头部格式如下：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7eb9c880-48e2-4d49-a810-f4201c878b76-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/7eb9c880-48e2-4d49-a810-f4201c878b76-3807603.jpg"></p>
+<ul>
+<li>目标和源端口：主要是告诉 UDP 协议应该把报文发给哪个进程。</li>
+<li>包长度：该字段保存了 UDP 首部的长度跟数据的长度之和。</li>
+<li>校验和：校验和是为了提供可靠的 UDP 首部和数据而设计。</li>
+</ul>
+<h3 id="TCP-和-UDP-区别："><a href="#TCP-和-UDP-区别：" class="headerlink" title="TCP 和 UDP 区别："></a>TCP 和 UDP 区别：</h3><ol>
+<li>连接</li>
+</ol>
+<ul>
+<li>TCP 是面向连接的传输层协议，传输数据前先要建立连接。</li>
+<li>UDP 是不需要连接，即刻传输数据。</li>
+</ul>
+<ol start="2">
+<li>服务对象</li>
+</ol>
+<ul>
+<li>TCP 是一对一的两点服务，即一条连接只有两个端点。</li>
+<li>UDP 支持一对一、一对多、多对多的交互通信</li>
+</ul>
+<ol start="3">
+<li>可靠性</li>
+</ol>
+<ul>
+<li>TCP 是可靠交付数据的，数据可以无差错、不丢失、不重复、按需到达。</li>
+<li>UDP 是尽最大努力交付，不保证可靠交付数据。</li>
+</ul>
+<ol start="4">
+<li>拥塞控制、流量控制</li>
+</ol>
+<ul>
+<li>TCP 有拥塞控制和流量控制机制，保证数据传输的安全性。</li>
+<li>UDP 则没有，即使网络非常拥堵了，也不会影响 UDP 的发送速率。</li>
+</ul>
+<ol start="5">
+<li>首部开销</li>
+</ol>
+<ul>
+<li>TCP 首部长度较长，会有一定的开销，首部在没有使用「选项」字段时是 20 个字节，如果使用了「选项」字段则会变长的。</li>
+<li>UDP 首部只有 8 个字节，并且是固定不变的，开销较小。</li>
+</ul>
+<h3 id="TCP-和-UDP-应用场景："><a href="#TCP-和-UDP-应用场景：" class="headerlink" title="TCP 和 UDP 应用场景："></a>TCP 和 UDP 应用场景：</h3><p>由于 TCP 是面向连接，能保证数据的可靠性交付，因此经常用于：</p>
+<ul>
+<li>FTP 文件传输</li>
+<li>HTTP &#x2F; HTTPS</li>
+</ul>
+<p>由于 UDP 面向无连接，它可以随时发送数据，再加上UDP本身的处理既简单又高效，因此经常用于：</p>
+<ul>
+<li>包总量较少的通信，如 DNS 、SNMP 等</li>
+<li>视频、音频等多媒体通信</li>
+<li>广播通信</li>
+</ul>
+<h3 id="为什么-UDP-头部没有「首部长度」字段，而-TCP-头部有「首部长度」字段呢？"><a href="#为什么-UDP-头部没有「首部长度」字段，而-TCP-头部有「首部长度」字段呢？" class="headerlink" title="为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？"></a>为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？</h3><p>原因是 TCP 有可变长的「选项」字段，而 UDP 头部长度则是不会变化的，无需多一个字段去记录 UDP 的首部长度。</p>
+<h3 id="为什么-UDP-头部有「包长度」字段，而-TCP-头部则没有「包长度」字段呢？"><a href="#为什么-UDP-头部有「包长度」字段，而-TCP-头部则没有「包长度」字段呢？" class="headerlink" title="为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？"></a>为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？</h3><p>先说说 TCP 是如何计算负载数据长度：</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/6a63631a-a40f-4e2c-a1d0-442c7992d1a7-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/6a63631a-a40f-4e2c-a1d0-442c7992d1a7-3807603.jpg"></p>
+<p>其中 IP 总长度 和 IP 首部长度，在 IP 首部格式是已知的。TCP 首部长度，则是在 TCP 首部格式已知的，所以就可以求得 TCP 数据的长度。</p>
+<p>大家这时就奇怪了问：“ UDP 也是基于 IP 层的呀，那 UDP 的数据长度也可以通过这个公式计算呀？ 为何还要有「包长度」呢？”</p>
+<p>这么一问，确实感觉 UDP 「包长度」是冗余的。</p>
+<p>因为为了网络设备硬件设计和处理方便，首部长度需要是 4字节的整数倍。</p>
+<p>如果去掉 UDP 「包长度」字段，那 UDP 首部长度就不是 4 字节的整数倍了，所以笔者觉得这可能是为了补全 UDP 首部长度是 4 字节的整数倍，才补充了「包长度」字段。</p>
+<h2 id="02-TCP-连接建立"><a href="#02-TCP-连接建立" class="headerlink" title="02 TCP 连接建立"></a>02 TCP 连接建立</h2><h3 id="TCP-三次握手过程和状态变迁"><a href="#TCP-三次握手过程和状态变迁" class="headerlink" title="TCP 三次握手过程和状态变迁"></a>TCP 三次握手过程和状态变迁</h3><p>TCP 是面向连接的协议，所以使用 TCP 前必须先建立连接，而建立连接是通过三次握手而进行的。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a3138778-9679-4780-be39-595f03248f1f-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a3138778-9679-4780-be39-595f03248f1f-3807603.jpg"></p>
+<p>一开始，客户端和服务端都处于 CLOSED 状态。先是服务端主动监听某个端口，处于 LISTEN状态。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b98d8625-72ca-475f-bd8c-2d54f441eeee-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b98d8625-72ca-475f-bd8c-2d54f441eeee-3807603.jpg"></p>
+<p>客户端会随机初始化序号（client_isn），将此序号置于 TCP 首部的「序号」字段中，同时把 SYN 标志位置为 1 ，表示 SYN 报文。接着把第一个 SYN 报文发送给服务端，表示向服务端发起连接，该报文不包含应用层数据，之后客户端处于 SYN-SENT 状态。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/338ba269-a162-4790-87f3-e9b90035ad6e-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/338ba269-a162-4790-87f3-e9b90035ad6e-3807603.jpg"></p>
+<p>服务端收到客户端的 SYN 报文后，首先服务端也随机初始化自己的序号（server_isn），将此序号填入 TCP 首部的「序号」字段中，其次把 TCP 首部的「确认应答号」字段填入 client_isn + 1, 接着把 SYN 和 ACK 标志位置为 1。最后把该报文发给客户端，该报文也不包含应用层数据，之后服务端处于 SYN-RCVD 状态。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/69f67cce-c0f4-4975-b188-0a29863b7a90-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/69f67cce-c0f4-4975-b188-0a29863b7a90-3807603.jpg"></p>
+<p>客户端收到服务端报文后，还要向服务端回应最后一个应答报文，首先该应答报文 TCP 首部 ACK 标志位置为 1 ，其次「确认应答号」字段填入 server_isn + 1 ，最后把报文发送给服务端，这次报文可以携带客户到服务器的数据，之后客户端处于 ESTABLISHED 状态。<br>服务器收到客户端的应答报文后，也进入 ESTABLISHED 状态。</p>
+<p>从上面的过程可以发现第三次握手是可以携带数据的，前两次握手是不可以携带数据的，这也是面试常问的题。</p>
+<p>一旦完成三次握手，双方都处于 ESTABLISHED 状态，此致连接就已建立完成，客户端和服务端就可以相互发送数据了。</p>
+<h3 id="为什么是三次握手？不是两次、四次？"><a href="#为什么是三次握手？不是两次、四次？" class="headerlink" title="为什么是三次握手？不是两次、四次？"></a>为什么是三次握手？不是两次、四次？</h3><p>在前面我们知道了什么是 TCP 连接：<br>用于保证可靠性和流量控制维护的某些状态信息，这些信息的组合，包括Socket、序列号和窗口大小称为连接。<br>所以，重要的是为什么三次握手才可以初始化Socket、序列号和窗口大小并建立 TCP 连接。</p>
+<p>接下来以三个方面分析三次握手的原因：</p>
+<ul>
+<li>三次握手才可以阻止重复历史连接的初始化（主要原因）</li>
+<li>三次握手才可以同步双方的初始序列号</li>
+<li>三次握手才可以避免资源浪费</li>
+</ul>
+<p><strong>原因一：避免历史连接</strong><br>简单来说，三次握手的首要原因是为了防止旧的重复连接初始化造成混乱。</p>
+<p>网络环境是错综复杂的，往往并不是如我们期望的一样，先发送的数据包，就先到达目标主机，反而它很怪，可能会由于网络拥堵等乱七八糟的原因，会使得旧的数据包，先到达目标主机，那么这种情况下 TCP 三次握手是如何避免的呢？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/c7a25789-7c17-41a8-953e-684464401051-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/c7a25789-7c17-41a8-953e-684464401051-3807603.jpg"></p>
+<p>客户端连续发送多次 SYN 建立连接的报文，在网络拥堵等情况下：</p>
+<ul>
+<li>一个「旧 SVN 报文」比「最新的 SYN 」 报文早到达了服务端；</li>
+<li>那么此时服务端就会回一个 SYN + ACK 报文给客户端；</li>
+<li>客户端收到后可以根据自身的上下文，判断这是一个历史连接（序列号过期或超时），那么客户端就会发送 RST 报文给服务端，表示中止这一次连接。</li>
+</ul>
+<p>如果是两次握手连接，就不能判断当前连接是否是历史连接，三次握手则可以在客户端（发送方）准备发送第三次报文时，客户端因有足够的上下文来判断当前连接是否是历史连接：</p>
+<ul>
+<li>如果是历史连接（序列号过期或超时），则第三次握手发送的报文是 RST 报文，以此中止历史连接；</li>
+<li>如果不是历史连接，则第三次发送的报文是 ACK 报文，通信双方就会成功建立连接；</li>
+</ul>
+<p>所以， TCP 使用三次握手建立连接的最主要原因是防止历史连接初始化了连接。</p>
+<p><strong>原因二：同步双方初始序列号</strong><br>TCP 协议的通信双方， 都必须维护一个「序列号」， 序列号是可靠传输的一个关键因素，它的作用：</p>
+<ul>
+<li>接收方可以去除重复的数据；</li>
+<li>接收方可以根据数据包的序列号按序接收；</li>
+<li>可以标识发送出去的数据包中， 哪些是已经被对方收到的；</li>
+</ul>
+<p>可见，序列号在 TCP 连接中占据着非常重要的作用，所以当客户端发送携带「初始序列号」的 SYN 报文的时候，需要服务端回一个 ACK 应答报文，表示客户端的 SVN 报文已被服务端成功接收，那当服务端发送「初始序列号」给客户端的时候，依然也要得到客户端的应答回应，这样一来一回，才能确保双方的初始序列号能被可靠的同步。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/0374061b-f9b3-4288-800c-7a11c732b269-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/0374061b-f9b3-4288-800c-7a11c732b269-3807603.jpg"></p>
+<p>四次握手其实也能够可靠的同步双方的初始化序号，但由于第二步和第三步可以优化成一步，所以就成了「三次握手」。</p>
+<p>而两次握手只保证了一方的初始序列号能被对方成功接收，没办法保证双方的初始序列号都能被确认接收。</p>
+<p><strong>原因三：避免资源浪费</strong><br>如果只有「两次握手」，当客户端的 SYN 请求连接在网络中阻塞，客户端没有接收到 ACK 报文，就会重新发送 SYN ，由于没有第三次握手，服务器不清楚客户端是否收到了自己发送的建立连接的 ACK 确认信号，所以每收到一个 SYN 就只能先主动建立一个连接，这会造成什么情况呢？</p>
+<p>如果客户端的 SYN 阻塞了，重复发送多次 SYN 报文，那么服务器在收到请求后就会建立多个冗余的无效链接，造成不必要的资源浪费。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/dcc66195-43b9-4197-ab53-ea9dee3d5945-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/dcc66195-43b9-4197-ab53-ea9dee3d5945-3807603.jpg"></p>
+<p>即两次握手会造成消息滞留情况下，服务器重复接受无用的连接请求 SYN 报文，而造成重复分配资源。</p>
+<p><strong>小结</strong><br>TCP 建立连接时，通过三次握手能防止历史连接的建立，能减少双方不必要的资源开销，能帮助双方同步初始化序列号。序列号能够保证数据包不重复、不丢弃和按序传输。</p>
+<p>不使用「两次握手」和「四次握手」的原因：</p>
+<ul>
+<li>「两次握手」：无法防止历史连接的建立，会造成双方资源的浪费，也无法可靠的同步双方序列号；</li>
+<li>「四次握手」：三次握手就已经理论上最少可靠连接建立，所以不需要使用更多的通信次数。</li>
+</ul>
+<h3 id="为什么客户端和服务端的初始序列号-ISN-是不相同的？"><a href="#为什么客户端和服务端的初始序列号-ISN-是不相同的？" class="headerlink" title="为什么客户端和服务端的初始序列号 ISN 是不相同的？"></a>为什么客户端和服务端的初始序列号 ISN 是不相同的？</h3><p>因为网络中的报文会延迟、会复制重发、也有可能丢失，这样会造成的不同连接之间产生互相影响，所以为了避免互相影响，客户端和服务端的初始序列号是随机且不同的。</p>
+<h3 id="初始序列号-ISN-是如何随机产生的？"><a href="#初始序列号-ISN-是如何随机产生的？" class="headerlink" title="初始序列号 ISN 是如何随机产生的？"></a>初始序列号 ISN 是如何随机产生的？</h3><p>起始 ISN 是基于时钟的，每 4 毫秒 + 1，转一圈要 4.55 个小时。</p>
+<p>RFC1948 中提出了一个较好的初始化序列号 ISN 随机生成算法：</p>
+<p><em>ISN &#x3D; M + F (localhost, localport, remotehost, remoteport)</em></p>
+<ul>
+<li>M 是一个计时器，这个计时器每隔 4 毫秒加 1。</li>
+<li>F 是一个 Hash 算法，根据源 IP、目的 IP、源端口、目的端口生成一个随机数值。要保证 Hash 算法不能被外部轻易推算得出，用 MD5 算法是一个比较好的选择。</li>
+</ul>
+<h3 id="既然-IP-层会分片，为什么-TCP-层还需要-MSS-呢？"><a href="#既然-IP-层会分片，为什么-TCP-层还需要-MSS-呢？" class="headerlink" title="既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？"></a>既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？</h3><p>我们先来认识下 MTU 和 MSS</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a1d3160a-d257-48bb-b6c8-d4ef37783b1e-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a1d3160a-d257-48bb-b6c8-d4ef37783b1e-3807603.jpg"></p>
+<ul>
+<li>MTU：一个网络包的最大长度，以太网中一般为 1500 字节；</li>
+<li>MSS：除去 IP 和 TCP 头部之后，一个网络包所能容纳的 TCP 数据的最大长度；</li>
+</ul>
+<p>如果在 TCP 的整个报文（头部 + 数据）交给 IP 层进行分片，会有什么异常呢？</p>
+<p>当 IP 层有一个超过 MTU 大小的数据（TCP 头部 + TCP 数据）要发送，那么 IP 层就要进行分片，把数据分片成若干片，保证每一个分片都小于 MTU。把一份 IP 数据报进行分片以后，由目标主机的 IP 层来进行重新组装后，在交给上一层 TCP 传输层。</p>
+<p>这看起来井然有序，但这存在隐患的，那么当如果一个 IP 分片丢失，整个 IP 报文的所有分片都得重传。</p>
+<p>因为 IP 层本身没有超时重传机制，它由传输层的 TCP 来负责超时和重传。</p>
+<p>当接收方发现 TCP 报文（头部 + 数据）的某一片丢失后，则不会响应 ACK 给对方，那么发送方的 TCP 在超时后，就会重发「整个 TCP 报文（头部 + 数据）」。</p>
+<p>因此，可以得知由 IP 层进行分片传输，是非常没有效率的。</p>
+<p>所以，为了达到最佳的传输效能 TCP 协议在建立连接的时候通常要协商双方的 MSS 值，当 TCP 层发现数据超过 MSS 时，则就先会进行分片，当然由它形成的 IP 包的长度也就不会大于 MTU ，自然也就不用 IP 分片了。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/8967d4c4-a385-4245-a394-f92bd65a77d4-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/8967d4c4-a385-4245-a394-f92bd65a77d4-3807603.jpg"></p>
+<p>经过 TCP 层分片后，如果一个 TCP 分片丢失后，进行重发时也是以 MSS 为单位，而不用重传所有的分片，大大增加了重传的效率。</p>
+<h3 id="SYN-攻击"><a href="#SYN-攻击" class="headerlink" title="SYN 攻击"></a>SYN 攻击</h3><p>我们都知道 TCP 连接建立是需要三次握手，假设攻击者短时间伪造不同 IP 地址的 SYN 报文，服务端每接收到一个 SVN 报文，就进入SYN_RCVD 状态，但服务端发送出去的 ACK + SYN 报文，无法得到未知 IP 主机的 ACK 应答，久而久之就会占满服务端的 SYN 接收队列（未连接队列），使得服务器不能为正常用户服务。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b73f2216-a493-4e25-9f53-f722711264ed-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b73f2216-a493-4e25-9f53-f722711264ed-3807603.jpg"></p>
+<p><strong>避免 SVN 攻击方式一</strong></p>
+<p>其中一种解决方式是通过修改 Linux 内核参数，控制队列大小和当队列满时应做什么处理。</p>
+<ul>
+<li>当网卡接收数据包的速度大于内核处理的速度时，会有一个队列保存这些数据包。控制该队列的最大值如下参数：<pre class="highlight"><code class="hljs linux">net.core.netdev_max_backlog<br></code></pre></li>
+<li>SYN_RCVD 状态连接的最大个数：<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_max_syn_backlog<br></code></pre></li>
+<li>超出处理能时，对新的 SYN 直接回报 RST，丢弃连接：<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_abort_on_overflow<br></code></pre>
+<strong>避免 SVN 攻击方式二</strong></li>
+</ul>
+<p>我们先来看下Linux 内核的 SYN （未完成连接建立）队列与 Accpet （已完成连接建立）队列是如何工作的？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/167b95b7-b6ac-48df-bd7a-affb4f9fd44c-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/167b95b7-b6ac-48df-bd7a-affb4f9fd44c-3807603.jpg"></p>
+<p>正常流程：</p>
+<ul>
+<li>当服务端接收到客户端的 SYN 报文时，会将其加入到内核的「 SYN 队列」；</li>
+<li>接着发送 SYN + ACK 给客户端，等待客户端回应 ACK 报文；</li>
+<li>服务端接收到 ACK 报文后，从「 SVN 队列」移除放入到「 Accept 队列」；</li>
+<li>应用通过调用 accpet() socket 接口，从「 Accept 队列」取出的连接。</li>
+</ul>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a94fbb2e-6b71-44d6-89fc-9ce949c8aae0-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a94fbb2e-6b71-44d6-89fc-9ce949c8aae0-3807603.jpg"></p>
+<p>应用程序过慢：</p>
+<ul>
+<li>如果应用程序过慢时，就会导致「 Accept 队列」被占满。</li>
+</ul>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/56b43b72-a301-4ea9-8a60-47ae0b073fcf-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/56b43b72-a301-4ea9-8a60-47ae0b073fcf-3807603.jpg"></p>
+<p>受到 SVN 攻击：</p>
+<ul>
+<li>如果不断受到 SVN 攻击，就会导致「 SYN 队列」被占满。</li>
+</ul>
+<p>tcp_syncookies 的方式可以应对 SYN 攻击的方法：</p>
+<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_syncookies = 1<br></code></pre>
+
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/998d0549-0d5e-4f49-8892-8828c3f95c93-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/998d0549-0d5e-4f49-8892-8828c3f95c93-3807603.jpg"></p>
+<ul>
+<li>当 「 SYN 队列」满之后，后续服务器收到 SYN 包，不进入「 SYN 队列」；</li>
+<li>计算出一个 cookie 值，再以 SYN + ACK 中的「序列号」返回客户端，</li>
+<li>服务端接收到客户端的应答报文时，服务器会检查这个 ACK 包的合法性。如果合法，直接放入到「 Accept 队列」。</li>
+<li>最后应用通过调用 accpet() socket 接口，从「 Accept 队列」取出的连接。</li>
+</ul>
+<h2 id="03-TCP-连接断开"><a href="#03-TCP-连接断开" class="headerlink" title="03 TCP 连接断开"></a>03 TCP 连接断开</h2><h3 id="TCP-四次挥手过程和状态变迁"><a href="#TCP-四次挥手过程和状态变迁" class="headerlink" title="TCP 四次挥手过程和状态变迁"></a>TCP 四次挥手过程和状态变迁</h3><p>天下没有不散的宴席，对于 TCP 连接也是这样， TCP 断开连接是通过四次挥手方式。</p>
+<p>双方都可以主动断开连接，断开连接后主机中的「资源」将被释放。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/dfc45d65-9d15-4451-9780-d21f2d51aa73-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/dfc45d65-9d15-4451-9780-d21f2d51aa73-3807603.jpg"></p>
+<ul>
+<li>客户端打算关闭连接，此时会发送一个 TCP 首部 FIN 标志位被置为 1 的报文，也即 FIN 报文，之后客户端进入 FIN_WAIT_1 状态。</li>
+<li>服务端收到该报文后，就向客户端发送 ACK 应答报文，接着服务端进入 CLOSED_WAIT 状态。</li>
+<li>客户端收到服务端的 ACK 应答报文后，之后进入 FIN_WAIT_2 状态。</li>
+<li>等待服务端处理完数据后，也向客户端发送 FIN 报文，之后服务端进入 LAST_ACK 状态。</li>
+<li>客户端收到服务端的 FIN 报文后，回一个 ACK 应答报文，之后进入 TIME_WAIT 状态</li>
+<li>服务器收到了 ACK 应答报文后，就进入了 CLOSE 状态，至此服务端已经完成连接的关闭。</li>
+<li>客户端在经过 2MSL 一段时间后，自动进入 CLOSE 状态，至此客户端也完成连接的关闭。</li>
+</ul>
+<p>你可以看到，每个方向都需要一个 FIN 和一个 ACK，因此通常被称为四次挥手。</p>
+<p>这里一点需要注意是：主动关闭连接的，才有 TIME_WAIT 状态。</p>
+<h3 id="为什么挥手需要四次？"><a href="#为什么挥手需要四次？" class="headerlink" title="为什么挥手需要四次？"></a>为什么挥手需要四次？</h3><p>再来回顾下四次挥手双方发 FIN 包的过程，就能理解为什么需要四次了。</p>
+<ul>
+<li>关闭连接时，客户端向服务端发送 FIN 时，仅仅表示客户端不再发送数据了但是还能接收数据。</li>
+<li>服务器收到客户端的 FIN 报文时，先回一个 ACK 应答报文，而服务端可能还有数据需要处理和发送，等服务端不再发送数据时，才发送 FIN 报文给客户端来表示同意现在关闭连接。</li>
+</ul>
+<p>从上面过程可知，服务端通常需要等待完成数据的发送和处理，所以服务端的 ACK 和 FIN 一般都会分开发送，从而比三次握手导致多了一次。</p>
+<h3 id="为什么-TIME-WAIT-等待的时间是-2MSL？"><a href="#为什么-TIME-WAIT-等待的时间是-2MSL？" class="headerlink" title="为什么 TIME_WAIT 等待的时间是 2MSL？"></a>为什么 TIME_WAIT 等待的时间是 2MSL？</h3><p>MSL 是 Maximum Segment Lifetime，报文最大生存时间，它是任何报文在网络上存在的最长时间，超过这个时间报文将被丢弃。因为 TCP 报文基于是 IP 协议的，而 IP 头中有一个 TTL 字段，是 IP 数据报可以经过的最大路由数，每经过一个处理他的路由器此值就减 1，当此值为 0 则数据报将被丢弃，同时发送 ICMP 报文通知源主机。</p>
+<p>MSL 与 TTL 的区别： MSL 的单位是时间，而 TTL 是经过路由跳数。所以 MSL 应该要大于等于 TTL 消耗为 0 的时间，以确保报文已被自然消亡。</p>
+<p>TIME_WAIT 等待 2 倍的 MSL，比较合理的解释是： 网络中可能存在来自发送方的数据包，当这些发送方的数据包被接收方处理后又会向对方发送响应，所以一来一回需要等待 2 倍的时间。</p>
+<p>比如如果被动关闭方没有收到断开连接的最后的 ACK 报文，就会触发超时重发 Fin 报文，另一方接收到 FIN 后，会重发 ACK 给被动关闭方， 一来一去正好 2 个 MSL。</p>
+<p>2MSL 的时间是从客户端接收到 FIN 后发送 ACK 开始计时的。如果在 TIME-WAIT 时间内，因为客户端的 ACK 没有传输到服务端，客户端又接收到了服务端重发的 FIN 报文，那么 2MSL 时间将重新计时。</p>
+<p>在 Linux 系统里 2MSL 默认是 60 秒，那么一个 MSL 也就是 30 秒。Linux 系统停留在 TIME_WAIT 的时间为固定的 60 秒。</p>
+<p>其定义在 Linux 内核代码里的名称为 TCP_TIMEWAIT_LEN：</p>
+<pre class="highlight"><code class="hljs linux">#define TCP_TIMEWAIT_LEN (60*HZ) /* how long to wait to destroy TIME-WAIT <br>                                    state, about 60 seconds  */<br></code></pre>
+
+<p>如果要修改 TIME_WAIT 的时间长度，只能修改 Linux 内核代码里 TCP_TIMEWAIT_LEN 的值，并重新编译 Linux 内核。</p>
+<h3 id="为什么需要-TIME-WAIT-状态？"><a href="#为什么需要-TIME-WAIT-状态？" class="headerlink" title="为什么需要 TIME_WAIT 状态？"></a>为什么需要 TIME_WAIT 状态？</h3><p>主动发起关闭连接的一方，才会有 TIME-WAIT 状态。</p>
+<p>需要 TIME-WAIT 状态，主要是两个原因：</p>
+<ul>
+<li>防止具有相同「四元组」的「旧」数据包被收到；</li>
+<li>保证「被动关闭连接」的一方能被正确的关闭，即保证最后的 ACK 能让被动关闭方接收，从而帮助其正常关闭；</li>
+</ul>
+<p><strong>原因一：防止旧连接的数据包</strong></p>
+<p>假设 TIME-WAIT 没有等待时间或时间过短，被延迟的数据包抵达后会发生什么呢？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7515f7f9-6eac-4b2d-9cd2-bf54b4055025-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/7515f7f9-6eac-4b2d-9cd2-bf54b4055025-3807603.jpg"></p>
+<ul>
+<li>如上图黄色框框服务端在关闭连接之前发送的 SEQ &#x3D; 301 报文，被网络延迟了。</li>
+<li>这时有相同端口的 TCP 连接被复用后，被延迟的 SEQ &#x3D; 301 抵达了客户端，那么客户端是有可能正常接收这个过期的报文，这就会产生数据错乱等严重的问题。</li>
+</ul>
+<p>所以，TCP 就设计出了这么一个机制，经过 2MSL 这个时间，足以让两个方向上的数据包都被丢弃，使得原来连接的数据包在网络中都自然消失，再出现的数据包一定都是新建立连接所产生的。</p>
+<p><strong>原因二：保证连接正确关闭</strong><br>也就是说，TIME-WAIT 作用是等待足够的时间以确保最后的 ACK 能让被动关闭方接收，从而帮助其正常关闭。</p>
+<p>假设 TIME-WAIT 没有等待时间或时间过短，断开连接会造成什么问题呢？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/7f425af0-8da8-4f9e-a606-d2b7192dbe90-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/7f425af0-8da8-4f9e-a606-d2b7192dbe90-3807603.jpg"></p>
+<ul>
+<li>如上图红色框框客户端四次挥手的最后一个 ACK 报文如果在网络中被丢失了，此时如果客户端 TIME-WAIT 过短或没有，则就直接进入了 CLOSE 状态了，那么服务端则会一直处在 LASE-ACK 状态。</li>
+<li>当客户端发起建立连接的 SYN 请求报文后，服务端会发送 RST 报文给客户端，连接建立的过程就会被终止。</li>
+</ul>
+<p>如果 TIME-WAIT 等待足够长的情况就会遇到两种情况：</p>
+<ul>
+<li>服务端正常收到四次挥手的最后一个 ACK 报文，则服务端正常关闭连接。</li>
+<li>服务端没有收到四次挥手的最后一个 ACK 报文时，则会重发 FIN 关闭连接报文并等待新的 ACK 报文。</li>
+</ul>
+<p>所以客户端在 TIME-WAIT 状态等待 2MSL 时间后，就可以保证双方的连接都可以正常的关闭。</p>
+<h3 id="TIME-WAIT-过多有什么危害？"><a href="#TIME-WAIT-过多有什么危害？" class="headerlink" title="TIME_WAIT 过多有什么危害？"></a>TIME_WAIT 过多有什么危害？</h3><p>如果服务器有处于 TIME-WAIT 状态的 TCP，则说明是由服务器方主动发起的断开请求。</p>
+<p>过多的 TIME-WAIT 状态主要的危害有两种：</p>
+<ul>
+<li>第一是内存资源占用；</li>
+<li>第二是对端口资源的占用，一个 TCP 连接至少消耗一个本地端口；</li>
+</ul>
+<p>第二个危害是会造成严重的后果的，要知道，端口资源也是有限的，一般可以开启的端口为 32768～61000，也可以通过如下参数设置指定：</p>
+<pre class="highlight"><code class="hljs linux">net.ipv4.ip_local_port_range<br></code></pre>
+
+<p>如果服务端 TIME_WAIT 状态过多，占满了所有端口资源，则会导致无法创建新连接。</p>
+<h3 id="如何优化-TIME-WAIT？"><a href="#如何优化-TIME-WAIT？" class="headerlink" title="如何优化 TIME_WAIT？"></a>如何优化 TIME_WAIT？</h3><p>这里给出优化 TIME-WAIT 的几个方式，都是有利有弊：</p>
+<ul>
+<li>打开 net.ipv4.tcp_tw_reuse 和 net.ipv4.tcp_timestamps 选项；</li>
+<li>net.ipv4.tcp_max_tw_buckets</li>
+<li>程序中使用 SO_LINGER ，应用强制使用 RST 关闭。</li>
+</ul>
+<p><strong>方式一</strong>：net.ipv4.tcp_tw_reuse 和 tcp_timestamps</p>
+<p>如下的 Linux 内核参数开启后，则可以复用处于 TIME_WAIT 的 socket 为新的连接所用。</p>
+<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_tw_reuse = 1<br></code></pre>
+
+<p>使用这个选项，还有一个前提，需要打开对 TCP 时间戳的支持，即</p>
+<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_timestamps=1（默认即为 1）<br></code></pre>
+
+<p>这个时间戳的字段是在 TCP 头部的「选项」里，用于记录 TCP 发送方的当前时间戳和从对端接收到的最新时间戳。</p>
+<p>由于引入了时间戳，我们在前面提到的 2MSL 问题就不复存在了，因为重复的数据包会因为时间戳过期被自然丢弃。</p>
+<p><strong>提醒</strong>：net.ipv4.tcp_tw_reuse要慎用，因为使用了它就必然要打开时间戳的支持 net.ipv4.tcp_timestamps，当客户端与服务端主机时间不同步时，客户端的发送的消息会被直接拒绝掉。</p>
+<p><strong>方式二</strong>：net.ipv4.tcp_max_tw_buckets</p>
+<p>这个值默认为 18000，当系统中处于 TIME_WAIT 的连接一旦超过这个值时，系统就会将所有的 TIME_WAIT 连接状态重置。</p>
+<p>这个方法过于暴力，而且治标不治本，带来的问题远比解决的问题多，不推荐使用。</p>
+<p><strong>方式三</strong>：程序中使用 SO_LINGER</p>
+<p>我们可以通过设置 socket 选项，来设置调用 close 关闭连接行为。</p>
+<pre class="highlight"><code class="hljs linux">struct linger so_linger;<br>so_linger.l_onoff = 1;<br>so_linger.l_linger = 0;<br>setsockopt(s, SOL_SOCKET, SO_LINGER, &amp;so_linger,sizeof(so_linger));<br></code></pre>
+
+<p>如果l_onoff为非 0， 且l_linger值为 0，那么调用close后，会立该发送一个RST标志给对端，该 TCP 连接将跳过四次挥手，也就跳过了TIME_WAIT状态，直接关闭。</p>
+<p>但这为跨越TIME_WAIT状态提供了一个可能，不过是一个非常危险的行为，不值得提倡。</p>
+<h3 id="如果已经建立了连接，但是客户端突然出现故障了怎么办？"><a href="#如果已经建立了连接，但是客户端突然出现故障了怎么办？" class="headerlink" title="如果已经建立了连接，但是客户端突然出现故障了怎么办？"></a>如果已经建立了连接，但是客户端突然出现故障了怎么办？</h3><p>TCP 有一个机制是保活机制。这个机制的原理是这样的：</p>
+<p>定义一个时间段，在这个时间段内，如果没有任何连接相关的活动，TCP 保活机制会开始作用，每隔一个时间间隔，发送一个探测报文，该探测报文包含的数据非常少，如果连续几个探测报文都没有得到响应，则认为当前的 TCP 连接已经死亡，系统内核将错误信息通知给上层应用程序。</p>
+<p>在 Linux 内核可以有对应的参数可以设置保活时间、保活探测的次数、保活探测的时间间隔，以下都为默认值：</p>
+<pre class="highlight"><code class="hljs linux">net.ipv4.tcp_keepalive_time=7200<br>net.ipv4.tcp_keepalive_intvl=75  <br>net.ipv4.tcp_keepalive_probes=9<br></code></pre>
+
+<ul>
+<li>tcp_keepalive_time&#x3D;7200：表示保活时间是 7200 秒（2小时），也就 2 小时内如果没有任何连接相关的活动，则会启动保活机制</li>
+<li>tcp_keepalive_intvl&#x3D;75：表示每次检测间隔 75 秒；</li>
+<li>tcp_keepalive_probes&#x3D;9：表示检测 9 次无响应，认为对方是不可达的，从而中断本次的连接。</li>
+</ul>
+<p>也就是说在 Linux 系统中，最少需要经过 2 小时 11 分 15 秒才可以发现一个「死亡」连接。</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/b3ce13f5-f51b-4412-a10d-69e86d19faaa-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/b3ce13f5-f51b-4412-a10d-69e86d19faaa-3807603.jpg"></p>
+<p>这个时间是有点长的，我们也可以根据实际的需求，对以上的保活相关的参数进行设置。</p>
+<p>如果开启了 TCP 保活，需要考虑以下几种情况：</p>
+<p>第一种，对端程序是正常工作的。当 TCP 保活的探测报文发送给对端, 对端会正常响应，这样 TCP 保活时间会被重置，等待下一个 TCP 保活时间的到来。</p>
+<p>第二种，对端程序崩溃并重启。当 TCP 保活的探测报文发送给对端后，对端是可以响应的，但由于没有该连接的有效信息，会产生一个 RST 报文，这样很快就会发现 TCP 连接已经被重置。</p>
+<p>第三种，是对端程序崩溃，或对端由于其他原因导致报文不可达。当 TCP 保活的探测报文发送给对端后，石沉大海，没有响应，连续几次，达到保活探测次数后，TCP 会报告该 TCP 连接已经死亡。</p>
+<h2 id="04-Socket-编程"><a href="#04-Socket-编程" class="headerlink" title="04 Socket 编程"></a>04 Socket 编程</h2><h3 id="针对-TCP-应该如何-Socket-编程？"><a href="#针对-TCP-应该如何-Socket-编程？" class="headerlink" title="针对 TCP 应该如何 Socket 编程？"></a>针对 TCP 应该如何 Socket 编程？</h3><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/a90c5641-ee6b-43bf-bf71-d99cf4286ce5-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/a90c5641-ee6b-43bf-bf71-d99cf4286ce5-3807603.jpg"></p>
+<ul>
+<li>服务端和客户端初始化 socket，得到文件描述符；</li>
+<li>服务端调用 bind，将绑定在 IP 地址和端口;</li>
+<li>服务端调用 listen，进行监听；</li>
+<li>服务端调用 accept，等待客户端连接；</li>
+<li>客户端调用 connect，向服务器端的地址和端口发起连接请求；</li>
+<li>服务端 accept 返回用于传输的 socket 的文件描述符；</li>
+<li>客户端调用 write 写入数据；服务端调用 read 读取数据；</li>
+<li>客户端断开连接时，会调用 close，那么服务端 read 读取数据的时候，就会读取到了 EOF，待处理完数据后，服务端调用 close，表示连接关闭。</li>
+</ul>
+<p>这里需要注意的是，服务端调用 accept 时，连接成功了会返回一个已完成连接的 socket，后续用来传输数据。</p>
+<p>所以，监听的 socket 和真正用来传送数据的 socket，是「两个」 socket，一个叫作监听 socket，一个叫作已完成连接 socket。</p>
+<p>成功连接建立之后，双方开始通过 read 和 write 函数来读写数据，就像往一个文件流里面写东西一样。</p>
+<h3 id="listen-时候参数-backlog-的意义？"><a href="#listen-时候参数-backlog-的意义？" class="headerlink" title="listen 时候参数 backlog 的意义？"></a>listen 时候参数 backlog 的意义？</h3><p>Linux内核中会维护两个队列：</p>
+<ul>
+<li>未完成连接队列（SYN 队列）：接收到一个 SYN 建立连接请求，处于 SYN_RCVD 状态；</li>
+<li>已完成连接队列（Accpet 队列）：已完成 TCP 三次握手过程，处于 ESTABLISHED 状态；</li>
+</ul>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/2eeecece-0460-4a5c-bcd5-bff9c84d487a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/2eeecece-0460-4a5c-bcd5-bff9c84d487a-3807603.jpg"></p>
+<pre class="highlight"><code class="hljs linux">int listen (int socketfd, int backlog)<br></code></pre>
+
+<ul>
+<li>参数一 socketfd 为 socketfd 文件描述符</li>
+<li>参数二 backlog，这参数在历史有一定的变化</li>
+</ul>
+<p>在 早期 Linux 内核 backlog 是 SYN 队列大小，也就是未完成的队列大小。</p>
+<p>在 Linux 内核 2.2 之后，backlog 变成 accept 队列，也就是已完成连接建立的队列长度，所以现在通常认为 backlog 是 accept 队列。</p>
+<h3 id="accept-发送在三次握手的哪一步？"><a href="#accept-发送在三次握手的哪一步？" class="headerlink" title="accept 发送在三次握手的哪一步？"></a>accept 发送在三次握手的哪一步？</h3><p>我们先看看客户端连接服务端时，发送了什么？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/98eb9122-e985-40e4-9163-788dc088971d-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/98eb9122-e985-40e4-9163-788dc088971d-3807603.jpg"></p>
+<ul>
+<li>客户端的协议栈向服务器端发送了 SYN 包，并告诉服务器端当前发送序列号 client_isn，客户端进入 SYNC_SENT 状态；</li>
+<li>服务器端的协议栈收到这个包之后，和客户端进行 ACK 应答，应答的值为 client_isn+1，表示对 SYN 包 client_isn 的确认，同时服务器也发送一个 SYN 包，告诉客户端当前我的发送序列号为 server_isn，服务器端进入 SYNC_RCVD 状态；</li>
+<li>客户端协议栈收到 ACK 之后，使得应用程序从 connect 调用返回，表示客户端到服务器端的单向连接建立成功，客户端的状态为 ESTABLISHED，同时客户端协议栈也会对服务器端的 SYN 包进行应答，应答数据为 server_isn+1；</li>
+<li>应答包到达服务器端后，服务器端协议栈使得 accept 阻塞调用返回，这个时候服务器端到客户端的单向连接也建立成功，服务器端也进入 ESTABLISHED 状态。</li>
+</ul>
+<p>从上面的描述过程，我们可以得知客户端 connect 成功返回是在第二次握手，服务端 accept 成功返回是在三次握手成功之后。</p>
+<h3 id="客户端调用-close-了，连接是断开的流程是什么？"><a href="#客户端调用-close-了，连接是断开的流程是什么？" class="headerlink" title="客户端调用 close 了，连接是断开的流程是什么？"></a>客户端调用 close 了，连接是断开的流程是什么？</h3><p>我们看看客户端主动调用了 close，会发生什么？</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://api2.mubu.com/v3/document_image/548b88c6-b150-4a69-9d2d-f127a019535a-3807603.jpg" class="lozad post-image"src="https://api2.mubu.com/v3/document_image/548b88c6-b150-4a69-9d2d-f127a019535a-3807603.jpg"></p>
+<ul>
+<li>客户端调用 close，表明客户端没有数据需要发送了，则此时会向服务端发送 FIN 报文，进入 FIN_WAIT_1 状态；</li>
+<li>服务端接收到了 FIN 报文，TCP 协议栈会为 FIN 包插入一个文件结束符 EOF 到接收缓冲区中，应用程序可以通过 read 调用来感知这个 FIN 包。这个 EOF 会被放在已排队等候的其他已接收的数据之后，这就意味着服务端需要处理这种异常情况，因为 EOF 表示在该连接上再无额外数据到达。此时，服务端进入 CLOSE_WAIT 状态；</li>
+<li>接着，当处理完数据后，自然就会读到 EOF，于是也调用 close 关闭它的套接字，这会使得会发出一个 FIN 包，之后处于 LAST_ACK 状态；</li>
+<li>客户端接收到服务端的 FIN 包，并发送 ACK 确认包给服务端，此时客户端将进入 TIME_WAIT 状态；</li>
+<li>服务端收到 ACK 确认包后，就进入了最后的 CLOSE 状态；</li>
+<li>客户端进过 2MSL 时间之后，也进入 CLOSED 状态；</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2022/09/30/TokenAPopularSchemeForServerAuthentication/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Token - 服务端身份验证的流行方案 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2022/09/30/Vue.jsScopedStylesvsCSSModules/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Vue scoped 样式与 CSS Module 对比 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#01-TCP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86"><span class="toc-text">01 TCP基本认识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E5%A4%B4%E6%A0%BC%E5%BC%8F"><span class="toc-text">TCP头格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TCP-%E5%8D%8F%E8%AE%AE%EF%BC%9F-TCP-%E5%B7%A5%E4%BD%9C%E5%9C%A8%E5%93%AA%E4%B8%80%E5%B1%82%EF%BC%9F"><span class="toc-text">为什么需要 TCP 协议？ TCP 工作在哪一层？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%EF%BC%9F"><span class="toc-text">什么是 TCP ？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%E8%BF%9E%E6%8E%A5%EF%BC%9F"><span class="toc-text">什么是 TCP 连接？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%94%AF%E4%B8%80%E7%A1%AE%E5%AE%9A%E4%B8%80%E4%B8%AA-TCP-%E8%BF%9E%E6%8E%A5%E5%91%A2%EF%BC%9F"><span class="toc-text">如何唯一确定一个 TCP 连接呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E4%B8%80%E4%B8%AA-IP-%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9B%91%E5%90%AC%E4%BA%86%E4%B8%80%E4%B8%AA%E7%AB%AF%E5%8F%A3%EF%BC%8C%E5%AE%83%E7%9A%84-TCP-%E7%9A%84%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="toc-text">有一个 IP 的服务器监听了一个端口，它的 TCP 的最大连接数是多少？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP-%E5%92%8C-TCP-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F%E5%88%86%E5%88%AB%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E6%98%AF%EF%BC%9F"><span class="toc-text">UDP 和 TCP 有什么区别呢？分别的应用场景是？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="toc-text">TCP 和 UDP 区别：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-text">TCP 和 UDP 应用场景：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%B2%A1%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E5%88%99%E6%B2%A1%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#02-TCP-%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B"><span class="toc-text">02 TCP 连接建立</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 三次握手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%9F%E4%B8%8D%E6%98%AF%E4%B8%A4%E6%AC%A1%E3%80%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么是三次握手？不是两次、四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%EF%BC%9F"><span class="toc-text">为什么客户端和服务端的初始序列号 ISN 是不相同的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E5%A6%82%E4%BD%95%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E7%9A%84%EF%BC%9F"><span class="toc-text">初始序列号 ISN 是如何随机产生的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A2%E7%84%B6-IP-%E5%B1%82%E4%BC%9A%E5%88%86%E7%89%87%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88-TCP-%E5%B1%82%E8%BF%98%E9%9C%80%E8%A6%81-MSS-%E5%91%A2%EF%BC%9F"><span class="toc-text">既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN-%E6%94%BB%E5%87%BB"><span class="toc-text">SYN 攻击</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#03-TCP-%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80"><span class="toc-text">03 TCP 连接断开</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 四次挥手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8C%A5%E6%89%8B%E9%9C%80%E8%A6%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么挥手需要四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-TIME-WAIT-%E7%AD%89%E5%BE%85%E7%9A%84%E6%97%B6%E9%97%B4%E6%98%AF-2MSL%EF%BC%9F"><span class="toc-text">为什么 TIME_WAIT 等待的时间是 2MSL？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TIME-WAIT-%E7%8A%B6%E6%80%81%EF%BC%9F"><span class="toc-text">为什么需要 TIME_WAIT 状态？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIME-WAIT-%E8%BF%87%E5%A4%9A%E6%9C%89%E4%BB%80%E4%B9%88%E5%8D%B1%E5%AE%B3%EF%BC%9F"><span class="toc-text">TIME_WAIT 过多有什么危害？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96-TIME-WAIT%EF%BC%9F"><span class="toc-text">如何优化 TIME_WAIT？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%B7%B2%E7%BB%8F%E5%BB%BA%E7%AB%8B%E4%BA%86%E8%BF%9E%E6%8E%A5%EF%BC%8C%E4%BD%86%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%AA%81%E7%84%B6%E5%87%BA%E7%8E%B0%E6%95%85%E9%9A%9C%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">如果已经建立了连接，但是客户端突然出现故障了怎么办？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#04-Socket-%E7%BC%96%E7%A8%8B"><span class="toc-text">04 Socket 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%88%E5%AF%B9-TCP-%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95-Socket-%E7%BC%96%E7%A8%8B%EF%BC%9F"><span class="toc-text">针对 TCP 应该如何 Socket 编程？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#listen-%E6%97%B6%E5%80%99%E5%8F%82%E6%95%B0-backlog-%E7%9A%84%E6%84%8F%E4%B9%89%EF%BC%9F"><span class="toc-text">listen 时候参数 backlog 的意义？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#accept-%E5%8F%91%E9%80%81%E5%9C%A8%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E5%93%AA%E4%B8%80%E6%AD%A5%EF%BC%9F"><span class="toc-text">accept 发送在三次握手的哪一步？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B0%83%E7%94%A8-close-%E4%BA%86%EF%BC%8C%E8%BF%9E%E6%8E%A5%E6%98%AF%E6%96%AD%E5%BC%80%E7%9A%84%E6%B5%81%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">客户端调用 close 了，连接是断开的流程是什么？</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#01-TCP%E5%9F%BA%E6%9C%AC%E8%AE%A4%E8%AF%86"><span class="toc-text">01 TCP基本认识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP%E5%A4%B4%E6%A0%BC%E5%BC%8F"><span class="toc-text">TCP头格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TCP-%E5%8D%8F%E8%AE%AE%EF%BC%9F-TCP-%E5%B7%A5%E4%BD%9C%E5%9C%A8%E5%93%AA%E4%B8%80%E5%B1%82%EF%BC%9F"><span class="toc-text">为什么需要 TCP 协议？ TCP 工作在哪一层？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%EF%BC%9F"><span class="toc-text">什么是 TCP ？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-TCP-%E8%BF%9E%E6%8E%A5%EF%BC%9F"><span class="toc-text">什么是 TCP 连接？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%94%AF%E4%B8%80%E7%A1%AE%E5%AE%9A%E4%B8%80%E4%B8%AA-TCP-%E8%BF%9E%E6%8E%A5%E5%91%A2%EF%BC%9F"><span class="toc-text">如何唯一确定一个 TCP 连接呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%89%E4%B8%80%E4%B8%AA-IP-%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9B%91%E5%90%AC%E4%BA%86%E4%B8%80%E4%B8%AA%E7%AB%AF%E5%8F%A3%EF%BC%8C%E5%AE%83%E7%9A%84-TCP-%E7%9A%84%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="toc-text">有一个 IP 的服务器监听了一个端口，它的 TCP 的最大连接数是多少？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#UDP-%E5%92%8C-TCP-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F%E5%88%86%E5%88%AB%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E6%98%AF%EF%BC%9F"><span class="toc-text">UDP 和 TCP 有什么区别呢？分别的应用场景是？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%8C%BA%E5%88%AB%EF%BC%9A"><span class="toc-text">TCP 和 UDP 区别：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%92%8C-UDP-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-text">TCP 和 UDP 应用场景：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%B2%A1%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E9%A6%96%E9%83%A8%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部没有「首部长度」字段，而 TCP 头部有「首部长度」字段呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-UDP-%E5%A4%B4%E9%83%A8%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%EF%BC%8C%E8%80%8C-TCP-%E5%A4%B4%E9%83%A8%E5%88%99%E6%B2%A1%E6%9C%89%E3%80%8C%E5%8C%85%E9%95%BF%E5%BA%A6%E3%80%8D%E5%AD%97%E6%AE%B5%E5%91%A2%EF%BC%9F"><span class="toc-text">为什么 UDP 头部有「包长度」字段，而 TCP 头部则没有「包长度」字段呢？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#02-TCP-%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B"><span class="toc-text">02 TCP 连接建立</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 三次握手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%EF%BC%9F%E4%B8%8D%E6%98%AF%E4%B8%A4%E6%AC%A1%E3%80%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么是三次握手？不是两次、四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8C%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E4%B8%8D%E7%9B%B8%E5%90%8C%E7%9A%84%EF%BC%9F"><span class="toc-text">为什么客户端和服务端的初始序列号 ISN 是不相同的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%BA%8F%E5%88%97%E5%8F%B7-ISN-%E6%98%AF%E5%A6%82%E4%BD%95%E9%9A%8F%E6%9C%BA%E4%BA%A7%E7%94%9F%E7%9A%84%EF%BC%9F"><span class="toc-text">初始序列号 ISN 是如何随机产生的？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A2%E7%84%B6-IP-%E5%B1%82%E4%BC%9A%E5%88%86%E7%89%87%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88-TCP-%E5%B1%82%E8%BF%98%E9%9C%80%E8%A6%81-MSS-%E5%91%A2%EF%BC%9F"><span class="toc-text">既然 IP 层会分片，为什么 TCP 层还需要 MSS 呢？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SYN-%E6%94%BB%E5%87%BB"><span class="toc-text">SYN 攻击</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#03-TCP-%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80"><span class="toc-text">03 TCP 连接断开</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TCP-%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E8%BF%87%E7%A8%8B%E5%92%8C%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81"><span class="toc-text">TCP 四次挥手过程和状态变迁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8C%A5%E6%89%8B%E9%9C%80%E8%A6%81%E5%9B%9B%E6%AC%A1%EF%BC%9F"><span class="toc-text">为什么挥手需要四次？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-TIME-WAIT-%E7%AD%89%E5%BE%85%E7%9A%84%E6%97%B6%E9%97%B4%E6%98%AF-2MSL%EF%BC%9F"><span class="toc-text">为什么 TIME_WAIT 等待的时间是 2MSL？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-TIME-WAIT-%E7%8A%B6%E6%80%81%EF%BC%9F"><span class="toc-text">为什么需要 TIME_WAIT 状态？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIME-WAIT-%E8%BF%87%E5%A4%9A%E6%9C%89%E4%BB%80%E4%B9%88%E5%8D%B1%E5%AE%B3%EF%BC%9F"><span class="toc-text">TIME_WAIT 过多有什么危害？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96-TIME-WAIT%EF%BC%9F"><span class="toc-text">如何优化 TIME_WAIT？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%B7%B2%E7%BB%8F%E5%BB%BA%E7%AB%8B%E4%BA%86%E8%BF%9E%E6%8E%A5%EF%BC%8C%E4%BD%86%E6%98%AF%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%AA%81%E7%84%B6%E5%87%BA%E7%8E%B0%E6%95%85%E9%9A%9C%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-text">如果已经建立了连接，但是客户端突然出现故障了怎么办？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#04-Socket-%E7%BC%96%E7%A8%8B"><span class="toc-text">04 Socket 编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%92%88%E5%AF%B9-TCP-%E5%BA%94%E8%AF%A5%E5%A6%82%E4%BD%95-Socket-%E7%BC%96%E7%A8%8B%EF%BC%9F"><span class="toc-text">针对 TCP 应该如何 Socket 编程？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#listen-%E6%97%B6%E5%80%99%E5%8F%82%E6%95%B0-backlog-%E7%9A%84%E6%84%8F%E4%B9%89%EF%BC%9F"><span class="toc-text">listen 时候参数 backlog 的意义？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#accept-%E5%8F%91%E9%80%81%E5%9C%A8%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E7%9A%84%E5%93%AA%E4%B8%80%E6%AD%A5%EF%BC%9F"><span class="toc-text">accept 发送在三次握手的哪一步？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B0%83%E7%94%A8-close-%E4%BA%86%EF%BC%8C%E8%BF%9E%E6%8E%A5%E6%98%AF%E6%96%AD%E5%BC%80%E7%9A%84%E6%B5%81%E7%A8%8B%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">客户端调用 close 了，连接是断开的流程是什么？</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-16</div>
+        <a href="/2023/12/16/23121600/"><div class="recent-posts-item-content">leafer目录</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-16</div>
+        <a href="/2023/12/16/23122400/"><div class="recent-posts-item-content">vite 打包 + 自动部署</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-01</div>
+        <a href="/2023/12/01/23120100/"><div class="recent-posts-item-content">如何将你的身体恢复到最完美状态</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-11-23</div>
+        <a href="/2023/11/23/23112300/"><div class="recent-posts-item-content">HTML 元素类型</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2023
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

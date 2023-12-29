@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta 
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta 
+    http-equiv="X-UA-Compatible" 
+    content="ie=edge">
+  <meta 
+    name="theme-color" 
+    content="#fff" 
+    id="theme-color">
+  <meta 
+    name="description" 
+    content="记录个人成长与生活，前端，算法，nlp">
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>js类面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="js类面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2023/02/15/23021502/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="和js相关的面试题">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2023-02-15">
+      <meta 
+        property="og:article:modified_time" 
+        content="2023-02-15">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试题">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>326</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>71</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#eval-%E6%98%AF%E5%81%9A%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">eval 是做什么的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-text">严格模式的限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Javascript-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%96%B9%E6%B3%95"><span class="toc-text">Javascript 垃圾回收方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%AA%E4%BA%9B%E6%93%8D%E4%BD%9C%E4%BC%9A%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">哪些操作会造成内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%9F%E9%83%BD%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%8C%E5%90%84%E6%9C%89%E4%BB%80%E4%B9%88%E7%89%B9%E7%82%B9%EF%BC%9F"><span class="toc-text">为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setTimeout%E3%80%81setInterval"><span class="toc-text">setTimeout、setInterval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cookie%EF%BC%8ClocalStorage%EF%BC%8CsessionStorage%EF%BC%8CindexDB"><span class="toc-text">cookie，localStorage，sessionStorage，indexDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#var%E3%80%81let-%E5%8F%8A-const-%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">var、let 及 const 区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#filter"><span class="toc-text">filter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reduce"><span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Es6-%E4%B8%AD%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Es6 中箭头函数与普通函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Promise"><span class="toc-text">Promise</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#async-%E5%92%8C-await"><span class="toc-text">async 和 await</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-Module"><span class="toc-text">ES Module</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-ES-%E6%A8%A1%E5%9D%97%E6%AF%94-CommonJS-%E6%9B%B4%E5%A5%BD"><span class="toc-text">为什么 ES 模块比 CommonJS 更好?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy"><span class="toc-text">Proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E7%9A%84%E6%8C%87%E5%90%91%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%9F"><span class="toc-text">this 的指向有哪几种情况？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%AF%B9%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E8%BF%9B%E8%A1%8C%E5%A4%9A%E6%AC%A1-bind%EF%BC%8C%E9%82%A3%E4%B9%88%E4%B8%8A%E4%B8%8B%E6%96%87%E4%BC%9A%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2%EF%BC%9F"><span class="toc-text">如果对一个函数进行多次 bind，那么上下文会是什么呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AA-this-%E8%A7%84%E5%88%99%E5%87%BA%E7%8E%B0%E6%97%B6%EF%BC%8Cthis-%E6%9C%80%E7%BB%88%E6%8C%87%E5%90%91%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">多个 this 规则出现时，this 最终指向哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">事件循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%8F%90%E5%8D%87"><span class="toc-text">变量提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">创建对象的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="toc-text">原型链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E5%8E%9F%E7%90%86"><span class="toc-text">instanceof 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E6%98%AF%E5%93%AA%E4%B8%AA%E7%B1%BB%E7%9A%84%E7%9B%B4%E6%8E%A5%E5%AE%9E%E4%BE%8B"><span class="toc-text">判断对象是哪个类的直接实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%8Cnew-%E6%97%B6%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">构造函数，new 时发生了什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB"><span class="toc-text">类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF"><span class="toc-text">继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES5-x2F-ES6-%E7%9A%84%E7%BB%A7%E6%89%BF%E9%99%A4%E4%BA%86%E5%86%99%E6%B3%95%E4%BB%A5%E5%A4%96%E8%BF%98%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">ES5&#x2F;ES6 的继承除了写法以外还有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS 变量类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E4%B8%AD%E4%BD%BF%E7%94%A8-typeof-%E8%83%BD%E5%BE%97%E5%88%B0%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">JS 中使用 typeof 能得到哪些类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E8%83%BD%E6%AD%A3%E7%A1%AE%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">instanceof 能正确判断对象的原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%87%BD%E6%95%B0"><span class="toc-text">实现一个类型判断函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E6%98%AF%E4%B8%8D%E6%98%AF-Array"><span class="toc-text">如何判断一个数据是不是 Array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined-%E5%8F%AF%E8%A2%AB%E8%B5%8B%E5%80%BC"><span class="toc-text">undefined 可被赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E5%9B%9E%E6%94%B6%E5%86%85%E5%AE%B9"><span class="toc-text">如何判断回收内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5"><span class="toc-text">V8 回收策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">新生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%80%81%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">老生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E5%9C%BA%E6%99%AF"><span class="toc-text">常见的内存泄漏的场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%BC%98%E5%8C%96"><span class="toc-text">内存泄漏优化</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">
+        <div class="categories-list-item">
+          技术文章
+          <span class="categories-list-item-badge">286</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E4%BB%96/">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">13</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%B8%B8%E6%88%8F/">
+        <div class="categories-list-item">
+          游戏
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E8%80%83%E8%AF%95/">
+        <div class="categories-list-item">
+          考试
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E9%98%85%E8%AF%BB/">
+        <div class="categories-list-item">
+          阅读
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BD%AF%E5%AE%9E%E5%8A%9B/" 
+        title="软实力">
+        <div class="tags-list-item">软实力</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%80%83%E8%AF%95/" 
+        title="考试">
+        <div class="tags-list-item">考试</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%8E%9F%E7%A5%9E/" 
+        title="原神">
+        <div class="tags-list-item">原神</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      js类面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/23021502.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2023-02-15T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2023-02-15</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" 
+          class="post-meta-link">
+          技术文章
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+            class="post-meta-link">
+            面试题
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="eval-是做什么的？"><a href="#eval-是做什么的？" class="headerlink" title="eval 是做什么的？"></a>eval 是做什么的？</h2><ul>
+<li>eval 的功能是把对应的字符串解析成 JS 代码并运行</li>
+<li>eval 不安全，若有用户输入会有被攻击风险</li>
+<li>非常耗性能（先解析成 js 语句，再执行）</li>
+</ul>
+<h2 id="严格模式的限制"><a href="#严格模式的限制" class="headerlink" title="严格模式的限制"></a>严格模式的限制</h2><ul>
+<li>变量必须声明后再使用</li>
+<li>函数的参数不能有同名属性，否则报错</li>
+<li>不能使用 with 语句</li>
+<li>不能对只读属性赋值，否则报错</li>
+<li>不能使用前缀 0 表示八进制数，否则报错</li>
+<li>不能删除不可删除的属性，否则报错</li>
+<li>不能删除变量 delete prop，会报错，只能删除属性 delete global[prop]</li>
+<li>eval 不会在它的外层作用域引入变量</li>
+<li>eval 和 arguments 不能被重新赋值</li>
+<li>arguments 不会自动反映函数参数的变化</li>
+<li>不能使用 arguments.callee</li>
+<li>不能使用 arguments.caller</li>
+<li>禁止 this 指向全局对象</li>
+<li>不能使用 fn.caller 和 fn.arguments 获取函数调用的堆栈</li>
+<li>增加了保留字（比如 protected、static 和 interface）</li>
+</ul>
+<h2 id="Javascript-垃圾回收方法"><a href="#Javascript-垃圾回收方法" class="headerlink" title="Javascript 垃圾回收方法"></a>Javascript 垃圾回收方法</h2><ul>
+<li>标记清除（mark and sweep）<br>这是 JavaScript 最常见的垃圾回收方式，当变量进入执行环境的时候，比如函数中声明一个变量，垃圾回收器将其标记为“进入环境”，当变量离开环境的时候（函数执行结束）将其标记为“离开环境”<br>垃圾回收器会在运行的时候给存储在内存中的所有变量加上标记，然后去掉环境中的变量以及被环境中变量所引用的变量（闭包），在这些完成之后仍存在标记的就是要删除的变量了</li>
+<li>引用计数(reference counting)<br>在低版本 IE 中经常会出现内存泄露，很多时候就是因为其采用引用计数方式进行垃圾回收。引用计数的策略是跟踪记录每个值被使用的次数，当声明了一个 变量并将一个引用类型赋值给该变量的时候这个值的引用次数就加 1，如果该变量的值变成了另外一个，则这个值得引用次数减 1，当这个值的引用次数变为 0 的时 候，说明没有变量在使用，这个值没法被访问了，因此可以将其占用的空间回收，这样垃圾回收器会在运行的时候清理掉引用次数为 0 的值占用的空间</li>
+</ul>
+<h2 id="哪些操作会造成内存泄漏？"><a href="#哪些操作会造成内存泄漏？" class="headerlink" title="哪些操作会造成内存泄漏？"></a>哪些操作会造成内存泄漏？</h2><p>JavaScript 内存泄露指对象在不需要使用它时仍然存在，导致占用的内存不能使用或回收，以下几种情况会导致内存泄漏：</p>
+<ul>
+<li>未使用 let 声明的全局变量</li>
+<li>闭包函数(Closures)</li>
+<li>循环引用(两个对象相互引用)</li>
+<li>控制台日志(console.log)</li>
+<li>移除存在绑定事件的 DOM 元素(IE)</li>
+</ul>
+<h2 id="为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？"><a href="#为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？" class="headerlink" title="为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？"></a>为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？</h2><p>模块化可以给我们带来以下好处</p>
+<ul>
+<li>解决命名冲突</li>
+<li>提供复用性</li>
+<li>提高代码可维护性</li>
+</ul>
+<p>实现模块化方式：</p>
+<ul>
+<li>立即执行函数</li>
+<li>AMD 和 CMD</li>
+<li>CommonJS</li>
+<li>ES Module</li>
+</ul>
+<h2 id="setTimeout、setInterval"><a href="#setTimeout、setInterval" class="headerlink" title="setTimeout、setInterval"></a>setTimeout、setInterval</h2><p>常见的定时器函数有 <code>setTimeout</code>、<code>setInterval</code>、<code>requestAnimationFrame</code>，但 setTimeout、setInterval 并不是到了哪个时间就执行，<strong>而是到了那个时间把任务加入到异步事件队列中</strong>。</p>
+<p>因为 JS 是单线程执行的，如果某些同步代码影响了性能，就会导致 setTimeout 不会按期执行。而 setInterval 可能经过了很多同步代码的阻塞，导致不正确了，可以使用 setTimeout 每次获取 Date 值，计算距离下一次期望执行的时间还有多久来动态的调整。</p>
+<h2 id="cookie，localStorage，sessionStorage，indexDB"><a href="#cookie，localStorage，sessionStorage，indexDB" class="headerlink" title="cookie，localStorage，sessionStorage，indexDB"></a>cookie，localStorage，sessionStorage，indexDB</h2><table>
+<thead>
+<tr>
+<th align="center">特性</th>
+<th align="center">cookie</th>
+<th align="center">localStorage</th>
+<th align="center">sessionStorage</th>
+<th align="center">indexDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">数据生命周期</td>
+<td align="center">一般由服务器生成，可以设置过期时间</td>
+<td align="center">除非被清理，否则一直存在</td>
+<td align="center">页面关闭就清理</td>
+<td align="center">除非被清理，否则一直存在</td>
+</tr>
+<tr>
+<td align="center">数据存储大小</td>
+<td align="center">4K</td>
+<td align="center">5M</td>
+<td align="center">5M</td>
+<td align="center">无限</td>
+</tr>
+<tr>
+<td align="center">与服务端通信</td>
+<td align="center">每次都会携带在 header 中，对于请求性能影响</td>
+<td align="center">不参与</td>
+<td align="center">不参与</td>
+<td align="center">不参与</td>
+</tr>
+</tbody></table>
+<p>从上表可以看到，<code>cookie</code> 已经不建议用于存储。如果没有大量数据存储需求的话，可以使用 <code>localStorage</code> 和 <code>sessionStorage</code> 。对于不怎么改变的数据尽量使用 <code>localStorage</code> 存储，否则可以用 <code>sessionStorage</code> 存储。</p>
+<p>对于 <code>cookie</code>，我们还需要注意安全性。</p>
+<table>
+<thead>
+<tr>
+<th align="center">属性</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">value</td>
+<td align="center">如果用于保存用户登录态，应该将该值加密，不能使用明文的用户标识</td>
+</tr>
+<tr>
+<td align="center">http-only</td>
+<td align="center">不能通过 JS 访问 Cookie，减少 XSS 攻击</td>
+</tr>
+<tr>
+<td align="center">secure</td>
+<td align="center">只能在协议为 HTTPS 的请求中携带</td>
+</tr>
+<tr>
+<td align="center">same-site</td>
+<td align="center">规定浏览器不能在跨域请求中携带 Cookie，减少 CSRF 攻击</td>
+</tr>
+</tbody></table>
+<h2 id="var、let-及-const-区别？"><a href="#var、let-及-const-区别？" class="headerlink" title="var、let 及 const 区别？"></a>var、let 及 const 区别？</h2><ul>
+<li>全局申明的 var 变量会挂载在 window 上，而 let 和 const 不会</li>
+<li>var 声明变量存在变量提升，let 和 const 不会</li>
+<li>let、const 的作用范围是块级作用域，而 var 的作用范围是函数作用域</li>
+<li>同一作用域下 let 和 const 不能声明同名变量，而 var 可以</li>
+<li>同一作用域下在 let 和 const 声明前使用会存在暂时性死区</li>
+<li>const一旦声明必须赋值,不能使用 null 占位，声明后不能再修改，如果声明的是复合类型数据，可以修改其属性。</li>
+</ul>
+<p>##Proxy</p>
+<p>Proxy 是 ES6 中新增的功能，它可以用来自定义对象中的操作。 Vue3.0 中将会通过 Proxy 来替换原本的 Object.defineProperty 来实现数据响应式。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> p = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(target, handler);<br></code></pre>
+
+<p><code>target</code> 代表需要添加代理的对象，<code>handler</code> 用来自定义对象中的操作，比如可以用来自定义 set 或者 get 函数。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> <span class="hljs-title function_">onWatch</span> = (<span class="hljs-params">obj, setBind, getLogger</span>) =&gt; &#123;<br>  <span class="hljs-keyword">let</span> handler = &#123;<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">target, property, value, receiver</span>) &#123;<br>      <span class="hljs-title function_">setBind</span>(value, property);<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">set</span>(target, property, value);<br>    &#125;,<br>    <span class="hljs-title function_">get</span>(<span class="hljs-params">target, property, receiver</span>) &#123;<br>      <span class="hljs-title function_">getLogger</span>(target, property);<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, property, receiver);<br>    &#125;,<br>  &#125;;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(obj, handler);<br>&#125;;<br><br><span class="hljs-keyword">let</span> obj = &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;;<br><span class="hljs-keyword">let</span> p = <span class="hljs-title function_">onWatch</span>(<br>  obj,<br>  <span class="hljs-function">(<span class="hljs-params">v, property</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`监听到属性<span class="hljs-subst">$&#123;property&#125;</span>改变为<span class="hljs-subst">$&#123;v&#125;</span>`</span>);<br>  &#125;,<br>  <span class="hljs-function">(<span class="hljs-params">target, property</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`&#x27;<span class="hljs-subst">$&#123;property&#125;</span>&#x27; = <span class="hljs-subst">$&#123;target[property]&#125;</span>`</span>);<br>  &#125;<br>);<br>p.<span class="hljs-property">a</span> = <span class="hljs-number">2</span>; <span class="hljs-comment">// 控制台输出：监听到属性a改变</span><br>p.<span class="hljs-property">a</span>; <span class="hljs-comment">// &#x27;a&#x27; = 2</span><br></code></pre>
+
+<p>自定义 set 和 get 函数的方式，在原本的逻辑中插入了我们的函数逻辑，实现了在对对象任何属性进行读写时发出通知。</p>
+<p>当然这是简单版的响应式实现，如果需要实现一个 Vue 中的响应式，需要我们在 get 中收集依赖，在 set 派发更新，之所以 Vue3.0 要使用 Proxy 替换原本的 API 原因在于 Proxy 无需一层层递归为每个属性添加代理，一次即可完成以上操作，性能上更好，并且原本的实现有一些数据更新不能监听到，但是 Proxy 可以完美监听到任何方式的数据改变，唯一缺陷可能就是浏览器的兼容性不好了。</p>
+<h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><p>map 作用是生成一个新数组，遍历原数组，将每个元素拿出来做一些变换然后返回一个新数组，原数组不发生改变。</p>
+<p>map 的回调函数接受三个参数，分别是当前索引元素，索引，原数组</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];<br><span class="hljs-keyword">var</span> arr2 = arr.<span class="hljs-title function_">map</span>(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> item + <span class="hljs-number">1</span>);<br>arr; <span class="hljs-comment">//[ 1, 2, 3 ]</span><br>arr2; <span class="hljs-comment">// [ 2, 3, 4 ]</span><br></code></pre>
+
+<p><strong>一个典型面试题</strong></p>
+<pre class="highlight"><code class="hljs javascript">[<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;2&#x27;</span>, <span class="hljs-string">&#x27;3&#x27;</span>].<span class="hljs-title function_">map</span>(<span class="hljs-built_in">parseInt</span>);<br><span class="hljs-comment">// -&gt; [ 1, NaN, NaN ]</span><br></code></pre>
+
+<ul>
+<li>第一个 parseInt(‘1’, 0) -&gt; 1</li>
+<li>第二个 parseInt(‘2’, 1) -&gt; NaN</li>
+<li>第三个 parseInt(‘3’, 2) -&gt; NaN</li>
+</ul>
+<blockquote>
+<p>parseInt传入一个字符串和一个进制，比如’100’用2计算完即是<code>1*4+0*2+0*1</code>，得4；根据进制规则字符串中每个数字一定是小于进制的，问题中的’2’,’3’都大于进制了，所以返回NaN</p>
+</blockquote>
+<h2 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h2><p>filter 的作用也是生成一个新数组，在遍历数组的时候将返回值为 true 的元素放入新数组，我们可以利用这个函数删除一些不需要的元素；filter 的回调函数接受三个参数，分别是当前索引元素，索引，原数组</p>
+<h2 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h2><p>reduce 可以将数组中的元素通过回调函数最终转换为一个值。如果我们想实现一个功能将函数里的元素全部相加得到一个值，可能会这样写代码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];<br><span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; arr.<span class="hljs-property">length</span>; i++) &#123;<br>  total += arr[i];<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(total); <span class="hljs-comment">//6</span><br></code></pre>
+
+<p>但是如果我们使用 reduce 的话就可以将遍历部分的代码优化为一行代码</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];<br><span class="hljs-keyword">const</span> sum = arr.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">acc, current</span>) =&gt;</span> acc + current, <span class="hljs-number">0</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(sum);<br></code></pre>
+
+<p>对于 reduce 来说，它接受两个参数，分别是回调函数和初始值，接下来我们来分解上述代码中 reduce 的过程</p>
+<ul>
+<li>首先初始值为 0，该值会在执行第一次回调函数时作为第一个参数传入</li>
+<li>回调函数接受四个参数，分别为累计值、当前元素、当前索引、原数组，后三者想必大家都可以明白作用，这里着重分析第一个参数</li>
+<li>在一次执行回调函数时，当前值和初始值相加得出结果 1，该结果会在第二次执行回调函数时当做第一个参数传入</li>
+<li>所以在第二次执行回调函数时，相加的值就分别是 1 和 2，以此类推，循环结束后得到结果 6。</li>
+</ul>
+<h2 id="Es6-中箭头函数与普通函数的区别？"><a href="#Es6-中箭头函数与普通函数的区别？" class="headerlink" title="Es6 中箭头函数与普通函数的区别？"></a>Es6 中箭头函数与普通函数的区别？</h2><ul>
+<li>普通 function 的声明在变量提升中是最高的，箭头函数没有函数提升</li>
+<li>箭头函数没有属于自己的<code>this</code>，<code>arguments</code></li>
+<li>箭头函数不能作为构造函数，不能被 new，没有 property</li>
+<li>不可以使用 yield 命令，因此箭头函数不能用作 Generator 函数</li>
+<li>不可以使用 new 命令，因为没有自己的 this，无法调用 call，apply；没有 prototype 属性 ，而 new 命令在执行时需要将构造函数的 prototype 赋值给新的对象的 <code>__proto__</code></li>
+</ul>
+<h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><p><code>Promise</code> 翻译过来就是承诺的意思，这个承诺会在未来有一个确切的答复，并且该承诺有三种状态，这个承诺一旦从等待状态变成为其他状态就永远不能更改状态了。</p>
+<ul>
+<li>等待中（pending）</li>
+<li>完成了（resolved）</li>
+<li>拒绝了（rejected）</li>
+</ul>
+<p>当我们在构造 Promise 的时候，构造函数内部的代码是立即执行的。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;new Promise&#x27;</span>);<br>  <span class="hljs-title function_">resolve</span>(<span class="hljs-string">&#x27;success&#x27;</span>);<br>&#125;);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;finifsh&#x27;</span>);<br><br><span class="hljs-comment">// 先打印new Promise， 再打印 finifsh</span><br></code></pre>
+
+<p>Promise 实现了链式调用，也就是说每次调用 then 之后返回的都是一个 Promise，并且是一个全新的 Promise，原因也是因为状态不可变。如果你在 then 中 使用了 return，那么 return 的值会被 Promise.resolve() 包装。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Promise</span>.<span class="hljs-title function_">resolve</span>(<span class="hljs-number">1</span>)<br>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res); <span class="hljs-comment">// =&gt; 1</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>; <span class="hljs-comment">// 包装成 Promise.resolve(2)</span><br>  &#125;)<br>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res); <span class="hljs-comment">// =&gt; 2</span><br>  &#125;);<br></code></pre>
+
+<p>当然了，Promise 也很好地解决了回调地狱的问题</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">ajax</span>(url)<br>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res);<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">ajax</span>(url1);<br>  &#125;)<br>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res);<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">ajax</span>(url2);<br>  &#125;)<br>  .<span class="hljs-title function_">then</span>(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res));<br></code></pre>
+
+<p>其实它也是存在一些缺点的，比如无法取消 Promise，错误需要通过回调函数捕获。</p>
+<h2 id="async-和-await"><a href="#async-和-await" class="headerlink" title="async 和 await"></a>async 和 await</h2><p>一个函数如果加上 async ，那么该函数就会返回一个 Promise</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">test</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;1&#x27;</span>;<br>&#125;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">test</span>());<br><span class="hljs-comment">// -&gt; Promise &#123;&lt;resolved&gt;: &quot;1&quot;&#125;</span><br></code></pre>
+
+<p>async 就是将函数返回值使用 Promise.resolve() 包裹了下，和 then 中处理返回值一样，并且 await 只能配套 async 使用。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">test</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> value = <span class="hljs-keyword">await</span> <span class="hljs-title function_">sleep</span>();<br>&#125;<br></code></pre>
+
+<p>async 和 await 可以说是异步终极解决方案了，相比直接使用 Promise 来说，优势在于处理 then 的调用链，能够更清晰准确的写出代码，毕竟写一大堆 then 也很恶心，并且也能优雅地解决回调地狱问题。</p>
+<p>当然也存在一些缺点，因为 <strong>await 将异步代码改造成了同步代码</strong>，如果多个异步代码没有依赖性却使用了 await 会导致性能上的降低。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">test</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-comment">// 以下代码没有依赖性的话，完全可以使用 Promise.all 的方式</span><br>  <span class="hljs-comment">// 如果有依赖性的话，其实就是解决回调地狱的例子了</span><br>  <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(url);<br>  <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(url1);<br>  <span class="hljs-keyword">await</span> <span class="hljs-title function_">fetch</span>(url2);<br>&#125;<br></code></pre>
+
+<p>看一个使用 await 的例子：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">let</span> a = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">let</span> <span class="hljs-title function_">b</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; &#123;<br>  a = a + (<span class="hljs-keyword">await</span> <span class="hljs-number">10</span>);<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;2&#x27;</span>, a);<br>&#125;;<br><span class="hljs-title function_">b</span>();<br>a++;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;1&#x27;</span>, a);<br><br><span class="hljs-comment">//先输出  ‘1’, 1</span><br><span class="hljs-comment">//在输出  ‘2’, 10</span><br></code></pre>
+
+<ul>
+<li>首先函数 b 先执行，在执行到 await 10 之前变量 a 还是 0，因为 await 内部实现了 generator ，generator 会保留堆栈中东西，所以这时候 a &#x3D; 0 被保存了下来</li>
+<li>因为 await 是异步操作，后来的表达式不返回 Promise 的话，就会包装成 Promise.reslove(返回值)，然后会去执行函数外的同步代码</li>
+<li>同步代码 a++ 与打印 a 执行完毕后开始执行异步代码，将保存下来的值拿出来使用，这时候 a &#x3D; 0 + 10</li>
+</ul>
+<p>上述解释中提到了 await 内部实现了 generator，其实 <strong>await 就是 generator 加上 Promise 的语法糖，且内部实现了自动执行 generator</strong>。</p>
+<h2 id="ES-Module"><a href="#ES-Module" class="headerlink" title="ES Module"></a>ES Module</h2><p>ES Module 是原生实现的模块化方案，与 CommonJS 有以下几个区别</p>
+<ul>
+<li>CommonJS 支持动态导入，也就是 require(${path}&#x2F;xx.js)，后者目前不支持，但是已有提案</li>
+<li>CommonJS 是同步导入，因为用于服务端，文件都在本地，同步导入即使卡住主线程影响也不大。而后者是异步导入，因为用于浏览器，需要下载文件，如果也采用同步导入会对渲染有很大影响</li>
+<li>CommonJS 在导出时都是值拷贝，就算导出的值变了，导入的值也不会改变，所以如果想更新值，必须重新导入一次。但是 ES Module 采用实时绑定的方式，导入导出的值都指向同一个内存地址，所以导入值会跟随导出值变化</li>
+<li>ES Module 会编译成 require&#x2F;exports 来执行的</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 引入模块 API</span><br><span class="hljs-keyword">import</span> <span class="hljs-variable constant_">XXX</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./a.js&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-variable constant_">XXX</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./a.js&#x27;</span>;<br><span class="hljs-comment">// 导出模块 API</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">a</span>(<span class="hljs-params"></span>) &#123;&#125;<br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;&#125;<br></code></pre>
+
+<h2 id="为什么-ES-模块比-CommonJS-更好"><a href="#为什么-ES-模块比-CommonJS-更好" class="headerlink" title="为什么 ES 模块比 CommonJS 更好?"></a>为什么 ES 模块比 CommonJS 更好?</h2><p>ES 模块是官方标准，也是 JavaScript 语言明确的发展方向，而 CommonJS 模块是一种特殊的传统格式，在 ES 模块被提出之前做为暂时的解决方案。<br>ES 模块允许进行静态分析，从而实现像 tree-shaking 的优化，并提供诸如循环引用和动态绑定等高级功能。</p>
+<h2 id="Proxy"><a href="#Proxy" class="headerlink" title="Proxy"></a>Proxy</h2><p>Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(<br>  &#123;&#125;,<br>  &#123;<br>    <span class="hljs-attr">get</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">target, key, receiver</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`getting <span class="hljs-subst">$&#123;key&#125;</span>!`</span>);<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, key, receiver);<br>    &#125;,<br>    <span class="hljs-attr">set</span>: <span class="hljs-keyword">function</span> (<span class="hljs-params">target, key, value, receiver</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`setting <span class="hljs-subst">$&#123;key&#125;</span>!`</span>);<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">set</span>(target, key, value, receiver);<br>    &#125;,<br>  &#125;<br>);<br></code></pre>
+
+<p>Proxy 支持的拦截操作一览，一共 13 种。</p>
+<ul>
+<li>get(target, propKey, receiver)<ul>
+<li>拦截对象属性的读取，比如 proxy.foo 和 proxy[‘foo’]。</li>
+</ul>
+</li>
+<li>set(target, propKey, value, receiver)<ul>
+<li>拦截对象属性的设置，比如 proxy.foo &#x3D; v 或 proxy[‘foo’] &#x3D; v，返回一个布尔值。</li>
+</ul>
+</li>
+<li>has(target, propKey)<ul>
+<li>拦截 propKey in proxy 的操作，返回一个布尔值。</li>
+</ul>
+</li>
+<li>deleteProperty(target, propKey)<ul>
+<li>拦截 delete proxy[propKey]的操作，返回一个布尔值。</li>
+</ul>
+</li>
+<li>ownKeys(target)<ul>
+<li>拦截 Object.getOwnPropertyNames(proxy)、Object.getOwnPropertySymbols(proxy)、Object.keys(proxy)、for…in 循环，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而 Object.keys()的返回结果仅包括目标对象自身的可遍历属性。</li>
+</ul>
+</li>
+<li>getOwnPropertyDescriptor(target, propKey)<ul>
+<li>拦截 Object.getOwnPropertyDescriptor(proxy, propKey)，返回属性的描述对象。</li>
+</ul>
+</li>
+<li>defineProperty(target, propKey, propDesc)<ul>
+<li>拦截 Object.defineProperty(proxy, propKey, propDesc）、Object.defineProperties(proxy, propDescs)，返回一个布尔值。</li>
+</ul>
+</li>
+<li>preventExtensions(target)<ul>
+<li>拦截 Object.preventExtensions(proxy)，返回一个布尔值。</li>
+</ul>
+</li>
+<li>getPrototypeOf(target)<ul>
+<li>拦截 Object.getPrototypeOf(proxy)，返回一个对象。</li>
+</ul>
+</li>
+<li>isExtensible(target)<ul>
+<li>拦截 Object.isExtensible(proxy)，返回一个布尔值。</li>
+</ul>
+</li>
+<li>setPrototypeOf(target, proto)<ul>
+<li>拦截 Object.setPrototypeOf(proxy, proto)，返回一个布尔值。如果目标对象是函数，那么还有两种额外操作可以拦截。</li>
+</ul>
+</li>
+<li>apply(target, object, args)<ul>
+<li>拦截 Proxy 实例作为函数调用的操作，比如 proxy(…args)、proxy.call(object, …args)、proxy.apply(…)。</li>
+</ul>
+</li>
+<li>construct(target, args)<ul>
+<li>拦截 Proxy 实例作为构造函数调用的操作，比如 new proxy(…args)。</li>
+</ul>
+</li>
+</ul>
+<h2 id="this-的指向有哪几种情况？"><a href="#this-的指向有哪几种情况？" class="headerlink" title="this 的指向有哪几种情况？"></a>this 的指向有哪几种情况？</h2><p>this 代表函数调用相关联的对象，通常页称之为执行上下文。</p>
+<ol>
+<li>作为函数直接调用，非严格模式下，this 指向 window，严格模式下，this 指向 undefined；</li>
+<li>作为某对象的方法调用，this 通常指向调用的对象。</li>
+<li>使用 apply、call、bind 可以绑定 this 的指向。</li>
+<li>在构造函数中，this 指向新创建的对象</li>
+<li>箭头函数没有单独的 this 值，this 在箭头函数创建时确定，它与声明所在的上下文相同。</li>
+</ol>
+<h2 id="如果对一个函数进行多次-bind，那么上下文会是什么呢？"><a href="#如果对一个函数进行多次-bind，那么上下文会是什么呢？" class="headerlink" title="如果对一个函数进行多次 bind，那么上下文会是什么呢？"></a>如果对一个函数进行多次 bind，那么上下文会是什么呢？</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> a = &#123;&#125;;<br><span class="hljs-keyword">let</span> fn = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>);<br>&#125;;<br>fn.<span class="hljs-title function_">bind</span>().<span class="hljs-title function_">bind</span>(a)(); <span class="hljs-comment">// =&gt; ?</span><br></code></pre>
+
+<p>不管我们给函数 bind 几次，fn 中的 this 永远由第一次 bind 决定，所以结果永远是 window。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// fn.bind().bind(a) 等于</span><br><span class="hljs-keyword">let</span> fn2 = <span class="hljs-keyword">function</span> <span class="hljs-title function_">fn1</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> fn.<span class="hljs-title function_">apply</span>();<br>  &#125;.<span class="hljs-title function_">apply</span>(a);<br>&#125;;<br><span class="hljs-title function_">fn2</span>();<br></code></pre>
+
+<h2 id="多个-this-规则出现时，this-最终指向哪里？"><a href="#多个-this-规则出现时，this-最终指向哪里？" class="headerlink" title="多个 this 规则出现时，this 最终指向哪里？"></a>多个 this 规则出现时，this 最终指向哪里？</h2><p>首先，new 的方式优先级最高，接下来是 bind 这些函数，然后是 obj.foo() 这种调用方式，最后是 foo 这种调用方式，同时，箭头函数的 this 一旦被绑定，就不会再被任何方式所改变。</p>
+<h2 id="事件循环"><a href="#事件循环" class="headerlink" title="事件循环"></a>事件循环</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6992167223523541023">彻底搞懂JavaScript事件循环</a></p>
+<h2 id="变量提升"><a href="#变量提升" class="headerlink" title="变量提升"></a>变量提升</h2><p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000039288278">彻底解决 JS 变量提升的面试题 | 一题一图，超详细包教包会</a></p>
+<h2 id="创建对象的方法"><a href="#创建对象的方法" class="headerlink" title="创建对象的方法"></a>创建对象的方法</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> o1 = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;value&quot;</span> &#125;;<br><span class="hljs-keyword">var</span> o2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;value&quot;</span> &#125;);<br><br><span class="hljs-keyword">var</span> M = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;o3&quot;</span>;<br>&#125;;<br><span class="hljs-keyword">var</span> o3 = <span class="hljs-keyword">new</span> <span class="hljs-title function_">M</span>();<br><br><span class="hljs-keyword">var</span> P = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;o4&quot;</span> &#125;;<br><span class="hljs-keyword">var</span> o4 = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(P);<br></code></pre>
+
+<h2 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h2><ul>
+<li>JavaScript 的所有对象中都包含了一个 <code>__proto__</code> 内部属性，这个属性所对应的就是该对象的原型</li>
+<li>JavaScript 的函数对象，除了原型 <code>__proto__</code> 之外，还预置了 prototype 属性</li>
+<li>当函数对象作为构造函数创建实例时，该 prototype 属性值将被作为实例对象的原型 <code>__proto__</code>。</li>
+</ul>
+<h2 id="原型链"><a href="#原型链" class="headerlink" title="原型链"></a>原型链</h2><p>任何一个实例对象通过原型链可以找到它对应的原型对象，原型对象上面的实例和方法都是实例所共享的。</p>
+<p>一个对象在查找以一个方法或属性时，他会先在自己的对象上去找，找不到时，他会沿着原型链依次向上查找。</p>
+<p>注意： 函数才有 prototype，实例对象只有<code>__proto__</code>， 而函数有的<code>__proto__</code>是因为函数是 Function 的实例对象</p>
+<h2 id="instanceof-原理"><a href="#instanceof-原理" class="headerlink" title="instanceof 原理"></a>instanceof 原理</h2><p>判断实例对象的<code>__proto__</code>属性与构造函数的 prototype 是不是用一个引用。如果不是，他会沿着对象的<code>__proto__</code>向上查找的，直到顶端 Object。</p>
+<h2 id="判断对象是哪个类的直接实例"><a href="#判断对象是哪个类的直接实例" class="headerlink" title="判断对象是哪个类的直接实例"></a>判断对象是哪个类的直接实例</h2><p>使用<code>对象.construcor</code>直接可判断</p>
+<h2 id="构造函数，new-时发生了什么？"><a href="#构造函数，new-时发生了什么？" class="headerlink" title="构造函数，new 时发生了什么？"></a>构造函数，new 时发生了什么？</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> obj = &#123;&#125;;<br>obj.<span class="hljs-property">__proto__</span> = <span class="hljs-title class_">Base</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>;<br><span class="hljs-title class_">Base</span>.<span class="hljs-title function_">call</span>(obj);<br></code></pre>
+
+<ol>
+<li>创建一个新的对象 obj;</li>
+<li>将这个空对象的<code>__proto__</code>成员指向了 Base 函数对象 prototype 成员对象</li>
+<li>Base 函数对象的 this 指针替换成 obj, 相当于执行了 Base.call(obj);</li>
+<li>如果构造函数显示的返回一个对象，那么则这个实例为这个返回的对象。 否则返回这个新创建的对象</li>
+</ol>
+<h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 普通写法</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Animal</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;name&quot;</span>;<br>&#125;<br><br><span class="hljs-comment">// ES6</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal2</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;name&quot;</span>;<br>  &#125;<br>&#125;<br></code></pre>
+
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>在构造函数中 使用<code>Parent.call(this)</code>的方法继承父类属性。</p>
+<p>原理： 将子类的 this 使用父类的构造函数跑一遍</p>
+<p>缺点： Parent 原型链上的属性和方法并不会被子类继承</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Parent</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;parent&quot;</span>;<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Child</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-title class_">Parent</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>);<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">type</span> = <span class="hljs-string">&quot;child&quot;</span>;<br>&#125;<br></code></pre>
+
+<h2 id="ES5-x2F-ES6-的继承除了写法以外还有什么区别？"><a href="#ES5-x2F-ES6-的继承除了写法以外还有什么区别？" class="headerlink" title="ES5&#x2F;ES6 的继承除了写法以外还有什么区别？"></a>ES5&#x2F;ES6 的继承除了写法以外还有什么区别？</h2><ul>
+<li>class 声明会提升，但不会初始化赋值。Foo 进入暂时性死区，类似于 let、const 声明变量。</li>
+<li>class 声明内部会启用严格模式。</li>
+<li>class 的所有方法（包括静态方法和实例方法）都是不可枚举的。</li>
+<li>class 的所有方法（包括静态方法和实例方法）都没有原型对象 prototype，所以也没有 construct，不能使用 new 来调用。</li>
+<li>必须使用 new 调用 class。</li>
+<li>class 内部无法重写类名。</li>
+</ul>
+<h2 id="JS-变量类型"><a href="#JS-变量类型" class="headerlink" title="JS 变量类型"></a>JS 变量类型</h2><p>JS 中有 6 种原始值，分别是：</p>
+<ol>
+<li>boolean</li>
+<li>number</li>
+<li>string</li>
+<li>undefined</li>
+<li>symbol</li>
+<li>null</li>
+</ol>
+<p>3 种引用类型：</p>
+<ol>
+<li>对象</li>
+<li>数组</li>
+<li>函数</li>
+</ol>
+<h2 id="JS-中使用-typeof-能得到哪些类型？"><a href="#JS-中使用-typeof-能得到哪些类型？" class="headerlink" title="JS 中使用 typeof 能得到哪些类型？"></a>JS 中使用 typeof 能得到哪些类型？</h2><p>关于null，虽然是基本变量，但是因为设计的时候<code>null</code>是全 0，而对象是<code>000</code>开头，所以有这个误判。</p>
+<ol>
+<li>boolean</li>
+<li>number</li>
+<li>string</li>
+<li>undefined</li>
+<li>symbol</li>
+<li>object</li>
+<li>function</li>
+<li>bigint</li>
+</ol>
+<h2 id="instanceof-能正确判断对象的原理是什么？"><a href="#instanceof-能正确判断对象的原理是什么？" class="headerlink" title="instanceof 能正确判断对象的原理是什么？"></a>instanceof 能正确判断对象的原理是什么？</h2><p>判断一个对象与构造函数是否在一个原型链上</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title class_">Person</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;&#125;;<br><span class="hljs-keyword">const</span> p1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>();<br>p1 <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Person</span>; <span class="hljs-comment">// true</span><br><br><span class="hljs-keyword">var</span> str = <span class="hljs-string">&quot;hello world&quot;</span>;<br>str <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">String</span>; <span class="hljs-comment">// false</span><br><br><span class="hljs-keyword">var</span> str1 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;hello world&quot;</span>);<br>str1 <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">String</span>; <span class="hljs-comment">// true</span><br></code></pre>
+
+<h2 id="实现一个类型判断函数"><a href="#实现一个类型判断函数" class="headerlink" title="实现一个类型判断函数"></a>实现一个类型判断函数</h2><ol>
+<li>判断 null</li>
+<li>判断基础类型</li>
+<li>使用<code>Object.prototype.toString.call(target)</code>来判断<strong>引用类型</strong></li>
+</ol>
+<p>注意： 一定是使用<code>call</code>来调用，不然是判断的 Object.prototype 的类型<br>之所以要先判断是否为基本类型是因为：虽然<code>Object.prototype.toString.call()</code>能判断出某值是：number&#x2F;string&#x2F;boolean，但是其实在包装的时候是把他们先转成了对象然后再判断类型的。 但是 JS 中包装类型和原始类型还是有差别的，因为对一个包装类型来说，typeof 的值是 object</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 类型判断</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getType</span>(<span class="hljs-params">target</span>) &#123;<br>  <span class="hljs-comment">//先处理最特殊的Null</span><br>  <span class="hljs-keyword">if</span> (target === <span class="hljs-literal">null</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;null&quot;</span>;<br>  &#125;<br>  <span class="hljs-comment">//判断是不是基础类型</span><br>  <span class="hljs-keyword">const</span> typeOfT = <span class="hljs-keyword">typeof</span> target;<br>  <span class="hljs-keyword">if</span> (typeOfT !== <span class="hljs-string">&quot;object&quot;</span>) &#123;<br>    <span class="hljs-keyword">return</span> typeOfT;<br>  &#125;<br>  <span class="hljs-comment">//肯定是引用类型了</span><br>  <span class="hljs-keyword">const</span> template = &#123;<br>    <span class="hljs-string">&quot;[object Object]&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br>    <span class="hljs-string">&quot;[object Array]&quot;</span>: <span class="hljs-string">&quot;array&quot;</span>,<br>    <span class="hljs-comment">// 一些包装类型</span><br>    <span class="hljs-string">&quot;[object String]&quot;</span>: <span class="hljs-string">&quot;object - string&quot;</span>,<br>    <span class="hljs-string">&quot;[object Number]&quot;</span>: <span class="hljs-string">&quot;object - number&quot;</span>,<br>    <span class="hljs-string">&quot;[object Boolean]&quot;</span>: <span class="hljs-string">&quot;object - boolean&quot;</span>,<br>  &#125;;<br>  <span class="hljs-keyword">const</span> typeStr = <span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(target);<br>  <span class="hljs-keyword">return</span> template[typeStr];<br>&#125;<br></code></pre>
+
+<h2 id="如何判断一个数据是不是-Array"><a href="#如何判断一个数据是不是-Array" class="headerlink" title="如何判断一个数据是不是 Array"></a>如何判断一个数据是不是 Array</h2><ul>
+<li><code>Array.isArray(obj)</code><ul>
+<li>ECMAScript 5 种的函数，当使用 ie8 的时候就会出现问题。</li>
+</ul>
+</li>
+<li><code>obj instanceof Array</code><ul>
+<li>当用来检测在不同的 window 或 iframe 里构造的数组时会失败。这是因为每一个 iframe 都有它自己的执行环境，彼此之间并不共享原型链，所以此时的判断一个对象是否为数组就会失败。此时我们有一个更好的方式去判断一个对象是否为数组。</li>
+</ul>
+</li>
+<li><code>Object.prototype.toString.call(obj) == &#39;[object Array]&#39;</code><ul>
+<li>这个方法比较靠谱</li>
+</ul>
+</li>
+<li><code>obj.constructor === Array</code><ul>
+<li>constructor 属性返回对创建此对象的函数的引用</li>
+</ul>
+</li>
+</ul>
+<h2 id="undefined-可被赋值"><a href="#undefined-可被赋值" class="headerlink" title="undefined 可被赋值"></a>undefined 可被赋值</h2><p>在 ES3 中(Firefox4 之前),window.undefined 就是一个普通的属性，你完全可以把它的值改变成为任意的真值，但在 ES5 中((Firefox4 之后),window.undefined 成了一个不可写,不可配置的数据属性,它的值永远是 undefined。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-literal">undefined</span> = <span class="hljs-number">1</span>;<br><span class="hljs-title function_">alert</span>(<span class="hljs-literal">undefined</span>); <span class="hljs-comment">// chrome: undefined,  ie8: 1</span><br></code></pre>
+
+<p>不管是标准浏览器，还是老的 IE 浏览器，<strong>在函数内部 undefined 可作为局部变量重新赋值</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">fn</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">var</span> <span class="hljs-literal">undefined</span> = <span class="hljs-number">100</span>;<br>  <span class="hljs-title function_">alert</span>(<span class="hljs-literal">undefined</span>); <span class="hljs-comment">//chrome: 100,  ie8: 100</span><br>&#125;<br><span class="hljs-title function_">fn</span>();<br></code></pre>
+
+<p>有时候我们需要判断一个变量是不是 undefined，会这样用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (str === <span class="hljs-literal">undefined</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;I am empty&quot;</span>);<br>&#125;<br></code></pre>
+
+<p>但假如 str 这个变量没声明就会出现报错，用下面的方式会更好一些</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> str === <span class="hljs-string">&quot;undefined&quot;</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;I am better&quot;</span>);<br>&#125;<br></code></pre>
+
+<p>有时候我们会看到这种写法</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">if</span> (str === <span class="hljs-keyword">void</span> <span class="hljs-number">0</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;I am real undefind&quot;</span>);<br>&#125;<br></code></pre>
+
+<p>那是因为 「void 0」的执行结果永远是「undefined」, 即使在某些老旧浏览器 或者在某个函数中 undefined 被重新赋值，我们仍然可以通过<code>void 0</code>得到真正的 <code>undefined</code>。</p>
+<h2 id="如何判断回收内容"><a href="#如何判断回收内容" class="headerlink" title="如何判断回收内容"></a>如何判断回收内容</h2><p>如何确定哪些内存需要回收，哪些内存不需要回收，这是垃圾回收期需要解决的最基本问题。我们可以这样假定，一个对象为活对象当且仅当它被一个根对象 或另一个活对象指向。根对象永远是活对象，它是被浏览器或 V8 所引用的对象。被局部变量所指向的对象也属于根对象，因为它们所在的作用域对象被视为根对 象。全局对象（Node 中为 global，浏览器中为 window）自然是根对象。浏览器中的 DOM 元素也属于根对象。</p>
+<h2 id="V8-回收策略"><a href="#V8-回收策略" class="headerlink" title="V8 回收策略"></a>V8 回收策略</h2><p>新生代的对象为存活时间较短的对象，老生代中的对象为存活时间较长或常驻内存的对象。分别对新生代和老生代使用 不同的垃圾回收算法来提升垃圾回收的效率。对象起初都会被分配到新生代，当新生代中的对象满足某些条件（后面会有介绍）时，会被移动到老生代（晋升）。</p>
+<h2 id="新生代算法"><a href="#新生代算法" class="headerlink" title="新生代算法"></a>新生代算法</h2><p>在新生代空间中，内存空间分为两部分，分别为 From 空间和 To 空间。在这两个空间中，必定有一个空间是使用的，另一个空间是空闲的。新分配的对象会被放入 From 空间中，当 From 空间被占满时，新生代 GC 就会启动了。算法会检查 From 空间中存活的对象并复制到 To 空间中，如果有失活的对象就会销毁。当复制完成后将 From 空间和 To 空间互换，这样 GC 就结束了。</p>
+<h2 id="老生代算法"><a href="#老生代算法" class="headerlink" title="老生代算法"></a>老生代算法</h2><p>老生代中的对象一般存活时间较长且数量也多，使用了两个算法，分别是标记清除算法和标记压缩算法。</p>
+<p>在讲算法前，先来说下什么情况下对象会出现在老生代空间中：</p>
+<ol>
+<li>新生代中的对象是否已经经历过一次 Scavenge 算法，如果经历过的话，会将对象从新生代空间移到老生代空间中。</li>
+<li>To 空间的对象占比大小超过 25 %。在这种情况下，为了不影响到内存分配，会将对象从新生代空间移到老生代空间中。</li>
+</ol>
+<h2 id="什么是内存泄漏？"><a href="#什么是内存泄漏？" class="headerlink" title="什么是内存泄漏？"></a>什么是内存泄漏？</h2><p>存泄漏是指程序中已分配的堆内存由于某种原因未释放或者无法释放，造成系统内存的浪费，导致程序运行速度减慢甚至系统奔溃等后果。</p>
+<h2 id="常见的内存泄漏的场景"><a href="#常见的内存泄漏的场景" class="headerlink" title="常见的内存泄漏的场景"></a>常见的内存泄漏的场景</h2><ul>
+<li>缓存</li>
+<li>作用域未释放（闭包）</li>
+<li>没有必要的全局变量</li>
+<li>无效的 DOM 引用</li>
+<li>定时器未清除</li>
+<li>事件监听为空白</li>
+</ul>
+<h2 id="内存泄漏优化"><a href="#内存泄漏优化" class="headerlink" title="内存泄漏优化"></a>内存泄漏优化</h2><ul>
+<li>在业务不需要的用到的内部函数，可以重构到函数外，实现解除闭包。</li>
+<li>避免创建过多的生命周期较长的对象，或者将对象分解成多个子对象。</li>
+<li>避免过多使用闭包。</li>
+<li>注意清除定时器和事件监听器。</li>
+<li>nodejs 中使用 stream 或 buffer 来操作大文件，不会受 nodejs 内存限制。</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2023/02/15/23021501/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">css类面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2023/02/15/23021504/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Web安全类面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#eval-%E6%98%AF%E5%81%9A%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">eval 是做什么的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-text">严格模式的限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Javascript-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%96%B9%E6%B3%95"><span class="toc-text">Javascript 垃圾回收方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%AA%E4%BA%9B%E6%93%8D%E4%BD%9C%E4%BC%9A%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">哪些操作会造成内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%9F%E9%83%BD%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%8C%E5%90%84%E6%9C%89%E4%BB%80%E4%B9%88%E7%89%B9%E7%82%B9%EF%BC%9F"><span class="toc-text">为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setTimeout%E3%80%81setInterval"><span class="toc-text">setTimeout、setInterval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cookie%EF%BC%8ClocalStorage%EF%BC%8CsessionStorage%EF%BC%8CindexDB"><span class="toc-text">cookie，localStorage，sessionStorage，indexDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#var%E3%80%81let-%E5%8F%8A-const-%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">var、let 及 const 区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#filter"><span class="toc-text">filter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reduce"><span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Es6-%E4%B8%AD%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Es6 中箭头函数与普通函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Promise"><span class="toc-text">Promise</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#async-%E5%92%8C-await"><span class="toc-text">async 和 await</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-Module"><span class="toc-text">ES Module</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-ES-%E6%A8%A1%E5%9D%97%E6%AF%94-CommonJS-%E6%9B%B4%E5%A5%BD"><span class="toc-text">为什么 ES 模块比 CommonJS 更好?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy"><span class="toc-text">Proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E7%9A%84%E6%8C%87%E5%90%91%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%9F"><span class="toc-text">this 的指向有哪几种情况？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%AF%B9%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E8%BF%9B%E8%A1%8C%E5%A4%9A%E6%AC%A1-bind%EF%BC%8C%E9%82%A3%E4%B9%88%E4%B8%8A%E4%B8%8B%E6%96%87%E4%BC%9A%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2%EF%BC%9F"><span class="toc-text">如果对一个函数进行多次 bind，那么上下文会是什么呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AA-this-%E8%A7%84%E5%88%99%E5%87%BA%E7%8E%B0%E6%97%B6%EF%BC%8Cthis-%E6%9C%80%E7%BB%88%E6%8C%87%E5%90%91%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">多个 this 规则出现时，this 最终指向哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">事件循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%8F%90%E5%8D%87"><span class="toc-text">变量提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">创建对象的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="toc-text">原型链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E5%8E%9F%E7%90%86"><span class="toc-text">instanceof 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E6%98%AF%E5%93%AA%E4%B8%AA%E7%B1%BB%E7%9A%84%E7%9B%B4%E6%8E%A5%E5%AE%9E%E4%BE%8B"><span class="toc-text">判断对象是哪个类的直接实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%8Cnew-%E6%97%B6%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">构造函数，new 时发生了什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB"><span class="toc-text">类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF"><span class="toc-text">继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES5-x2F-ES6-%E7%9A%84%E7%BB%A7%E6%89%BF%E9%99%A4%E4%BA%86%E5%86%99%E6%B3%95%E4%BB%A5%E5%A4%96%E8%BF%98%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">ES5&#x2F;ES6 的继承除了写法以外还有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS 变量类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E4%B8%AD%E4%BD%BF%E7%94%A8-typeof-%E8%83%BD%E5%BE%97%E5%88%B0%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">JS 中使用 typeof 能得到哪些类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E8%83%BD%E6%AD%A3%E7%A1%AE%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">instanceof 能正确判断对象的原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%87%BD%E6%95%B0"><span class="toc-text">实现一个类型判断函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E6%98%AF%E4%B8%8D%E6%98%AF-Array"><span class="toc-text">如何判断一个数据是不是 Array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined-%E5%8F%AF%E8%A2%AB%E8%B5%8B%E5%80%BC"><span class="toc-text">undefined 可被赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E5%9B%9E%E6%94%B6%E5%86%85%E5%AE%B9"><span class="toc-text">如何判断回收内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5"><span class="toc-text">V8 回收策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">新生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%80%81%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">老生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E5%9C%BA%E6%99%AF"><span class="toc-text">常见的内存泄漏的场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%BC%98%E5%8C%96"><span class="toc-text">内存泄漏优化</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#eval-%E6%98%AF%E5%81%9A%E4%BB%80%E4%B9%88%E7%9A%84%EF%BC%9F"><span class="toc-text">eval 是做什么的？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-text">严格模式的限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Javascript-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%96%B9%E6%B3%95"><span class="toc-text">Javascript 垃圾回收方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%AA%E4%BA%9B%E6%93%8D%E4%BD%9C%E4%BC%9A%E9%80%A0%E6%88%90%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">哪些操作会造成内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%9F%E9%83%BD%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9D%97%E5%8C%96%EF%BC%8C%E5%90%84%E6%9C%89%E4%BB%80%E4%B9%88%E7%89%B9%E7%82%B9%EF%BC%9F"><span class="toc-text">为什么要使用模块化？都有哪几种方式可以实现模块化，各有什么特点？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#setTimeout%E3%80%81setInterval"><span class="toc-text">setTimeout、setInterval</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cookie%EF%BC%8ClocalStorage%EF%BC%8CsessionStorage%EF%BC%8CindexDB"><span class="toc-text">cookie，localStorage，sessionStorage，indexDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#var%E3%80%81let-%E5%8F%8A-const-%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">var、let 及 const 区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#map"><span class="toc-text">map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#filter"><span class="toc-text">filter</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#reduce"><span class="toc-text">reduce</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Es6-%E4%B8%AD%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Es6 中箭头函数与普通函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Promise"><span class="toc-text">Promise</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#async-%E5%92%8C-await"><span class="toc-text">async 和 await</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-Module"><span class="toc-text">ES Module</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-ES-%E6%A8%A1%E5%9D%97%E6%AF%94-CommonJS-%E6%9B%B4%E5%A5%BD"><span class="toc-text">为什么 ES 模块比 CommonJS 更好?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy"><span class="toc-text">Proxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E7%9A%84%E6%8C%87%E5%90%91%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E6%83%85%E5%86%B5%EF%BC%9F"><span class="toc-text">this 的指向有哪几种情况？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9C%E5%AF%B9%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E8%BF%9B%E8%A1%8C%E5%A4%9A%E6%AC%A1-bind%EF%BC%8C%E9%82%A3%E4%B9%88%E4%B8%8A%E4%B8%8B%E6%96%87%E4%BC%9A%E6%98%AF%E4%BB%80%E4%B9%88%E5%91%A2%EF%BC%9F"><span class="toc-text">如果对一个函数进行多次 bind，那么上下文会是什么呢？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E4%B8%AA-this-%E8%A7%84%E5%88%99%E5%87%BA%E7%8E%B0%E6%97%B6%EF%BC%8Cthis-%E6%9C%80%E7%BB%88%E6%8C%87%E5%90%91%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">多个 this 规则出现时，this 最终指向哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF"><span class="toc-text">事件循环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%98%E9%87%8F%E6%8F%90%E5%8D%87"><span class="toc-text">变量提升</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="toc-text">创建对象的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="toc-text">原型链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E5%8E%9F%E7%90%86"><span class="toc-text">instanceof 原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E6%98%AF%E5%93%AA%E4%B8%AA%E7%B1%BB%E7%9A%84%E7%9B%B4%E6%8E%A5%E5%AE%9E%E4%BE%8B"><span class="toc-text">判断对象是哪个类的直接实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%EF%BC%8Cnew-%E6%97%B6%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">构造函数，new 时发生了什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB"><span class="toc-text">类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF"><span class="toc-text">继承</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES5-x2F-ES6-%E7%9A%84%E7%BB%A7%E6%89%BF%E9%99%A4%E4%BA%86%E5%86%99%E6%B3%95%E4%BB%A5%E5%A4%96%E8%BF%98%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">ES5&#x2F;ES6 的继承除了写法以外还有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E5%8F%98%E9%87%8F%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS 变量类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E4%B8%AD%E4%BD%BF%E7%94%A8-typeof-%E8%83%BD%E5%BE%97%E5%88%B0%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">JS 中使用 typeof 能得到哪些类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#instanceof-%E8%83%BD%E6%AD%A3%E7%A1%AE%E5%88%A4%E6%96%AD%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">instanceof 能正确判断对象的原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%B1%BB%E5%9E%8B%E5%88%A4%E6%96%AD%E5%87%BD%E6%95%B0"><span class="toc-text">实现一个类型判断函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E6%95%B0%E6%8D%AE%E6%98%AF%E4%B8%8D%E6%98%AF-Array"><span class="toc-text">如何判断一个数据是不是 Array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#undefined-%E5%8F%AF%E8%A2%AB%E8%B5%8B%E5%80%BC"><span class="toc-text">undefined 可被赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E5%9B%9E%E6%94%B6%E5%86%85%E5%AE%B9"><span class="toc-text">如何判断回收内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#V8-%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5"><span class="toc-text">V8 回收策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B0%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">新生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%80%81%E7%94%9F%E4%BB%A3%E7%AE%97%E6%B3%95"><span class="toc-text">老生代算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%9F"><span class="toc-text">什么是内存泄漏？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E7%9A%84%E5%9C%BA%E6%99%AF"><span class="toc-text">常见的内存泄漏的场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E4%BC%98%E5%8C%96"><span class="toc-text">内存泄漏优化</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-16</div>
+        <a href="/2023/12/16/23121600/"><div class="recent-posts-item-content">leafer目录</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-16</div>
+        <a href="/2023/12/16/23122400/"><div class="recent-posts-item-content">vite 打包 + 自动部署</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-12-01</div>
+        <a href="/2023/12/01/23120100/"><div class="recent-posts-item-content">如何将你的身体恢复到最完美状态</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2023-11-23</div>
+        <a href="/2023/11/23/23112300/"><div class="recent-posts-item-content">HTML 元素类型</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2023
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
