@@ -12,6 +12,8 @@
 - Docker
 - CI CD
 - Nest.js
+- electron
+- tauri
 
 [从0开始学前端系列](https://shuangxunian.github.io/2022/11/06/22110603/)；
 
