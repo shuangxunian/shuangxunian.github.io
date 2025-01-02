@@ -1,7 +1,9 @@
 # 关于我
 欢迎来到我的博客！我是霜序廿，一个喜欢算法的前端er；
 
-当前就职于杭州的一家专注做PaaS服务的公司，负责AI产品的前端架构与实现，以及对应的nlp模型；
+当前就职于杭州的一家CRM的公司，技术栈为：
+- 熟练：vue2 elementUI antd echarts vant
+- 了解：vue3 react
 
 爱好是代码，原神，联盟，看书，Apex；
 
@@ -11,6 +13,8 @@
 
 如果您觉得我写的不错，欢迎请我喝蜜雪冰城~
 
-有问题只支持付费咨询，可以给我发邮件附上您的联系方式：shuangxunian@gmail.com，我会联系你
+有问题只支持付费咨询，可以给我发邮件附上您的联系方式：shuangxunian@gmail.com，我会联系你；
+
+感谢[https://mjj.today/](https://mjj.today/) 提供的图床服务支持~
 
 
