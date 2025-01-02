@@ -1,11 +1,17 @@
 # 关于我
-欢迎来到我的博客！我是霜序廿，一个喜欢算法的前端er；
+欢迎来到我的博客！我是霜序廿，一个喜欢算法的前端er，爱好是代码，原神，联盟，看书，Apex；21年开始就职于杭州的一家CRM的公司；
 
-当前就职于杭州的一家CRM的公司，技术栈为：
-- 熟练：vue2 elementUI antd echarts vant
-- 了解：vue3 react
+熟悉的一些技术：
+- Vue
+- JavaScript
+- Node.js
+- echarts antv elementUI vantUI
 
-爱好是代码，原神，联盟，看书，Apex；
+学习过的一些技术：
+- React
+- Docker
+- CI CD
+- Nest.js
 
 [从0开始学前端系列](https://shuangxunian.github.io/2022/11/06/22110603/)；
 
