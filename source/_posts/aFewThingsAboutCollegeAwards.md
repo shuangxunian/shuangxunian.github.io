@@ -40,11 +40,20 @@ DOI: 10.1109/CCDC49329.2020.9164282
 ![](https://i.miji.bid/2025/01/19/99a20f0a5e917356eb0b59e94f422509.png)
 
 ## 项目
-1. 小爱课程表
+1. 销帮帮
+2021.7-2025.1 tob crm类产品，解决了多种复杂业务，涉及到的技术栈：vue2 elementUI vant antg 图论 ast
+![](https://pfweb.xbongbong.com)
+
+2. 小爱课程表
+2020 toc 对接方正系统的课程表，涉及到的技术栈：js
 ![](https://i.miji.bid/2025/01/19/311cd913cfd859291b91bf34c620b4d3.png)
 
+3. 不做简历
+2024 toc 涉及到的技术栈：leafer vue3 ts
+![](https://shuangxunian.github.io/no-resume/)
 
-
+other：
+都是一些vue2+elementUI的小工具，仅针对于不同业务，没什么难点
 
 
 
