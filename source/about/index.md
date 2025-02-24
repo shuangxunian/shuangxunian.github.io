@@ -22,13 +22,13 @@
 介绍：仿GoodNotes 跨平台 云端存储 toc 涉及到的技术栈：leafer vue3 express redis mysql 开源
 [链接](https://github.com/woyanteam/my-note)
 
-3. 原神自走棋
+2. 原神自走棋
 时间2025-至今
 类别：游戏
 介绍：原神IP 保卫萝卜+自走棋玩法 2D 涉及到的技术栈：leafer vue3 开源
 [链接](https://github.com/woyanteam/genshin-game)
 
-5. 军棋对弈
+3. 军棋对弈
 时间：2023-至今
 类别：游戏，数据处理
 介绍：大学做过的一个竞赛，现在想从头到尾重新做一下。闭源
@@ -52,9 +52,6 @@ todo：
 1. 销帮帮
 2021.7-2025.1 tob crm类产品，解决了多种复杂业务，涉及到的技术栈：vue2 elementUI vant antg 图论 ast
 [链接](https://pfweb.xbongbong.com)
-
-2. 小爱课程表
-2020 toc 对接方正系统的课程表，涉及到的技术栈：js
 
 
 other：
