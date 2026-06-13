@@ -3,7 +3,7 @@ title: 大白话讲解Promise
 excerpt: 关于promise
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

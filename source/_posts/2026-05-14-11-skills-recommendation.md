@@ -3,7 +3,7 @@ title: 装了上百个 Skill，我最常用的是这 11 个
 excerpt: 姜学长推荐的 11 个高频 Skill，覆盖效率工具、产品开发和自媒体三大场景，拿来即用。
 date: 2026-05-14
 categories:
-  - AI工具
+- AI技术
 tags:
   - AI
   - Skill

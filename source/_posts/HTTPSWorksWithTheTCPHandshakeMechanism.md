@@ -3,7 +3,7 @@ title: HTTPS的工作原理
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 网络
 ---

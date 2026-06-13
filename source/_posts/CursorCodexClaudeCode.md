@@ -3,7 +3,7 @@ title: Cursor、Codex、Claude Code：竞品还是共生？
 excerpt: 聊聊这三个最火的 AI 编程工具背后的关系、商业逻辑，以及 Cursor 收费模式引发的争议。
 date: 2026-05-08
 categories:
-  - 技术
+- AI技术
 tags:
   - AI
   - 编程工具

@@ -3,7 +3,7 @@ title: 用 AI 把文章做成视频：web-video-presentation Skill 介绍
 excerpt: 一个把口播稿变成可录屏网页演示的 AI Skill，支持自动合成音频、多主题切换，适合做 B 站 / 视频号教程。
 date: 2026-05-12
 categories:
-  - 工具分享
+- AI技术
 tags:
   - OpenClaw
   - AI

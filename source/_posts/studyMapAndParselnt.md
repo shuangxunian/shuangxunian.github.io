@@ -3,7 +3,7 @@ title: 从.map(parseInt)讲起
 excerpt: 简单讲一下map和parselnt
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 - 面试

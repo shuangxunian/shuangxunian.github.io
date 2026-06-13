@@ -3,7 +3,7 @@ title: Token - 服务端身份验证的流行方案
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 网络
 ---

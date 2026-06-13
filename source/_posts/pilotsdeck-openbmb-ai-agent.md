@@ -2,7 +2,8 @@
 title: "PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架"
 excerpt: "PilotDeck 是由清华大学 THUNLP、面壁智能与 OpenBMB 联合开源的以 WorkSpace 为核心的智能体操作系统，通过白盒记忆、智能路由与 Always-on 三大能力，为多项目并行的 AI Agent 生产力场景提供了全新解决方案。"
 date: 2026-05-29
-categories: [AI]
+categories:
+- AI技术
 tags: [AI Agent, OpenBMB, PilotDeck, 任务调度, LLM]
 ---
 

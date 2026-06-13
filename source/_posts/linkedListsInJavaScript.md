@@ -3,7 +3,7 @@ title: JavaScript中的链表
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 算法
 tags:
 - js
 - 算法

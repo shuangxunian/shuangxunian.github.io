@@ -3,7 +3,7 @@ title: Claude Code 工作原理解密：从一句指令到精准修改代码
 excerpt: 当你对 Claude Code 说"帮我修复这个 bug"时，背后并不是魔法，而是一套精密的工程系统。这篇文章将带你深入理解它的完整工作流程。
 date: 2026-06-02
 categories:
-  - 技术实践
+- AI技术
 tags:
   - Claude Code
   - AI编程

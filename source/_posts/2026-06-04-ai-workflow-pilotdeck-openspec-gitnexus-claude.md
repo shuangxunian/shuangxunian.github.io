@@ -3,7 +3,7 @@ title: PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作�
 excerpt: 从「对话玩具」到真正干活的生产力工具——记录我用四个工具搭建的 AI 编程工作流。
 date: 2026-06-04
 categories:
-  - 工程实践
+- AI技术
 tags:
   - AI
   - Claude

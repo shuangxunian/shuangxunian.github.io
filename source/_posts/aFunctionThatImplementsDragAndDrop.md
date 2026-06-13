@@ -3,7 +3,7 @@ title: 一个实现拖拽的函数
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

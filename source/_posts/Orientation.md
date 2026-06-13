@@ -3,7 +3,7 @@ title: 沈航新生问题汇总
 excerpt: 我谨代表全体学长学姐，欢迎新生~
 date: 2022-09-30
 categories:
-- 其他
+- 其它
 tags:
 - 其他
 ---

@@ -3,7 +3,7 @@ title: javascript取整方法floor、round、ceil
 excerpt: 关于js取整
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

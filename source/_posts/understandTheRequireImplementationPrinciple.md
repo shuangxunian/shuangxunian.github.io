@@ -3,7 +3,7 @@ title: 彻底搞懂 Node.js 中的 Require 机制(源码分析到手写实践)
 excerpt: 关于require的实现原理
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

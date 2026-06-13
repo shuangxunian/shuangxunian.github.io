@@ -3,7 +3,7 @@ title: 什么是跨域以及几种简单解决方案
 excerpt: 跨域是什么与两种解决方法
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

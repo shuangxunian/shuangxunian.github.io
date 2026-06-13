@@ -3,7 +3,7 @@ title: 彻底理解浏览器的缓存机制
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 浏览器
 ---

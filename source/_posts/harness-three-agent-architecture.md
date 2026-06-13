@@ -3,7 +3,7 @@ title: 用三个 AI Agent 替代一个：Harness 架构实践
 excerpt: 把 Planner、Generator、Evaluator 拆成三个独立 Agent，通过文件通信，让评估真正独立于实现。
 date: 2026-05-27
 categories:
-  - AI Engineering
+- AI技术
 tags:
   - AI Agent
   - 软件工程

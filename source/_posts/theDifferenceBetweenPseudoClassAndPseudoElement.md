@@ -3,7 +3,7 @@ title: 【CSS基础】伪类与伪元素的区别
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - css
 ---

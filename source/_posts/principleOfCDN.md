@@ -3,7 +3,7 @@ title: CDN原理详解
 excerpt: 一篇关于CDN（Content Delivery Network，内容分发网络）的文章
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 网络
 - 面试

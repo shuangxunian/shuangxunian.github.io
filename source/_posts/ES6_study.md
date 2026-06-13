@@ -3,7 +3,7 @@ title: ES6笔记
 excerpt: 关于ES6的一点自己的理解
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 - 面试

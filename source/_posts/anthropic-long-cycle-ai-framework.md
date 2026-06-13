@@ -3,7 +3,7 @@ title: Anthropic长周期AI应用框架设计工程实践
 excerpt: 借鉴对抗思想搭建多智能体架构，解决大模型长期任务通病，落地前端设计与全栈自研应用开发
 date: 2025-05-25 16:00:00
 categories:
-  - AI
+- AI技术
 tags:
   - AI Agent
   - 多智能体

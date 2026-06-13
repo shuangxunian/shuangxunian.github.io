@@ -3,7 +3,7 @@ title: 记一次关于滚动条的bug
 excerpt: 记一次关于滚动条的bug
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - DOM
 - 浏览器

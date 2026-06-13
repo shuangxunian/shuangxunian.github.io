@@ -3,7 +3,7 @@ title: "OpenClaw 踩坑：AGENTS.md 中不要有模棱两可的词语"
 excerpt: "AGENTS.md 中模棱两可的描述配合记忆系统，会导致 Agent 严重误判。本文以「消息」一词为例，分享实战踩坑经验。"
 date: 2026-06-11
 categories:
-  - 工程实践
+- AI技术
 tags:
   - OpenClaw
   - AI Agent

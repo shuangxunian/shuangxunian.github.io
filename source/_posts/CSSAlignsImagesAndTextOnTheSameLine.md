@@ -3,7 +3,7 @@ title: CSS 让同一行的图片和文字对齐
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - css
 ---

@@ -3,7 +3,7 @@ title: 事件冒泡和事件捕获
 excerpt: 关于事件冒泡和事件捕获的文章
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 - dom

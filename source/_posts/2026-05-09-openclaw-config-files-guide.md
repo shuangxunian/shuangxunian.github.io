@@ -3,7 +3,7 @@ title: OpenClaw 配置文件详解：AGENTS.md、SOUL.md、TOOLS.md 各管什么
 excerpt: 搞清楚这三个文件的分工，才能真正用好 OpenClaw 的定制能力
 date: 2026-05-09
 categories:
-  - 技术文章
+- AI技术
 tags:
   - OpenClaw
   - AI Agent

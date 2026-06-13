@@ -3,7 +3,7 @@ title: js迭代器实现斐波那契
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 算法
 tags:
 - js
 ---

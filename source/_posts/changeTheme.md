@@ -4,7 +4,7 @@ banner_img: https://api2.mubu.com/v3/document_image/bdc5425b-8fcc-424f-a94f-0c4b
 excerpt: 如何更换个人网站的主题
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 建站
 - gitee

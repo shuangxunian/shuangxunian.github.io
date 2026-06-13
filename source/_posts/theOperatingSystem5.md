@@ -3,7 +3,7 @@ title: 操作系统期末考试——5
 excerpt: 本文涉及到文件管理
 date: 2022-09-30
 categories:
-- 考试
+- 开发技术
 tags:
 - 操作系统
 - 考试

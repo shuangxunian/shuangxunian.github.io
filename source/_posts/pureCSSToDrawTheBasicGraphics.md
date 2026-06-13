@@ -3,7 +3,7 @@ title: 纯CSS画的基本图形（矩形、圆形、三角形、多边形、爱�
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - css
 ---

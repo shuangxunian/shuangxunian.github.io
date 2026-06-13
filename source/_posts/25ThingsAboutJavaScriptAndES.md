@@ -3,7 +3,7 @@ title: JavaScript与ES的25个知识点
 excerpt: 如题目~
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

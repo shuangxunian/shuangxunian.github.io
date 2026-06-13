@@ -3,7 +3,7 @@ title: 为什么用Object.prototype. toString.call(obj)检测对象类型?
 excerpt: 如题目~
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

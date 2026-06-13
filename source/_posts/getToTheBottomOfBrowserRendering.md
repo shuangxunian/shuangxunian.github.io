@@ -3,7 +3,7 @@ title: 深入浅出浏览器渲染原理
 excerpt: 理解浏览器渲染
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 浏览器
 ---

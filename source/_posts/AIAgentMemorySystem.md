@@ -3,7 +3,7 @@ title: AI Agent 记忆系统：临时记忆 vs 永久记忆的设计与实现
 excerpt: 深入理解 AI Agent 的记忆架构，包括临时/永久记忆的自动分类、RAG 检索流程，以及完整的 Python 实现代码
 date: 2026-05-06
 categories:
-- 技术文章
+- AI技术
 tags:
 - AI
 - Agent

@@ -3,7 +3,7 @@ title: I/O 模型：阻塞、非阻塞与多路复用（select/poll/epoll）
 excerpt: 梳理五种 Unix I/O 模型的核心差异，重点对比 select/poll/epoll 的实现原理与性能瓶颈，以及 epoll 的 LT/ET 两种触发模式。
 date: 2026-05-08
 categories:
-  - 操作系统
+- 开发技术
 tags:
   - IO模型
   - epoll

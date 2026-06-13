@@ -3,7 +3,7 @@ title: 5种回到顶部的写法从实现到增强
 excerpt: 做项目遇到的一个要求，收集到了五种解决方案
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 - css

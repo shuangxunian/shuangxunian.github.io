@@ -3,7 +3,7 @@ title: 软件工程期末考试
 excerpt: 此文章为今天上课老师讲的内容~
 date: 2022-09-30
 categories:
-- 考试
+- 开发技术
 tags:
 - 软件工程
 - 考试

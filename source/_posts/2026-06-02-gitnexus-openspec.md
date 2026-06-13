@@ -3,7 +3,7 @@ title: AI 时代的代码智能革命：GitNexus 与 OpenSpec 到底解决了什
 excerpt: 两个 GitHub 爆款项目，一个让 AI "看懂"你的代码，一个让 AI "规划"你的需求。合在一起，是 2026 年最值得关注的 AI 编程范式。
 date: 2026-06-02
 categories:
-  - 技术实践
+- AI技术
 tags:
   - AI编程
   - GitNexus

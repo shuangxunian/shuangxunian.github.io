@@ -3,7 +3,7 @@ title: 初探babel
 excerpt: 关于babel.js的简单安装与使用
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---

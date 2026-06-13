@@ -3,7 +3,7 @@ title: 飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线
 excerpt: 从飞书发一张截图，到博客文章自动上线，整个链路只需要一句话。本文记录这套全链路的搭建过程。
 date: 2026-05-07
 categories:
-  - 技术实践
+- AI技术
 tags:
   - OpenClaw
   - 飞书

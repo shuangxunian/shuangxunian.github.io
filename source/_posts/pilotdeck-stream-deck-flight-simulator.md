@@ -2,7 +2,8 @@
 title: "PilotDeck：让 Stream Deck 成为你的飞行仪表盘"
 excerpt: "PilotsDeck 是一款免费开源的 Elgato Stream Deck 插件，可将你的 Stream Deck 变成功能强大的飞行模拟器控制面板，支持 MSFS、X-Plane 和 Prepar3D。"
 date: 2026-05-29
-categories: [工具]
+categories:
+- 其它
 tags: [Stream Deck, 飞行模拟, PilotDeck, 工具]
 ---
 

@@ -3,7 +3,7 @@ title: 开源软件的许可协议
 excerpt: 一篇关于各种协议的文章
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - 其他
 ---

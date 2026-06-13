@@ -3,7 +3,7 @@ title: 面试官昨天问我对base64的理解，着实被问懵了
 excerpt: 如题目
 date: 2022-09-30
 categories:
-- 技术文章
+- 开发技术
 tags:
 - js
 ---
