@@ -330,11 +330,3 @@ runEmbeddedPiAgent() while(true) 循环
 ```
 
 **核心智慧**：compaction 就是把「一段很长的对话」变成「一段摘要 + 最近几轮关键消息」，用一个小型 LLM 调用省下未来所有调用的 token 开销。但它本身也有风险——调用 LLM 本身要花钱、花时间，所以有重试上限防护。
-
----
-
-想接着看什么？
-
-1. 📨 **Subscription 管道** — `subscribeEmbeddedPiSession` 怎么处理流式响应和 tool call
-2. 🔄 **Failover 重试逻辑** — timeout/rate limit/auth fail/context overflow 的完整重试矩阵
-3. 📁 **Session 文件格式** — JSONL transcript 的读写 / repair / 修复
