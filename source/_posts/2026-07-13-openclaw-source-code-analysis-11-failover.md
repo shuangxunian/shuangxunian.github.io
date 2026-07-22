@@ -2,8 +2,7 @@
 title: OpenClaw 源码解析 ⑪：Failover 重试逻辑完整拆解
 date: 2026-07-13 15:43:00
 categories:
-  - OpenClaw
-  - 源码解析
+- AI技术
 tags:
   - OpenClaw
   - Failover

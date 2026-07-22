@@ -2,7 +2,7 @@
 title: OpenClaw Gateway Memory Leak Analysis
 date: 2026-06-25
 categories:
-  - Tech
+- AI技术
 tags:
   - OpenClaw
   - Ops

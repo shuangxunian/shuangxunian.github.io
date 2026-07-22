@@ -2,7 +2,8 @@
 title: "OpenClaw 源码解析 ③：runEmbeddedPiAgent 逐行走读"
 excerpt: "深入 OpenClaw Agent 运行时的唯一入口函数 runEmbeddedPiAgent，从调用链、双层排队到主循环 while(true)，逐行拆解六阶段时序与故障恢复机制。"
 date: 2026-07-10
-categories: [技术]
+categories:
+- AI技术
 tags: [OpenClaw, 源码解析, Agent, TypeScript]
 ---
 

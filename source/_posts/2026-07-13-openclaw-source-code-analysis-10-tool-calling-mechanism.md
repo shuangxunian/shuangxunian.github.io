@@ -2,8 +2,7 @@
 title: OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt
 date: 2026-07-13 11:28:00
 categories:
-  - OpenClaw
-  - 源码解析
+- AI技术
 tags:
   - OpenClaw
   - Tool Calling

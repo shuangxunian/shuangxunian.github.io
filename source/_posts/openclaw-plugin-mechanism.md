@@ -3,7 +3,7 @@ title: OpenClaw 插件机制科普：一个 Guard 插件是怎么"活"起来的
 excerpt: 从插件目录结构、加载流程、钩子订阅到权限模型，拆解 OpenClaw 插件系统的完整运作链路。
 date: 2026-07-02
 categories:
-  - 技术实践
+- AI技术
 tags:
   - OpenClaw
   - 插件

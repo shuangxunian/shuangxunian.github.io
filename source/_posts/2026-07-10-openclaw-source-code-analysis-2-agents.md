@@ -2,7 +2,8 @@
 title: "OpenClaw 源码解析 ②：Agent 执行引擎"
 excerpt: "深入 OpenClaw Agents 模块的四层架构，从 runEmbeddedPiAgent 唯一入口出发，逐层拆解事件驱动引擎、工具系统三层过滤、沙箱安全边界、上下文压缩机制、模型解析管道与子 Agent 生命周期。"
 date: 2026-07-10
-categories: [技术]
+categories:
+- AI技术
 tags: [OpenClaw, 源码解析, Agent, LLM]
 ---
 

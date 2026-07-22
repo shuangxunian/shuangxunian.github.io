@@ -2,8 +2,7 @@
 title: OpenClaw 源码解析 ⑦：Compaction 完整拆解
 date: 2026-07-13 09:31:00
 categories:
-  - OpenClaw
-  - 源码解析
+- AI技术
 tags:
   - OpenClaw
   - Compaction

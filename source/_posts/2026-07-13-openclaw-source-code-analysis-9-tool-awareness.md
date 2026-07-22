@@ -2,8 +2,7 @@
 title: OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools
 date: 2026-07-13 11:25:00
 categories:
-  - OpenClaw
-  - 源码解析
+- AI技术
 tags:
   - OpenClaw
   - Tools

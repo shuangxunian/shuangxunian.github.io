@@ -2,7 +2,8 @@
 title: "OpenClaw 源码解析 ①：宏观全景图"
 excerpt: "从五层架构、消息数据流到关键设计决策，一文俯瞰 OpenClaw 源码的宏观全景。"
 date: 2026-07-10
-categories: [技术]
+categories:
+- AI技术
 tags: [OpenClaw, 源码解析, 架构]
 ---
 

@@ -2,7 +2,8 @@
 title: OpenClaw 4.23 发布：当图像生成成为一等公民
 excerpt: OpenClaw v2026.4.23 版本全面解析——图像生成原生化、子代理 Forked Context、按调用超时控制，以及大量安全加固。这是一次「打补丁也打底气」的 Operator Release。
 date: 2026-07-10
-categories: [技术]
+categories:
+- AI技术
 tags: [OpenClaw, AI Agent]
 ---
 

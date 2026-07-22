@@ -2,7 +2,7 @@
 title: "OpenClaw 源码解析 ⑤：工具系统深度拆解"
 date: 2026-07-10
 categories:
-  - 技术
+- AI技术
 tags:
   - OpenClaw
   - 源码解析
