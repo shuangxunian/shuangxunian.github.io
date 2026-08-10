@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>一句 Hello，Claude Code 为什么可能要处理 3 万 Token？</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="一句 Hello，Claude Code 为什么可能要处理 3 万 Token？">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/10/2026-08-10-claude-code-token-trace/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="用 claude-trace 拆开一次 Claude Code 请求：隐藏上下文、系统提示词、工具定义和提示词缓存，分别怎样构成一次看似简单的对话。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="Claude Code">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Token">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Prompt Cache">
+        
+          <meta 
+            property="og:article:tag" 
+            content="调试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>182</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%8A%93%E4%B8%80%E4%BB%BD%E8%87%AA%E5%B7%B1%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="toc-text">先抓一份自己的请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%AF%B7%E6%B1%82%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-text">一次请求长什么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#messages%EF%BC%9A%E4%BD%A0%E8%AF%B4%E7%9A%84-Hello-%E6%8E%92%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-text">messages：你说的 Hello 排在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system%EF%BC%9AClaude-Code-%E7%9A%84%E8%A1%8C%E4%B8%BA%E8%AF%B4%E6%98%8E%E4%B9%A6"><span class="toc-text">system：Claude Code 的行为说明书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tools%EF%BC%9A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E6%9C%AC%E8%BA%AB%E4%B9%9F%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">tools：工具定义本身也是上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#thinking-%E4%B8%8E-effort%EF%BC%9A%E5%86%B3%E5%AE%9A%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A8%E7%90%86%E5%BC%BA%E5%BA%A6"><span class="toc-text">thinking 与 effort：决定可用的推理强度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E4%B8%8D%E6%98%AF%E4%B8%80%E6%95%B4%E5%9D%97-JSON%EF%BC%8C%E8%80%8C%E6%98%AF-SSE-%E4%BA%8B%E4%BB%B6%E6%B5%81"><span class="toc-text">响应不是一整块 JSON，而是 SSE 事件流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Token-%E8%B4%A6%E5%8D%95%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E8%AF%BB"><span class="toc-text">Token 账单应该怎样读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%8A%93%E5%8C%85%E5%9B%9E%E7%AD%94%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">用抓包回答，而不是猜测</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI-%E7%BC%96%E7%A8%8B/">
+        <div class="categories-list-item">
+          AI-编程
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+        title="前端基础">
+        <div class="tags-list-item">前端基础</div>
+      </a>
+    
+      <a 
+        href="/tags/JavaScript/" 
+        title="JavaScript">
+        <div class="tags-list-item">JavaScript</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      一句 Hello，Claude Code 为什么可能要处理 3 万 Token？
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-08-10-claude-code-token-trace.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-10T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI-%E7%BC%96%E7%A8%8B/" 
+          class="post-meta-link">
+          AI 编程
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/Claude-Code/" 
+            class="post-meta-link">
+            Claude Code
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Token/" 
+            class="post-meta-link">
+            Token
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Prompt-Cache/" 
+            class="post-meta-link">
+            Prompt Cache
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E8%B0%83%E8%AF%95/" 
+            class="post-meta-link">
+            调试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>在 Claude Code 里输入一句 <code>hello</code>，它回了一句“有什么可以帮你的？”。从人的视角看，这几乎是一轮没有成本的对话。</p>
+<p>但从 API 请求的视角看，事情完全不同。在一次实际抓包中，本轮的 <code>input_tokens</code> 只有 <strong>6</strong>，而服务端同时记录了约 <strong>1.4 万个缓存写入 token</strong> 和 <strong>1.6 万个缓存读取 token</strong>。把三者相加，模型在这次请求中关联的上下文接近 <strong>3.1 万 token</strong>。</p>
+<p>这不表示你输入的五个字母突然变成了三万个 token，而是 Claude Code 为了完成一个看似简单的请求，附带了大量运行上下文。本文用 <a target="_blank" rel="noopener" href="https://github.com/badlogic">Mario Zechner</a> 的 <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/@mariozechner/claude-trace">claude-trace</a> 把一次请求拆开，看看这些 token 到底花在了哪里。</p>
+<blockquote>
+<p>本文展示的是某次环境与版本下的抓包结构。Claude Code 的系统提示词、可用工具、MCP、Skills、Hooks 和缓存命中情况都会随版本、项目和配置变化，数字不应被理解为固定值。</p>
+</blockquote>
+<h2 id="先抓一份自己的请求"><a href="#先抓一份自己的请求" class="headerlink" title="先抓一份自己的请求"></a>先抓一份自己的请求</h2><p>安装并启动 <code>claude-trace</code>：</p>
+<pre class="highlight"><code class="hljs bash">npm install -g @mariozechner/claude-trace<br><br><span class="hljs-comment"># 以 Claude Code 启动一次会话，并记录所有 API 请求</span><br>claude-trace --include-all-requests<br></code></pre>
+
+<p>之后像平常一样使用 Claude Code，结束会话即可。工具会在当前工作目录生成：</p>
+<pre class="highlight"><code class="hljs text">.claude-trace/<br>  log-2026-08-10-12-34-56.jsonl<br>  log-2026-08-10-12-34-56.html<br></code></pre>
+
+<p>HTML 是自包含的报告，直接用浏览器打开即可查看请求、响应、工具调用和 token 用量。默认情况下，<code>claude-trace</code> 只记录消息数超过两条的 <code>/v1/messages</code> 请求；<code>--include-all-requests</code> 很重要，因为单轮 <code>hello</code> 正是容易被过滤掉的请求。</p>
+<p><strong>注意：报告不是可以随手上传的日志。</strong> 它可能包含项目路径、源代码片段、文件内容、工具输出、MCP 返回值和会话上下文。调试或分享前，应先脱敏并确认其中没有私密信息。</p>
+<h2 id="一次请求长什么样"><a href="#一次请求长什么样" class="headerlink" title="一次请求长什么样"></a>一次请求长什么样</h2><p>在报告的原始请求视图中，重点看四个字段：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;messages&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;system&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;tools&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;thinking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;adaptive&quot;</span> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p>这不是完整原文，只是便于理解的轮廓。<code>messages</code>、<code>system</code> 和 <code>tools</code> 承载了大部分上下文；<code>thinking</code> 与输出配置则影响模型在本轮可使用的推理策略。</p>
+<h2 id="messages：你说的-Hello-排在最后"><a href="#messages：你说的-Hello-排在最后" class="headerlink" title="messages：你说的 Hello 排在最后"></a><code>messages</code>：你说的 Hello 排在最后</h2><p>最反直觉的地方是：用户真正输入的 <code>hello</code>，通常不是 <code>messages[0]</code> 里的唯一内容。</p>
+<p>Claude Code 会将一些运行时上下文包装为多个 content block，与用户输入一起发送。一次典型抓包中，可能依次出现：</p>
+<ol>
+<li><strong>Hooks 相关配置</strong>：只有启用了对应 Hook 或插件时才会出现。</li>
+<li><strong>延迟加载的工具目录</strong>：先告诉模型有哪些工具可用，而不是把每个工具的完整说明都塞进这里。需要时，模型可通过工具搜索机制取得具体定义。</li>
+<li><strong>MCP 使用说明</strong>：告诉模型如何发现和调用当前配置的 MCP 服务。</li>
+<li><strong>可用 Skills 列表或说明</strong>：项目所启用的工作流、技能会影响这里的内容。</li>
+<li><strong>项目指令</strong>：例如仓库里的 <code>CLAUDE.md</code>，其中的目录约定、编码规则和工具偏好会被带入上下文。</li>
+<li><strong>实际输入</strong>：最后才是用户的 <code>hello</code>。</li>
+</ol>
+<p>这解释了一个常见现象：Claude Code 之所以“知道”项目规范，并不是因为规范永久存放在模型里，而是因为每次相关请求都把规范作为上下文提供给模型。</p>
+<p>从抓包还可以看到，实际用户输入附近常带有 <code>cache_control</code>。它相当于给上下文标出一个缓存边界：边界之前相对稳定的内容可以复用；本次输入及其后的动态内容仍需要重新处理。具体 block 的位置和缓存策略会随版本改变，但这个思路是理解成本的关键。</p>
+<h2 id="system：Claude-Code-的行为说明书"><a href="#system：Claude-Code-的行为说明书" class="headerlink" title="system：Claude Code 的行为说明书"></a><code>system</code>：Claude Code 的行为说明书</h2><p><code>system</code> 字段不是一整段普通字符串，而常常是多个文本块组成的数组。它通常包括以下几类信息：</p>
+<ul>
+<li><strong>请求元信息</strong>：例如客户端版本、入口类型等。</li>
+<li><strong>身份说明</strong>：模型正在以 Claude Code 的身份工作。</li>
+<li><strong>行为规则</strong>：如何完成任务、哪些高风险动作需要确认、怎样使用工具、输出风格等。</li>
+<li><strong>能力与环境说明</strong>：记忆策略、当前 shell、工作目录、操作系统以及其他运行环境信息。</li>
+</ul>
+<p>这些内容决定了 Claude Code 与普通聊天窗口的区别。模型不仅要生成一句自然语言回复，还要理解自己在一个什么环境中运行、能调用哪些能力、执行命令时要遵守什么边界。</p>
+<p>如果想查看不同 Claude Code 版本的系统提示词和工具定义变化，可以使用同一作者的 <a target="_blank" rel="noopener" href="https://github.com/badlogic/cchistory">cchistory</a>：</p>
+<pre class="highlight"><code class="hljs bash">npm install -g @mariozechner/cchistory<br>cchistory 1.0.0<br></code></pre>
+
+<p>它会提取指定版本发送的用户消息格式、系统提示词与工具定义。对于“上周还好好的，这周为什么行为变了”这类问题，版本对比比凭感觉猜测更可靠。</p>
+<h2 id="tools：工具定义本身也是上下文"><a href="#tools：工具定义本身也是上下文" class="headerlink" title="tools：工具定义本身也是上下文"></a><code>tools</code>：工具定义本身也是上下文</h2><p><code>tools</code> 中是 Claude Code 直接提供给模型的工具定义。常见工具覆盖文件读取、内容搜索、文件编辑、Shell 命令执行、子代理任务分派、计划唤醒和工具搜索等能力。</p>
+<p>每个工具都不只是一个名字。它还会有：</p>
+<ul>
+<li>何时适合或不适合使用的说明；</li>
+<li>参数的 JSON Schema；</li>
+<li>参数含义和约束；</li>
+<li>与安全操作相关的规则。</li>
+</ul>
+<p>因此，一个功能强大的命令行工具并不会只消耗“用户提示词的 token”。为了让模型正确、安全地调用工具，工具说明本身也必须进入上下文。特别是 Shell 工具的说明往往很长，因为它需要描述工作目录、超时、命令风险和使用约束。</p>
+<h2 id="thinking-与-effort：决定可用的推理强度"><a href="#thinking-与-effort：决定可用的推理强度" class="headerlink" title="thinking 与 effort：决定可用的推理强度"></a><code>thinking</code> 与 <code>effort</code>：决定可用的推理强度</h2><p>抓包中还可能看到类似：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;thinking&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;adaptive&quot;</span> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;output_config&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;effort&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;xhigh&quot;</span> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p><code>adaptive</code> 表示模型可自行决定本轮是否、以及如何使用更深入的推理；<code>effort</code> 则是客户端提供的推理强度上限或偏好。字段取值与具体模型、套餐和客户端版本有关，不能简单把某个自然语言提示词等同于某个固定的 API 参数。</p>
+<h2 id="响应不是一整块-JSON，而是-SSE-事件流"><a href="#响应不是一整块-JSON，而是-SSE-事件流" class="headerlink" title="响应不是一整块 JSON，而是 SSE 事件流"></a>响应不是一整块 JSON，而是 SSE 事件流</h2><p>Claude Code 收到的响应通常以 SSE（Server-Sent Events）流的形式抵达。浏览器或终端里“逐字出现”的效果，来自服务器持续推送的增量事件。</p>
+<p>一轮简单文本回复常见的顺序如下：</p>
+<pre class="highlight"><code class="hljs text">message_start<br>content_block_start<br>ping<br>content_block_delta<br>content_block_delta<br>content_block_stop<br>message_delta（携带 stop_reason: end_turn）<br>message_stop<br></code></pre>
+
+<p>其中，<code>content_block_delta</code> 才是“Hello”“How can I help you today?” 这类实际文本片段。<code>ping</code> 用于保持连接；<code>end_turn</code> 表示模型主动结束了这一轮回答。</p>
+<h2 id="Token-账单应该怎样读"><a href="#Token-账单应该怎样读" class="headerlink" title="Token 账单应该怎样读"></a>Token 账单应该怎样读</h2><p>最值得看的字段通常在 <code>message_start</code> 的 <code>usage</code> 中：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;input_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">6</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cache_creation_input_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">14000</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cache_read_input_tokens&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">16000</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p>可以这样理解：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>input_tokens</code></td>
+<td>本轮常规输入，包含用户输入及未命中缓存的部分</td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>cache_creation_input_tokens</code></td>
+<td>本轮新写入提示词缓存的内容</td>
+<td>14,000</td>
+</tr>
+<tr>
+<td><code>cache_read_input_tokens</code></td>
+<td>从已有提示词缓存复用的内容</td>
+<td>16,000</td>
+</tr>
+</tbody></table>
+<p>在这个例子中，相关上下文总量约为：</p>
+<pre class="highlight"><code class="hljs text">6 + 14,000 + 16,000 = 30,006 tokens<br></code></pre>
+
+<p>视频中“接近 3 万 token”的说法，指的就是这个量级。它描述的是本次请求涉及的上下文规模，而不是说 <code>hello</code> 本身有三万个 token。</p>
+<p>缓存尤其值得区分。缓存读取通常比正常输入便宜得多，因此连续对话的成本并不等于每次都从零开始处理所有系统提示词和工具定义；但缓存写入、缓存有效期、模型定价和缓存命中条件会影响实际费用。要判断“贵不贵”，应以当次响应的 usage 字段和当期官方价格为准，而不是只看上下文 token 相加的总数。</p>
+<h2 id="用抓包回答，而不是猜测"><a href="#用抓包回答，而不是猜测" class="headerlink" title="用抓包回答，而不是猜测"></a>用抓包回答，而不是猜测</h2><p>当 Claude Code 出现以下情况时，<code>claude-trace</code> 很适合作为第一手证据：</p>
+<ul>
+<li>明明输入很短，token 使用却很高；</li>
+<li>同一提示词在不同项目或不同日期表现不同；</li>
+<li>想确认 <code>CLAUDE.md</code>、MCP、Skills 或 Hooks 是否真的进入了上下文；</li>
+<li>想区分“缓存没有命中”和“模型输出过长”；</li>
+<li>想定位某个工具调用、系统提示词或上下文注入带来的行为变化。</li>
+</ul>
+<p>结论很简单：一句 <code>hello</code> 背后并不只有一句 <code>hello</code>。Claude Code 还需要携带项目规则、环境信息、工具契约和会话状态，才能作为编码代理工作。看不见的上下文正是能力的一部分，也正是 token 账单的一部分。下次遇到异常行为或成本波动，先看它实际发了什么、收到了什么，再决定该删配置、缩短指令，还是调整工作流。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-behavior-delegation-oloo-part-2-chapter-6/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第六章：行为委托与 ES6 class </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%8A%93%E4%B8%80%E4%BB%BD%E8%87%AA%E5%B7%B1%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="toc-text">先抓一份自己的请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%AF%B7%E6%B1%82%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-text">一次请求长什么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#messages%EF%BC%9A%E4%BD%A0%E8%AF%B4%E7%9A%84-Hello-%E6%8E%92%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-text">messages：你说的 Hello 排在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system%EF%BC%9AClaude-Code-%E7%9A%84%E8%A1%8C%E4%B8%BA%E8%AF%B4%E6%98%8E%E4%B9%A6"><span class="toc-text">system：Claude Code 的行为说明书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tools%EF%BC%9A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E6%9C%AC%E8%BA%AB%E4%B9%9F%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">tools：工具定义本身也是上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#thinking-%E4%B8%8E-effort%EF%BC%9A%E5%86%B3%E5%AE%9A%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A8%E7%90%86%E5%BC%BA%E5%BA%A6"><span class="toc-text">thinking 与 effort：决定可用的推理强度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E4%B8%8D%E6%98%AF%E4%B8%80%E6%95%B4%E5%9D%97-JSON%EF%BC%8C%E8%80%8C%E6%98%AF-SSE-%E4%BA%8B%E4%BB%B6%E6%B5%81"><span class="toc-text">响应不是一整块 JSON，而是 SSE 事件流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Token-%E8%B4%A6%E5%8D%95%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E8%AF%BB"><span class="toc-text">Token 账单应该怎样读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%8A%93%E5%8C%85%E5%9B%9E%E7%AD%94%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">用抓包回答，而不是猜测</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E6%8A%93%E4%B8%80%E4%BB%BD%E8%87%AA%E5%B7%B1%E7%9A%84%E8%AF%B7%E6%B1%82"><span class="toc-text">先抓一份自己的请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E6%AC%A1%E8%AF%B7%E6%B1%82%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-text">一次请求长什么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#messages%EF%BC%9A%E4%BD%A0%E8%AF%B4%E7%9A%84-Hello-%E6%8E%92%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-text">messages：你说的 Hello 排在最后</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#system%EF%BC%9AClaude-Code-%E7%9A%84%E8%A1%8C%E4%B8%BA%E8%AF%B4%E6%98%8E%E4%B9%A6"><span class="toc-text">system：Claude Code 的行为说明书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tools%EF%BC%9A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E6%9C%AC%E8%BA%AB%E4%B9%9F%E6%98%AF%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">tools：工具定义本身也是上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#thinking-%E4%B8%8E-effort%EF%BC%9A%E5%86%B3%E5%AE%9A%E5%8F%AF%E7%94%A8%E7%9A%84%E6%8E%A8%E7%90%86%E5%BC%BA%E5%BA%A6"><span class="toc-text">thinking 与 effort：决定可用的推理强度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E4%B8%8D%E6%98%AF%E4%B8%80%E6%95%B4%E5%9D%97-JSON%EF%BC%8C%E8%80%8C%E6%98%AF-SSE-%E4%BA%8B%E4%BB%B6%E6%B5%81"><span class="toc-text">响应不是一整块 JSON，而是 SSE 事件流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Token-%E8%B4%A6%E5%8D%95%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E8%AF%BB"><span class="toc-text">Token 账单应该怎样读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%8A%93%E5%8C%85%E5%9B%9E%E7%AD%94%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">用抓包回答，而不是猜测</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-token-trace/"><div class="recent-posts-item-content">一句 Hello，Claude Code 为什么可能要处理 3 万 Token？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-behavior-delegation-oloo-part-2-chapter-6/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二部分第六章：行为委托与 ES6 class</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-closure-chapter-5/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第五章：作用域闭包</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-es6-class-appendix-part-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二部分附录 A：ES6 中的 class</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
