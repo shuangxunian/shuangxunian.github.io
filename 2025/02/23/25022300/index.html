@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>react学习</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="react学习">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2025/02/23/25022300/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2025-02-23">
+      <meta 
+        property="og:article:modified_time" 
+        content="2025-02-23">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="js">
+        
+          <meta 
+            property="og:article:tag" 
+            content="react">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E7%AE%80%E4%BB%8B"><span class="toc-text">React 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSX-%E8%AF%AD%E6%B3%95"><span class="toc-text">JSX 语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%EF%BC%88Components%EF%BC%89"><span class="toc-text">组件（Components）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%BB%84%E4%BB%B6"><span class="toc-text">函数组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%BB%84%E4%BB%B6"><span class="toc-text">类组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%BB%84%E4%BB%B6"><span class="toc-text">使用组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Props-%E5%92%8C-State"><span class="toc-text">Props 和 State</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Props%EF%BC%88%E7%88%B6%E4%BC%A0%E5%AD%90%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="toc-text">Props（父传子数据）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#State%EF%BC%88%E7%BB%84%E4%BB%B6%E5%86%85%E9%83%A8%E7%8A%B6%E6%80%81%EF%BC%89"><span class="toc-text">State（组件内部状态）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="toc-text">事件处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="toc-text">条件渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E6%B8%B2%E6%9F%93"><span class="toc-text">列表渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E5%89%AF%E4%BD%9C%E7%94%A8%EF%BC%88useEffect%EF%BC%89"><span class="toc-text">生命周期与副作用（useEffect）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%EF%BC%88React-Router%EF%BC%89"><span class="toc-text">路由（React Router）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89"><span class="toc-text">状态管理（进阶）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="toc-text">构建与部署</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      react学习
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/25022300.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2025-02-22T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2025-02-23</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>816 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/js/" 
+            class="post-meta-link">
+            js
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/react/" 
+            class="post-meta-link">
+            react
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>先学一下react有备无患，发现挺容易上手的，还记得大三的时候学vue学的特别慢，现在看react看了一天就可以看大项目了；具体历程就是：</p>
+<ul>
+<li>看官方文档，看视频 1day</li>
+<li>看github react项目，标准的<a target="_blank" rel="noopener" href="https://github.com/duxianwei520/react.git">管理系统</a>入手</li>
+</ul>
+<h2 id="React-简介"><a href="#React-简介" class="headerlink" title="React 简介"></a>React 简介</h2><ul>
+<li><strong>是什么？</strong><br>React 是 Facebook 开发的用于构建用户界面的 JavaScript 库，专注于组件化和声明式编程。</li>
+<li><strong>核心概念</strong>  <ul>
+<li><strong>组件化</strong>：将 UI 拆分为独立、可复用的代码块。</li>
+<li><strong>虚拟 DOM</strong>：高效更新界面，提升性能。</li>
+<li><strong>单向数据流</strong>：数据从父组件流向子组件。</li>
+</ul>
+</li>
+</ul>
+<h2 id="JSX-语法"><a href="#JSX-语法" class="headerlink" title="JSX 语法"></a>JSX 语法</h2><ul>
+<li><strong>什么是 JSX？</strong><br>一种类似 HTML 的语法扩展，最终会被转换为 JavaScript。</li>
+<li><strong>基础用法</strong>：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">const</span> element = <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello, React!<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>;<br></code></pre></li>
+<li><strong>嵌入 JavaScript 表达式</strong>：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">const</span> name = <span class="hljs-string">&quot;Alice&quot;</span>;<br><span class="hljs-keyword">const</span> element = <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello, &#123;name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>;<br></code></pre></li>
+<li><strong>注意事项</strong>：<ul>
+<li>使用 <code>className</code> 代替 <code>class</code>。</li>
+<li>标签必须闭合（如 <code>&lt;img /&gt;</code>）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="组件（Components）"><a href="#组件（Components）" class="headerlink" title="组件（Components）"></a>组件（Components）</h2><h3 id="函数组件"><a href="#函数组件" class="headerlink" title="函数组件"></a>函数组件</h3>  <pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Welcome</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello, &#123;props.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>;<br>&#125;<br></code></pre>
+
+<h3 id="类组件"><a href="#类组件" class="headerlink" title="类组件"></a>类组件</h3><p>（了解即可，推荐用函数组件+Hooks）<br>  <pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Welcome</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">React.Component</span> &#123;<br>  <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>Hello, &#123;this.props.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span>;<br>  &#125;<br>&#125;<br></code></pre></p>
+<h3 id="使用组件"><a href="#使用组件" class="headerlink" title="使用组件"></a>使用组件</h3>  <pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Welcome</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Alice&quot;</span> /&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Welcome</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Bob&quot;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre>
+
+<h2 id="Props-和-State"><a href="#Props-和-State" class="headerlink" title="Props 和 State"></a>Props 和 State</h2><h3 id="Props（父传子数据）"><a href="#Props（父传子数据）" class="headerlink" title="Props（父传子数据）"></a>Props（父传子数据）</h3>  <pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">User</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;props.name&#125; - &#123;props.age&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>;<br>&#125;<br><br><span class="hljs-comment">// 使用</span><br>&lt;<span class="hljs-title class_">User</span> name=<span class="hljs-string">&quot;Alice&quot;</span> age=&#123;<span class="hljs-number">25</span>&#125; /&gt;<br></code></pre>
+
+<h3 id="State（组件内部状态）"><a href="#State（组件内部状态）" class="headerlink" title="State（组件内部状态）"></a>State（组件内部状态）</h3><p>  使用 <code>useState</code> Hook：<br>  <pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Counter</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Count: &#123;count&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> setCount(count + 1)&#125;&gt;+1<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></p>
+<h2 id="事件处理"><a href="#事件处理" class="headerlink" title="事件处理"></a>事件处理</h2><ul>
+<li><strong>语法</strong>：使用驼峰命名（如 <code>onClick</code>）。</li>
+<li><strong>示例</strong>：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Button</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleClick</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;Button clicked!&#x27;</span>);<br>  &#125;;<br><br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;handleClick&#125;</span>&gt;</span>Click Me<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>;<br>&#125;<br></code></pre></li>
+</ul>
+<h2 id="条件渲染"><a href="#条件渲染" class="headerlink" title="条件渲染"></a>条件渲染</h2><ul>
+<li><strong>使用 <code>if</code> 或三元运算符</strong>：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Greeting</span>(<span class="hljs-params">&#123; isLoggedIn &#125;</span>) &#123;<br>  <span class="hljs-keyword">return</span> isLoggedIn ? <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Welcome back!<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span> : <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Please sign in.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>;<br>&#125;<br></code></pre></li>
+</ul>
+<h2 id="列表渲染"><a href="#列表渲染" class="headerlink" title="列表渲染"></a>列表渲染</h2><ul>
+<li>**使用 <code>map</code> 和 <code>key</code>**：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">function</span> <span class="hljs-title function_">TodoList</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> todos = [<span class="hljs-string">&#x27;Learn React&#x27;</span>, <span class="hljs-string">&#x27;Build a project&#x27;</span>, <span class="hljs-string">&#x27;Deploy&#x27;</span>];<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">      &#123;todos.map((todo, index) =&gt; (</span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;index&#125;</span>&gt;</span>&#123;todo&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="language-xml">      ))&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></li>
+</ul>
+<h2 id="生命周期与副作用（useEffect）"><a href="#生命周期与副作用（useEffect）" class="headerlink" title="生命周期与副作用（useEffect）"></a>生命周期与副作用（useEffect）</h2><ul>
+<li><strong>副作用操作</strong>：数据获取、订阅等。</li>
+<li>**使用<code>useEffect</code>**：<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Timer</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [seconds, setSeconds] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>);<br><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">const</span> interval = <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-title function_">setSeconds</span>(<span class="hljs-function"><span class="hljs-params">s</span> =&gt;</span> s + <span class="hljs-number">1</span>);<br>    &#125;, <span class="hljs-number">1000</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> <span class="hljs-built_in">clearInterval</span>(interval); <span class="hljs-comment">// 清理函数</span><br>  &#125;, []); <span class="hljs-comment">// 空数组表示只在组件挂载时运行</span><br><br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Seconds: &#123;seconds&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;<br>&#125;<br></code></pre></li>
+</ul>
+<h2 id="路由（React-Router）"><a href="#路由（React-Router）" class="headerlink" title="路由（React Router）"></a>路由（React Router）</h2><ol>
+<li><p><strong>安装</strong>：</p>
+<pre class="highlight"><code class="hljs bash">npm install react-router-dom<br></code></pre>
+</li>
+<li><p><strong>基本配置</strong>：</p>
+<pre class="highlight"><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">BrowserRouter</span> <span class="hljs-keyword">as</span> <span class="hljs-title class_">Router</span>, <span class="hljs-title class_">Route</span>, <span class="hljs-title class_">Link</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Router</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">nav</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/&quot;</span>&gt;</span>Home<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/about&quot;</span>&gt;</span>About<span class="hljs-tag">&lt;/<span class="hljs-name">Link</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">nav</span>&gt;</span></span><br><span class="language-xml"></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/&quot;</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Home&#125;</span> /&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/about&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;About&#125;</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">Router</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre></li>
+</ol>
+<h2 id="状态管理（进阶）"><a href="#状态管理（进阶）" class="headerlink" title="状态管理（进阶）"></a>状态管理（进阶）</h2><ul>
+<li><strong>Context API</strong>：跨组件共享状态。</li>
+<li><strong>Redux</strong>：第三方库，适合复杂应用。</li>
+</ul>
+<h2 id="构建与部署"><a href="#构建与部署" class="headerlink" title="构建与部署"></a>构建与部署</h2><ol>
+<li><strong>构建生产代码</strong>：<pre class="highlight"><code class="hljs bash">npm run build<br></code></pre></li>
+<li><strong>部署</strong>：将 <code>build</code> 文件夹内容上传至服务器或使用 Vercel&#x2F;Netlify 等平台。</li>
+</ol>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2025/04/13/25041301/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">北京生活 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2025/02/22/25022200/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">快速获取B站字幕 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E7%AE%80%E4%BB%8B"><span class="toc-text">React 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSX-%E8%AF%AD%E6%B3%95"><span class="toc-text">JSX 语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%EF%BC%88Components%EF%BC%89"><span class="toc-text">组件（Components）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%BB%84%E4%BB%B6"><span class="toc-text">函数组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%BB%84%E4%BB%B6"><span class="toc-text">类组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%BB%84%E4%BB%B6"><span class="toc-text">使用组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Props-%E5%92%8C-State"><span class="toc-text">Props 和 State</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Props%EF%BC%88%E7%88%B6%E4%BC%A0%E5%AD%90%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="toc-text">Props（父传子数据）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#State%EF%BC%88%E7%BB%84%E4%BB%B6%E5%86%85%E9%83%A8%E7%8A%B6%E6%80%81%EF%BC%89"><span class="toc-text">State（组件内部状态）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="toc-text">事件处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="toc-text">条件渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E6%B8%B2%E6%9F%93"><span class="toc-text">列表渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E5%89%AF%E4%BD%9C%E7%94%A8%EF%BC%88useEffect%EF%BC%89"><span class="toc-text">生命周期与副作用（useEffect）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%EF%BC%88React-Router%EF%BC%89"><span class="toc-text">路由（React Router）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89"><span class="toc-text">状态管理（进阶）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="toc-text">构建与部署</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-%E7%AE%80%E4%BB%8B"><span class="toc-text">React 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JSX-%E8%AF%AD%E6%B3%95"><span class="toc-text">JSX 语法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%EF%BC%88Components%EF%BC%89"><span class="toc-text">组件（Components）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%BB%84%E4%BB%B6"><span class="toc-text">函数组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%BB%84%E4%BB%B6"><span class="toc-text">类组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E7%BB%84%E4%BB%B6"><span class="toc-text">使用组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Props-%E5%92%8C-State"><span class="toc-text">Props 和 State</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Props%EF%BC%88%E7%88%B6%E4%BC%A0%E5%AD%90%E6%95%B0%E6%8D%AE%EF%BC%89"><span class="toc-text">Props（父传子数据）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#State%EF%BC%88%E7%BB%84%E4%BB%B6%E5%86%85%E9%83%A8%E7%8A%B6%E6%80%81%EF%BC%89"><span class="toc-text">State（组件内部状态）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86"><span class="toc-text">事件处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%93"><span class="toc-text">条件渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%97%E8%A1%A8%E6%B8%B2%E6%9F%93"><span class="toc-text">列表渲染</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E4%B8%8E%E5%89%AF%E4%BD%9C%E7%94%A8%EF%BC%88useEffect%EF%BC%89"><span class="toc-text">生命周期与副作用（useEffect）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%EF%BC%88React-Router%EF%BC%89"><span class="toc-text">路由（React Router）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%88%E8%BF%9B%E9%98%B6%EF%BC%89"><span class="toc-text">状态管理（进阶）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E4%B8%8E%E9%83%A8%E7%BD%B2"><span class="toc-text">构建与部署</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>vue的代理知识点</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="vue的代理知识点">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/03/05/26030500/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-03-05">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-03-05">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue2-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Object-defineProperty%EF%BC%89"><span class="toc-text">Vue2 的响应式实现（Object.defineProperty）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue2-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue2 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vue3-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Proxy%EF%BC%89"><span class="toc-text">二、Vue3 的响应式实现（Proxy）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91-1"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue3-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue3 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#receiver%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">receiver有什么用？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E7%94%A8-receiver-%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">不用 receiver 会发生什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8-Reflect-get-receiver"><span class="toc-text">用 Reflect.get + receiver</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8F%98%E5%8C%96%EF%BC%9A"><span class="toc-text">核心变化：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#receiver-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%84%8F%E4%B9%89"><span class="toc-text">receiver 的核心意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Vue3-%E5%BF%85%E9%A1%BB%E7%94%A8-receiver%EF%BC%9F"><span class="toc-text">为什么 Vue3 必须用 receiver？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      vue的代理知识点
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/26030500.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-03-04T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-03-05</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="Vue2-的响应式实现（Object-defineProperty）"><a href="#Vue2-的响应式实现（Object-defineProperty）" class="headerlink" title="Vue2 的响应式实现（Object.defineProperty）"></a>Vue2 的响应式实现（Object.defineProperty）</h2><p>Vue2 的响应式核心是 Object.defineProperty 这个 ES5 原生 API，它的核心思路是遍历对象的每个属性，为其添加 getter&#x2F;setter 拦截。</p>
+<h3 id="1-核心实现逻辑"><a href="#1-核心实现逻辑" class="headerlink" title="1. 核心实现逻辑"></a>1. 核心实现逻辑</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 模拟 Vue2 响应式核心逻辑</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">defineReactive</span>(<span class="hljs-params">obj, key, value</span>) &#123;<br>  <span class="hljs-comment">// 递归处理嵌套对象（比如 obj = &#123; a: &#123; b: 1 &#125; &#125;）</span><br>  <span class="hljs-title function_">observe</span>(value);<br><br>  <span class="hljs-comment">// 拦截属性的读取和修改</span><br>  <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(obj, key, &#123;<br>    <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 可枚举</span><br>    <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// 可配置</span><br>    <span class="hljs-comment">// 读取属性时触发（收集依赖）</span><br>    <span class="hljs-title function_">get</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`读取 <span class="hljs-subst">$&#123;key&#125;</span>：<span class="hljs-subst">$&#123;value&#125;</span>`</span>);<br>      <span class="hljs-comment">// 收集依赖（比如对应的 watcher/effect）</span><br>      dep.<span class="hljs-title function_">depend</span>();<br>      <span class="hljs-keyword">return</span> value;<br>    &#125;,<br>    <span class="hljs-comment">// 修改属性时触发（触发更新）</span><br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">newVal</span>) &#123;<br>      <span class="hljs-keyword">if</span> (newVal === value) <span class="hljs-keyword">return</span>;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`修改 <span class="hljs-subst">$&#123;key&#125;</span>：<span class="hljs-subst">$&#123;newVal&#125;</span>`</span>);<br>      value = newVal;<br>      <span class="hljs-comment">// 递归处理新值（如果新值是对象）</span><br>      <span class="hljs-title function_">observe</span>(newVal);<br>      <span class="hljs-comment">// 通知依赖更新（比如重新渲染视图）</span><br>      dep.<span class="hljs-title function_">notify</span>();<br>    &#125;<br>  &#125;);<br>&#125;<br><br><span class="hljs-comment">// 遍历对象，为所有属性添加响应式</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">observe</span>(<span class="hljs-params">obj</span>) &#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> obj !== <span class="hljs-string">&#x27;object&#x27;</span> || obj === <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span>;<br>  <span class="hljs-comment">// 遍历对象的每个 key</span><br>  <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">keys</span>(obj).<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> &#123;<br>    <span class="hljs-title function_">defineReactive</span>(obj, key, obj[key]);<br>  &#125;);<br>&#125;<br><br><span class="hljs-comment">// 测试</span><br><span class="hljs-keyword">const</span> data = &#123; <span class="hljs-attr">price</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">number</span>: <span class="hljs-number">2</span> &#125;;<br><span class="hljs-title function_">observe</span>(data);<br><br><span class="hljs-comment">// 读取属性 → 触发 get</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(data.<span class="hljs-property">price</span>); <span class="hljs-comment">// 输出：读取 price：100  100</span><br><span class="hljs-comment">// 修改属性 → 触发 set</span><br>data.<span class="hljs-property">number</span> = <span class="hljs-number">3</span>; <span class="hljs-comment">// 输出：修改 number：3</span><br></code></pre>
+
+<h3 id="2-Vue2-响应式的关键特点"><a href="#2-Vue2-响应式的关键特点" class="headerlink" title="2. Vue2 响应式的关键特点"></a>2. Vue2 响应式的关键特点</h3><ul>
+<li>拦截粒度：针对对象的单个属性拦截，需要遍历对象的所有属性（包括嵌套对象递归遍历）。</li>
+<li>依赖收集：读取属性（get）时，收集当前的依赖（Watcher）；修改属性（set）时，通知所有收集的 Watcher 执行更新。</li>
+<li>局限性（也是 Vue2 响应式的痛点）：<ul>
+<li>无法监听新增属性（比如 data.newKey &#x3D; 123，因为初始化时没为这个属性加 getter&#x2F;setter），需要用 this.$set。</li>
+<li>无法监听数组的下标 &#x2F; 长度修改（比如 arr[0] &#x3D; 1、arr.length &#x3D; 0），Vue2 只能重写数组的 7 个方法（push&#x2F;pop&#x2F;shift&#x2F;unshift&#x2F;splice&#x2F;sort&#x2F;reverse）来监听。</li>
+<li>必须提前遍历所有属性，对性能有一定影响（尤其是深层嵌套对象）。</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、Vue3-的响应式实现（Proxy）"><a href="#二、Vue3-的响应式实现（Proxy）" class="headerlink" title="二、Vue3 的响应式实现（Proxy）"></a>二、Vue3 的响应式实现（Proxy）</h2><p>Vue3 放弃了 Object.defineProperty，改用 ES6 新增的 Proxy API，核心思路是拦截整个对象的操作，而非单个属性。</p>
+<h3 id="1-核心实现逻辑-1"><a href="#1-核心实现逻辑-1" class="headerlink" title="1. 核心实现逻辑"></a>1. 核心实现逻辑</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 模拟 Vue3 响应式核心逻辑</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">reactive</span>(<span class="hljs-params">obj</span>) &#123;<br>  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> obj !== <span class="hljs-string">&#x27;object&#x27;</span> || obj === <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> obj;<br><br>  <span class="hljs-comment">// 创建 Proxy 代理对象</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(obj, &#123;<br>    <span class="hljs-comment">// 读取属性时触发（包括 obj.key、obj[&#x27;key&#x27;]、数组下标）</span><br>    <span class="hljs-title function_">get</span>(<span class="hljs-params">target, key, receiver</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`读取 <span class="hljs-subst">$&#123;key&#125;</span>`</span>);<br>      <span class="hljs-comment">// 收集依赖</span><br>      <span class="hljs-title function_">track</span>(target, key);<br>      <span class="hljs-comment">// 处理嵌套对象（比如 obj.a.b，递归返回代理对象）</span><br>      <span class="hljs-keyword">const</span> res = <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, key, receiver);<br>      <span class="hljs-keyword">return</span> <span class="hljs-title function_">reactive</span>(res);<br>    &#125;,<br>    <span class="hljs-comment">// 修改属性/新增属性时触发</span><br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">target, key, value, receiver</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`修改/新增 <span class="hljs-subst">$&#123;key&#125;</span>：<span class="hljs-subst">$&#123;value&#125;</span>`</span>);<br>      <span class="hljs-comment">// 先执行原始赋值操作</span><br>      <span class="hljs-keyword">const</span> oldVal = <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, key, receiver);<br>      <span class="hljs-keyword">const</span> result = <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">set</span>(target, key, value, receiver);<br>      <span class="hljs-comment">// 只有值变化时才触发更新</span><br>      <span class="hljs-keyword">if</span> (oldVal !== value) &#123;<br>        <span class="hljs-comment">// 触发依赖更新</span><br>        <span class="hljs-title function_">trigger</span>(target, key);<br>      &#125;<br>      <span class="hljs-keyword">return</span> result;<br>    &#125;,<br>    <span class="hljs-comment">// 删除属性时触发</span><br>    <span class="hljs-title function_">deleteProperty</span>(<span class="hljs-params">target, key</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`删除 <span class="hljs-subst">$&#123;key&#125;</span>`</span>);<br>      <span class="hljs-keyword">const</span> result = <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">deleteProperty</span>(target, key);<br>      <span class="hljs-title function_">trigger</span>(target, key);<br>      <span class="hljs-keyword">return</span> result;<br>    &#125;<br>  &#125;);<br>&#125;<br><br><span class="hljs-comment">// 模拟依赖收集</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">track</span>(<span class="hljs-params">target, key</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`收集 <span class="hljs-subst">$&#123;key&#125;</span> 的依赖`</span>);<br>&#125;<br><br><span class="hljs-comment">// 模拟触发更新</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">trigger</span>(<span class="hljs-params">target, key</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`触发 <span class="hljs-subst">$&#123;key&#125;</span> 的依赖更新`</span>);<br>&#125;<br><br><span class="hljs-comment">// 测试</span><br><span class="hljs-keyword">const</span> data = <span class="hljs-title function_">reactive</span>(&#123; <span class="hljs-attr">price</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">number</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">arr</span>: [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>] &#125;);<br><br><span class="hljs-comment">// 读取属性 → 触发 get</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(data.<span class="hljs-property">price</span>); <span class="hljs-comment">// 输出：读取 price  收集 price 的依赖  100</span><br><span class="hljs-comment">// 新增属性 → 触发 set（Vue2 做不到）</span><br>data.<span class="hljs-property">newKey</span> = <span class="hljs-string">&#x27;abc&#x27;</span>; <span class="hljs-comment">// 输出：修改/新增 newKey：abc  触发 newKey 的依赖更新</span><br><span class="hljs-comment">// 修改数组下标 → 触发 set（Vue2 做不到）</span><br>data.<span class="hljs-property">arr</span>[<span class="hljs-number">0</span>] = <span class="hljs-number">10</span>; <span class="hljs-comment">// 输出：读取 arr  收集 arr 的依赖  读取 0  收集 0 的依赖  修改/新增 0：10  触发 0 的依赖更新</span><br><span class="hljs-comment">// 删除属性 → 触发 deleteProperty</span><br><span class="hljs-keyword">delete</span> data.<span class="hljs-property">number</span>; <span class="hljs-comment">// 输出：删除 number  触发 number 的依赖更新</span><br></code></pre>
+
+<h3 id="2-Vue3-响应式的关键特点"><a href="#2-Vue3-响应式的关键特点" class="headerlink" title="2. Vue3 响应式的关键特点"></a>2. Vue3 响应式的关键特点</h3><ul>
+<li>拦截粒度：针对整个对象拦截，无需提前遍历所有属性（访问属性时才会递归处理嵌套对象）。</li>
+<li>核心优势：<ul>
+<li>支持监听新增属性（比如 obj.newKey &#x3D; 123），无需额外 API。</li>
+<li>支持监听数组的下标 &#x2F; 长度修改（比如 arr[0] &#x3D; 1、arr.length &#x3D; 0）。</li>
+<li>支持拦截 delete 操作、in 操作等更多对象行为。</li>
+<li>性能更优：懒递归（访问嵌套属性时才递归代理，而非初始化时全量遍历）。</li>
+</ul>
+</li>
+</ul>
+<p>注意：Proxy 是 ES6 特性，无法兼容 IE 浏览器，这也是 Vue3 放弃 IE 支持的原因之一。</p>
+<h2 id="receiver有什么用？"><a href="#receiver有什么用？" class="headerlink" title="receiver有什么用？"></a>receiver有什么用？</h2><h3 id="不用-receiver-会发生什么？"><a href="#不用-receiver-会发生什么？" class="headerlink" title="不用 receiver 会发生什么？"></a>不用 receiver 会发生什么？</h3><p>我们先把代码改成 return target[key]（去掉 receiver），运行后看结果：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> p1 = &#123;<br>    <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;shuang&#x27;</span>,<br>    <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;xunian&#x27;</span>,<br>    <span class="hljs-keyword">get</span> <span class="hljs-title function_">fullName</span>() &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;fullName 中的 this:&#x27;</span>, <span class="hljs-variable language_">this</span>); <span class="hljs-comment">// 新增打印 this</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.lastName&#125;</span> <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.firstName&#125;</span>`</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> nameProxy = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(p1, &#123;<br>    <span class="hljs-title function_">get</span>(<span class="hljs-params">target, key, receiver</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;get&#x27;</span>, key);<br>        <span class="hljs-keyword">return</span> target[key]; <span class="hljs-comment">// 不用 Reflect.get + receiver</span><br>    &#125;,<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">target, key, value</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;set&#x27;</span>, key, value);<br>        target[key] = value;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>&#125;)<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(nameProxy.<span class="hljs-property">fullName</span>);<br></code></pre>
+
+<p>输出结果：</p>
+<pre class="highlight"><code class="hljs plaintext">get fullName<br>fullName 中的 this: &#123; lastName: &#x27;shuang&#x27;, firstName: &#x27;xunian&#x27;, fullName: [Getter] &#125;<br>shuang xunian<br></code></pre>
+
+<p>这里能发现两个问题：</p>
+<ol>
+<li>fullName 的 getter 中，this 指向的是原始对象 p1，而不是代理对象 nameProxy；</li>
+<li>读取 this.lastName 和 this.firstName 时，没有触发 Proxy 的 get 拦截器（控制台只打印了 get fullName，没打印 get lastName&#x2F;get firstName）。</li>
+</ol>
+<h3 id="用-Reflect-get-receiver"><a href="#用-Reflect-get-receiver" class="headerlink" title="用 Reflect.get + receiver"></a>用 Reflect.get + receiver</h3><p>恢复 return Reflect.get(target, key, receiver)，再运行：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> p1 = &#123;<br>    <span class="hljs-attr">lastName</span>: <span class="hljs-string">&#x27;shuang&#x27;</span>,<br>    <span class="hljs-attr">firstName</span>: <span class="hljs-string">&#x27;xunian&#x27;</span>,<br>    <span class="hljs-keyword">get</span> <span class="hljs-title function_">fullName</span>() &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;fullName 中的 this:&#x27;</span>, <span class="hljs-variable language_">this</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.lastName&#125;</span> <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.firstName&#125;</span>`</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> nameProxy = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(p1, &#123;<br>    <span class="hljs-title function_">get</span>(<span class="hljs-params">target, key, receiver</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;get&#x27;</span>, key);<br>        <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, key, receiver); <span class="hljs-comment">// 带 receiver</span><br>    &#125;,<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">target, key, value</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;set&#x27;</span>, key, value);<br>        target[key] = value;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>&#125;)<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(nameProxy.<span class="hljs-property">fullName</span>);<br></code></pre>
+
+<p>输出结果：</p>
+<pre class="highlight"><code class="hljs plaintext">get fullName<br>fullName 中的 this: Proxy &#123; lastName: &#x27;shuang&#x27;, firstName: &#x27;xunian&#x27;, fullName: [Getter] &#125;<br>get lastName<br>get firstName<br>shuang xunian<br></code></pre>
+
+<h3 id="核心变化："><a href="#核心变化：" class="headerlink" title="核心变化："></a>核心变化：</h3><ul>
+<li>fullName 的 getter 中，this 指向的是代理对象 nameProxy，而非原始对象 p1；</li>
+<li>读取 this.lastName&#x2F;this.firstName 时，触发了 Proxy 的 get 拦截器（打印了 get lastName&#x2F;get firstName）。</li>
+</ul>
+<h3 id="receiver-的核心意义"><a href="#receiver-的核心意义" class="headerlink" title="receiver 的核心意义"></a>receiver 的核心意义</h3><p>receiver 本质是指定 getter 执行时的 this 指向，它的取值是：</p>
+<ul>
+<li>当你访问 nameProxy.fullName 时，receiver 就是 nameProxy（代理对象本身）；</li>
+<li>Reflect.get(target, key, receiver) 等价于：调用 target[key] 的 getter，并把 getter 中的 this 绑定为 receiver。</li>
+</ul>
+<h3 id="为什么-Vue3-必须用-receiver？"><a href="#为什么-Vue3-必须用-receiver？" class="headerlink" title="为什么 Vue3 必须用 receiver？"></a>为什么 Vue3 必须用 receiver？</h3><p>Vue3 的响应式核心是追踪所有依赖：</p>
+<ul>
+<li>不仅要追踪 fullName 被访问，还要追踪 fullName 依赖的 lastName&#x2F;firstName 被访问；</li>
+<li>如果 getter 中的 this 指向原始对象 p1，那么访问 this.lastName 就是直接访问原始对象，不会经过 Proxy 的 get 拦截器，Vue 就无法收集到 lastName 这个依赖；</li>
+<li>只有让 this 指向代理对象，访问 this.lastName 才会触发 Proxy 拦截，Vue 才能完整收集所有依赖，保证后续修改 lastName 时，能触发 fullName 的更新。</li>
+</ul>
+<p>再举一个更直观的例子：修改属性后验证</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 接上面的代码，修改 lastName</span><br>nameProxy.<span class="hljs-property">lastName</span> = <span class="hljs-string">&#x27;zhang&#x27;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(nameProxy.<span class="hljs-property">fullName</span>);<br></code></pre>
+
+<p>用 receiver 的输出：</p>
+<pre class="highlight"><code class="hljs plaintext">set lastName zhang<br>get fullName<br>fullName 中的 this: Proxy &#123; lastName: &#x27;zhang&#x27;, firstName: &#x27;xunian&#x27;, fullName: [Getter] &#125;<br>get lastName<br>get firstName<br>zhang xunian<br></code></pre>
+
+<p>不用 receiver 的输出：</p>
+<pre class="highlight"><code class="hljs plaintext">set lastName zhang<br>get fullName<br>fullName 中的 this: &#123; lastName: &#x27;shuang&#x27;, firstName: &#x27;xunian&#x27;, fullName: [Getter] &#125;<br>shuang xunian // 这里还是旧值！！<br></code></pre>
+
+<p>问题根源：<br>不用 receiver 时，getter 中的 this 是原始对象 p1，而你修改的是代理对象 nameProxy 的 lastName（虽然最终同步到了 p1，但 getter 执行时 this 指向错误，导致读取的是原始对象的旧值 —— 这个例子可能因为对象是引用类型暂时不明显，但如果是嵌套 Proxy 场景，会直接导致响应式失效）。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>receiver 的核心作用是保证 getter 执行时 this 指向代理对象，而非原始对象；</li>
+<li>没有 receiver 时，getter 中访问的属性会绕过 Proxy 拦截，Vue 无法收集完整依赖，导致响应式失效；</li>
+<li>Vue3 中用 Reflect.get(target, key, receiver) 而非 target[key]，是为了完整拦截所有属性访问，确保响应式依赖追踪的准确性，这是实现复杂响应式（比如计算属性）的基础。</li>
+<li>简单来说，receiver 是 Proxy 和 Reflect 配合的 “桥梁”，保证了拦截逻辑的完整性，也是 Vue3 响应式系统能正确处理计算属性、嵌套对象的关键。</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/03/08/26030800/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">近期工作汇总 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/01/21/26012100/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">vue的sourceMap详解 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue2-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Object-defineProperty%EF%BC%89"><span class="toc-text">Vue2 的响应式实现（Object.defineProperty）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue2-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue2 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vue3-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Proxy%EF%BC%89"><span class="toc-text">二、Vue3 的响应式实现（Proxy）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91-1"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue3-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue3 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#receiver%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">receiver有什么用？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E7%94%A8-receiver-%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">不用 receiver 会发生什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8-Reflect-get-receiver"><span class="toc-text">用 Reflect.get + receiver</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8F%98%E5%8C%96%EF%BC%9A"><span class="toc-text">核心变化：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#receiver-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%84%8F%E4%B9%89"><span class="toc-text">receiver 的核心意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Vue3-%E5%BF%85%E9%A1%BB%E7%94%A8-receiver%EF%BC%9F"><span class="toc-text">为什么 Vue3 必须用 receiver？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Vue2-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Object-defineProperty%EF%BC%89"><span class="toc-text">Vue2 的响应式实现（Object.defineProperty）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue2-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue2 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vue3-%E7%9A%84%E5%93%8D%E5%BA%94%E5%BC%8F%E5%AE%9E%E7%8E%B0%EF%BC%88Proxy%EF%BC%89"><span class="toc-text">二、Vue3 的响应式实现（Proxy）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A0%B8%E5%BF%83%E5%AE%9E%E7%8E%B0%E9%80%BB%E8%BE%91-1"><span class="toc-text">1. 核心实现逻辑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vue3-%E5%93%8D%E5%BA%94%E5%BC%8F%E7%9A%84%E5%85%B3%E9%94%AE%E7%89%B9%E7%82%B9"><span class="toc-text">2. Vue3 响应式的关键特点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#receiver%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">receiver有什么用？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E7%94%A8-receiver-%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">不用 receiver 会发生什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8-Reflect-get-receiver"><span class="toc-text">用 Reflect.get + receiver</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8F%98%E5%8C%96%EF%BC%9A"><span class="toc-text">核心变化：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#receiver-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%84%8F%E4%B9%89"><span class="toc-text">receiver 的核心意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-Vue3-%E5%BF%85%E9%A1%BB%E7%94%A8-receiver%EF%BC%9F"><span class="toc-text">为什么 Vue3 必须用 receiver？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

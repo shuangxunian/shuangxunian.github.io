@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>vue Vuex 面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="vue Vuex 面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2024/12/22/24122205/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2024-12-22">
+      <meta 
+        property="og:article:modified_time" 
+        content="2024-12-22">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81Vuex"><span class="toc-text">五、Vuex</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vuex-%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-text">1. Vuex 的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vuex%E4%B8%ADaction%E5%92%8Cmutation%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. Vuex中action和mutation的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Vuex-%E5%92%8C-localStorage-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3. Vuex 和 localStorage 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">4. Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Vuex-%E6%88%96%E8%80%85-Redux"><span class="toc-text">5. 为什么要用 Vuex 或者 Redux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vuex%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">6. Vuex有哪几种属性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vuex%E5%92%8C%E5%8D%95%E7%BA%AF%E7%9A%84%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">7. Vuex和单纯的全局对象有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E4%B8%BA%E4%BB%80%E4%B9%88-Vuex-%E7%9A%84-mutation-%E4%B8%AD%E4%B8%8D%E8%83%BD%E5%81%9A%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C%EF%BC%9F"><span class="toc-text">8. 为什么 Vuex 的 mutation 中不能做异步操作？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vuex%E7%9A%84%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88-%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%8C%E5%A6%82%E4%BD%95%E5%BC%80%E5%90%AF%EF%BC%9F"><span class="toc-text">9. Vuex的严格模式是什么,有什么作用，如何开启？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E6%89%B9%E9%87%8F%E4%BD%BF%E7%94%A8Vuex%E7%9A%84getter%E5%B1%9E%E6%80%A7"><span class="toc-text">10. 如何在组件中批量使用Vuex的getter属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E9%87%8D%E5%A4%8D%E4%BD%BF%E7%94%A8Vuex%E7%9A%84mutation"><span class="toc-text">11. 如何在组件中重复使用Vuex的mutation</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      vue Vuex 面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/24122205.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2024-12-21T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2024-12-22</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="五、Vuex"><a href="#五、Vuex" class="headerlink" title="五、Vuex"></a>五、Vuex</h2><h3 id="1-Vuex-的原理"><a href="#1-Vuex-的原理" class="headerlink" title="1. Vuex 的原理"></a>1. Vuex 的原理</h3><p>Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。每一个 Vuex 应用的核心就是 store（仓库）。“store” 基本上就是一个容器，它包含着你的应用中大部分的状态 ( state )。</p>
+<ul>
+<li>Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。</li>
+<li>改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样可以方便地跟踪每一个状态的变化。</li>
+</ul>
+<p> <img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/92fc4b2c6e414344b9b22bc057dcd39c~tplv-k3u1fbpfcp-watermark.awebp" alt="b025e120ca3d0bd2ded3d038d58cacf4jpg" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/92fc4b2c6e414344b9b22bc057dcd39c~tplv-k3u1fbpfcp-watermark.awebp" class="lozad post-image"> Vuex为Vue Components建立起了一个完整的生态圈，包括开发中的API调用一环。 <strong>（1）核心流程中的主要功能：</strong></p>
+<ul>
+<li>Vue Components 是 vue 组件，组件会触发（dispatch）一些事件或动作，也就是图中的 Actions;</li>
+<li>在组件中发出的动作，肯定是想获取或者改变数据的，但是在 vuex 中，数据是集中管理的，不能直接去更改数据，所以会把这个动作提交（Commit）到 Mutations 中;</li>
+<li>然后 Mutations 就去改变（Mutate）State 中的数据;</li>
+<li>当 State 中的数据被改变之后，就会重新渲染（Render）到 Vue Components 中去，组件展示更新后的数据，完成一个流程。</li>
+</ul>
+<p><strong>（2）各模块在核心流程中的主要功能：</strong></p>
+<ul>
+<li><code>Vue Components</code>∶ Vue组件。HTML页面上，负责接收用户操作等交互行为，执行dispatch方法触发对应action进行回应。</li>
+<li><code>dispatch</code>∶操作行为触发方法，是唯一能执行action的方法。</li>
+<li><code>actions</code>∶ 操作行为处理模块。负责处理Vue Components接收到的所有交互行为。包含同步&#x2F;异步操作，支持多个同名方法，按照注册的顺序依次触发。向后台API请求的操作就在这个模块中进行，包括触发其他action以及提交mutation的操作。该模块提供了Promise的封装，以支持action的链式触发。</li>
+<li><code>commit</code>∶状态改变提交操作方法。对mutation进行提交，是唯一能执行mutation的方法。</li>
+<li><code>mutations</code>∶状态改变操作方法。是Vuex修改state的唯一推荐方法，其他修改方式在严格模式下将会报错。该方法只能进行同步操作，且方法名只能全局唯一。操作之中会有一些hook暴露出来，以进行state的监控等。</li>
+<li><code>state</code>∶ 页面状态管理容器对象。集中存储Vuecomponents中data对象的零散数据，全局唯一，以进行统一的状态管理。页面显示所需的数据从该对象中进行读取，利用Vue的细粒度数据响应机制来进行高效的状态更新。</li>
+<li><code>getters</code>∶ state对象读取方法。图中没有单独列出该模块，应该被包含在了render中，Vue Components通过该方法读取全局state对象。</li>
+</ul>
+<h3 id="2-Vuex中action和mutation的区别"><a href="#2-Vuex中action和mutation的区别" class="headerlink" title="2. Vuex中action和mutation的区别"></a>2. Vuex中action和mutation的区别</h3><p>mutation中的操作是一系列的同步函数，用于修改state中的变量的的状态。当使用vuex时需要通过commit来提交需要操作的内容。mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是实际进行状态更改的地方，并且它会接受 state 作为第一个参数：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vuex</span>.<span class="hljs-title class_">Store</span>(&#123;<br>  <span class="hljs-attr">state</span>: &#123;<br>    <span class="hljs-attr">count</span>: <span class="hljs-number">1</span><br>  &#125;,<br>  <span class="hljs-attr">mutations</span>: &#123;<br>    increment (state) &#123;<br>      state.<span class="hljs-property">count</span>++      <span class="hljs-comment">// 变更状态</span><br>    &#125;<br>  &#125;<br>&#125;)<br>复制代码<br></code></pre>
+
+<p>当触发一个类型为 increment 的 mutation 时，需要调用此函数：</p>
+<pre class="highlight"><code class="hljs javascript">store.<span class="hljs-title function_">commit</span>(<span class="hljs-string">&#x27;increment&#x27;</span>)<br>复制代码<br></code></pre>
+
+<p>而Action类似于mutation，不同点在于：</p>
+<ul>
+<li>Action 可以包含任意异步操作。</li>
+<li>Action 提交的是 mutation，而不是直接变更状态。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Vuex</span>.<span class="hljs-title class_">Store</span>(&#123;<br>  <span class="hljs-attr">state</span>: &#123;<br>    <span class="hljs-attr">count</span>: <span class="hljs-number">0</span><br>  &#125;,<br>  <span class="hljs-attr">mutations</span>: &#123;<br>    increment (state) &#123;<br>      state.<span class="hljs-property">count</span>++<br>    &#125;<br>  &#125;,<br>  <span class="hljs-attr">actions</span>: &#123;<br>    increment (context) &#123;<br>      context.<span class="hljs-title function_">commit</span>(<span class="hljs-string">&#x27;increment&#x27;</span>)<br>    &#125;<br>  &#125;<br>&#125;)<br>复制代码<br></code></pre>
+
+<p>Action 函数接受一个与 store 实例具有相同方法和属性的 context 对象，因此你可以调用 context.commit 提交一个 mutation，或者通过 context.state 和 context.getters 来获取 state 和 getters。 所以，两者的不同点如下：</p>
+<ul>
+<li>Mutation专注于修改State，理论上是修改State的唯一途径；Action业务代码、异步请求。</li>
+<li>Mutation：必须同步执行；Action：可以异步，但不能直接操作State。</li>
+<li>在视图更新时，先触发actions，actions再触发mutation</li>
+<li>mutation的参数是state，它包含store中的数据；store的参数是context，它是 state 的父级，包含 state、getters</li>
+</ul>
+<h3 id="3-Vuex-和-localStorage-的区别"><a href="#3-Vuex-和-localStorage-的区别" class="headerlink" title="3. Vuex 和 localStorage 的区别"></a>3. Vuex 和 localStorage 的区别</h3><p><strong>（1）最重要的区别</strong></p>
+<ul>
+<li>vuex存储在内存中</li>
+<li>localstorage 则以文件的方式存储在本地，只能存储字符串类型的数据，存储对象需要 JSON的stringify和parse方法进行处理。 读取内存比读取硬盘速度要快</li>
+</ul>
+<p><strong>（2）应用场景</strong></p>
+<ul>
+<li>Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。vuex用于组件之间的传值。</li>
+<li>localstorage是本地存储，是将数据存储到浏览器的方法，一般是在跨页面传递数据时使用 。</li>
+<li>Vuex能做到数据的响应式，localstorage不能</li>
+</ul>
+<p><strong>（3）永久性</strong></p>
+<p>刷新页面时vuex存储的值会丢失，localstorage不会。</p>
+<p><strong>注意：</strong> 对于不变的数据确实可以用localstorage可以代替vuex，但是当两个组件共用一个数据源（对象或数组）时，如果其中一个组件改变了该数据源，希望另一个组件响应该变化时，localstorage无法做到，原因就是区别1。</p>
+<h3 id="4-Redux-和-Vuex-有什么区别，它们的共同思想"><a href="#4-Redux-和-Vuex-有什么区别，它们的共同思想" class="headerlink" title="4. Redux 和 Vuex 有什么区别，它们的共同思想"></a>4. Redux 和 Vuex 有什么区别，它们的共同思想</h3><p><strong>（1）Redux 和 Vuex区别</strong></p>
+<ul>
+<li>Vuex改进了Redux中的Action和Reducer函数，以mutations变化函数取代Reducer，无需switch，只需在对应的mutation函数里改变state值即可</li>
+<li>Vuex由于Vue自动重新渲染的特性，无需订阅重新渲染函数，只要生成新的State即可</li>
+<li>Vuex数据流的顺序是∶View调用store.commit提交对应的请求到Store中对应的mutation函数-&gt;store改变（vue检测到数据变化自动渲染）</li>
+</ul>
+<p>通俗点理解就是，vuex 弱化 dispatch，通过commit进行 store状态的一次更变;取消了action概念，不必传入特定的 action形式进行指定变更;弱化reducer，基于commit参数直接对数据进行转变，使得框架更加简易;</p>
+<p><strong>（2）共同思想</strong></p>
+<ul>
+<li>单—的数据源</li>
+<li>变化可以预测</li>
+</ul>
+<p>本质上：redux与vuex都是对mvvm思想的服务，将数据从视图中抽离的一种方案; 形式上：vuex借鉴了redux，将store作为全局的数据中心，进行mode管理;</p>
+<h3 id="5-为什么要用-Vuex-或者-Redux"><a href="#5-为什么要用-Vuex-或者-Redux" class="headerlink" title="5. 为什么要用 Vuex 或者 Redux"></a>5. 为什么要用 Vuex 或者 Redux</h3><p>由于传参的方法对于多层嵌套的组件将会非常繁琐，并且对于兄弟组件间的状态传递无能为力。我们经常会采用父子组件直接引用或者通过事件来变更和同步状态的多份拷贝。以上的这些模式非常脆弱，通常会导致代码无法维护。</p>
+<p>所以需要把组件的共享状态抽取出来，以一个全局单例模式管理。在这种模式下，组件树构成了一个巨大的”视图”，不管在树的哪个位置，任何组件都能获取状态或者触发行为。</p>
+<p>另外，通过定义和隔离状态管理中的各种概念并强制遵守一定的规则，代码将会变得更结构化且易维护。</p>
+<h3 id="6-Vuex有哪几种属性？"><a href="#6-Vuex有哪几种属性？" class="headerlink" title="6. Vuex有哪几种属性？"></a>6. Vuex有哪几种属性？</h3><p>有五种，分别是 State、 Getter、Mutation 、Action、 Module</p>
+<ul>
+<li>state &#x3D;&gt; 基本数据(数据源存放地)</li>
+<li>getters &#x3D;&gt; 从基本数据派生出来的数据</li>
+<li>mutations &#x3D;&gt; 提交更改数据的方法，同步</li>
+<li>actions &#x3D;&gt; 像一个装饰器，包裹mutations，使之可以异步。</li>
+<li>modules &#x3D;&gt; 模块化Vuex</li>
+</ul>
+<h3 id="7-Vuex和单纯的全局对象有什么区别？"><a href="#7-Vuex和单纯的全局对象有什么区别？" class="headerlink" title="7. Vuex和单纯的全局对象有什么区别？"></a>7. Vuex和单纯的全局对象有什么区别？</h3><ul>
+<li>Vuex 的状态存储是响应式的。当 Vue 组件从 store 中读取状态的时候，若 store 中的状态发生变化，那么相应的组件也会相应地得到高效更新。</li>
+<li>不能直接改变 store 中的状态。改变 store 中的状态的唯一途径就是显式地提交 (commit) mutation。这样可以方便地跟踪每一个状态的变化，从而能够实现一些工具帮助更好地了解我们的应用。</li>
+</ul>
+<h3 id="8-为什么-Vuex-的-mutation-中不能做异步操作？"><a href="#8-为什么-Vuex-的-mutation-中不能做异步操作？" class="headerlink" title="8. 为什么 Vuex 的 mutation 中不能做异步操作？"></a>8. 为什么 Vuex 的 mutation 中不能做异步操作？</h3><ul>
+<li>Vuex中所有的状态更新的唯一途径都是mutation，异步操作通过 Action 来提交 mutation实现，这样可以方便地跟踪每一个状态的变化，从而能够实现一些工具帮助更好地了解我们的应用。</li>
+<li>每个mutation执行完成后都会对应到一个新的状态变更，这样devtools就可以打个快照存下来，然后就可以实现 time-travel 了。如果mutation支持异步操作，就没有办法知道状态是何时更新的，无法很好的进行状态的追踪，给调试带来困难。</li>
+</ul>
+<h3 id="9-Vuex的严格模式是什么-有什么作用，如何开启？"><a href="#9-Vuex的严格模式是什么-有什么作用，如何开启？" class="headerlink" title="9. Vuex的严格模式是什么,有什么作用，如何开启？"></a>9. Vuex的严格模式是什么,有什么作用，如何开启？</h3><p>在严格模式下，无论何时发生了状态变更且不是由mutation函数引起的，将会抛出错误。这能保证所有的状态变更都能被调试工具跟踪到。</p>
+<p>在Vuex.Store 构造器选项中开启,如下</p>
+<pre class="highlight"><code class="hljs monkey"><span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> Vuex.Store(&#123;<br>    <span class="hljs-meta">strict</span>:<span class="hljs-literal">true</span>,<br>&#125;)<br>复制代码<br></code></pre>
+
+<h3 id="10-如何在组件中批量使用Vuex的getter属性"><a href="#10-如何在组件中批量使用Vuex的getter属性" class="headerlink" title="10. 如何在组件中批量使用Vuex的getter属性"></a>10. 如何在组件中批量使用Vuex的getter属性</h3><p>使用mapGetters辅助函数, 利用对象展开运算符将getter混入computed 对象中</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;mapGetters&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vuex&#x27;</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span>&#123;<br>    <span class="hljs-attr">computed</span>:&#123;<br>        ...<span class="hljs-title function_">mapGetters</span>([<span class="hljs-string">&#x27;total&#x27;</span>,<span class="hljs-string">&#x27;discountTotal&#x27;</span>])<br>    &#125;<br>&#125;<br>复制代码<br></code></pre>
+
+<h3 id="11-如何在组件中重复使用Vuex的mutation"><a href="#11-如何在组件中重复使用Vuex的mutation" class="headerlink" title="11. 如何在组件中重复使用Vuex的mutation"></a>11. 如何在组件中重复使用Vuex的mutation</h3><p>使用mapMutations辅助函数,在组件中这么使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; mapMutations &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vuex&#x27;</span><br><span class="hljs-attr">methods</span>:&#123;<br>    ...<span class="hljs-title function_">mapMutations</span>(&#123;<br>        <span class="hljs-attr">setNumber</span>:<span class="hljs-string">&#x27;SET_NUMBER&#x27;</span>,<br>    &#125;)<br>&#125;<br>复制代码<br></code></pre>
+
+<p>然后调用<code>this.setNumber(10)</code>相当调用<code>this.$store.commit(&#39;SET_NUMBER&#39;,10)</code></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2024/12/22/24122204/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">vue路由面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2024/12/22/24122207/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">vue虚拟DOM面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81Vuex"><span class="toc-text">五、Vuex</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vuex-%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-text">1. Vuex 的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vuex%E4%B8%ADaction%E5%92%8Cmutation%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. Vuex中action和mutation的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Vuex-%E5%92%8C-localStorage-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3. Vuex 和 localStorage 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">4. Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Vuex-%E6%88%96%E8%80%85-Redux"><span class="toc-text">5. 为什么要用 Vuex 或者 Redux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vuex%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">6. Vuex有哪几种属性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vuex%E5%92%8C%E5%8D%95%E7%BA%AF%E7%9A%84%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">7. Vuex和单纯的全局对象有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E4%B8%BA%E4%BB%80%E4%B9%88-Vuex-%E7%9A%84-mutation-%E4%B8%AD%E4%B8%8D%E8%83%BD%E5%81%9A%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C%EF%BC%9F"><span class="toc-text">8. 为什么 Vuex 的 mutation 中不能做异步操作？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vuex%E7%9A%84%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88-%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%8C%E5%A6%82%E4%BD%95%E5%BC%80%E5%90%AF%EF%BC%9F"><span class="toc-text">9. Vuex的严格模式是什么,有什么作用，如何开启？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E6%89%B9%E9%87%8F%E4%BD%BF%E7%94%A8Vuex%E7%9A%84getter%E5%B1%9E%E6%80%A7"><span class="toc-text">10. 如何在组件中批量使用Vuex的getter属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E9%87%8D%E5%A4%8D%E4%BD%BF%E7%94%A8Vuex%E7%9A%84mutation"><span class="toc-text">11. 如何在组件中重复使用Vuex的mutation</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81Vuex"><span class="toc-text">五、Vuex</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vuex-%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-text">1. Vuex 的原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-Vuex%E4%B8%ADaction%E5%92%8Cmutation%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. Vuex中action和mutation的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Vuex-%E5%92%8C-localStorage-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3. Vuex 和 localStorage 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">4. Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Vuex-%E6%88%96%E8%80%85-Redux"><span class="toc-text">5. 为什么要用 Vuex 或者 Redux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vuex%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">6. Vuex有哪几种属性？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vuex%E5%92%8C%E5%8D%95%E7%BA%AF%E7%9A%84%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">7. Vuex和单纯的全局对象有什么区别？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E4%B8%BA%E4%BB%80%E4%B9%88-Vuex-%E7%9A%84-mutation-%E4%B8%AD%E4%B8%8D%E8%83%BD%E5%81%9A%E5%BC%82%E6%AD%A5%E6%93%8D%E4%BD%9C%EF%BC%9F"><span class="toc-text">8. 为什么 Vuex 的 mutation 中不能做异步操作？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vuex%E7%9A%84%E4%B8%A5%E6%A0%BC%E6%A8%A1%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88-%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%8C%E5%A6%82%E4%BD%95%E5%BC%80%E5%90%AF%EF%BC%9F"><span class="toc-text">9. Vuex的严格模式是什么,有什么作用，如何开启？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E6%89%B9%E9%87%8F%E4%BD%BF%E7%94%A8Vuex%E7%9A%84getter%E5%B1%9E%E6%80%A7"><span class="toc-text">10. 如何在组件中批量使用Vuex的getter属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-%E5%A6%82%E4%BD%95%E5%9C%A8%E7%BB%84%E4%BB%B6%E4%B8%AD%E9%87%8D%E5%A4%8D%E4%BD%BF%E7%94%A8Vuex%E7%9A%84mutation"><span class="toc-text">11. 如何在组件中重复使用Vuex的mutation</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

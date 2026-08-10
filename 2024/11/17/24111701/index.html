@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>js es6 面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="js es6 面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2024/11/17/24111701/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2024-11-17">
+      <meta 
+        property="og:article:modified_time" 
+        content="2024-11-17">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+          <meta 
+            property="og:article:tag" 
+            content="js面试题">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#let%E3%80%81const%E3%80%81var%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">let、const、var的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#const%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%B1%9E%E6%80%A7%E5%8F%AF%E4%BB%A5%E4%BF%AE%E6%94%B9%E5%90%97"><span class="toc-text">const对象的属性可以修改吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9Cnew%E4%B8%80%E4%B8%AA%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7"><span class="toc-text">如果new一个箭头函数的会怎么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">箭头函数与普通函数的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84this%E6%8C%87%E5%90%91%E5%93%AA%E2%BE%A5%EF%BC%9F"><span class="toc-text">箭头函数的this指向哪⾥？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E4%BD%9C%E7%94%A8%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">扩展运算符的作用及使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy-%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E4%BB%80%E4%B9%88%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">Proxy 可以实现什么功能？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E5%AF%B9%E8%B1%A1%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对对象与数组的解构的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E5%8F%96%E9%AB%98%E5%BA%A6%E5%B5%8C%E5%A5%97%E7%9A%84%E5%AF%B9%E8%B1%A1%E9%87%8C%E7%9A%84%E6%8C%87%E5%AE%9A%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">如何提取高度嵌套的对象里的指定属性？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-rest-%E5%8F%82%E6%95%B0%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对 rest 参数的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES6%E4%B8%AD%E6%A8%A1%E6%9D%BF%E8%AF%AD%E6%B3%95%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86"><span class="toc-text">ES6中模板语法与字符串处理</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      js es6 面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/24111701.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2024-11-16T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2024-11-17</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/js%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+            class="post-meta-link">
+            js面试题
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="let、const、var的区别"><a href="#let、const、var的区别" class="headerlink" title="let、const、var的区别"></a>let、const、var的区别</h2><p><strong>块级作用域</strong><br>块作用域由 <code>&#123; &#125;</code>包括，let和const具有块级作用域，var不存在块级作用域。块级作用域解决了ES5中的两个问题：</p>
+<ul>
+<li>内层变量可能覆盖外层变量</li>
+<li>用来计数的循环变量泄露为全局变量</li>
+</ul>
+<p><strong>变量提升</strong><br>var存在变量提升，let和const不存在变量提升，即在变量只能在声明之后使用，否在会报错。</p>
+<p><strong>给全局添加属性</strong><br>浏览器的全局对象是window，Node的全局对象是global。var声明的变量为全局变量，并且会将该变量添加为全局对象的属性，但是let和const不会。</p>
+<p><strong>重复声明</strong><br>var声明变量时，可以重复声明变量，后声明的同名变量会覆盖之前声明的遍历。const和let不允许重复声明变量。</p>
+<p><strong>暂时性死区</strong><br>在使用let、const命令声明变量之前，该变量都是不可用的。这在语法上，称为<strong>暂时性死区</strong>。使用var声明的变量不存在暂时性死区。</p>
+<p><strong>初始值设置</strong><br>在变量声明时，var 和 let 可以不用设置初始值。而const声明变量必须设置初始值。</p>
+<p><strong>指针指向</strong><br>let和const都是ES6新增的用于创建变量的语法。 let创建的变量是可以更改指针指向（可以重新赋值）。但const声明的变量是不允许改变指针的指向。</p>
+<table>
+<thead>
+<tr>
+<th><strong>区别</strong></th>
+<th><strong>var</strong></th>
+<th><strong>let</strong></th>
+<th><strong>const</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>是否有块级作用域</td>
+<td>×</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+<tr>
+<td>是否存在变量提升</td>
+<td>✔️</td>
+<td>×</td>
+<td>×</td>
+</tr>
+<tr>
+<td>是否添加全局属性</td>
+<td>✔️</td>
+<td>×</td>
+<td>×</td>
+</tr>
+<tr>
+<td>能否重复声明变量</td>
+<td>✔️</td>
+<td>×</td>
+<td>×</td>
+</tr>
+<tr>
+<td>是否存在暂时性死区</td>
+<td>×</td>
+<td>✔️</td>
+<td>✔️</td>
+</tr>
+<tr>
+<td>是否必须设置初始值</td>
+<td>×</td>
+<td>×</td>
+<td>✔️</td>
+</tr>
+<tr>
+<td>能否改变指针指向</td>
+<td>✔️</td>
+<td>✔️</td>
+<td>×</td>
+</tr>
+</tbody></table>
+<h2 id="const对象的属性可以修改吗"><a href="#const对象的属性可以修改吗" class="headerlink" title="const对象的属性可以修改吗"></a>const对象的属性可以修改吗</h2><p>const保证的并不是变量的值不能改动，而是变量指向的那个内存地址不能改动。对于基本类型的数据（数值、字符串、布尔值），其值就保存在变量指向的那个内存地址，因此等同于常量。</p>
+<p>但对于引用类型的数据（主要是对象和数组）来说，变量指向数据的内存地址，保存的只是一个指针，const只能保证这个指针是固定不变的，至于它指向的数据结构是不是可变的，就完全不能控制了。</p>
+<h2 id="如果new一个箭头函数的会怎么样"><a href="#如果new一个箭头函数的会怎么样" class="headerlink" title="如果new一个箭头函数的会怎么样"></a>如果new一个箭头函数的会怎么样</h2><p>箭头函数是ES6中的提出来的，它没有prototype，也没有自己的this指向，更不可以使用arguments参数，所以不能New一个箭头函数。</p>
+<p>new操作符的实现步骤如下：</p>
+<ol>
+<li>创建一个对象</li>
+<li>将构造函数的作用域赋给新对象（也就是将对象的<code>__proto__</code>属性指向构造函数的prototype属性）</li>
+<li>指向构造函数中的代码，构造函数中的this指向该对象（也就是为这个对象添加属性和方法）</li>
+<li>返回新的对象</li>
+</ol>
+<p>所以，上面的第二、三步，箭头函数都是没有办法执行的。</p>
+<h2 id="箭头函数与普通函数的区别"><a href="#箭头函数与普通函数的区别" class="headerlink" title="箭头函数与普通函数的区别"></a>箭头函数与普通函数的区别</h2><p><strong>（1）箭头函数比普通函数更加简洁</strong></p>
+<ul>
+<li>如果没有参数，就直接写一个空括号即可</li>
+<li>如果只有一个参数，可以省去参数的括号</li>
+<li>如果有多个参数，用逗号分割</li>
+<li>如果函数体的返回值只有一句，可以省略大括号</li>
+<li>如果函数体不需要返回值，且只有一句话，可以给这个语句前面加一个void关键字。最常见的就是调用一个函数：</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> <span class="hljs-title function_">fn</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">doesNotReturn</span>();<br></code></pre>
+
+<p><strong>（2）箭头函数没有自己的this</strong><br>箭头函数不会创建自己的this， 所以它没有自己的this，它只会在自己作用域的上一层继承this。所以箭头函数中this的指向在它在定义时已经确定了，之后不会改变。</p>
+<p><strong>（3）箭头函数继承来的this指向永远不会改变</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> id = <span class="hljs-string">&#x27;GLOBAL&#x27;</span>;<br><span class="hljs-keyword">var</span> obj = &#123;<br>  <span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;OBJ&#x27;</span>,<br>  <span class="hljs-attr">a</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span>);<br>  &#125;,<br>  <span class="hljs-attr">b</span>: <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span>);<br>  &#125;<br>&#125;;<br>obj.<span class="hljs-title function_">a</span>();    <span class="hljs-comment">// &#x27;OBJ&#x27;</span><br>obj.<span class="hljs-title function_">b</span>();    <span class="hljs-comment">// &#x27;GLOBAL&#x27;</span><br><span class="hljs-keyword">new</span> obj.<span class="hljs-title function_">a</span>()  <span class="hljs-comment">// undefined</span><br><span class="hljs-keyword">new</span> obj.<span class="hljs-title function_">b</span>()  <span class="hljs-comment">// Uncaught TypeError: obj.b is not a constructor</span><br></code></pre>
+
+<p>对象obj的方法b是使用箭头函数定义的，这个函数中的this就永远指向它定义时所处的全局执行环境中的this，即便这个函数是作为对象obj的方法调用，this依旧指向Window对象。需要注意，定义对象的大括号<code>&#123;&#125;</code>是无法形成一个单独的执行环境的，它依旧是处于全局执行环境中。</p>
+<p><strong>（4）call()、apply()、bind()等方法不能改变箭头函数中this的指向</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> id = <span class="hljs-string">&#x27;Global&#x27;</span>;<br><span class="hljs-keyword">let</span> <span class="hljs-title function_">fun1</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">id</span>)<br>&#125;;<br><span class="hljs-title function_">fun1</span>();                     <span class="hljs-comment">// &#x27;Global&#x27;</span><br>fun1.<span class="hljs-title function_">call</span>(&#123;<span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;Obj&#x27;</span>&#125;);     <span class="hljs-comment">// &#x27;Global&#x27;</span><br>fun1.<span class="hljs-title function_">apply</span>(&#123;<span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;Obj&#x27;</span>&#125;);    <span class="hljs-comment">// &#x27;Global&#x27;</span><br>fun1.<span class="hljs-title function_">bind</span>(&#123;<span class="hljs-attr">id</span>: <span class="hljs-string">&#x27;Obj&#x27;</span>&#125;)();   <span class="hljs-comment">// &#x27;Global&#x27;</span><br></code></pre>
+
+<p><strong>（5）箭头函数不能作为构造函数使用</strong></p>
+<p>构造函数在new的步骤在上面已经说过了，实际上第二步就是将函数中的this指向该对象。 但是由于箭头函数时没有自己的this的，且this指向外层的执行环境，且不能改变指向，所以不能当做构造函数使用。</p>
+<p><strong>（6）箭头函数没有自己的arguments</strong></p>
+<p>箭头函数没有自己的arguments对象。在箭头函数中访问arguments实际上获得的是它外层函数的arguments值。</p>
+<p><strong>（7）箭头函数没有prototype</strong></p>
+<p><strong>（8）箭头函数不能用作Generator函数，不能使用yeild关键字</strong></p>
+<h2 id="箭头函数的this指向哪⾥？"><a href="#箭头函数的this指向哪⾥？" class="headerlink" title="箭头函数的this指向哪⾥？"></a>箭头函数的this指向哪⾥？</h2><p>箭头函数不同于传统JavaScript中的函数，箭头函数并没有属于⾃⼰的this，它所谓的this是捕获其所在上下⽂的 this 值，作为⾃⼰的 this 值，并且由于没有属于⾃⼰的this，所以是不会被new调⽤的，这个所谓的this也不会被改变。</p>
+<p>可以⽤Babel理解⼀下箭头函数:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// ES6 </span><br><span class="hljs-keyword">const</span> obj = &#123; <br>  <span class="hljs-title function_">getArrow</span>(<span class="hljs-params"></span>) &#123; <br>    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> &#123; <br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span> === obj); <br>    &#125;; <br>  &#125; <br>&#125;<br></code></pre>
+
+<p>转化后：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// ES5，由 Babel 转译</span><br><span class="hljs-keyword">var</span> obj = &#123; <br>   <span class="hljs-attr">getArrow</span>: <span class="hljs-keyword">function</span> <span class="hljs-title function_">getArrow</span>(<span class="hljs-params"></span>) &#123; <br>     <span class="hljs-keyword">var</span> _this = <span class="hljs-variable language_">this</span>; <br>     <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123; <br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(_this === obj); <br>     &#125;; <br>   &#125; <br>&#125;;<br></code></pre>
+
+<h2 id="扩展运算符的作用及使用场景"><a href="#扩展运算符的作用及使用场景" class="headerlink" title="扩展运算符的作用及使用场景"></a>扩展运算符的作用及使用场景</h2><p><strong>（1）对象扩展运算符</strong></p>
+<p>对象的扩展运算符(…)用于取出参数对象中的所有可遍历属性，拷贝到当前对象之中。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> bar = &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span> &#125;;<br><span class="hljs-keyword">let</span> baz = &#123; ...bar &#125;; <span class="hljs-comment">// &#123; a: 1, b: 2 &#125;</span><br></code></pre>
+
+<p>上述方法实际上等价于:</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> bar = &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span> &#125;;<br><span class="hljs-keyword">let</span> baz = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, bar); <span class="hljs-comment">// &#123; a: 1, b: 2 &#125;</span><br></code></pre>
+
+<p><code>Object.assign</code>方法用于对象的合并，将源对象<code>（source）</code>的所有可枚举属性，复制到目标对象<code>（target）</code>。<code>Object.assign</code>方法的第一个参数是目标对象，后面的参数都是源对象。(<strong>如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性</strong>)。</p>
+<p>同样，如果用户自定义的属性，放在扩展运算符后面，则扩展运算符内部的同名属性会被覆盖掉。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> bar = &#123;<span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span>&#125;;<br><span class="hljs-keyword">let</span> baz = &#123;...bar, ...&#123;<span class="hljs-attr">a</span>:<span class="hljs-number">2</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">4</span>&#125;&#125;;  <span class="hljs-comment">// &#123;a: 2, b: 4&#125;</span><br></code></pre>
+
+<p>利用上述特性就可以很方便的修改对象的部分属性。在<code>redux</code>中的<code>reducer</code>函数规定必须是<strong>一个纯函数</strong>，<code>reducer</code>中的<code>state</code>对象要求不能直接修改，可以通过扩展运算符把修改路径的对象都复制一遍，然后产生一个新的对象返回。</p>
+<p>需要注意：<strong>扩展运算符对对象实例的拷贝属于浅拷贝</strong>。</p>
+<p><strong>（2）数组扩展运算符</strong></p>
+<p>数组的扩展运算符可以将一个数组转为用逗号分隔的参数序列，且每次只能展开一层数组。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(...[<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])<br><span class="hljs-comment">// 1 2 3</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(...[<span class="hljs-number">1</span>, [<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>], <span class="hljs-number">5</span>])<br><span class="hljs-comment">// 1 [2, 3, 4] 5</span><br></code></pre>
+
+<p>下面是数组的扩展运算符的应用：</p>
+<ul>
+<li><strong>将数组转换为参数序列</strong></li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">x, y</span>) &#123;<br>  <span class="hljs-keyword">return</span> x + y;<br>&#125;<br><span class="hljs-keyword">const</span> numbers = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>];<br><span class="hljs-title function_">add</span>(...numbers) <span class="hljs-comment">// 3</span><br></code></pre>
+
+<ul>
+<li><strong>复制数组</strong></li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr1 = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>];<br><span class="hljs-keyword">const</span> arr2 = [...arr1];<br></code></pre>
+
+<p>要记住：<strong>扩展运算符(…)用于取出参数对象中的所有可遍历属性，拷贝到当前对象之中</strong>，这里参数对象是个数组，数组里面的所有对象都是基础数据类型，将所有基础数据类型重新拷贝到新的数组中。</p>
+<ul>
+<li><strong>合并数组</strong></li>
+</ul>
+<p>如果想在数组内合并数组，可以这样：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> arr1 = [<span class="hljs-string">&#x27;two&#x27;</span>, <span class="hljs-string">&#x27;three&#x27;</span>];<span class="hljs-keyword">const</span> arr2 = [<span class="hljs-string">&#x27;one&#x27;</span>, ...arr1, <span class="hljs-string">&#x27;four&#x27;</span>, <span class="hljs-string">&#x27;five&#x27;</span>];<span class="hljs-comment">// [&quot;one&quot;, &quot;two&quot;, &quot;three&quot;, &quot;four&quot;, &quot;five&quot;]</span><br></code></pre>
+
+<ul>
+<li><strong>扩展运算符与解构赋值结合起来，用于生成数组</strong></li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [first, ...rest] = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>];first <span class="hljs-comment">// 1rest  // [2, 3, 4, 5]</span><br></code></pre>
+
+<p>需要注意：<strong>如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [...rest, last] = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>];         <span class="hljs-comment">// 报错const [first, ...rest, last] = [1, 2, 3, 4, 5];  // 报错</span><br></code></pre>
+
+<ul>
+<li><strong>将字符串转为真正的数组</strong></li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">[...<span class="hljs-string">&#x27;hello&#x27;</span>]    <span class="hljs-comment">// [ &quot;h&quot;, &quot;e&quot;, &quot;l&quot;, &quot;l&quot;, &quot;o&quot; ]</span><br></code></pre>
+
+<ul>
+<li><strong>任何 Iterator 接口的对象，都可以用扩展运算符转为真正的数组</strong></li>
+</ul>
+<p>比较常见的应用是可以将某些数据结构转为数组：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// arguments对象</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">foo</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> args = [...<span class="hljs-variable language_">arguments</span>];<br>&#125;<br></code></pre>
+
+<p>用于替换<code>es5</code>中的<code>Array.prototype.slice.call(arguments)</code>写法。</p>
+<ul>
+<li><strong>使用</strong><code>Math</code><strong>函数获取数组中特定的值</strong></li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> numbers = [<span class="hljs-number">9</span>, <span class="hljs-number">4</span>, <span class="hljs-number">7</span>, <span class="hljs-number">1</span>];<br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">min</span>(...numbers); <span class="hljs-comment">// 1</span><br><span class="hljs-title class_">Math</span>.<span class="hljs-title function_">max</span>(...numbers); <span class="hljs-comment">// 9</span><br></code></pre>
+
+<h2 id="Proxy-可以实现什么功能？"><a href="#Proxy-可以实现什么功能？" class="headerlink" title="Proxy 可以实现什么功能？"></a>Proxy 可以实现什么功能？</h2><p>在 Vue3.0 中通过 <code>Proxy</code> 来替换原本的 <code>Object.defineProperty</code> 来实现数据响应式。</p>
+<p>Proxy 是 ES6 中新增的功能，它可以用来自定义对象中的操作。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> p = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(target, handler)<br></code></pre>
+
+<p><code>target</code> 代表需要添加代理的对象，<code>handler</code> 用来自定义对象中的操作，比如可以用来自定义 <code>set</code> 或者 <code>get</code> 函数。</p>
+<p>下面来通过 <code>Proxy</code> 来实现一个数据响应式：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> <span class="hljs-title function_">onWatch</span> = (<span class="hljs-params">obj, setBind, getLogger</span>) =&gt; &#123;<br>  <span class="hljs-keyword">let</span> handler = &#123;<br>    <span class="hljs-title function_">get</span>(<span class="hljs-params">target, property, receiver</span>) &#123;<br>      <span class="hljs-title function_">getLogger</span>(target, property)<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">get</span>(target, property, receiver)<br>    &#125;,<br>    <span class="hljs-title function_">set</span>(<span class="hljs-params">target, property, value, receiver</span>) &#123;<br>      <span class="hljs-title function_">setBind</span>(value, property)<br>      <span class="hljs-keyword">return</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">set</span>(target, property, value)<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(obj, handler)<br>&#125;<br><span class="hljs-keyword">let</span> obj = &#123; <span class="hljs-attr">a</span>: <span class="hljs-number">1</span> &#125;<br><span class="hljs-keyword">let</span> p = <span class="hljs-title function_">onWatch</span>(<br>  obj,<br>  <span class="hljs-function">(<span class="hljs-params">v, property</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`监听到属性<span class="hljs-subst">$&#123;property&#125;</span>改变为<span class="hljs-subst">$&#123;v&#125;</span>`</span>)<br>  &#125;,<br>  <span class="hljs-function">(<span class="hljs-params">target, property</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`&#x27;<span class="hljs-subst">$&#123;property&#125;</span>&#x27; = <span class="hljs-subst">$&#123;target[property]&#125;</span>`</span>)<br>  &#125;<br>)<br>p.<span class="hljs-property">a</span> = <span class="hljs-number">2</span> <span class="hljs-comment">// 监听到属性a改变</span><br>p.<span class="hljs-property">a</span> <span class="hljs-comment">// &#x27;a&#x27; = 2</span><br></code></pre>
+
+<p>在上述代码中，通过自定义 <code>set</code> 和 <code>get</code> 函数的方式，在原本的逻辑中插入了我们的函数逻辑，实现了在对对象任何属性进行读写时发出通知。</p>
+<p>当然这是简单版的响应式实现，如果需要实现一个 Vue 中的响应式，需要在 <code>get</code> 中收集依赖，在 <code>set</code> 派发更新，之所以 Vue3.0 要使用 <code>Proxy</code> 替换原本的 API 原因在于 <code>Proxy</code> 无需一层层递归为每个属性添加代理，一次即可完成以上操作，性能上更好，并且原本的实现有一些数据更新不能监听到，但是 <code>Proxy</code> 可以完美监听到任何方式的数据改变，唯一缺陷就是浏览器的兼容性不好。</p>
+<h2 id="对对象与数组的解构的理解"><a href="#对对象与数组的解构的理解" class="headerlink" title="对对象与数组的解构的理解"></a>对对象与数组的解构的理解</h2><p>解构是 ES6 提供的一种新的提取数据的模式，这种模式能够从对象或数组里有针对性地拿到想要的数值。 <strong>1）数组的解构</strong> 在解构数组时，以元素的位置为匹配条件来提取想要的数据的：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [a, b, c] = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]<br></code></pre>
+
+<p>最终，a、b、c分别被赋予了数组第0、1、2个索引位的值；数组里的0、1、2索引位的元素值，精准地被映射到了左侧的第0、1、2个变量里去，这就是数组解构的工作模式。还可以通过给左侧变量数组设置空占位的方式，实现对数组中某几个元素的精准提取：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [a,,c] = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]<br></code></pre>
+
+<p>通过把中间位留空，可以顺利地把数组第一位和最后一位的值赋给 a、c 两个变量。</p>
+<p>对象解构比数组结构稍微复杂一些，也更显强大。在解构对象时，是以属性的名称为匹配条件，来提取想要的数据的。现在定义一个对象：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> stu = &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Bob&#x27;</span>,<br>  <span class="hljs-attr">age</span>: <span class="hljs-number">24</span><br>&#125;<br></code></pre>
+
+<p>假如想要解构它的两个自有属性，可以这样：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; name, age &#125; = stu<br></code></pre>
+
+<p>这样就得到了 name 和 age 两个和 stu 平级的变量；注意，对象解构严格以属性名作为定位依据，所以就算调换了 name 和 age 的位置，结果也是一样的：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; age, name &#125; = stu<br></code></pre>
+
+<h2 id="如何提取高度嵌套的对象里的指定属性？"><a href="#如何提取高度嵌套的对象里的指定属性？" class="headerlink" title="如何提取高度嵌套的对象里的指定属性？"></a>如何提取高度嵌套的对象里的指定属性？</h2><p>有时会遇到一些嵌套程度非常深的对象：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> school = &#123;<br>   <span class="hljs-attr">classes</span>: &#123;<br>      <span class="hljs-attr">stu</span>: &#123;<br>         <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;Bob&#x27;</span>,<br>         <span class="hljs-attr">age</span>: <span class="hljs-number">24</span>,<br>      &#125;<br>   &#125;<br>&#125;<br></code></pre>
+
+<p>像此处的 name 这个变量，嵌套了四层，此时如果仍然尝试老方法来提取它：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; name &#125; = school<br></code></pre>
+
+<p>显然是不奏效的，因为 school 这个对象本身是没有 name 这个属性的，name 位于 school 对象的“儿子的儿子”对象里面。要想把 name 提取出来，一种比较笨的方法是逐层解构：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; classes &#125; = school<br><span class="hljs-keyword">const</span> &#123; stu &#125; = classes<br><span class="hljs-keyword">const</span> &#123; name &#125; = stu<br>name <span class="hljs-comment">// &#x27;Bob&#x27;</span><br></code></pre>
+
+<p>但是还有一种更标准的做法，可以用一行代码来解决这个问题：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> &#123; <span class="hljs-attr">classes</span>: &#123; <span class="hljs-attr">stu</span>: &#123; name &#125; &#125;&#125; = school   <br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(name)  <span class="hljs-comment">// &#x27;Bob&#x27;</span><br></code></pre>
+
+<p>可以在解构出来的变量名右侧，通过冒号+{目标属性名}这种形式，进一步解构它，一直解构到拿到目标数据为止。</p>
+<h2 id="对-rest-参数的理解"><a href="#对-rest-参数的理解" class="headerlink" title="对 rest 参数的理解"></a>对 rest 参数的理解</h2><p>扩展运算符被用在函数形参上时，<strong>它还可以把一个分离的参数序列整合成一个数组</strong>：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">mutiple</span>(<span class="hljs-params">...args</span>) &#123;<br>  <span class="hljs-keyword">let</span> result = <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> val <span class="hljs-keyword">of</span> args) &#123;<br>    result *= val;<br>  &#125;<br>  <span class="hljs-keyword">return</span> result;<br>&#125;<br><span class="hljs-title function_">mutiple</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>) <span class="hljs-comment">// 24</span><br></code></pre>
+
+<p>这里，传入 mutiple 的是四个分离的参数，但是如果在 mutiple 函数里尝试输出 args 的值，会发现它是一个数组：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">mutiple</span>(<span class="hljs-params">...args</span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(args)<br>&#125;<br><span class="hljs-title function_">mutiple</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>) <span class="hljs-comment">// [1, 2, 3, 4]</span><br></code></pre>
+
+<p>这就是 … rest运算符的又一层威力了，它可以把函数的多个入参收敛进一个数组里。这一点<strong>经常用于获取函数的多余参数，或者像上面这样处理函数参数个数不确定的情况。</strong></p>
+<h2 id="ES6中模板语法与字符串处理"><a href="#ES6中模板语法与字符串处理" class="headerlink" title="ES6中模板语法与字符串处理"></a>ES6中模板语法与字符串处理</h2><p>ES6 提出了“模板语法”的概念。在 ES6 以前，拼接字符串是很麻烦的事情：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> name = <span class="hljs-string">&#x27;css&#x27;</span>   <br><span class="hljs-keyword">var</span> career = <span class="hljs-string">&#x27;coder&#x27;</span> <br><span class="hljs-keyword">var</span> hobby = [<span class="hljs-string">&#x27;coding&#x27;</span>, <span class="hljs-string">&#x27;writing&#x27;</span>]<br><span class="hljs-keyword">var</span> finalString = <span class="hljs-string">&#x27;my name is &#x27;</span> + name + <span class="hljs-string">&#x27;, I work as a &#x27;</span> + career + <span class="hljs-string">&#x27;, I love &#x27;</span> + hobby[<span class="hljs-number">0</span>] + <span class="hljs-string">&#x27; and &#x27;</span> + hobby[<span class="hljs-number">1</span>]<br></code></pre>
+
+<p>仅仅几个变量，写了这么多加号，还要时刻小心里面的空格和标点符号有没有跟错地方。但是有了模板字符串，拼接难度直线下降：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> name = <span class="hljs-string">&#x27;css&#x27;</span>   <br><span class="hljs-keyword">var</span> career = <span class="hljs-string">&#x27;coder&#x27;</span> <br><span class="hljs-keyword">var</span> hobby = [<span class="hljs-string">&#x27;coding&#x27;</span>, <span class="hljs-string">&#x27;writing&#x27;</span>]<br><span class="hljs-keyword">var</span> finalString = <span class="hljs-string">`my name is <span class="hljs-subst">$&#123;name&#125;</span>, I work as a <span class="hljs-subst">$&#123;career&#125;</span> I love <span class="hljs-subst">$&#123;hobby[<span class="hljs-number">0</span>]&#125;</span> and <span class="hljs-subst">$&#123;hobby[<span class="hljs-number">1</span>]&#125;</span>`</span><br></code></pre>
+
+<p>字符串不仅更容易拼了，也更易读了，代码整体的质量都变高了。这就是模板字符串的第一个优势——允许用${}的方式嵌入变量。但这还不是问题的关键，模板字符串的关键优势有两个：</p>
+<ul>
+<li>在模板字符串中，空格、缩进、换行都会被保留</li>
+<li>模板字符串完全支持“运算”式的表达式，可以在${}里完成一些计算</li>
+</ul>
+<p>基于第一点，可以在模板字符串里无障碍地直接写 html 代码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> list = <span class="hljs-string">`</span><br><span class="hljs-string">    &lt;ul&gt;</span><br><span class="hljs-string">        &lt;li&gt;列表项1&lt;/li&gt;</span><br><span class="hljs-string">        &lt;li&gt;列表项2&lt;/li&gt;</span><br><span class="hljs-string">    &lt;/ul&gt;</span><br><span class="hljs-string">`</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(message); <span class="hljs-comment">// 正确输出，不存在报错</span><br></code></pre>
+
+<p>基于第二点，可以把一些简单的计算和调用丢进 ${} 来做：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">a, b</span>) &#123;<br>  <span class="hljs-keyword">const</span> finalString = <span class="hljs-string">`<span class="hljs-subst">$&#123;a&#125;</span> + <span class="hljs-subst">$&#123;b&#125;</span> = <span class="hljs-subst">$&#123;a+b&#125;</span>`</span><br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(finalString)<br>&#125;<br><span class="hljs-title function_">add</span>(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>) <span class="hljs-comment">// 输出 &#x27;1 + 2 = 3&#x27;</span><br></code></pre>
+
+<p>除了模板语法外， ES6中还新增了一系列的字符串方法用于提升开发效率：</p>
+<p><strong>（1）存在性判定</strong>：在过去，当判断一个字符&#x2F;字符串是否在某字符串中时，只能用 indexOf &gt; -1 来做。现在 ES6 提供了三个方法：includes、startsWith、endsWith，它们都会返回一个布尔值来告诉你是否存在。</p>
+<ul>
+<li><strong>includes</strong>：判断字符串与子串的包含关系：</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> son = <span class="hljs-string">&#x27;haha&#x27;</span> <br><span class="hljs-keyword">const</span> father = <span class="hljs-string">&#x27;xixi haha hehe&#x27;</span><br>father.<span class="hljs-title function_">includes</span>(son) <span class="hljs-comment">// true</span><br></code></pre>
+
+<ul>
+<li><strong>startsWith</strong>：判断字符串是否以某个&#x2F;某串字符开头：</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> father = <span class="hljs-string">&#x27;xixi haha hehe&#x27;</span><br>father.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&#x27;haha&#x27;</span>) <span class="hljs-comment">// false</span><br>father.<span class="hljs-title function_">startsWith</span>(<span class="hljs-string">&#x27;xixi&#x27;</span>) <span class="hljs-comment">// true</span><br></code></pre>
+
+<ul>
+<li><strong>endsWith</strong>：判断字符串是否以某个&#x2F;某串字符结尾：</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> father = <span class="hljs-string">&#x27;xixi haha hehe&#x27;</span><br>  father.<span class="hljs-title function_">endsWith</span>(<span class="hljs-string">&#x27;hehe&#x27;</span>) <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><strong>（2）自动重复</strong>：可以使用 repeat 方法来使同一个字符串输出多次（被连续复制多次）：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> sourceCode = <span class="hljs-string">&#x27;repeat for 3 times;&#x27;</span><br><span class="hljs-keyword">const</span> repeated = sourceCode.<span class="hljs-title function_">repeat</span>(<span class="hljs-number">3</span>) <br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(repeated) <span class="hljs-comment">// repeat for 3 times;repeat for 3 times;repeat for 3 times;</span><br></code></pre>
+
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2024/11/17/24111703/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">js 原型与原型链 面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2024/11/17/24111702/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">js JavaScript基础 面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#let%E3%80%81const%E3%80%81var%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">let、const、var的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#const%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%B1%9E%E6%80%A7%E5%8F%AF%E4%BB%A5%E4%BF%AE%E6%94%B9%E5%90%97"><span class="toc-text">const对象的属性可以修改吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9Cnew%E4%B8%80%E4%B8%AA%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7"><span class="toc-text">如果new一个箭头函数的会怎么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">箭头函数与普通函数的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84this%E6%8C%87%E5%90%91%E5%93%AA%E2%BE%A5%EF%BC%9F"><span class="toc-text">箭头函数的this指向哪⾥？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E4%BD%9C%E7%94%A8%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">扩展运算符的作用及使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy-%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E4%BB%80%E4%B9%88%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">Proxy 可以实现什么功能？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E5%AF%B9%E8%B1%A1%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对对象与数组的解构的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E5%8F%96%E9%AB%98%E5%BA%A6%E5%B5%8C%E5%A5%97%E7%9A%84%E5%AF%B9%E8%B1%A1%E9%87%8C%E7%9A%84%E6%8C%87%E5%AE%9A%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">如何提取高度嵌套的对象里的指定属性？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-rest-%E5%8F%82%E6%95%B0%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对 rest 参数的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES6%E4%B8%AD%E6%A8%A1%E6%9D%BF%E8%AF%AD%E6%B3%95%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86"><span class="toc-text">ES6中模板语法与字符串处理</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#let%E3%80%81const%E3%80%81var%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">let、const、var的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#const%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%B1%9E%E6%80%A7%E5%8F%AF%E4%BB%A5%E4%BF%AE%E6%94%B9%E5%90%97"><span class="toc-text">const对象的属性可以修改吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E6%9E%9Cnew%E4%B8%80%E4%B8%AA%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7"><span class="toc-text">如果new一个箭头函数的会怎么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">箭头函数与普通函数的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E7%9A%84this%E6%8C%87%E5%90%91%E5%93%AA%E2%BE%A5%EF%BC%9F"><span class="toc-text">箭头函数的this指向哪⾥？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E4%BD%9C%E7%94%A8%E5%8F%8A%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">扩展运算符的作用及使用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxy-%E5%8F%AF%E4%BB%A5%E5%AE%9E%E7%8E%B0%E4%BB%80%E4%B9%88%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">Proxy 可以实现什么功能？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E5%AF%B9%E8%B1%A1%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对对象与数组的解构的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8F%90%E5%8F%96%E9%AB%98%E5%BA%A6%E5%B5%8C%E5%A5%97%E7%9A%84%E5%AF%B9%E8%B1%A1%E9%87%8C%E7%9A%84%E6%8C%87%E5%AE%9A%E5%B1%9E%E6%80%A7%EF%BC%9F"><span class="toc-text">如何提取高度嵌套的对象里的指定属性？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-rest-%E5%8F%82%E6%95%B0%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">对 rest 参数的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES6%E4%B8%AD%E6%A8%A1%E6%9D%BF%E8%AF%AD%E6%B3%95%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%A4%84%E7%90%86"><span class="toc-text">ES6中模板语法与字符串处理</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》第五章：作用域闭包</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》第五章：作用域闭包">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-closure-chapter-5/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="从函数定义时的词法环境理解闭包，掌握回调、循环、模块模式与内存生命周期，并区分经典模块模式和 ES 模块。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="作用域">
+        
+          <meta 
+            property="og:article:tag" 
+            content="闭包">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="模块化">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">闭包是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E8%AE%B0%E4%BD%8F%E7%9A%84%E6%98%AF%E7%BB%91%E5%AE%9A%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%9B%BA%E5%AE%9A%E6%95%B0%E5%80%BC"><span class="toc-text">闭包记住的是绑定，不是固定数值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E5%B8%B8%E5%87%BA%E7%8E%B0%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">闭包常出现在哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E6%98%AF%E5%90%A6%E7%AE%97%E9%97%AD%E5%8C%85"><span class="toc-text">IIFE 是否算闭包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E4%B8%8E%E9%97%AD%E5%8C%85%EF%BC%9A%E5%85%B3%E9%94%AE%E6%98%AF%E2%80%9C%E5%85%B1%E4%BA%AB%E7%BB%91%E5%AE%9A%E2%80%9D"><span class="toc-text">循环与闭包：关键是“共享绑定”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-IIFE-%E4%B8%BA%E6%AF%8F%E4%B8%80%E8%BD%AE%E5%88%9B%E5%BB%BA%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 IIFE 为每一轮创建绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-let-%E7%9A%84%E6%AF%8F%E8%BD%AE%E8%BF%AD%E4%BB%A3%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 let 的每轮迭代绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E6%A8%A1%E5%9D%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%A7%81%E6%9C%89%E7%8A%B6%E6%80%81%E4%B8%8E%E5%85%AC%E5%BC%80-API"><span class="toc-text">经典模块模式：私有状态与公开 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%9D%97%EF%BC%9A%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E4%B8%80%E4%BB%BD%E7%8B%AC%E7%AB%8B%E7%8A%B6%E6%80%81"><span class="toc-text">工厂模块：每次调用一份独立状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E5%BC%80-API-%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%8F%AF%E5%8F%98%E5%AF%B9%E8%B1%A1"><span class="toc-text">公开 API 可以是可变对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E6%A8%A1%E5%9D%97%EF%BC%9A%E7%8E%B0%E4%BB%A3%E7%9A%84%E6%96%87%E4%BB%B6%E7%BA%A7%E5%B0%81%E8%A3%85"><span class="toc-text">ES 模块：现代的文件级封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E4%B8%8E%E5%86%85%E5%AD%98%EF%BC%9A%E7%AE%A1%E7%90%86%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%9B%9E%E9%81%BF%E9%97%AD%E5%8C%85"><span class="toc-text">闭包与内存：管理生命周期，而不是回避闭包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E4%B8%A4%E4%B8%AA%E5%87%BD%E6%95%B0%E4%BC%9A%E5%85%B1%E4%BA%AB%E8%AE%A1%E6%95%B0%E5%90%97"><span class="toc-text">练习：两个函数会共享计数吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》第五章：作用域闭包
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-closure-chapter-5.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" 
+            class="post-meta-link">
+            作用域
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%97%AD%E5%8C%85/" 
+            class="post-meta-link">
+            闭包
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" 
+            class="post-meta-link">
+            模块化
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本文承接前四章的词法作用域与提升模型。闭包不是一个额外的语法关键字，而是函数与其定义位置的词法环境共同产生的能力。</p>
+</blockquote>
+<h2 id="闭包是什么"><a href="#闭包是什么" class="headerlink" title="闭包是什么"></a>闭包是什么</h2><p>可以把闭包理解为：<strong>函数创建时会关联其词法环境，因此函数在之后执行时，仍能访问定义位置可见的外层绑定。</strong></p>
+<p>当内部函数被返回、传给回调或存入其他长期存活的位置，并在外层函数返回后仍读取外层变量时，这个特性最直观。函数“记住”的不是某个变量值的快照，而是对外层<strong>绑定</strong>的访问能力；若该绑定后来被修改，闭包会读到更新后的值。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createReader</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> value = <span class="hljs-number">2</span>;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">readValue</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> value;<br>  &#125;;<br>&#125;<br><br><span class="hljs-keyword">const</span> read = <span class="hljs-title function_">createReader</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">read</span>()); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p><code>createReader()</code> 已经返回，但 <code>readValue</code> 仍能访问 <code>value</code>。引擎会保留仍被可达闭包需要的环境信息。不要把它理解为“整个外层作用域永远不会销毁”：只有仍可能被观察到的绑定及其引用对象需要继续存活，具体存储与优化方式由引擎决定。</p>
+<h2 id="闭包记住的是绑定，不是固定数值"><a href="#闭包记住的是绑定，不是固定数值" class="headerlink" title="闭包记住的是绑定，不是固定数值"></a>闭包记住的是绑定，不是固定数值</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createCounter</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> count = <span class="hljs-number">0</span>;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-title function_">increment</span>(<span class="hljs-params"></span>) &#123;<br>      count += <span class="hljs-number">1</span>;<br>    &#125;,<br>    <span class="hljs-title function_">getCount</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-keyword">return</span> count;<br>    &#125;,<br>  &#125;;<br>&#125;<br><br><span class="hljs-keyword">const</span> counter = <span class="hljs-title function_">createCounter</span>();<br>counter.<span class="hljs-title function_">increment</span>();<br>counter.<span class="hljs-title function_">increment</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(counter.<span class="hljs-title function_">getCount</span>()); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p><code>increment</code> 与 <code>getCount</code> 共享同一个 <code>count</code> 绑定。每次调用 <code>increment</code> 都写回这个绑定，之后 <code>getCount</code> 读取到的自然是新值。不同工厂调用会创建不同的绑定实例：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> first = <span class="hljs-title function_">createCounter</span>();<br><span class="hljs-keyword">const</span> second = <span class="hljs-title function_">createCounter</span>();<br><br>first.<span class="hljs-title function_">increment</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(first.<span class="hljs-title function_">getCount</span>()); <span class="hljs-comment">// 1</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(second.<span class="hljs-title function_">getCount</span>()); <span class="hljs-comment">// 0</span><br></code></pre>
+
+<h2 id="闭包常出现在哪里"><a href="#闭包常出现在哪里" class="headerlink" title="闭包常出现在哪里"></a>闭包常出现在哪里</h2><p>闭包常见于函数在定义位置之外、或定义位置的执行结束之后才被调用的场景：</p>
+<ul>
+<li>返回内部函数或将函数保存到对象中；</li>
+<li><code>setTimeout</code>、<code>setInterval</code> 等异步回调；</li>
+<li>DOM 事件监听器；</li>
+<li>Promise、网络请求或其他异步 API 的回调；</li>
+<li>高阶函数接收或返回函数；</li>
+<li>ES 模块中导出的函数访问模块私有绑定。</li>
+</ul>
+<p>但不要把“传了一个函数”机械等同于“它一定持有有用的外层数据”。所有函数都有定义时的词法环境关联；只有函数实际引用了外层绑定时，才会形成值得讨论的捕获关系。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">wait</span>(<span class="hljs-params">message</span>) &#123;<br>  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">timer</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(message);<br>  &#125;, <span class="hljs-number">1000</span>);<br>&#125;<br><br><span class="hljs-title function_">wait</span>(<span class="hljs-string">&quot;hello&quot;</span>);<br></code></pre>
+
+<p>回调 <code>timer</code> 在 <code>wait</code> 返回后执行，仍能读取参数 <code>message</code>。这就是异步回调中最常见的闭包形式。</p>
+<h3 id="IIFE-是否算闭包"><a href="#IIFE-是否算闭包" class="headerlink" title="IIFE 是否算闭包"></a>IIFE 是否算闭包</h3><p>从广义的语言模型看，函数值会关联其词法环境，因此不必武断地说 IIFE “不算闭包”。但下面的 IIFE 没有把内部函数或数据带到外部，外层调用结束后也没有可观察的延续访问：</p>
+<pre class="highlight"><code class="hljs js">(<span class="hljs-keyword">function</span> <span class="hljs-title function_">initialize</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> version = <span class="hljs-string">&quot;1.0&quot;</span>;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(version);<br>&#125;());<br></code></pre>
+
+<p>它展示的是普通的词法查找与函数作用域，而不是闭包最有价值的“函数离开创建环境后仍访问外层绑定”的用法。把术语争论转化为实际问题更有帮助：是否存在一个存活函数继续使用外层状态？</p>
+<h2 id="循环与闭包：关键是“共享绑定”"><a href="#循环与闭包：关键是“共享绑定”" class="headerlink" title="循环与闭包：关键是“共享绑定”"></a>循环与闭包：关键是“共享绑定”</h2><p>经典问题不是“闭包失效”，而是多个回调捕获了同一个 <code>var</code> 绑定：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> index = <span class="hljs-number">1</span>; index &lt;= <span class="hljs-number">5</span>; index += <span class="hljs-number">1</span>) &#123;<br>  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(index), index * <span class="hljs-number">1000</span>);<br>&#125;<br><br><span class="hljs-comment">// 每个回调执行时，通常都会输出 6</span><br></code></pre>
+
+<p><code>var index</code> 属于外层函数或脚本作用域。循环结束时它已变为 <code>6</code>，所有回调读取的都是这个同一绑定。</p>
+<h3 id="使用-IIFE-为每一轮创建绑定"><a href="#使用-IIFE-为每一轮创建绑定" class="headerlink" title="使用 IIFE 为每一轮创建绑定"></a>使用 IIFE 为每一轮创建绑定</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> index = <span class="hljs-number">1</span>; index &lt;= <span class="hljs-number">5</span>; index += <span class="hljs-number">1</span>) &#123;<br>  (<span class="hljs-keyword">function</span> <span class="hljs-title function_">schedule</span>(<span class="hljs-params">value</span>) &#123;<br>    <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(value), value * <span class="hljs-number">1000</span>);<br>  &#125;(index));<br>&#125;<br></code></pre>
+
+<p>每次 IIFE 调用都会创建独立的参数绑定 <code>value</code>，对应的定时器回调各自捕获自己的 <code>value</code>。</p>
+<h3 id="使用-let-的每轮迭代绑定"><a href="#使用-let-的每轮迭代绑定" class="headerlink" title="使用 let 的每轮迭代绑定"></a>使用 <code>let</code> 的每轮迭代绑定</h3><p>现代 JavaScript 优先使用 <code>let</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> index = <span class="hljs-number">1</span>; index &lt;= <span class="hljs-number">5</span>; index += <span class="hljs-number">1</span>) &#123;<br>  <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(index), index * <span class="hljs-number">1000</span>);<br>&#125;<br></code></pre>
+
+<p><code>for (let ...)</code> 为每轮迭代提供独立的 <code>index</code> 绑定，因此五个回调分别读取 <code>1</code> 到 <code>5</code>。这不是定时器的特殊规则，而是循环的词法绑定语义。</p>
+<h2 id="经典模块模式：私有状态与公开-API"><a href="#经典模块模式：私有状态与公开-API" class="headerlink" title="经典模块模式：私有状态与公开 API"></a>经典模块模式：私有状态与公开 API</h2><p>在 ES 模块普及前，IIFE 加闭包常用来创建单例模块：将状态放在封闭函数中，只返回明确的 API。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> coolModule = (<span class="hljs-keyword">function</span> <span class="hljs-title function_">createCoolModule</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> message = <span class="hljs-string">&quot;private data&quot;</span>;<br><br>  <span class="hljs-keyword">function</span> <span class="hljs-title function_">printMessage</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(message);<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> &#123; printMessage &#125;;<br>&#125;());<br><br>coolModule.<span class="hljs-title function_">printMessage</span>(); <span class="hljs-comment">// &quot;private data&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(coolModule.<span class="hljs-property">message</span>); <span class="hljs-comment">// undefined</span><br></code></pre>
+
+<p>外部拿不到名为 <code>message</code> 的属性，但 <code>printMessage</code> 的闭包可以访问该绑定。这里的“私有”是封装与防误用，不是安全边界：只要把能读取或修改私有状态的方法暴露出去，调用方仍可通过它们影响状态。</p>
+<h3 id="工厂模块：每次调用一份独立状态"><a href="#工厂模块：每次调用一份独立状态" class="headerlink" title="工厂模块：每次调用一份独立状态"></a>工厂模块：每次调用一份独立状态</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createModule</span>(<span class="hljs-params">id</span>) &#123;<br>  <span class="hljs-keyword">const</span> innerId = id;<br><br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-title function_">log</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(innerId);<br>    &#125;,<br>  &#125;;<br>&#125;<br><br><span class="hljs-keyword">const</span> firstModule = <span class="hljs-title function_">createModule</span>(<span class="hljs-number">1</span>);<br><span class="hljs-keyword">const</span> secondModule = <span class="hljs-title function_">createModule</span>(<span class="hljs-number">2</span>);<br><br>firstModule.<span class="hljs-title function_">log</span>(); <span class="hljs-comment">// 1</span><br>secondModule.<span class="hljs-title function_">log</span>(); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p>每次 <code>createModule</code> 调用都有自己独立的 <code>innerId</code> 绑定。模块模式不要求必须使用 IIFE 或返回单个函数；关键是外部持有的 API 通过闭包访问封闭状态。</p>
+<h3 id="公开-API-可以是可变对象"><a href="#公开-API-可以是可变对象" class="headerlink" title="公开 API 可以是可变对象"></a>公开 API 可以是可变对象</h3><p>如果返回的是普通对象，公开 API 当然可以被内部或外部在运行时替换：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> moduleApi = (<span class="hljs-keyword">function</span> <span class="hljs-title function_">createModule</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> publicApi = &#123;<br>    <span class="hljs-title function_">print</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;old output&quot;</span>);<br>    &#125;,<br>    <span class="hljs-title function_">change</span>(<span class="hljs-params"></span>) &#123;<br>      publicApi.<span class="hljs-property">print</span> = <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;new output&quot;</span>);<br>    &#125;,<br>  &#125;;<br><br>  <span class="hljs-keyword">return</span> publicApi;<br>&#125;());<br><br>moduleApi.<span class="hljs-title function_">print</span>(); <span class="hljs-comment">// &quot;old output&quot;</span><br>moduleApi.<span class="hljs-title function_">change</span>();<br>moduleApi.<span class="hljs-title function_">print</span>(); <span class="hljs-comment">// &quot;new output&quot;</span><br></code></pre>
+
+<p>是否允许这种可变 API 是设计选择。大多数业务模块更容易维护的做法是导出稳定函数，并把状态变化限制在模块内部。</p>
+<h2 id="ES-模块：现代的文件级封装"><a href="#ES-模块：现代的文件级封装" class="headerlink" title="ES 模块：现代的文件级封装"></a>ES 模块：现代的文件级封装</h2><p>ES 模块在以模块方式加载时拥有独立的顶层作用域，并使用静态的 <code>import</code>&#x2F;<code>export</code> 语法声明依赖和公开接口。浏览器中通常通过 <code>&lt;script type=&quot;module&quot;&gt;</code> 加载；构建工具则会根据项目配置解析模块：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-comment">// counter.js</span><br><span class="hljs-keyword">let</span> count = <span class="hljs-number">0</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">increment</span>(<span class="hljs-params"></span>) &#123;<br>  count += <span class="hljs-number">1</span>;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getCount</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> count;<br>&#125;<br></code></pre>
+
+<pre class="highlight"><code class="hljs js"><span class="hljs-comment">// app.js</span><br><span class="hljs-keyword">import</span> &#123; getCount, increment &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./counter.js&quot;</span>;<br><br><span class="hljs-title function_">increment</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">getCount</span>()); <span class="hljs-comment">// 1</span><br></code></pre>
+
+<p>导出的函数通过模块词法环境访问 <code>count</code>，效果上与模块模式中的闭包一致，但依赖关系可由工具静态分析。导出名称由模块源代码确定，不能在运行时随意新增；不过导出的绑定是实时绑定（live binding），导出对象的内部内容也仍然可能变化。导入方不能给导入绑定重新赋值。</p>
+<p>动态 <code>import()</code> 可以按运行时条件加载模块，但不会改变模块内部仍有独立作用域、静态声明导出的事实。</p>
+<h2 id="闭包与内存：管理生命周期，而不是回避闭包"><a href="#闭包与内存：管理生命周期，而不是回避闭包" class="headerlink" title="闭包与内存：管理生命周期，而不是回避闭包"></a>闭包与内存：管理生命周期，而不是回避闭包</h2><p>闭包本身不是内存泄漏。问题发生在不再需要的函数仍被长生命周期对象持有，从而间接保留了大对象、DOM 节点或缓存数据。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">subscribe</span>(<span class="hljs-params">button, records</span>) &#123;<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">onClick</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(records.<span class="hljs-property">length</span>);<br>  button.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&quot;click&quot;</span>, onClick);<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> button.<span class="hljs-title function_">removeEventListener</span>(<span class="hljs-string">&quot;click&quot;</span>, onClick);<br>&#125;<br></code></pre>
+
+<p>调用方在组件卸载或功能结束时执行返回的清理函数，就能移除事件监听器，使不再需要的引用有机会被回收。类似地，应在不需要时 <code>clearInterval</code> &#x2F; <code>clearTimeout</code>，取消订阅，并清理全局缓存中的回调引用。</p>
+<p>节流、防抖、记忆化缓存等模式也依赖闭包保存状态。它们很实用，但缓存大小、失效策略和清理时机需要按业务生命周期设计。</p>
+<h2 id="练习：两个函数会共享计数吗"><a href="#练习：两个函数会共享计数吗" class="headerlink" title="练习：两个函数会共享计数吗"></a>练习：两个函数会共享计数吗</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createIncrementer</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> value = <span class="hljs-number">0</span>;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> ++value;<br>&#125;<br><br><span class="hljs-keyword">const</span> increaseA = <span class="hljs-title function_">createIncrementer</span>();<br><span class="hljs-keyword">const</span> increaseB = <span class="hljs-title function_">createIncrementer</span>();<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">increaseA</span>());<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">increaseA</span>());<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">increaseB</span>());<br></code></pre>
+
+<details>
+<summary>查看解析</summary>
+
+<p>依次输出 <code>1</code>、<code>2</code>、<code>1</code>。<code>increaseA</code> 和 <code>increaseB</code> 分别来自两次 <code>createIncrementer()</code> 调用，因此各自捕获不同的 <code>value</code> 绑定。前两次调用修改的是第一个绑定，第三次调用读取和修改的是第二个绑定。</p>
+</details>
+
+<h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><ol>
+<li>闭包让函数在之后执行时仍可访问其定义位置的词法环境。</li>
+<li>闭包访问的是外层绑定而非数值快照，多个闭包可以共享同一个可变状态。</li>
+<li>定时器、事件、Promise 回调、高阶函数和模块都经常使用闭包。</li>
+<li><code>var</code> 循环问题来自多个回调共享同一绑定；IIFE 参数或 <code>for (let ...)</code> 可以提供每轮独立绑定。</li>
+<li>经典模块模式通过闭包隐藏状态并公开有限 API；现代项目优先使用 ES 模块。</li>
+<li>ES 模块导出是静态声明的实时绑定，导入绑定不能由导入方重新赋值。</li>
+<li>闭包不是泄漏；及时移除监听器、清理计时器和取消订阅，才能避免不必要的长期引用。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Closures">MDN：闭包</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules">MDN：模块指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener">MDN：addEventListener()</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-hoisting-chapter-4/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第四章：提升 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-scope-and-closures-appendices/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》附录：动态作用域、块作用域与箭头函数 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">闭包是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E8%AE%B0%E4%BD%8F%E7%9A%84%E6%98%AF%E7%BB%91%E5%AE%9A%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%9B%BA%E5%AE%9A%E6%95%B0%E5%80%BC"><span class="toc-text">闭包记住的是绑定，不是固定数值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E5%B8%B8%E5%87%BA%E7%8E%B0%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">闭包常出现在哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E6%98%AF%E5%90%A6%E7%AE%97%E9%97%AD%E5%8C%85"><span class="toc-text">IIFE 是否算闭包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E4%B8%8E%E9%97%AD%E5%8C%85%EF%BC%9A%E5%85%B3%E9%94%AE%E6%98%AF%E2%80%9C%E5%85%B1%E4%BA%AB%E7%BB%91%E5%AE%9A%E2%80%9D"><span class="toc-text">循环与闭包：关键是“共享绑定”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-IIFE-%E4%B8%BA%E6%AF%8F%E4%B8%80%E8%BD%AE%E5%88%9B%E5%BB%BA%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 IIFE 为每一轮创建绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-let-%E7%9A%84%E6%AF%8F%E8%BD%AE%E8%BF%AD%E4%BB%A3%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 let 的每轮迭代绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E6%A8%A1%E5%9D%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%A7%81%E6%9C%89%E7%8A%B6%E6%80%81%E4%B8%8E%E5%85%AC%E5%BC%80-API"><span class="toc-text">经典模块模式：私有状态与公开 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%9D%97%EF%BC%9A%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E4%B8%80%E4%BB%BD%E7%8B%AC%E7%AB%8B%E7%8A%B6%E6%80%81"><span class="toc-text">工厂模块：每次调用一份独立状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E5%BC%80-API-%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%8F%AF%E5%8F%98%E5%AF%B9%E8%B1%A1"><span class="toc-text">公开 API 可以是可变对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E6%A8%A1%E5%9D%97%EF%BC%9A%E7%8E%B0%E4%BB%A3%E7%9A%84%E6%96%87%E4%BB%B6%E7%BA%A7%E5%B0%81%E8%A3%85"><span class="toc-text">ES 模块：现代的文件级封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E4%B8%8E%E5%86%85%E5%AD%98%EF%BC%9A%E7%AE%A1%E7%90%86%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%9B%9E%E9%81%BF%E9%97%AD%E5%8C%85"><span class="toc-text">闭包与内存：管理生命周期，而不是回避闭包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E4%B8%A4%E4%B8%AA%E5%87%BD%E6%95%B0%E4%BC%9A%E5%85%B1%E4%BA%AB%E8%AE%A1%E6%95%B0%E5%90%97"><span class="toc-text">练习：两个函数会共享计数吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">闭包是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E8%AE%B0%E4%BD%8F%E7%9A%84%E6%98%AF%E7%BB%91%E5%AE%9A%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%9B%BA%E5%AE%9A%E6%95%B0%E5%80%BC"><span class="toc-text">闭包记住的是绑定，不是固定数值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E5%B8%B8%E5%87%BA%E7%8E%B0%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">闭包常出现在哪里</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E6%98%AF%E5%90%A6%E7%AE%97%E9%97%AD%E5%8C%85"><span class="toc-text">IIFE 是否算闭包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BE%AA%E7%8E%AF%E4%B8%8E%E9%97%AD%E5%8C%85%EF%BC%9A%E5%85%B3%E9%94%AE%E6%98%AF%E2%80%9C%E5%85%B1%E4%BA%AB%E7%BB%91%E5%AE%9A%E2%80%9D"><span class="toc-text">循环与闭包：关键是“共享绑定”</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-IIFE-%E4%B8%BA%E6%AF%8F%E4%B8%80%E8%BD%AE%E5%88%9B%E5%BB%BA%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 IIFE 为每一轮创建绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-let-%E7%9A%84%E6%AF%8F%E8%BD%AE%E8%BF%AD%E4%BB%A3%E7%BB%91%E5%AE%9A"><span class="toc-text">使用 let 的每轮迭代绑定</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%8F%E5%85%B8%E6%A8%A1%E5%9D%97%E6%A8%A1%E5%BC%8F%EF%BC%9A%E7%A7%81%E6%9C%89%E7%8A%B6%E6%80%81%E4%B8%8E%E5%85%AC%E5%BC%80-API"><span class="toc-text">经典模块模式：私有状态与公开 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%9D%97%EF%BC%9A%E6%AF%8F%E6%AC%A1%E8%B0%83%E7%94%A8%E4%B8%80%E4%BB%BD%E7%8B%AC%E7%AB%8B%E7%8A%B6%E6%80%81"><span class="toc-text">工厂模块：每次调用一份独立状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AC%E5%BC%80-API-%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%8F%AF%E5%8F%98%E5%AF%B9%E8%B1%A1"><span class="toc-text">公开 API 可以是可变对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ES-%E6%A8%A1%E5%9D%97%EF%BC%9A%E7%8E%B0%E4%BB%A3%E7%9A%84%E6%96%87%E4%BB%B6%E7%BA%A7%E5%B0%81%E8%A3%85"><span class="toc-text">ES 模块：现代的文件级封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E4%B8%8E%E5%86%85%E5%AD%98%EF%BC%9A%E7%AE%A1%E7%90%86%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%9B%9E%E9%81%BF%E9%97%AD%E5%8C%85"><span class="toc-text">闭包与内存：管理生命周期，而不是回避闭包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E4%B8%A4%E4%B8%AA%E5%87%BD%E6%95%B0%E4%BC%9A%E5%85%B1%E4%BA%AB%E8%AE%A1%E6%95%B0%E5%90%97"><span class="toc-text">练习：两个函数会共享计数吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/05/07/FeishuOpenClawGithubPipeline/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="从飞书发一张截图，到博客文章自动上线，整个链路只需要一句话。本文记录这套全链路的搭建过程。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-05-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-05-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="飞书">
+        
+          <meta 
+            property="og:article:tag" 
+            content="GitHub">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Hexo">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A3%9E%E4%B9%A6-OpenClaw-GitHub%EF%BC%9A%E6%89%93%E9%80%A0%E5%85%A8%E8%87%AA%E5%8A%A8-AI-%E5%8D%9A%E5%AE%A2%E5%8F%91%E5%B8%83%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-text">飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%84%E7%8E%AF%E8%8A%82%E8%AF%A6%E8%A7%A3"><span class="toc-text">各环节详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A3%9E%E4%B9%A6%E7%AB%AF%EF%BC%9A%E5%8F%91%E6%B6%88%E6%81%AF%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="toc-text">1. 飞书端：发消息触发流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-OpenClaw%EF%BC%9AAI-Agent-%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-text">2. OpenClaw：AI Agent 运行时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-OCR%EF%BC%9A%E7%94%A8-Claude-Code-%E8%AF%86%E5%88%AB%E6%88%AA%E5%9B%BE"><span class="toc-text">3. OCR：用 Claude Code 识别截图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%86%85%E5%AE%B9%E6%95%B4%E7%90%86%EF%BC%9AAI-%E6%8E%92%E7%89%88%E6%88%90%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0"><span class="toc-text">4. 内容整理：AI 排版成博客文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-GitHub-%E6%8E%A8%E9%80%81%EF%BC%9AContents-API"><span class="toc-text">5. GitHub 推送：Contents API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-CI-x2F-CD%EF%BC%9AHexo-%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E9%83%A8%E7%BD%B2"><span class="toc-text">6. CI&#x2F;CD：Hexo 自动构建部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E6%95%88%E6%9E%9C"><span class="toc-text">实际效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span class="toc-text">踩过的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-1%EF%BC%9A%E9%A3%9E%E4%B9%A6%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="toc-text">坑 1：飞书图片消息的两种形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-2%EF%BC%9AAnthropic-%E4%BB%A3%E7%90%86%E5%8F%AA%E5%85%81%E8%AE%B8-Claude-Code-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">坑 2：Anthropic 代理只允许 Claude Code 客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-3%EF%BC%9Agateway-%E5%92%8C-node-%E6%98%AF%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">坑 3：gateway 和 node 是两个文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-4%EF%BC%9AGitHub-PAT-%E6%9D%83%E9%99%90"><span class="toc-text">坑 4：GitHub PAT 权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/FeishuOpenClawGithubPipeline.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-05-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-05-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%A3%9E%E4%B9%A6/" 
+            class="post-meta-link">
+            飞书
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/GitHub/" 
+            class="post-meta-link">
+            GitHub
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Hexo/" 
+            class="post-meta-link">
+            Hexo
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="飞书-OpenClaw-GitHub：打造全自动-AI-博客发布流水线"><a href="#飞书-OpenClaw-GitHub：打造全自动-AI-博客发布流水线" class="headerlink" title="飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线"></a>飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线</h1><blockquote>
+<p>从飞书发一张截图，到博客文章自动上线，整个链路只需要一句话。</p>
+</blockquote>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>我平时会在飞书里和 AI 聊技术话题，有时候聊着聊着就产出了一些值得记录的内容。但把对话整理成博客文章是个麻烦事——截图、OCR、排版、推送，每一步都要手动操作。</p>
+<p>于是我搭了一套全自动的流水线：<strong>飞书 → OpenClaw → GitHub → Hexo 博客</strong>，现在只需要把截图发给 AI，说一句”帮我发布成博客”，几分钟后文章就上线了。</p>
+<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><pre class="highlight"><code class="hljs awk">用户（飞书）<br>    │<br>    │ 发送截图/文字<br>    ▼<br>OpenClaw（AI Agent 运行时）<br>    │<br>    ├── 飞书 API 下载图片<br>    ├── Claude Code OCR 识别文字<br>    ├── AI 整理排版成 Markdown<br>    │<br>    ▼<br>GitHub Contents API<br>    │<br>    │ PUT <span class="hljs-regexp">/repos/</span>&#123;owner&#125;<span class="hljs-regexp">/&#123;repo&#125;/</span>contents/&#123;path&#125;<br>    ▼<br>GitHub 仓库（server 分支）<br>    │<br>    │ CI/CD 触发<br>    ▼<br>Hexo 构建 → GitHub Pages 部署<br></code></pre>
+
+<h2 id="各环节详解"><a href="#各环节详解" class="headerlink" title="各环节详解"></a>各环节详解</h2><h3 id="1-飞书端：发消息触发流程"><a href="#1-飞书端：发消息触发流程" class="headerlink" title="1. 飞书端：发消息触发流程"></a>1. 飞书端：发消息触发流程</h3><p>OpenClaw 接入飞书机器人后，用户可以直接在飞书私聊中发送：</p>
+<ul>
+<li>纯文字内容</li>
+<li>截图（图片消息）</li>
+<li>图片 + 文字说明</li>
+</ul>
+<p>飞书消息会携带 <code>message_id</code>，OpenClaw 通过飞书 API 拿到图片的 <code>image_key</code>，再下载到本地处理。</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-comment"># 下载飞书图片到本地</span><br>resp = requests.get(<br>    <span class="hljs-string">f&quot;https://open.feishu.cn/open-apis/im/v1/messages/<span class="hljs-subst">&#123;message_id&#125;</span>/resources/<span class="hljs-subst">&#123;image_key&#125;</span>?type=image&quot;</span>,<br>    headers=&#123;<span class="hljs-string">&quot;Authorization&quot;</span>: <span class="hljs-string">f&quot;Bearer <span class="hljs-subst">&#123;tenant_access_token&#125;</span>&quot;</span>&#125;,<br>    stream=<span class="hljs-literal">True</span><br>)<br></code></pre>
+
+<h3 id="2-OpenClaw：AI-Agent-运行时"><a href="#2-OpenClaw：AI-Agent-运行时" class="headerlink" title="2. OpenClaw：AI Agent 运行时"></a>2. OpenClaw：AI Agent 运行时</h3><p><a target="_blank" rel="noopener" href="https://github.com/openclaw/openclaw">OpenClaw</a> 是一个 AI Agent 运行时，支持接入飞书、Telegram、Discord 等多个 IM 平台。它负责：</p>
+<ul>
+<li><strong>消息路由</strong>：接收飞书消息，分发给 AI 处理</li>
+<li><strong>工具调用</strong>：执行文件下载、代码运行、API 调用等操作</li>
+<li><strong>上下文管理</strong>：维护对话历史和工作区文件</li>
+</ul>
+<p>在这套流水线里，OpenClaw 是整个链路的”大脑”，协调各个环节的执行。</p>
+<h3 id="3-OCR：用-Claude-Code-识别截图"><a href="#3-OCR：用-Claude-Code-识别截图" class="headerlink" title="3. OCR：用 Claude Code 识别截图"></a>3. OCR：用 Claude Code 识别截图</h3><p>Node 环境没有 PIL&#x2F;Tesseract，但可以用 Claude Code 的视觉能力来做 OCR：</p>
+<pre class="highlight"><code class="hljs bash">npx @anthropic-ai/claude-code \<br>  --<span class="hljs-built_in">print</span> \<br>  --permission-mode bypassPermissions \<br>  <span class="hljs-string">&quot;请识别这张图片中的所有文字内容，保持原有格式，输出 Markdown。图片路径：/path/to/image.jpg&quot;</span><br></code></pre>
+
+<p>Claude Code 支持读取本地图片文件，识别效果远好于传统 OCR，尤其是对中文、代码块、表格的处理。</p>
+<p><strong>注意</strong>：这个代理只允许 Claude Code 客户端调用，不能直接用 <code>anthropic</code> Python SDK 调用。</p>
+<h3 id="4-内容整理：AI-排版成博客文章"><a href="#4-内容整理：AI-排版成博客文章" class="headerlink" title="4. 内容整理：AI 排版成博客文章"></a>4. 内容整理：AI 排版成博客文章</h3><p>OCR 拿到原始文字后，让 AI 整理成符合 Hexo 格式的 Markdown：</p>
+<pre class="highlight"><code class="hljs markdown">---<br>title: 文章标题<br>excerpt: 摘要<br>date: 2026-05-07<br>categories:<br><span class="hljs-bullet">  -</span> 技术实践<br>tags:<br><span class="hljs-bullet">  -</span> AI<br><span class="hljs-section">  - Agent</span><br><span class="hljs-section">---</span><br><br><span class="hljs-section"># 正文内容...</span><br></code></pre>
+
+<h3 id="5-GitHub-推送：Contents-API"><a href="#5-GitHub-推送：Contents-API" class="headerlink" title="5. GitHub 推送：Contents API"></a>5. GitHub 推送：Contents API</h3><p>不需要 git clone，直接用 GitHub Contents API 推送文件：</p>
+<pre class="highlight"><code class="hljs python"><span class="hljs-keyword">import</span> requests, base64, json<br><br>token = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;.secrets/github_blog_token&quot;</span>).read().strip()<br>content = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;article.md&quot;</span>, <span class="hljs-string">&quot;rb&quot;</span>).read()<br><br>resp = requests.put(<br>    <span class="hljs-string">&quot;https://api.github.com/repos/shuangxunian/shuangxunian.github.io/contents/source/_posts/article.md&quot;</span>,<br>    headers=&#123;<br>        <span class="hljs-string">&quot;Authorization&quot;</span>: <span class="hljs-string">f&quot;token <span class="hljs-subst">&#123;token&#125;</span>&quot;</span>,<br>        <span class="hljs-string">&quot;Accept&quot;</span>: <span class="hljs-string">&quot;application/vnd.github.v3+json&quot;</span><br>    &#125;,<br>    json=&#123;<br>        <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">&quot;feat: add new article via OpenClaw&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span>: base64.b64encode(content).decode(),<br>        <span class="hljs-string">&quot;branch&quot;</span>: <span class="hljs-string">&quot;server&quot;</span><br>    &#125;<br>)<br></code></pre>
+
+<p><strong>权限要求</strong>：GitHub PAT 需要 <code>Contents: Read and write</code> 权限。</p>
+<h3 id="6-CI-x2F-CD：Hexo-自动构建部署"><a href="#6-CI-x2F-CD：Hexo-自动构建部署" class="headerlink" title="6. CI&#x2F;CD：Hexo 自动构建部署"></a>6. CI&#x2F;CD：Hexo 自动构建部署</h3><p>推送到 <code>server</code> 分支后，GitHub Actions 自动触发：</p>
+<pre class="highlight"><code class="hljs yaml"><span class="hljs-comment"># .github/workflows/deploy.yml（示意）</span><br><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> [<span class="hljs-string">server</span>]<br><br><span class="hljs-attr">jobs:</span><br>  <span class="hljs-attr">deploy:</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v3</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npx</span> <span class="hljs-string">hexo</span> <span class="hljs-string">generate</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">run:</span> <span class="hljs-string">npx</span> <span class="hljs-string">hexo</span> <span class="hljs-string">deploy</span>  <span class="hljs-comment"># 部署到 GitHub Pages</span><br></code></pre>
+
+<p>几分钟后，文章就出现在博客上了。</p>
+<h2 id="实际效果"><a href="#实际效果" class="headerlink" title="实际效果"></a>实际效果</h2><p>整个流程的用户体验是这样的：</p>
+<ol>
+<li>在飞书里把截图发给 AI</li>
+<li>说一句：”帮我整理成博客文章发布一下”</li>
+<li>AI 自动完成 OCR → 排版 → 推送</li>
+<li>收到确认消息，博客已更新</li>
+</ol>
+<p>从发消息到文章上线，大概 2-3 分钟。</p>
+<h2 id="踩过的坑"><a href="#踩过的坑" class="headerlink" title="踩过的坑"></a>踩过的坑</h2><h3 id="坑-1：飞书图片消息的两种形式"><a href="#坑-1：飞书图片消息的两种形式" class="headerlink" title="坑 1：飞书图片消息的两种形式"></a>坑 1：飞书图片消息的两种形式</h3><ul>
+<li><strong>纯图片消息</strong>（直接拖图片）：消息体里有 <code>image_key</code>，可以直接下载</li>
+<li><strong>图片 + 文字消息</strong>（图片拖到输入框后附带文字）：消息体里只有 <code>![image]</code> 占位符，需要先调用 <code>messages.read</code> API 拿到原始 post 富文本，再提取 <code>image_key</code></li>
+</ul>
+<h3 id="坑-2：Anthropic-代理只允许-Claude-Code-客户端"><a href="#坑-2：Anthropic-代理只允许-Claude-Code-客户端" class="headerlink" title="坑 2：Anthropic 代理只允许 Claude Code 客户端"></a>坑 2：Anthropic 代理只允许 Claude Code 客户端</h3><p>直接用 Python <code>anthropic</code> SDK 调用代理会报错：</p>
+<pre class="highlight"><code class="hljs smalltalk">&#123;<span class="hljs-comment">&quot;error&quot;</span>: &#123;<span class="hljs-comment">&quot;message&quot;</span>: <span class="hljs-comment">&quot;No available accounts: this group only allows Claude Code clients&quot;</span>&#125;&#125;<br></code></pre>
+
+<p>解决方案：用 <code>npx @anthropic-ai/claude-code --print</code> 来调用，它会被识别为合法的 Claude Code 客户端。</p>
+<h3 id="坑-3：gateway-和-node-是两个文件系统"><a href="#坑-3：gateway-和-node-是两个文件系统" class="headerlink" title="坑 3：gateway 和 node 是两个文件系统"></a>坑 3：gateway 和 node 是两个文件系统</h3><p>OpenClaw 的 <code>read</code>&#x2F;<code>write</code> 工具操作的是 gateway 文件系统，<code>exec</code> 命令操作的是 node 文件系统。要发送文件给飞书，必须先用 <code>exec</code> 在 node 上创建文件，不能用 <code>write</code> 工具。</p>
+<h3 id="坑-4：GitHub-PAT-权限"><a href="#坑-4：GitHub-PAT-权限" class="headerlink" title="坑 4：GitHub PAT 权限"></a>坑 4：GitHub PAT 权限</h3><p>初始创建的 PAT 默认只有 Read 权限，推送时会报 403。需要在 GitHub 设置里把 Contents 权限改为 Read and write。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这套流水线的核心思路是：<strong>让 AI 成为各个工具之间的胶水层</strong>。飞书、GitHub、Hexo 本身都有完善的 API，OpenClaw 负责把它们串联起来，用自然语言作为操作界面。</p>
+<p>对于有博客但懒得维护的工程师来说，这套方案可以大幅降低发布门槛——有想法就发，不用再纠结排版和流程。</p>
+<hr>
+<p><em>本文由 OpenClaw AI Agent 辅助生成并自动发布。</em></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/05/07/2026-05-07-game-analysis/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">我为什么喜欢三角洲和麻将，却对竞价之王提不起兴趣 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/05/06/AIAgentMemorySystem/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">AI Agent 记忆系统：临时记忆 vs 永久记忆的设计与实现 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A3%9E%E4%B9%A6-OpenClaw-GitHub%EF%BC%9A%E6%89%93%E9%80%A0%E5%85%A8%E8%87%AA%E5%8A%A8-AI-%E5%8D%9A%E5%AE%A2%E5%8F%91%E5%B8%83%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-text">飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%84%E7%8E%AF%E8%8A%82%E8%AF%A6%E8%A7%A3"><span class="toc-text">各环节详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A3%9E%E4%B9%A6%E7%AB%AF%EF%BC%9A%E5%8F%91%E6%B6%88%E6%81%AF%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="toc-text">1. 飞书端：发消息触发流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-OpenClaw%EF%BC%9AAI-Agent-%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-text">2. OpenClaw：AI Agent 运行时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-OCR%EF%BC%9A%E7%94%A8-Claude-Code-%E8%AF%86%E5%88%AB%E6%88%AA%E5%9B%BE"><span class="toc-text">3. OCR：用 Claude Code 识别截图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%86%85%E5%AE%B9%E6%95%B4%E7%90%86%EF%BC%9AAI-%E6%8E%92%E7%89%88%E6%88%90%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0"><span class="toc-text">4. 内容整理：AI 排版成博客文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-GitHub-%E6%8E%A8%E9%80%81%EF%BC%9AContents-API"><span class="toc-text">5. GitHub 推送：Contents API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-CI-x2F-CD%EF%BC%9AHexo-%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E9%83%A8%E7%BD%B2"><span class="toc-text">6. CI&#x2F;CD：Hexo 自动构建部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E6%95%88%E6%9E%9C"><span class="toc-text">实际效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span class="toc-text">踩过的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-1%EF%BC%9A%E9%A3%9E%E4%B9%A6%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="toc-text">坑 1：飞书图片消息的两种形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-2%EF%BC%9AAnthropic-%E4%BB%A3%E7%90%86%E5%8F%AA%E5%85%81%E8%AE%B8-Claude-Code-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">坑 2：Anthropic 代理只允许 Claude Code 客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-3%EF%BC%9Agateway-%E5%92%8C-node-%E6%98%AF%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">坑 3：gateway 和 node 是两个文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-4%EF%BC%9AGitHub-PAT-%E6%9D%83%E9%99%90"><span class="toc-text">坑 4：GitHub PAT 权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A3%9E%E4%B9%A6-OpenClaw-GitHub%EF%BC%9A%E6%89%93%E9%80%A0%E5%85%A8%E8%87%AA%E5%8A%A8-AI-%E5%8D%9A%E5%AE%A2%E5%8F%91%E5%B8%83%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-text">飞书 + OpenClaw + GitHub：打造全自动 AI 博客发布流水线</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-text">整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%84%E7%8E%AF%E8%8A%82%E8%AF%A6%E8%A7%A3"><span class="toc-text">各环节详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%A3%9E%E4%B9%A6%E7%AB%AF%EF%BC%9A%E5%8F%91%E6%B6%88%E6%81%AF%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B"><span class="toc-text">1. 飞书端：发消息触发流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-OpenClaw%EF%BC%9AAI-Agent-%E8%BF%90%E8%A1%8C%E6%97%B6"><span class="toc-text">2. OpenClaw：AI Agent 运行时</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-OCR%EF%BC%9A%E7%94%A8-Claude-Code-%E8%AF%86%E5%88%AB%E6%88%AA%E5%9B%BE"><span class="toc-text">3. OCR：用 Claude Code 识别截图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%86%85%E5%AE%B9%E6%95%B4%E7%90%86%EF%BC%9AAI-%E6%8E%92%E7%89%88%E6%88%90%E5%8D%9A%E5%AE%A2%E6%96%87%E7%AB%A0"><span class="toc-text">4. 内容整理：AI 排版成博客文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-GitHub-%E6%8E%A8%E9%80%81%EF%BC%9AContents-API"><span class="toc-text">5. GitHub 推送：Contents API</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-CI-x2F-CD%EF%BC%9AHexo-%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%E9%83%A8%E7%BD%B2"><span class="toc-text">6. CI&#x2F;CD：Hexo 自动构建部署</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E6%95%88%E6%9E%9C"><span class="toc-text">实际效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91"><span class="toc-text">踩过的坑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-1%EF%BC%9A%E9%A3%9E%E4%B9%A6%E5%9B%BE%E7%89%87%E6%B6%88%E6%81%AF%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="toc-text">坑 1：飞书图片消息的两种形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-2%EF%BC%9AAnthropic-%E4%BB%A3%E7%90%86%E5%8F%AA%E5%85%81%E8%AE%B8-Claude-Code-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">坑 2：Anthropic 代理只允许 Claude Code 客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-3%EF%BC%9Agateway-%E5%92%8C-node-%E6%98%AF%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-text">坑 3：gateway 和 node 是两个文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%91-4%EF%BC%9AGitHub-PAT-%E6%9D%83%E9%99%90"><span class="toc-text">坑 4：GitHub PAT 权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

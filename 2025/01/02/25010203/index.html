@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>react组件通信与路由面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="react组件通信与路由面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2025/01/02/25010203/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:modified_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="react">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%B8%B8%E8%A7%81%E6%83%85%E5%86%B5"><span class="toc-text">组件通信常见情况:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%88%B6%E5%AD%90%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">父子组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E7%BA%A7%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">跨级组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E5%B5%8C%E5%A5%97%E5%85%B3%E7%B3%BB%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">非嵌套关系组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3-props-%E5%B1%82%E7%BA%A7%E8%BF%87%E6%B7%B1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">如何解决 props 层级过深的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">组件通信的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">React-Router的实现原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE-React-Router-%E5%AE%9E%E7%8E%B0%E8%B7%AF%E7%94%B1%E5%88%87%E6%8D%A2"><span class="toc-text">如何配置 React-Router 实现路由切换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Route%E7%BB%84%E4%BB%B6"><span class="toc-text">使用Route组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8-lt-Switch-gt-%E7%BB%84%E4%BB%B6%E5%92%8C-lt-Route-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">结合使用 &lt;Switch&gt; 组件和 &lt;Route&gt; 组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-lt-Link-gt-%E3%80%81-lt-NavLink-gt-%E3%80%81-lt-Redirect-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">使用 &lt;Link&gt;、 &lt;NavLink&gt;、&lt;Redirect&gt;组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E6%80%8E%E4%B9%88%E8%AE%BE%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%EF%BC%9F"><span class="toc-text">React-Router怎么设置重定向？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-router-%E9%87%8C%E7%9A%84-Link-%E6%A0%87%E7%AD%BE%E5%92%8C-a-%E6%A0%87%E7%AD%BE%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">react-router 里的 Link 标签和 a 标签的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1%EF%BC%9F"><span class="toc-text">React-Router如何获取URL的参数和历史对象？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-text">获取URL的参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1"><span class="toc-text">获取历史对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E6%80%8E%E6%A0%B7%E5%9C%A8%E8%B7%AF%E7%94%B1%E5%8F%98%E5%8C%96%E6%97%B6%E9%87%8D%E6%96%B0%E6%B8%B2%E6%9F%93%E5%90%8C%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%EF%BC%9F"><span class="toc-text">React-Router 4怎样在路由变化时重新渲染同一个组件？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E8%B7%AF%E7%94%B1%E6%9C%89%E5%87%A0%E7%A7%8D%E6%A8%A1%E5%BC%8F%EF%BC%9F"><span class="toc-text">React-Router的路由有几种模式？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BrowserRouter"><span class="toc-text">BrowserRouter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashRouter"><span class="toc-text">HashRouter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E7%9A%84Switch%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">React-Router 4的Switch有什么用？</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      react组件通信与路由面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/25010203.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2025-01-01T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2025-01-02</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>3.4k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/react/" 
+            class="post-meta-link">
+            react
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="组件通信常见情况"><a href="#组件通信常见情况" class="headerlink" title="组件通信常见情况:"></a>组件通信常见情况:</h2><p>React组件间通信常见的几种情况:</p>
+<ul>
+<li>父组件向子组件通信</li>
+<li>子组件向父组件通信</li>
+<li>跨级组件通信</li>
+<li>非嵌套关系的组件通信</li>
+</ul>
+<h2 id="父子组件的通信方式？"><a href="#父子组件的通信方式？" class="headerlink" title="父子组件的通信方式？"></a>父子组件的通信方式？</h2><p><strong>父组件向子组件通信</strong>：父组件通过 props 向子组件传递需要的信息。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 子组件: Child</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">Child</span> = props =&gt;&#123;<br>  <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;props.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br>&#125;<br><span class="hljs-comment">// 父组件 Parent</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">Parent</span> = (<span class="hljs-params"></span>)=&gt;&#123;<br>    <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Child</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;react&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Child</span>&gt;</span></span><br>&#125;<br></code></pre>
+
+<p><strong>子组件向父组件通信</strong>：: props+回调的方式。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 子组件: Child</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">Child</span> = props =&gt;&#123;<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">cb</span> = msg =&gt;&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-function">()=&gt;</span>&#123;<br>          props.<span class="hljs-title function_">callback</span>(msg)<br>      &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> (<br>      <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;cb(</span>&quot;<span class="hljs-attr">你好</span>!&quot;)&#125;&gt;</span>你好<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br>  )<br>&#125;<br><span class="hljs-comment">// 父组件 Parent</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Parent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>    <span class="hljs-title function_">callback</span>(<span class="hljs-params">msg</span>)&#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(msg)<br>    &#125;<br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Child</span> <span class="hljs-attr">callback</span>=<span class="hljs-string">&#123;this.callback.bind(this)&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Child</span>&gt;</span></span>    <br>    &#125;<br>&#125;<br></code></pre>
+
+<h2 id="跨级组件的通信方式？"><a href="#跨级组件的通信方式？" class="headerlink" title="跨级组件的通信方式？"></a>跨级组件的通信方式？</h2><p>父组件向子组件的子组件通信，向更深层子组件通信：</p>
+<ul>
+<li>使用props，利用中间组件层层传递,但是如果父组件结构较深，那么中间每一层组件都要去传递props，增加了复杂度，并且这些props并不是中间组件自己需要的。</li>
+<li>使用context，context相当于一个大容器，可以把要通信的内容放在这个容器中，这样不管嵌套多深，都可以随意取用，对于跨越多层的全局数据可以使用context实现。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// context方式实现跨级组件通信 </span><br><span class="hljs-comment">// Context 设计目的是为了共享那些对于一个组件树而言是“全局”的数据</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">BatteryContext</span> = <span class="hljs-title function_">createContext</span>();<br><span class="hljs-comment">//  子组件的子组件 </span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">GrandChild</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-keyword">return</span> (<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BatteryContext.Consumer</span>&gt;</span></span><br><span class="language-xml">                &#123;</span><br><span class="language-xml">                    color =&gt; <span class="hljs-tag">&lt;<span class="hljs-name">h1</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span>&quot;<span class="hljs-attr">color</span>&quot;<span class="hljs-attr">:color</span>&#125;&#125;&gt;</span>我是红色的:&#123;color&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span><br><span class="language-xml">                &#125;</span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">BatteryContext.Consumer</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br><span class="hljs-comment">//  子组件</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">Child</span> = (<span class="hljs-params"></span>) =&gt;&#123;<br>    <span class="hljs-keyword">return</span> (<br>        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">GrandChild</span>/&gt;</span></span><br>    )<br>&#125;<br><span class="hljs-comment">// 父组件</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Parent</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>      state = &#123;<br>          <span class="hljs-attr">color</span>:<span class="hljs-string">&quot;red&quot;</span><br>      &#125;<br>      <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>          <span class="hljs-keyword">const</span> &#123;color&#125; = <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span><br>          <span class="hljs-keyword">return</span> (<br>          <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BatteryContext.Provider</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&#123;color&#125;</span>&gt;</span></span><br><span class="language-xml">              <span class="hljs-tag">&lt;<span class="hljs-name">Child</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Child</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;/<span class="hljs-name">BatteryContext.Provider</span>&gt;</span></span><br>          )<br>      &#125;<br>&#125;<br></code></pre>
+
+<h2 id="非嵌套关系组件的通信方式？"><a href="#非嵌套关系组件的通信方式？" class="headerlink" title="非嵌套关系组件的通信方式？"></a>非嵌套关系组件的通信方式？</h2><p>即没有任何包含关系的组件，包括兄弟组件以及不在同一个父级中的非兄弟组件。</p>
+<ul>
+<li>可以使用自定义事件通信（发布订阅模式）</li>
+<li>可以通过redux等进行全局状态管理</li>
+<li>如果是兄弟组件通信，可以找到这两个兄弟节点共同的父节点, 结合父子间通信方式进行通信。</li>
+</ul>
+<h2 id="如何解决-props-层级过深的问题"><a href="#如何解决-props-层级过深的问题" class="headerlink" title="如何解决 props 层级过深的问题"></a>如何解决 props 层级过深的问题</h2><ul>
+<li>使用Context API：提供一种组件之间的状态共享，而不必通过显式组件树逐层传递props；</li>
+<li>使用Redux等状态库。</li>
+</ul>
+<h2 id="组件通信的方式有哪些"><a href="#组件通信的方式有哪些" class="headerlink" title="组件通信的方式有哪些"></a>组件通信的方式有哪些</h2><ul>
+<li><strong>⽗组件向⼦组件通讯</strong>: ⽗组件可以向⼦组件通过传 props 的⽅式，向⼦组件进⾏通讯</li>
+<li><strong>⼦组件向⽗组件通讯</strong>: props+回调的⽅式，⽗组件向⼦组件传递props进⾏通讯，此props为作⽤域为⽗组件⾃身的函 数，⼦组件调⽤该函数，将⼦组件想要传递的信息，作为参数，传递到⽗组件的作⽤域中</li>
+<li><strong>兄弟组件通信</strong>: 找到这两个兄弟节点共同的⽗节点,结合上⾯两种⽅式由⽗节点转发信息进⾏通信</li>
+<li><strong>跨层级通信</strong>: Context 设计⽬的是为了共享那些对于⼀个组件树⽽⾔是“全局”的数据，例如当前认证的⽤户、主题或⾸选语⾔，对于跨越多层的全局数据通过 Context 通信再适合不过</li>
+<li><strong>发布订阅模式</strong>: 发布者发布事件，订阅者监听事件并做出反应,我们可以通过引⼊event模块进⾏通信</li>
+<li><strong>全局状态管理⼯具</strong>: 借助Redux或者Mobx等全局状态管理⼯具进⾏通信,这种⼯具会维护⼀个全局状态中⼼Store,并根据不同的事件产⽣新的状态</li>
+</ul>
+<h2 id="React-Router的实现原理是什么？"><a href="#React-Router的实现原理是什么？" class="headerlink" title="React-Router的实现原理是什么？"></a>React-Router的实现原理是什么？</h2><p>客户端路由实现的思想：</p>
+<ul>
+<li>基于 hash 的路由：通过监听 <code>hashchange</code>事件，感知 hash 的变化；改变 hash 可以直接通过 location.hash&#x3D;xxx</li>
+<li>基于 H5 history 路由：<ul>
+<li>改变 url 可以通过 history.pushState 和 resplaceState 等，会将URL压入堆栈，同时能够应用 <code>history.go()</code> 等 API</li>
+<li>监听 url 的变化可以通过自定义事件触发实现</li>
+</ul>
+</li>
+</ul>
+<p><strong>react-router 实现的思想：</strong></p>
+<ul>
+<li>基于 <code>history</code> 库来实现上述不同的客户端路由实现思想，并且能够保存历史记录等，磨平浏览器差异，上层无感知</li>
+<li>通过维护的列表，在每次 URL 发生变化的回收，通过配置的 路由路径，匹配到对应的 Component，并且 render</li>
+</ul>
+<h2 id="如何配置-React-Router-实现路由切换"><a href="#如何配置-React-Router-实现路由切换" class="headerlink" title="如何配置 React-Router 实现路由切换"></a>如何配置 React-Router 实现路由切换</h2><h3 id="使用Route组件"><a href="#使用Route组件" class="headerlink" title="使用Route组件"></a>使用<code>Route</code>组件</h3><p>路由匹配是通过比较 <code>Route</code> 的 path 属性和当前地址的 pathname 来实现的。当一个 <code>Route</code> 匹配成功时，它将渲染其内容，当它不匹配时就会渲染 null。没有路径的 <code>Route</code> 将始终被匹配。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// when location = &#123; pathname: &#x27;/about&#x27; &#125;</span><br>&lt;<span class="hljs-title class_">Route</span> path=<span class="hljs-string">&#x27;/about&#x27;</span> component=&#123;<span class="hljs-title class_">About</span>&#125;/&gt; <span class="hljs-comment">// renders &lt;About/&gt;</span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&#x27;/contact&#x27;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Contact&#125;/</span>&gt;</span></span> <span class="hljs-comment">// renders null</span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Always&#125;/</span>&gt;</span></span> <span class="hljs-comment">// renders &lt;Always/&gt;</span><br></code></pre>
+
+<h3 id="结合使用-lt-Switch-gt-组件和-lt-Route-gt-组件"><a href="#结合使用-lt-Switch-gt-组件和-lt-Route-gt-组件" class="headerlink" title="结合使用 &lt;Switch&gt; 组件和 &lt;Route&gt; 组件"></a>结合使用 <code>&lt;Switch&gt;</code> 组件和 <code>&lt;Route&gt;</code> 组件</h3><p><code>&lt;Switch&gt;</code> 用于将 <code>&lt;Route&gt;</code> 分组。</p>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">Switch</span>&gt;<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Home&#125;</span> /&gt;</span></span><br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/about&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;About&#125;</span> /&gt;</span></span><br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/contact&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Contact&#125;</span> /&gt;</span></span><br>&lt;/<span class="hljs-title class_">Switch</span>&gt;<br></code></pre>
+
+<p><code>&lt;Switch&gt;</code> 不是分组 <code>&lt;Route&gt;</code> 所必须的，但他通常很有用。 一个 <code>&lt;Switch&gt;</code> 会遍历其所有的子 <code>&lt;Route&gt;</code>元素，并仅渲染与当前地址匹配的第一个元素。</p>
+<h3 id="使用-lt-Link-gt-、-lt-NavLink-gt-、-lt-Redirect-gt-组件"><a href="#使用-lt-Link-gt-、-lt-NavLink-gt-、-lt-Redirect-gt-组件" class="headerlink" title="使用 &lt;Link&gt;、 &lt;NavLink&gt;、&lt;Redirect&gt;组件"></a>使用 <code>&lt;Link&gt;、 &lt;NavLink&gt;、&lt;Redirect&gt;</code>组件</h3><p><code>&lt;Link&gt;</code> 组件来在你的应用程序中创建链接。无论你在何处渲染一个<code>&lt;Link&gt;</code> ，都会在应用程序的 HTML 中渲染锚（<code>&lt;a&gt;</code>）。</p>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">Link</span> to=<span class="hljs-string">&quot;/&quot;</span>&gt;<span class="hljs-title class_">Home</span>&lt;/<span class="hljs-title class_">Link</span>&gt;   <br><span class="hljs-comment">// &lt;a href=&#x27;/&#x27;&gt;Home&lt;/a&gt;</span><br></code></pre>
+
+<p><code>&lt;NavLink&gt;</code>是一种特殊类型的 当它的 to属性与当前地址匹配时，可以将其定义为”活跃的”。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// location = &#123; pathname: &#x27;/react&#x27; &#125;</span><br>&lt;<span class="hljs-title class_">NavLink</span> to=<span class="hljs-string">&quot;/react&quot;</span> activeClassName=<span class="hljs-string">&quot;hurray&quot;</span>&gt;<br>    <span class="hljs-title class_">React</span><br>&lt;/<span class="hljs-title class_">NavLink</span>&gt;<br><span class="hljs-comment">// &lt;a href=&#x27;/react&#x27; className=&#x27;hurray&#x27;&gt;React&lt;/a&gt;</span><br></code></pre>
+
+<p>当我们想强制导航时，可以渲染一个<code>&lt;Redirect&gt;</code>，当一个<code>&lt;Redirect&gt;</code>渲染时，它将使用它的to属性进行定向。</p>
+<h2 id="React-Router怎么设置重定向？"><a href="#React-Router怎么设置重定向？" class="headerlink" title="React-Router怎么设置重定向？"></a>React-Router怎么设置重定向？</h2><p>使用<code>&lt;Redirect&gt;</code>组件实现路由的重定向：</p>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">Switch</span>&gt;<br>  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Redirect</span> <span class="hljs-attr">from</span>=<span class="hljs-string">&#x27;/users/:id&#x27;</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&#x27;/users/profile/:id&#x27;</span>/&gt;</span></span><br>  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&#x27;/users/profile/:id&#x27;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Profile&#125;/</span>&gt;</span></span><br>&lt;/<span class="hljs-title class_">Switch</span>&gt;<br></code></pre>
+
+<p>当请求 <code>/users/:id</code> 被重定向去 <code>&#39;/users/profile/:id&#39;</code>：</p>
+<ul>
+<li>属性 <code>from: string</code>：需要匹配的将要被重定向路径。</li>
+<li>属性 <code>to: string</code>：重定向的 URL 字符串</li>
+<li>属性 <code>to: object</code>：重定向的 location 对象</li>
+<li>属性 <code>push: bool</code>：若为真，重定向操作将会把新地址加入到访问历史记录里面，并且无法回退到前面的页面。</li>
+</ul>
+<h2 id="react-router-里的-Link-标签和-a-标签的区别"><a href="#react-router-里的-Link-标签和-a-标签的区别" class="headerlink" title="react-router 里的 Link 标签和 a 标签的区别"></a>react-router 里的 Link 标签和 a 标签的区别</h2><p>从最终渲染的 DOM 来看，这两者都是链接，都是<code>&lt;a&gt;</code>标签，区别是∶ <code>&lt;Link&gt;</code>是react-router 里实现路由跳转的链接，一般配合<code>&lt;Route&gt;</code> 使用，react-router接管了其默认的链接跳转行为，区别于传统的页面跳转，<code>&lt;Link&gt;</code> 的“跳转”行为只会触发相匹配的&#96;&#96;对应的页面内容更新，而不会刷新整个页面。</p>
+<p><code>&lt;Link&gt;</code>做了3件事情:</p>
+<ul>
+<li>有onclick那就执行onclick</li>
+<li>click的时候阻止a标签默认事件</li>
+<li>根据跳转href(即是to)，用history (web前端路由两种方式之一，history &amp; hash)跳转，此时只是链接变了，并没有刷新页面而&#96;&#96;标签就是普通的超链接了，用于从当前页面跳转到href指向的另一个页面(非锚点情况)。</li>
+</ul>
+<p>a标签默认事件禁掉之后做了什么才实现了跳转?</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> domArr = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByTagName</span>(<span class="hljs-string">&#x27;a&#x27;</span>)<br>[...domArr].<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">item</span>=&gt;</span>&#123;<br>    item.<span class="hljs-title function_">addEventListener</span>(<span class="hljs-string">&#x27;click&#x27;</span>,<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>        location.<span class="hljs-property">href</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">href</span><br>    &#125;)<br>&#125;)<br></code></pre>
+
+<h2 id="React-Router如何获取URL的参数和历史对象？"><a href="#React-Router如何获取URL的参数和历史对象？" class="headerlink" title="React-Router如何获取URL的参数和历史对象？"></a>React-Router如何获取URL的参数和历史对象？</h2><h3 id="获取URL的参数"><a href="#获取URL的参数" class="headerlink" title="获取URL的参数"></a>获取URL的参数</h3><ul>
+<li><strong>get传值</strong></li>
+</ul>
+<p>路由配置还是普通的配置，如：<code>&#39;admin&#39;</code>，传参方式如：<code>&#39;admin?id=&#39;1111&#39;&#39;</code>。通过<code>this.props.location.search</code>获取url获取到一个字符串<code>&#39;?id=&#39;1111&#39;</code> 可以用url，qs，querystring，浏览器提供的api URLSearchParams对象或者自己封装的方法去解析出id的值。</p>
+<ul>
+<li><strong>动态路由传值</strong></li>
+</ul>
+<p>路由需要配置成动态路由：如<code>path=&#39;/admin/:id&#39;</code>，传参方式，如<code>&#39;admin/111&#39;</code>。通过<code>this.props.match.params.id</code> 取得url中的动态路由id部分的值，除此之外还可以通过<code>useParams（Hooks）</code>来获取</p>
+<ul>
+<li><strong>通过query或state传值</strong></li>
+</ul>
+<p>传参方式如：在Link组件的to属性中可以传递对象<code>&#123;pathname:&#39;/admin&#39;,query:&#39;111&#39;,state:&#39;111&#39;&#125;;</code>。通过<code>this.props.location.state</code>或<code>this.props.location.query</code>来获取即可，传递的参数可以是对象、数组等，但是存在缺点就是只要刷新页面，参数就会丢失。</p>
+<h3 id="获取历史对象"><a href="#获取历史对象" class="headerlink" title="获取历史对象"></a>获取历史对象</h3><ul>
+<li>如果React &gt;&#x3D; 16.8 时可以使用 React Router中提供的Hooks</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; useHistory &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;react-router-dom&quot;</span>;<br><span class="hljs-keyword">let</span> history = <span class="hljs-title function_">useHistory</span>();<br></code></pre>
+
+<ul>
+<li>使用this.props.history获取历史对象</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> history = <span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">history</span>;<br></code></pre>
+
+<h2 id="React-Router-4怎样在路由变化时重新渲染同一个组件？"><a href="#React-Router-4怎样在路由变化时重新渲染同一个组件？" class="headerlink" title="React-Router 4怎样在路由变化时重新渲染同一个组件？"></a>React-Router 4怎样在路由变化时重新渲染同一个组件？</h2><p>当路由变化时，即组件的props发生了变化，会调用componentWillReceiveProps等生命周期钩子。那需要做的只是： 当路由改变时，根据路由，也去请求数据：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NewsList</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>  componentDidMount () &#123;<br>     <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fetchData</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">location</span>);<br>  &#125;<br><br>  <span class="hljs-title function_">fetchData</span>(<span class="hljs-params">location</span>) &#123;<br>    <span class="hljs-keyword">const</span> type = location.<span class="hljs-property">pathname</span>.<span class="hljs-title function_">replace</span>(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>) || <span class="hljs-string">&#x27;top&#x27;</span><br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">fetchListData</span>(type))<br>  &#125;<br>  <span class="hljs-title function_">componentWillReceiveProps</span>(<span class="hljs-params">nextProps</span>) &#123;<br>     <span class="hljs-keyword">if</span> (nextProps.<span class="hljs-property">location</span>.<span class="hljs-property">pathname</span> != <span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">location</span>.<span class="hljs-property">pathname</span>) &#123;<br>         <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">fetchData</span>(nextProps.<span class="hljs-property">location</span>);<br>     &#125; <br>  &#125;<br>  render () &#123;<br>    ...<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>利用生命周期componentWillReceiveProps，进行重新render的预处理操作。</p>
+<h2 id="React-Router的路由有几种模式？"><a href="#React-Router的路由有几种模式？" class="headerlink" title="React-Router的路由有几种模式？"></a>React-Router的路由有几种模式？</h2><p>React-Router 支持使用 hash（对应 HashRouter）和 browser（对应 BrowserRouter） 两种路由规则， react-router-dom 提供了 BrowserRouter 和 HashRouter 两个组件来实现应用的 UI 和 URL 同步：</p>
+<ul>
+<li>BrowserRouter 创建的 URL 格式：<a href="https://link.juejin.cn/?target=http://xxx.com/path">xxx.com&#x2F;path</a></li>
+<li>HashRouter 创建的 URL 格式：<a href="https://link.juejin.cn/?target=http://xxx.com/%23/path">xxx.com&#x2F;#&#x2F;path</a></li>
+</ul>
+<h3 id="BrowserRouter"><a href="#BrowserRouter" class="headerlink" title="BrowserRouter"></a>BrowserRouter</h3><p>它使用 HTML5 提供的 history API（pushState、replaceState 和 popstate 事件）来保持 UI 和 URL 的同步。由此可以看出，<strong>BrowserRouter 是使用 HTML 5 的 history API 来控制路由跳转的：</strong></p>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">BrowserRouter</span><br>    basename=&#123;string&#125;<br>    forceRefresh=&#123;bool&#125;<br>    getUserConfirmation=&#123;func&#125;<br>    keyLength=&#123;number&#125;<br>/&gt;<br></code></pre>
+
+<p><strong>其中的属性如下：</strong></p>
+<ul>
+<li>basename 所有路由的基准 URL。basename 的正确格式是前面有一个前导斜杠，但不能有尾部斜杠；</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">BrowserRouter</span> basename=<span class="hljs-string">&quot;/calendar&quot;</span>&gt;<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Link</span> <span class="hljs-attr">to</span>=<span class="hljs-string">&quot;/today&quot;</span> /&gt;</span></span><br>&lt;/<span class="hljs-title class_">BrowserRouter</span>&gt;<br></code></pre>
+
+<p>等同于</p>
+<pre class="highlight"><code class="hljs javascript">&lt;a href=<span class="hljs-string">&quot;/calendar/today&quot;</span> /&gt;<br></code></pre>
+
+<ul>
+<li>forceRefresh 如果为 true，在导航的过程中整个页面将会刷新。一般情况下，只有在不支持 HTML5 history API 的浏览器中使用此功能；</li>
+<li>getUserConfirmation 用于确认导航的函数，默认使用 window.confirm。例如，当从 &#x2F;a 导航至 &#x2F;b 时，会使用默认的 confirm 函数弹出一个提示，用户点击确定后才进行导航，否则不做任何处理；</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 这是默认的确认函数</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">getConfirmation</span> = (<span class="hljs-params">message, callback</span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> allowTransition = <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">confirm</span>(message);<br>  <span class="hljs-title function_">callback</span>(allowTransition);<br>&#125;<br>&lt;<span class="hljs-title class_">BrowserRouter</span> getUserConfirmation=&#123;getConfirmation&#125; /&gt;<br></code></pre>
+
+<blockquote>
+<p>需要配合&#96;&#96; 一起使用。</p>
+</blockquote>
+<ul>
+<li>KeyLength 用来设置 Location.Key 的长度。</li>
+</ul>
+<h3 id="HashRouter"><a href="#HashRouter" class="headerlink" title="HashRouter"></a>HashRouter</h3><p>使用 URL 的 hash 部分（即 window.location.hash）来保持 UI 和 URL 的同步。由此可以看出，<strong>HashRouter 是通过 URL 的 hash 属性来控制路由跳转的：</strong></p>
+<pre class="highlight"><code class="hljs javascript">&lt;<span class="hljs-title class_">HashRouter</span><br>    basename=&#123;string&#125;<br>    getUserConfirmation=&#123;func&#125;<br>    hashType=&#123;string&#125;  <br>/&gt;<br></code></pre>
+
+<p><strong>其参数如下</strong>：</p>
+<ul>
+<li>basename, getUserConfirmation 和 <code>BrowserRouter</code> 功能一样；</li>
+<li>hashType window.location.hash 使用的 hash 类型，有如下几种：<ul>
+<li>slash - 后面跟一个斜杠，例如 #&#x2F; 和 #&#x2F;sunshine&#x2F;lollipops；</li>
+<li>noslash - 后面没有斜杠，例如 # 和 #sunshine&#x2F;lollipops；</li>
+<li>hashbang - Google 风格的 ajax crawlable，例如 #!&#x2F; 和 #!&#x2F;sunshine&#x2F;lollipops。</li>
+</ul>
+</li>
+</ul>
+<h2 id="React-Router-4的Switch有什么用？"><a href="#React-Router-4的Switch有什么用？" class="headerlink" title="React-Router 4的Switch有什么用？"></a>React-Router 4的Switch有什么用？</h2><p>Switch 通常被用来包裹 Route，用于渲染与路径匹配的第一个子 <code>&lt;Route&gt;</code> 或 <code>&lt;Redirect&gt;</code>，它里面不能放其他元素。</p>
+<p>假如不加 <code>&lt;Switch&gt;</code> ：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Route</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><br>&lt;<span class="hljs-title class_">Route</span> path=<span class="hljs-string">&quot;/&quot;</span> component=&#123;<span class="hljs-title class_">Home</span>&#125;&gt;&lt;/<span class="hljs-title class_">Route</span>&gt;<br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/login&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Login&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span><br></code></pre>
+
+<p>Route 组件的 path 属性用于匹配路径，因为需要匹配 <code>/</code> 到 <code>Home</code>，匹配 <code>/login</code> 到 <code>Login</code>，所以需要两个 Route，但是不能这么写。这样写的话，当 URL 的 path 为 “&#x2F;login” 时，<code>&lt;Route path=&quot;/&quot; /&gt;</code>和<code>&lt;Route path=&quot;/login&quot; /&gt;</code>都会被匹配，因此页面会展示 Home 和 Login 两个组件。这时就需要借助 <code>&lt;Switch&gt;</code> 来做到只显示一个匹配组件：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Switch</span>, <span class="hljs-title class_">Route</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><br>&lt;<span class="hljs-title class_">Switch</span>&gt;<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Home&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span><br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/login&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Login&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span><br>&lt;/<span class="hljs-title class_">Switch</span>&gt;<br></code></pre>
+
+<p>此时，再访问 “&#x2F;login” 路径时，却只显示了 Home 组件。这是就用到了exact属性，它的作用就是精确匹配路径，经常与<code>&lt;Switch&gt;</code> 联合使用。只有当 URL 和该 <code>&lt;Route&gt;</code> 的 path 属性完全一致的情况下才能匹配上：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Switch</span>, <span class="hljs-title class_">Route</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><br>&lt;<span class="hljs-title class_">Switch</span>&gt;<br>   <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Home&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span><br>   <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Route</span> <span class="hljs-attr">exact</span> <span class="hljs-attr">path</span>=<span class="hljs-string">&quot;/login&quot;</span> <span class="hljs-attr">component</span>=<span class="hljs-string">&#123;Login&#125;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Route</span>&gt;</span></span><br>&lt;/<span class="hljs-title class_">Switch</span>&gt;<br></code></pre>
+
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2025/01/02/25010202/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">react生命周期面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2025/01/02/25010204/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">react Redux面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%B8%B8%E8%A7%81%E6%83%85%E5%86%B5"><span class="toc-text">组件通信常见情况:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%88%B6%E5%AD%90%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">父子组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E7%BA%A7%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">跨级组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E5%B5%8C%E5%A5%97%E5%85%B3%E7%B3%BB%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">非嵌套关系组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3-props-%E5%B1%82%E7%BA%A7%E8%BF%87%E6%B7%B1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">如何解决 props 层级过深的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">组件通信的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">React-Router的实现原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE-React-Router-%E5%AE%9E%E7%8E%B0%E8%B7%AF%E7%94%B1%E5%88%87%E6%8D%A2"><span class="toc-text">如何配置 React-Router 实现路由切换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Route%E7%BB%84%E4%BB%B6"><span class="toc-text">使用Route组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8-lt-Switch-gt-%E7%BB%84%E4%BB%B6%E5%92%8C-lt-Route-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">结合使用 &lt;Switch&gt; 组件和 &lt;Route&gt; 组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-lt-Link-gt-%E3%80%81-lt-NavLink-gt-%E3%80%81-lt-Redirect-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">使用 &lt;Link&gt;、 &lt;NavLink&gt;、&lt;Redirect&gt;组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E6%80%8E%E4%B9%88%E8%AE%BE%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%EF%BC%9F"><span class="toc-text">React-Router怎么设置重定向？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-router-%E9%87%8C%E7%9A%84-Link-%E6%A0%87%E7%AD%BE%E5%92%8C-a-%E6%A0%87%E7%AD%BE%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">react-router 里的 Link 标签和 a 标签的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1%EF%BC%9F"><span class="toc-text">React-Router如何获取URL的参数和历史对象？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-text">获取URL的参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1"><span class="toc-text">获取历史对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E6%80%8E%E6%A0%B7%E5%9C%A8%E8%B7%AF%E7%94%B1%E5%8F%98%E5%8C%96%E6%97%B6%E9%87%8D%E6%96%B0%E6%B8%B2%E6%9F%93%E5%90%8C%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%EF%BC%9F"><span class="toc-text">React-Router 4怎样在路由变化时重新渲染同一个组件？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E8%B7%AF%E7%94%B1%E6%9C%89%E5%87%A0%E7%A7%8D%E6%A8%A1%E5%BC%8F%EF%BC%9F"><span class="toc-text">React-Router的路由有几种模式？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BrowserRouter"><span class="toc-text">BrowserRouter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashRouter"><span class="toc-text">HashRouter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E7%9A%84Switch%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">React-Router 4的Switch有什么用？</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%B8%B8%E8%A7%81%E6%83%85%E5%86%B5"><span class="toc-text">组件通信常见情况:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%88%B6%E5%AD%90%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">父子组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E7%BA%A7%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">跨级组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E5%B5%8C%E5%A5%97%E5%85%B3%E7%B3%BB%E7%BB%84%E4%BB%B6%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%EF%BC%9F"><span class="toc-text">非嵌套关系组件的通信方式？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3-props-%E5%B1%82%E7%BA%A7%E8%BF%87%E6%B7%B1%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">如何解决 props 层级过深的问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E9%80%9A%E4%BF%A1%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">组件通信的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">React-Router的实现原理是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE-React-Router-%E5%AE%9E%E7%8E%B0%E8%B7%AF%E7%94%B1%E5%88%87%E6%8D%A2"><span class="toc-text">如何配置 React-Router 实现路由切换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Route%E7%BB%84%E4%BB%B6"><span class="toc-text">使用Route组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E5%90%88%E4%BD%BF%E7%94%A8-lt-Switch-gt-%E7%BB%84%E4%BB%B6%E5%92%8C-lt-Route-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">结合使用 &lt;Switch&gt; 组件和 &lt;Route&gt; 组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-lt-Link-gt-%E3%80%81-lt-NavLink-gt-%E3%80%81-lt-Redirect-gt-%E7%BB%84%E4%BB%B6"><span class="toc-text">使用 &lt;Link&gt;、 &lt;NavLink&gt;、&lt;Redirect&gt;组件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E6%80%8E%E4%B9%88%E8%AE%BE%E7%BD%AE%E9%87%8D%E5%AE%9A%E5%90%91%EF%BC%9F"><span class="toc-text">React-Router怎么设置重定向？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#react-router-%E9%87%8C%E7%9A%84-Link-%E6%A0%87%E7%AD%BE%E5%92%8C-a-%E6%A0%87%E7%AD%BE%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">react-router 里的 Link 标签和 a 标签的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0%E5%92%8C%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1%EF%BC%9F"><span class="toc-text">React-Router如何获取URL的参数和历史对象？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96URL%E7%9A%84%E5%8F%82%E6%95%B0"><span class="toc-text">获取URL的参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%8E%86%E5%8F%B2%E5%AF%B9%E8%B1%A1"><span class="toc-text">获取历史对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E6%80%8E%E6%A0%B7%E5%9C%A8%E8%B7%AF%E7%94%B1%E5%8F%98%E5%8C%96%E6%97%B6%E9%87%8D%E6%96%B0%E6%B8%B2%E6%9F%93%E5%90%8C%E4%B8%80%E4%B8%AA%E7%BB%84%E4%BB%B6%EF%BC%9F"><span class="toc-text">React-Router 4怎样在路由变化时重新渲染同一个组件？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router%E7%9A%84%E8%B7%AF%E7%94%B1%E6%9C%89%E5%87%A0%E7%A7%8D%E6%A8%A1%E5%BC%8F%EF%BC%9F"><span class="toc-text">React-Router的路由有几种模式？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#BrowserRouter"><span class="toc-text">BrowserRouter</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashRouter"><span class="toc-text">HashRouter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Router-4%E7%9A%84Switch%E6%9C%89%E4%BB%80%E4%B9%88%E7%94%A8%EF%BC%9F"><span class="toc-text">React-Router 4的Switch有什么用？</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

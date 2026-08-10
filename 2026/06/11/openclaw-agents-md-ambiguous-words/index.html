@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 踩坑：AGENTS.md 中不要有模棱两可的词语</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 踩坑：AGENTS.md 中不要有模棱两可的词语">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/06/11/openclaw-agents-md-ambiguous-words/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="AGENTS.md 中模棱两可的描述配合记忆系统，会导致 Agent 严重误判。本文以「消息」一词为例，分享实战踩坑经验。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-06-11">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-06-11">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="踩坑">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A%E6%A8%A1%E6%A3%B1%E4%B8%A4%E5%8F%AF%E7%9A%84%E6%8F%8F%E8%BF%B0-%E8%AE%B0%E5%BF%86-x3D-%E8%AF%AF%E5%88%A4"><span class="toc-text">问题：模棱两可的描述 + 记忆 &#x3D; 误判</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%B5%8B%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E5%BD%B1%E5%93%8D%E6%AF%94%E6%83%B3%E8%B1%A1%E4%B8%AD%E5%A4%A7"><span class="toc-text">实测：记忆的影响比想象中大</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E6%A1%88%E4%BE%8B%EF%BC%9A%E2%80%9D%E6%B6%88%E6%81%AF%E2%80%9D%E8%BF%99%E4%B8%AA%E8%AF%8D"><span class="toc-text">典型案例：”消息”这个词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9A%E7%94%A8%E7%B2%BE%E7%A1%AE%E6%9C%AF%E8%AF%AD%E6%9B%BF%E4%BB%A3%E6%A8%A1%E7%B3%8A%E8%AF%8D"><span class="toc-text">解决方案：用精确术语替代模糊词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 踩坑：AGENTS.md 中不要有模棱两可的词语
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/openclaw-agents-md-ambiguous-words.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-06-10T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-06-11</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E8%B8%A9%E5%9D%91/" 
+            class="post-meta-link">
+            踩坑
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>OpenClaw（小龙虾）是一个基于大模型的 AI Agent 框架，核心思路是通过 <code>AGENTS.md</code> 文件定义 Agent 的行为规则，再配合记忆系统让 Agent 在长周期任务中保持上下文连贯。</p>
+<p><code>AGENTS.md</code> 相当于给 Agent 写的操作手册——你在里面定义它该做什么、不该做什么、遇到什么情况走什么分支。听起来很直觉，但实际用下来，我踩了一个反复出现的坑：<strong>AGENTS.md 中的模棱两可的词语，会被记忆系统放大，最终导致 Agent 行为严重偏离预期。</strong></p>
+<p>这篇文章记录这个坑的具体表现、排查过程和解决方案。</p>
+<h2 id="问题：模棱两可的描述-记忆-x3D-误判"><a href="#问题：模棱两可的描述-记忆-x3D-误判" class="headerlink" title="问题：模棱两可的描述 + 记忆 &#x3D; 误判"></a>问题：模棱两可的描述 + 记忆 &#x3D; 误判</h2><p>先说结论：AGENTS.md 里的每一个词，Agent 都会当真。如果你用了一个有多种解释的词，Agent 不会来问你”你指的是哪个意思”，它会自己挑一个——而且挑的往往不是你想要的那个。</p>
+<p>这本身还能容忍，真正致命的是记忆系统的叠加效应。Agent 的记忆机制会把每次执行的上下文存下来，用于指导后续决策。当 Agent 第一次基于模糊规则做出了某个理解，这个理解会写入记忆，下一次执行时它就更加”确信”自己的理解是对的。</p>
+<p>整个链条是这样的：</p>
+<pre class="highlight"><code class="hljs">模糊规则 → 第一次随机理解 → 写入记忆 → 第二次基于记忆强化理解 → 越跑越偏<br></code></pre>
+
+<p>几轮下来，Agent 的行为可能和你最初的意图完全相反，但它自己”认为”自己严格遵守了 AGENTS.md。</p>
+<h2 id="实测：记忆的影响比想象中大"><a href="#实测：记忆的影响比想象中大" class="headerlink" title="实测：记忆的影响比想象中大"></a>实测：记忆的影响比想象中大</h2><p>我做了一个对比测试。同一份 AGENTS.md，同一个任务，分别在<strong>清空记忆</strong>和<strong>保留记忆</strong>两种状态下执行：</p>
+<ul>
+<li><strong>清空记忆</strong>：Agent 对模糊规则的理解每次都不太一样，但大致在合理范围内波动。</li>
+<li><strong>保留记忆</strong>：Agent 在前两三次执行后就锁定了一个理解，之后无论怎么调整 prompt，它都坚持那个方向。</li>
+</ul>
+<p>具体数据：在我的场景中，保留记忆时 Agent 的误判率从首次的约 30% 逐步上升到第五次执行时的 70% 以上。原因很简单——记忆里积累了越来越多基于错误理解的”成功经验”，Agent 越来越确信自己是对的。</p>
+<p>这说明一个关键问题：<strong>AGENTS.md 中的模糊表述不是”偶尔出错”的问题，而是”必然漂移”的问题。</strong>记忆系统会把小偏差滚成大偏差。</p>
+<h2 id="典型案例：”消息”这个词"><a href="#典型案例：”消息”这个词" class="headerlink" title="典型案例：”消息”这个词"></a>典型案例：”消息”这个词</h2><p>在我的项目中，AGENTS.md 里有这样一条规则：</p>
+<pre class="highlight"><code class="hljs markdown"><span class="hljs-section"># Before（模糊版本）</span><br>当收到消息时，先判断消息类型，再决定处理方式。<br>如果消息包含指令，执行对应操作。<br>处理完成后，发送消息通知用户。<br></code></pre>
+
+<p>看起来很清楚？问题是”消息”这个词在我的系统中至少有五种含义：</p>
+<table>
+<thead>
+<tr>
+<th>含义</th>
+<th>实际指向</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>飞书消息</td>
+<td>channel message</td>
+<td>IM 渠道收到的用户聊天内容</td>
+</tr>
+<tr>
+<td>系统事件</td>
+<td>system event</td>
+<td>内部组件触发的事件通知</td>
+</tr>
+<tr>
+<td>用户消息</td>
+<td>user turn</td>
+<td>对话中用户发送的一轮输入</td>
+</tr>
+<tr>
+<td>assistant 回复</td>
+<td>assistant text</td>
+<td>模型生成的回复文本</td>
+</tr>
+<tr>
+<td>推送通知</td>
+<td>push notification</td>
+<td>发给用户的异步提醒</td>
+</tr>
+</tbody></table>
+<p>Agent 第一次执行时，把”收到消息”理解成了”收到飞书消息”，把”发送消息通知用户”理解成了”发送一条 assistant text”。这个理解写入记忆后，后续所有涉及”消息”的规则都被锁定在这两个含义上。</p>
+<p>结果就是：当系统事件触发时，Agent 不处理（因为它”记得”消息 &#x3D; 飞书消息）；需要发飞书通知用户时，Agent 只生成了一段 assistant text（因为它”记得”发送消息 &#x3D; 生成回复）。</p>
+<h2 id="解决方案：用精确术语替代模糊词"><a href="#解决方案：用精确术语替代模糊词" class="headerlink" title="解决方案：用精确术语替代模糊词"></a>解决方案：用精确术语替代模糊词</h2><p>修复方法很简单——把每个模棱两可的词替换成只有一种解释的精确术语：</p>
+<pre class="highlight"><code class="hljs markdown"><span class="hljs-section"># After（精确版本）</span><br>当收到飞书群聊消息时，先判断是否包含指令前缀，再决定处理方式。<br>如果飞书群聊消息包含 <span class="hljs-code">`/`</span> 开头的指令，执行对应操作。<br>处理完成后，通过飞书回复通知用户执行结果。<br></code></pre>
+
+<p>以下是我整理的替代规则表：</p>
+<table>
+<thead>
+<tr>
+<th>模糊词</th>
+<th>可能的精确替代</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>消息</td>
+<td>飞书群聊消息 &#x2F; 系统事件 &#x2F; user turn &#x2F; assistant text &#x2F; 推送通知</td>
+</tr>
+<tr>
+<td>发送</td>
+<td>飞书回复 &#x2F; 调用 API &#x2F; 写入日志 &#x2F; 触发事件</td>
+</tr>
+<tr>
+<td>通知</td>
+<td>飞书卡片推送 &#x2F; 系统日志记录 &#x2F; webhook 回调</td>
+</tr>
+<tr>
+<td>处理</td>
+<td>解析并执行指令 &#x2F; 转发到下游服务 &#x2F; 写入数据库</td>
+</tr>
+<tr>
+<td>用户</td>
+<td>飞书群聊发起人 &#x2F; API 调用方 &#x2F; 管理后台操作者</td>
+</tr>
+</tbody></table>
+<p>通用原则：</p>
+<ol>
+<li><strong>同一个名词在文档中只能有一种含义。</strong> 如果有多种含义，给每种含义起不同的名字。</li>
+<li><strong>动词要带上执行方式。</strong> 不说”发送”，说”通过飞书回复”或”调用 XX API”。</li>
+<li><strong>写完之后做消歧测试。</strong> 把 AGENTS.md 交给另一个人（或另一个模型实例）读，让它列出每个关键词的含义。如果列出了多种可能，说明还不够精确。</li>
+<li><strong>定期清理记忆中的模糊推断。</strong> 即使 AGENTS.md 改好了，历史记忆中可能还残留着旧的错误理解，需要主动清除。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>AGENTS.md 不是写给人看的文档，是写给 Agent 执行的规则。人类可以根据上下文消歧，Agent 不会——它只会挑一个理解然后坚持到底，记忆系统还会帮它把这个理解越强化越深。</p>
+<p>一条经验：<strong>在 AGENTS.md 中，每个名词只能有一种含义，每个动词必须带上执行方式。</strong> 做到这一点，能避免大量因为”Agent 看起来正常运行但实际在做错误的事”导致的排查成本。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/06/19/jifuwen/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">祭父文 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/06/04/2026-06-04-ai-workflow-pilotdeck-openspec-gitnexus-claude/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作流 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A%E6%A8%A1%E6%A3%B1%E4%B8%A4%E5%8F%AF%E7%9A%84%E6%8F%8F%E8%BF%B0-%E8%AE%B0%E5%BF%86-x3D-%E8%AF%AF%E5%88%A4"><span class="toc-text">问题：模棱两可的描述 + 记忆 &#x3D; 误判</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%B5%8B%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E5%BD%B1%E5%93%8D%E6%AF%94%E6%83%B3%E8%B1%A1%E4%B8%AD%E5%A4%A7"><span class="toc-text">实测：记忆的影响比想象中大</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E6%A1%88%E4%BE%8B%EF%BC%9A%E2%80%9D%E6%B6%88%E6%81%AF%E2%80%9D%E8%BF%99%E4%B8%AA%E8%AF%8D"><span class="toc-text">典型案例：”消息”这个词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9A%E7%94%A8%E7%B2%BE%E7%A1%AE%E6%9C%AF%E8%AF%AD%E6%9B%BF%E4%BB%A3%E6%A8%A1%E7%B3%8A%E8%AF%8D"><span class="toc-text">解决方案：用精确术语替代模糊词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A%E6%A8%A1%E6%A3%B1%E4%B8%A4%E5%8F%AF%E7%9A%84%E6%8F%8F%E8%BF%B0-%E8%AE%B0%E5%BF%86-x3D-%E8%AF%AF%E5%88%A4"><span class="toc-text">问题：模棱两可的描述 + 记忆 &#x3D; 误判</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%B5%8B%EF%BC%9A%E8%AE%B0%E5%BF%86%E7%9A%84%E5%BD%B1%E5%93%8D%E6%AF%94%E6%83%B3%E8%B1%A1%E4%B8%AD%E5%A4%A7"><span class="toc-text">实测：记忆的影响比想象中大</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E6%A1%88%E4%BE%8B%EF%BC%9A%E2%80%9D%E6%B6%88%E6%81%AF%E2%80%9D%E8%BF%99%E4%B8%AA%E8%AF%8D"><span class="toc-text">典型案例：”消息”这个词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88%EF%BC%9A%E7%94%A8%E7%B2%BE%E7%A1%AE%E6%9C%AF%E8%AF%AD%E6%9B%BF%E4%BB%A3%E6%A8%A1%E7%B3%8A%E8%AF%8D"><span class="toc-text">解决方案：用精确术语替代模糊词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

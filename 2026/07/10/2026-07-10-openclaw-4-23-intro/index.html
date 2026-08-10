@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 4.23 发布：当图像生成成为一等公民</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 4.23 发布：当图像生成成为一等公民">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/10/2026-07-10-openclaw-4-23-intro/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="OpenClaw v2026.4.23 版本全面解析——图像生成原生化、子代理 Forked Context、按调用超时控制，以及大量安全加固。这是一次「打补丁也打底气」的 Operator Release。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%EF%BC%9A%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%BB%E3%80%8D%E5%88%B0%E3%80%8C%E7%94%BB%E5%BE%97%E5%A5%BD%E3%80%8D"><span class="toc-text">图像生成：从「能画」到「画得好」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Forked-Context%EF%BC%9A%E5%AD%90%E4%BB%A3%E7%90%86%E6%9C%89%E4%BA%86%E3%80%8C%E8%AE%B0%E5%BF%86%E7%BB%A7%E6%89%BF%E3%80%8D"><span class="toc-text">Forked Context：子代理有了「记忆继承」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E8%B0%83%E7%94%A8%E8%B6%85%E6%97%B6%EF%BC%9A%E9%95%BF%E4%BB%BB%E5%8A%A1%E4%B8%8D%E5%86%8D%E8%A2%AB%E8%AF%AF%E6%9D%80"><span class="toc-text">按调用超时：长任务不再被误杀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%EF%BC%9A%E4%BA%8C%E5%8D%81%E5%A4%9A%E9%A1%B9%E4%BF%AE%E8%A1%A5%EF%BC%8C%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%A8%E3%80%8D%E5%88%B0%E3%80%8C%E6%95%A2%E7%94%A8%E3%80%8D"><span class="toc-text">安全：二十多项修补，从「能用」到「敢用」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 4.23 发布：当图像生成成为一等公民
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-10-openclaw-4-23-intro.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-09T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>OpenClaw 最近发布了 v2026.4.23 版本。官方给这次更新的定位很有意思——「Operator Release」。不是什么惊天动地的单一大功能，而是在图像生成、子代理协作、安全治理这些维度上全线收紧螺丝。用个比喻：不是给你换了个新引擎，而是把整车的底盘、转向、刹车都调校了一遍。</p>
+<h2 id="图像生成：从「能画」到「画得好」"><a href="#图像生成：从「能画」到「画得好」" class="headerlink" title="图像生成：从「能画」到「画得好」"></a>图像生成：从「能画」到「画得好」</h2><p>这个版本最显眼的变化，就是把图像生成拉到了第一梯队。过去你用 OpenClaw 画图，多少有些凑合——要么配 Key 麻烦，要么参数不可控。4.23 做了三件事：</p>
+<p><strong>Codex OAuth 打通。</strong> OpenAI 的 <code>gpt-image-2</code> 模型现在可以通过 Codex OAuth 直接调用，不需要你再去单独申请 OpenAI API Key。对个人开发者来说，这一步省掉的是「注册-绑卡-拿 Key-配环境」一整条链路。</p>
+<p><strong>OpenRouter 也支持生图了。</strong> 配好 OpenRouter Key，你就能用 <code>image_generate</code> 工具画图，连参考图编辑都支持。多供应商自由切换，不再被单一接口绑死。</p>
+<p><strong>参数更精细。</strong> 质量（quality）、输出格式（format）、背景行为、审核等级——这些原本藏在各家 API 里的选项，现在通过 <code>image_generate</code> 统一暴露出来。Agent 画图不再是开盲盒。</p>
+<h2 id="Forked-Context：子代理有了「记忆继承」"><a href="#Forked-Context：子代理有了「记忆继承」" class="headerlink" title="Forked Context：子代理有了「记忆继承」"></a>Forked Context：子代理有了「记忆继承」</h2><p><code>session_spawn</code> 是 OpenClaw 里用来创建子代理的机制。之前的默认行为是完全隔离——子代理跟父代理干干净净，什么上下文都不带。这保证了安全和确定性，但有时候你也真的需要「你帮我去查一下，回来告诉我」。</p>
+<p>4.23 引入了一个可选开关：<strong>Forked Context</strong>。父代理可以选择把当前对话的完整 transcript 传给子代理。就像你叫同事帮忙，可以摊开整个会议纪要给他看，而不是让他从零开始猜。</p>
+<p>默认仍然是隔离的，这个设计很克制。安全性不妥协，灵活性按需打开。</p>
+<h2 id="按调用超时：长任务不再被误杀"><a href="#按调用超时：长任务不再被误杀" class="headerlink" title="按调用超时：长任务不再被误杀"></a>按调用超时：长任务不再被误杀</h2><p>你有没有遇到过这种场景：Agent 在生图或者生成视频，处理到一半被全局超时一刀切了？4.23 解决了这个问题。</p>
+<p>图像、视频、音乐、TTS 这些生成工具，现在支持 <strong>per-call 的 <code>timeoutMs</code></strong> 参数。画张图可能需要 30 秒，那就单独给图设 30 秒超时；全局超时保持 10 秒不动。粒度更细，长任务和短请求互不干扰。</p>
+<h2 id="安全：二十多项修补，从「能用」到「敢用」"><a href="#安全：二十多项修补，从「能用」到「敢用」" class="headerlink" title="安全：二十多项修补，从「能用」到「敢用」"></a>安全：二十多项修补，从「能用」到「敢用」</h2><p>这次更新的安全 Changelog 长度几乎是功能 Changelog 的两倍。不逐一展开了，挑几个有代表性的说：</p>
+<ul>
+<li><strong>Gateway 配置白名单化</strong>：Agent 能改的配置从「除了禁用手动列的都允许」变成了「只有白名单里的才允许」。安全边界的方向性转变。</li>
+<li><strong>配对加固</strong>：明文配对流量现在限制在私有 IP 和回环地址。<code>.local</code> 主机名不再被当成「安全」。</li>
+<li><strong>Teams &#x2F; Discord &#x2F; WhatsApp</strong> 各自修了一轮注入和权限绕过的洞。尤其是 WhatsApp 的联系人和位置字段，现在以隔离 JSON 形式渲染，堵住了通过这些字段注入的路径。</li>
+<li><strong>审批显式启用</strong>：以前只要配置了审批人，审批就自动生效；现在需要显式打开，避免「我以为没开但其实开了」的尴尬。</li>
+</ul>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>OpenClaw 4.23 不是那种让你尖叫的版本。但它是一个让人放心的版本——图像生成用起来更顺、子代理协作更灵活、安全边界更清晰。如果你在用图像工作流、多供应商、子代理，或者在生产环境部署，这个版本值得升级。</p>
+<hr>
+<p><strong>预告：</strong> 我计划开一整套 <strong>「OpenClaw 源码解析」</strong> 系列文章。从整体架构讲起，到插件机制、消息路由、子代理调度、安全沙箱——一步步把 OpenClaw 的内核拆开看。如果你对 AI Agent 的工程实现感兴趣，可以留意后续更新，预计很快上线。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-7-compaction/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑦：Compaction 完整拆解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-source-code-analysis-3-agent-loop/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ③：runEmbeddedPiAgent 逐行走读 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%EF%BC%9A%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%BB%E3%80%8D%E5%88%B0%E3%80%8C%E7%94%BB%E5%BE%97%E5%A5%BD%E3%80%8D"><span class="toc-text">图像生成：从「能画」到「画得好」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Forked-Context%EF%BC%9A%E5%AD%90%E4%BB%A3%E7%90%86%E6%9C%89%E4%BA%86%E3%80%8C%E8%AE%B0%E5%BF%86%E7%BB%A7%E6%89%BF%E3%80%8D"><span class="toc-text">Forked Context：子代理有了「记忆继承」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E8%B0%83%E7%94%A8%E8%B6%85%E6%97%B6%EF%BC%9A%E9%95%BF%E4%BB%BB%E5%8A%A1%E4%B8%8D%E5%86%8D%E8%A2%AB%E8%AF%AF%E6%9D%80"><span class="toc-text">按调用超时：长任务不再被误杀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%EF%BC%9A%E4%BA%8C%E5%8D%81%E5%A4%9A%E9%A1%B9%E4%BF%AE%E8%A1%A5%EF%BC%8C%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%A8%E3%80%8D%E5%88%B0%E3%80%8C%E6%95%A2%E7%94%A8%E3%80%8D"><span class="toc-text">安全：二十多项修补，从「能用」到「敢用」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%EF%BC%9A%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%BB%E3%80%8D%E5%88%B0%E3%80%8C%E7%94%BB%E5%BE%97%E5%A5%BD%E3%80%8D"><span class="toc-text">图像生成：从「能画」到「画得好」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Forked-Context%EF%BC%9A%E5%AD%90%E4%BB%A3%E7%90%86%E6%9C%89%E4%BA%86%E3%80%8C%E8%AE%B0%E5%BF%86%E7%BB%A7%E6%89%BF%E3%80%8D"><span class="toc-text">Forked Context：子代理有了「记忆继承」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%89%E8%B0%83%E7%94%A8%E8%B6%85%E6%97%B6%EF%BC%9A%E9%95%BF%E4%BB%BB%E5%8A%A1%E4%B8%8D%E5%86%8D%E8%A2%AB%E8%AF%AF%E6%9D%80"><span class="toc-text">按调用超时：长任务不再被误杀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%EF%BC%9A%E4%BA%8C%E5%8D%81%E5%A4%9A%E9%A1%B9%E4%BF%AE%E8%A1%A5%EF%BC%8C%E4%BB%8E%E3%80%8C%E8%83%BD%E7%94%A8%E3%80%8D%E5%88%B0%E3%80%8C%E6%95%A2%E7%94%A8%E3%80%8D"><span class="toc-text">安全：二十多项修补，从「能用」到「敢用」</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

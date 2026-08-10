@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>用三个 AI Agent 替代一个：Harness 架构实践</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="用三个 AI Agent 替代一个：Harness 架构实践">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/05/27/harness-three-agent-architecture/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="把 Planner、Generator、Evaluator 拆成三个独立 Agent，通过文件通信，让评估真正独立于实现。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-05-27">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-05-27">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="软件工程">
+        
+          <meta 
+            property="og:article:tag" 
+            content="架构设计">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%8B%86%E6%88%90%E4%B8%89%E4%B8%AA-Agent"><span class="toc-text">为什么要拆成三个 Agent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E8%A7%92%E8%89%B2%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-text">三个角色的分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE"><span class="toc-text">文件通信协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E7%BB%B4%E8%AF%84%E5%88%86%E6%A0%87%E5%87%86"><span class="toc-text">四维评分标准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%AE%BD%E5%AE%B9%E6%8C%87%E4%BB%A4"><span class="toc-text">反宽容指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="toc-text">版本管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-Reset-%E7%AD%96%E7%95%A5"><span class="toc-text">Context Reset 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E5%8F%82%E8%80%83"><span class="toc-text">成本参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E8%BE%B9%E7%95%8C"><span class="toc-text">适用边界</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      用三个 AI Agent 替代一个：Harness 架构实践
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/harness-three-agent-architecture.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-05-26T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-05-27</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" 
+            class="post-meta-link">
+            软件工程
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/" 
+            class="post-meta-link">
+            架构设计
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本文记录了一次把 Anthropic Harness 架构落地到实际项目的过程。核心思路：把”规划、实现、评估”三件事拆给三个独立的 Agent，通过文件通信，让评估真正独立于实现。</p>
+</blockquote>
+<h2 id="为什么要拆成三个-Agent"><a href="#为什么要拆成三个-Agent" class="headerlink" title="为什么要拆成三个 Agent"></a>为什么要拆成三个 Agent</h2><p>单 Agent 做完整流程有一个根本问题：<strong>它既是运动员，又是裁判</strong>。</p>
+<p>Generator 写完代码，自评”没问题”，然后用户发现一堆 bug。这不是模型能力的问题，而是结构问题——同一个上下文里既有实现细节，又要做客观评估，两者天然冲突。</p>
+<p>Anthropic 在他们的 Harness 论文里给出了一个解法：把 Generator 和 Evaluator 的上下文完全隔离。Evaluator 不知道代码怎么写的，不知道 Generator 遇到了什么困难——它只看到最终产品，像真实用户一样操作和评判。</p>
+<h2 id="三个角色的分工"><a href="#三个角色的分工" class="headerlink" title="三个角色的分工"></a>三个角色的分工</h2><pre class="highlight"><code class="hljs crmsh">Planner ──<span class="hljs-keyword">spec</span>.md──&gt; 项目目录 <span class="hljs-tag">&lt;──feedback.md── Evaluator</span><br><span class="hljs-tag">                         │                         ↑</span><br><span class="hljs-tag">                         └──────&gt;</span> Generator ───────┘<br>                              (读 <span class="hljs-keyword">spec</span> + feedback<br>                               写代码 + 更新组件清单)<br></code></pre>
+
+<p><strong>Planner</strong>：把 1-4 句话的需求扩展成完整的产品规格（spec.md）。只做产品设计，不写代码。</p>
+<p><strong>Generator</strong>：读 spec.md 和 feedback.md，写代码。每轮构建后判断策略：</p>
+<ul>
+<li>上轮总分 ≥ 5.0 且趋势上升 → <strong>REFINE</strong>（在现有代码基础上修复）</li>
+<li>上轮总分 &lt; 5.0 或连续两轮未提升 → <strong>PIVOT</strong>（推翻重来）</li>
+</ul>
+<p><strong>Evaluator</strong>：用 Playwright 实际操作页面，按四维标准打分，产出 feedback.md。<strong>绝对不读代码</strong>，只看产品。</p>
+<h2 id="文件通信协议"><a href="#文件通信协议" class="headerlink" title="文件通信协议"></a>文件通信协议</h2><p>三个 Agent 通过 NFS 共享目录通信，核心文件：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>谁写</th>
+<th>谁读</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>spec.md</code></td>
+<td>Planner</td>
+<td>Generator + Evaluator</td>
+<td>产品规格，版本归档</td>
+</tr>
+<tr>
+<td><code>feedback.md</code></td>
+<td>Evaluator</td>
+<td>Generator</td>
+<td>每轮覆盖写入</td>
+</tr>
+<tr>
+<td><code>score_history.md</code></td>
+<td>Evaluator</td>
+<td>Generator + Evaluator</td>
+<td>每轮追加，用于判断趋势</td>
+</tr>
+<tr>
+<td><code>progress.md</code></td>
+<td>Generator</td>
+<td>Generator</td>
+<td>每轮构建状态</td>
+</tr>
+<tr>
+<td><code>project_summary.md</code></td>
+<td>Evaluator</td>
+<td>Planner + Generator</td>
+<td>PASS 后更新，跨版本记忆</td>
+</tr>
+<tr>
+<td><code>component_registry.md</code></td>
+<td>Generator</td>
+<td>Generator</td>
+<td>可复用组件清单</td>
+</tr>
+</tbody></table>
+<p>关键约束：</p>
+<ul>
+<li>Evaluator 绝对不读 <code>backend/</code>、<code>frontend/</code> 代码目录</li>
+<li>Generator 绝对不读 Evaluator 的对话历史</li>
+<li>所有角色只读 <code>current</code> 版本的文件</li>
+</ul>
+<h2 id="四维评分标准"><a href="#四维评分标准" class="headerlink" title="四维评分标准"></a>四维评分标准</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>权重</th>
+<th>关注点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Design Quality</td>
+<td>30%</td>
+<td>颜色&#x2F;字体&#x2F;布局是否构成统一的视觉语言</td>
+</tr>
+<tr>
+<td>Originality</td>
+<td>20%</td>
+<td>是否有明显的设计意图，而非模板默认值</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>25%</td>
+<td>排版层级、间距一致性、对比度、响应式</td>
+</tr>
+<tr>
+<td>Functionality</td>
+<td>25%</td>
+<td>用户能否完成核心任务</td>
+</tr>
+</tbody></table>
+<p>通过线：加权总分 ≥ 7.0，且任一维度不低于 3.0。</p>
+<h2 id="反宽容指令"><a href="#反宽容指令" class="headerlink" title="反宽容指令"></a>反宽容指令</h2><p>这是整个方案里最重要的部分，写进 Evaluator 的 SKILL.md：</p>
+<ol>
+<li><strong>不要说服自己问题不重要。</strong> 如果你注意到了一个问题，它就是问题。</li>
+<li><strong>每个按钮都必须实际点击验证。</strong> 不点 &#x3D; 没测 &#x3D; 评估失败。</li>
+<li><strong>浅层测试 &#x3D; 失败的评估。</strong> 只看首页就打分是不可接受的。</li>
+<li><strong>宁可误报也不要漏报。</strong></li>
+<li><strong>7.0 是通过线，不是起步分。</strong> 大多数首轮产出应该在 4.0-6.0 分。</li>
+<li><strong>8.0 分以上需要论证。</strong></li>
+<li><strong>不要因为”已经比上次好了”就放松标准。</strong></li>
+</ol>
+<h2 id="版本管理"><a href="#版本管理" class="headerlink" title="版本管理"></a>版本管理</h2><p>一个项目会经历多个版本迭代。目录结构：</p>
+<pre class="highlight"><code class="hljs jboss-cli"><span class="hljs-string">/harness/</span>&#123;project_name&#125;/<br>├── project_summary.md    <span class="hljs-comment"># 产品当前状态（滚动更新）</span><br>├── component_registry.md <span class="hljs-comment"># 可复用组件清单</span><br>├── versions.json         <span class="hljs-comment"># 版本索引</span><br>├── current -&gt; v2/        <span class="hljs-comment"># 软链接指向当前版本</span><br>├── v1/                   <span class="hljs-comment"># 归档，不可修改</span><br>│   ├── spec.md<br>│   ├── feedback.md<br>│   └── score_<span class="hljs-keyword">history</span>.md<br>└── v2/<br>    └── <span class="hljs-string">...</span><br></code></pre>
+
+<p><code>project_summary.md</code> 是跨版本记忆的核心：Planner 写新版本 spec 时，从这里了解产品当前状态；Generator 开始新版本时，从这里知道已有什么可以复用。</p>
+<h2 id="Context-Reset-策略"><a href="#Context-Reset-策略" class="headerlink" title="Context Reset 策略"></a>Context Reset 策略</h2><p>Evaluator 每轮强制清 session，确保用全新上下文评估，不受上一轮评分记忆的影响。Generator 按需清 session：执行 PIVOT 策略时清，REFINE 时可以保留。</p>
+<p>这对应 Anthropic 原文的表述：<em>A reset provides a clean slate, at the cost of the handoff artifact having enough state for the next agent to pick up the work cleanly.</em></p>
+<h2 id="成本参考"><a href="#成本参考" class="headerlink" title="成本参考"></a>成本参考</h2><p>参考 Anthropic 的实测数据（DAW 音乐工作站，Opus 4.6）：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间</th>
+<th>成本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Planner</td>
+<td>4.7 min</td>
+<td>$0.46</td>
+</tr>
+<tr>
+<td>Build Round 1</td>
+<td>2 hr 7 min</td>
+<td>$71.08</td>
+</tr>
+<tr>
+<td>QA Round 1</td>
+<td>8.8 min</td>
+<td>$3.24</td>
+</tr>
+<tr>
+<td>Build Round 2</td>
+<td>1 hr 2 min</td>
+<td>$36.89</td>
+</tr>
+<tr>
+<td>QA Round 2</td>
+<td>6.8 min</td>
+<td>$3.09</td>
+</tr>
+<tr>
+<td>Build Round 3</td>
+<td>10.9 min</td>
+<td>$5.88</td>
+</tr>
+<tr>
+<td>QA Round 3</td>
+<td>9.6 min</td>
+<td>$4.06</td>
+</tr>
+<tr>
+<td><strong>合计</strong></td>
+<td><strong>3 hr 50 min</strong></td>
+<td><strong>$124.70</strong></td>
+</tr>
+</tbody></table>
+<p>三轮 QA 合计 $10.39，只占总成本 8%。加一个独立 Evaluator，成本增量不到 10%，但它每轮都抓到了 Generator 自评遗漏的实际问题。</p>
+<h2 id="适用边界"><a href="#适用边界" class="headerlink" title="适用边界"></a>适用边界</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>简单页面、单组件修改</td>
+<td>不用 harness，码仔自测够</td>
+</tr>
+<tr>
+<td>中等复杂度看板&#x2F;dashboard</td>
+<td>可选</td>
+</tr>
+<tr>
+<td>完整前后端分离重构</td>
+<td>推荐</td>
+</tr>
+</tbody></table>
+<p>Evaluator 的价值取决于任务是否在模型能力边界上。功能点越多、交互越复杂，独立评估的价值越高。</p>
+<hr>
+<p>本质上，这是把 Anthropic 说的 context reset 做成了结构化实现——不是在同一个 Agent 里手动清空上下文，而是切换到一个全新的、干净的 Agent，通过文件传递状态。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/05/29/pilotsdeck-openbmb-ai-agent/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/05/14/2026-05-14-11-skills-recommendation/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">装了上百个 Skill，我最常用的是这 11 个 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%8B%86%E6%88%90%E4%B8%89%E4%B8%AA-Agent"><span class="toc-text">为什么要拆成三个 Agent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E8%A7%92%E8%89%B2%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-text">三个角色的分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE"><span class="toc-text">文件通信协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E7%BB%B4%E8%AF%84%E5%88%86%E6%A0%87%E5%87%86"><span class="toc-text">四维评分标准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%AE%BD%E5%AE%B9%E6%8C%87%E4%BB%A4"><span class="toc-text">反宽容指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="toc-text">版本管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-Reset-%E7%AD%96%E7%95%A5"><span class="toc-text">Context Reset 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E5%8F%82%E8%80%83"><span class="toc-text">成本参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E8%BE%B9%E7%95%8C"><span class="toc-text">适用边界</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%8B%86%E6%88%90%E4%B8%89%E4%B8%AA-Agent"><span class="toc-text">为什么要拆成三个 Agent</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E8%A7%92%E8%89%B2%E7%9A%84%E5%88%86%E5%B7%A5"><span class="toc-text">三个角色的分工</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE"><span class="toc-text">文件通信协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E7%BB%B4%E8%AF%84%E5%88%86%E6%A0%87%E5%87%86"><span class="toc-text">四维评分标准</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%AE%BD%E5%AE%B9%E6%8C%87%E4%BB%A4"><span class="toc-text">反宽容指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86"><span class="toc-text">版本管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Context-Reset-%E7%AD%96%E7%95%A5"><span class="toc-text">Context Reset 策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%90%E6%9C%AC%E5%8F%82%E8%80%83"><span class="toc-text">成本参考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%82%E7%94%A8%E8%BE%B9%E7%95%8C"><span class="toc-text">适用边界</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

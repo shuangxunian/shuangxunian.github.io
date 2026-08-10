@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》第二部分第一章：关于 this</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》第二部分第一章：关于 this">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-this-introduction-part-2-chapter-1/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="建立 this 的正确心智模型：它不是函数自身，也不是词法作用域；普通函数的 this 由调用形式决定，箭头函数则是例外。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="this">
+        
+          <meta 
+            property="og:article:tag" 
+            content="对象">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">this 解决的是什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%B8%80%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E8%87%AA%E8%BA%AB"><span class="toc-text">误区一：this 不是函数自身</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%BA%8C%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E7%9A%84%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">误区二：this 不是函数的词法作用域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E4%B8%8D%E2%80%9C%E5%B1%9E%E4%BA%8E%E2%80%9D%E5%AF%B9%E8%B1%A1"><span class="toc-text">函数不“属于”对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84-this-%E5%8F%96%E5%86%B3%E4%BA%8E%E8%B0%83%E7%94%A8%E5%BD%A2%E5%BC%8F"><span class="toc-text">普通函数的 this 取决于调用形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%98%AF%E8%AF%8D%E6%B3%95-this-%E7%9A%84%E4%BE%8B%E5%A4%96"><span class="toc-text">箭头函数是词法 this 的例外</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E9%87%8D%E5%A4%8D%E7%9A%84%E5%88%86%E6%9E%90%E6%AD%A5%E9%AA%A4"><span class="toc-text">一个可重复的分析步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E6%8F%90%E5%8F%96%E6%96%B9%E6%B3%95%E5%90%8E%E4%BC%9A%E6%80%8E%E6%A0%B7"><span class="toc-text">练习：提取方法后会怎样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》第二部分第一章：关于 this
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-this-introduction-part-2-chapter-1.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/this/" 
+            class="post-meta-link">
+            this
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%AF%B9%E8%B1%A1/" 
+            class="post-meta-link">
+            对象
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>第一部分“作用域与闭包”已结束。本章进入第二部分“<code>this</code> 和对象原型”，先建立一个前提：<code>this</code> 与词法作用域是两套独立机制。后续章节会系统分析具体绑定规则与对象原型。</p>
+</blockquote>
+<h2 id="this-解决的是什么问题"><a href="#this-解决的是什么问题" class="headerlink" title="this 解决的是什么问题"></a><code>this</code> 解决的是什么问题</h2><p><code>this</code> 让同一个函数可以根据调用时提供的接收者（receiver）操作不同对象，而不需要为每个对象复制一份函数。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">identify</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>.<span class="hljs-title function_">toUpperCase</span>();<br>&#125;<br><br><span class="hljs-keyword">const</span> author = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Kyle&quot;</span> &#125;;<br><span class="hljs-keyword">const</span> reader = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Reader&quot;</span> &#125;;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(identify.<span class="hljs-title function_">call</span>(author)); <span class="hljs-comment">// &quot;KYLE&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(identify.<span class="hljs-title function_">call</span>(reader)); <span class="hljs-comment">// &quot;READER&quot;</span><br></code></pre>
+
+<p><code>identify</code> 是同一个函数值；<code>call()</code> 为这两次调用显式指定了不同的 <code>this</code> 值。把函数写成对象方法时，也可以由调用形式提供接收者：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> user = &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>,<br>  identify,<br>&#125;;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(user.<span class="hljs-title function_">identify</span>()); <span class="hljs-comment">// &quot;ADA&quot;</span><br></code></pre>
+
+<p>这是一种表达“由谁来执行这个行为”的方式。它并不总比显式参数更好：无状态工具函数、数据转换和跨对象计算通常使用参数更直观。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">identifyByName</span>(<span class="hljs-params">user</span>) &#123;<br>  <span class="hljs-keyword">return</span> user.<span class="hljs-property">name</span>.<span class="hljs-title function_">toUpperCase</span>();<br>&#125;<br><br><span class="hljs-title function_">identifyByName</span>(author); <span class="hljs-comment">// &quot;KYLE&quot;</span><br></code></pre>
+
+<p>选择标准不是代码是否更短，而是调用方是否确实是行为的自然接收者，以及函数被提取、组合或异步传递后是否仍能保持清晰。</p>
+<h2 id="误区一：this-不是函数自身"><a href="#误区一：this-不是函数自身" class="headerlink" title="误区一：this 不是函数自身"></a>误区一：<code>this</code> 不是函数自身</h2><p>函数也是对象，可以拥有属性，但普通调用不会自动让 <code>this</code> 指向当前函数：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">trackCall</span>(<span class="hljs-params"></span>) &#123;<br>  trackCall.<span class="hljs-property">count</span> += <span class="hljs-number">1</span>;<br>&#125;<br><br>trackCall.<span class="hljs-property">count</span> = <span class="hljs-number">0</span>;<br><span class="hljs-title function_">trackCall</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(trackCall.<span class="hljs-property">count</span>); <span class="hljs-comment">// 1</span><br></code></pre>
+
+<p>这里能计数，是因为函数体通过词法标识符 <code>trackCall</code> 访问了函数对象属性；不是因为 <code>this</code> 指向 <code>trackCall</code>。下面这种写法不可靠：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">trackCall</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">count</span> += <span class="hljs-number">1</span>;<br>&#125;<br></code></pre>
+
+<p>当以 <code>trackCall()</code> 普通调用时，严格模式中的 <code>this</code> 为 <code>undefined</code>，访问 <code>this.count</code> 会抛出 <code>TypeError</code>；非严格传统脚本中它通常指向全局对象，反而可能污染全局状态。</p>
+<p>也不要使用已废弃、严格模式中禁止的 <code>arguments.callee</code> 来引用当前函数。若状态确实属于函数的某个实例或流程，通常应使用闭包、对象字段或 <code>class</code> 私有字段表达所有权：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createTracker</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> count = <span class="hljs-number">0</span>;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> ++count;<br>&#125;<br></code></pre>
+
+<h2 id="误区二：this-不是函数的词法作用域"><a href="#误区二：this-不是函数的词法作用域" class="headerlink" title="误区二：this 不是函数的词法作用域"></a>误区二：<code>this</code> 不是函数的词法作用域</h2><p>词法作用域通过标识符名称查找，取决于代码写在哪里；<code>this</code> 是函数调用时得到的特殊绑定。两者不能互相替代。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">readValue</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> value = <span class="hljs-number">2</span>;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span>;<br>&#125;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(readValue.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">value</span>: <span class="hljs-number">99</span> &#125;)); <span class="hljs-comment">// 99</span><br></code></pre>
+
+<p><code>this.value</code> 是读取调用者提供对象的属性，和局部变量 <code>value</code> 没有关系。若要读取局部变量，直接写 <code>value</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">readLocalValue</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> value = <span class="hljs-number">2</span>;<br>  <span class="hljs-keyword">return</span> value;<br>&#125;<br></code></pre>
+
+<p>同样，嵌套函数也不会因为写在外层函数中，就自动把 <code>this</code> 指向外层调用的 <code>this</code>。普通嵌套函数有自己的调用方式；箭头函数才会词法地继承外层 <code>this</code>。</p>
+<h2 id="函数不“属于”对象"><a href="#函数不“属于”对象" class="headerlink" title="函数不“属于”对象"></a>函数不“属于”对象</h2><p>下面的对象字面量把一个函数值放在 <code>user.identify</code> 属性中，但函数本身并没有永久绑定到 <code>user</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> user = &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>,<br>  <span class="hljs-title function_">identify</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>;<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> detachedIdentify = user.<span class="hljs-property">identify</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(detachedIdentify.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Grace&quot;</span> &#125;)); <span class="hljs-comment">// &quot;Grace&quot;</span><br></code></pre>
+
+<p><code>user.identify()</code> 的调用形式会让普通函数的 <code>this</code> 指向 <code>user</code>；一旦提取为 <code>detachedIdentify</code>，再怎样调用它就决定了新的 <code>this</code>。这解释了回调中常见的 “<code>this</code> 丢失” 问题：不是 <code>this</code> 消失，而是调用形式变化了。</p>
+<h2 id="普通函数的-this-取决于调用形式"><a href="#普通函数的-this-取决于调用形式" class="headerlink" title="普通函数的 this 取决于调用形式"></a>普通函数的 <code>this</code> 取决于调用形式</h2><p>对普通函数而言，<code>this</code> 绑定在每次调用时确定。下一章会逐一展开，先记住这张导航表：</p>
+<table>
+<thead>
+<tr>
+<th>调用形式</th>
+<th>普通函数的典型 <code>this</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fn()</code></td>
+<td>严格模式为 <code>undefined</code>；非严格传统脚本通常为全局对象</td>
+</tr>
+<tr>
+<td><code>obj.fn()</code></td>
+<td><code>obj</code></td>
+</tr>
+<tr>
+<td><code>fn.call(context)</code> &#x2F; <code>fn.apply(context)</code></td>
+<td><code>context</code></td>
+</tr>
+<tr>
+<td><code>new Fn()</code></td>
+<td>新创建的实例对象（除非构造函数显式返回其他对象）</td>
+</tr>
+<tr>
+<td>已用 <code>fn.bind(context)</code> 创建的函数</td>
+<td>绑定时指定的 <code>context</code></td>
+</tr>
+</tbody></table>
+<p>表中的“典型”很重要：可选链调用、代理、宿主 API、严格模式和绑定函数都可能引入细节。分析时先看<strong>函数如何被调用</strong>，而不是看它在哪里声明、谁的属性名引用了它。</p>
+<h2 id="箭头函数是词法-this-的例外"><a href="#箭头函数是词法-this-的例外" class="headerlink" title="箭头函数是词法 this 的例外"></a>箭头函数是词法 <code>this</code> 的例外</h2><p>箭头函数没有自己的 <code>this</code>。它从创建位置的外层作用域取得 <code>this</code>，之后不能由 <code>call</code>、<code>apply</code> 或 <code>bind</code> 改写。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">createLogger</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>;<br>&#125;<br><br><span class="hljs-keyword">const</span> logger = createLogger.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span> &#125;);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(logger.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Grace&quot;</span> &#125;)); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p>这里 <code>createLogger</code> 通过 <code>call</code> 得到 <code>&#123; name: &quot;Ada&quot; &#125;</code>；返回的箭头函数词法捕获该 <code>this</code>。第二次 <code>call</code> 不会改变箭头函数的结果。</p>
+<p>箭头函数很适合需要保留外层 <code>this</code> 的回调，但不适合需要调用者动态提供 <code>this</code> 的对象方法、原型方法或部分 DOM 事件处理器。把所有函数都改成箭头函数，和把所有函数都 <code>bind</code> 一样，会掩盖真实的接收者语义。</p>
+<h2 id="一个可重复的分析步骤"><a href="#一个可重复的分析步骤" class="headerlink" title="一个可重复的分析步骤"></a>一个可重复的分析步骤</h2><p>遇到 <code>this</code> 问题时，按下面顺序判断：</p>
+<ol>
+<li>当前执行的是普通函数、箭头函数，还是已绑定函数？</li>
+<li>对普通函数，调用表达式是什么：独立调用、属性调用、<code>call</code>&#x2F;<code>apply</code>、<code>bind</code> 还是 <code>new</code>？</li>
+<li>函数是否被提取成回调，从而改变了调用形式？</li>
+<li>代码是否处于严格模式或 ES 模块中？这会影响默认绑定。</li>
+</ol>
+<p>不要从函数“属于谁”、定义在哪个对象里，或外层有哪些局部变量开始猜测。</p>
+<h2 id="练习：提取方法后会怎样"><a href="#练习：提取方法后会怎样" class="headerlink" title="练习：提取方法后会怎样"></a>练习：提取方法后会怎样</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> profile = &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>,<br>  <span class="hljs-title function_">getName</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>;<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> getName = profile.<span class="hljs-property">getName</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(profile.<span class="hljs-title function_">getName</span>());<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(getName.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Grace&quot;</span> &#125;));<br></code></pre>
+
+<details>
+<summary>查看解析</summary>
+
+<p>依次输出 <code>&quot;Ada&quot;</code> 和 <code>&quot;Grace&quot;</code>。</p>
+<p>第一次是 <code>profile.getName()</code> 属性调用，普通函数的 <code>this</code> 为 <code>profile</code>。第二次通过 <code>call()</code> 显式指定了 <code>&#123; name: &quot;Grace&quot; &#125;</code>。函数值相同，区别完全在调用形式。</p>
+</details>
+
+<h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><ol>
+<li><code>this</code> 让同一个行为函数可以面向不同接收者复用，但显式参数在无状态场景常更清晰。</li>
+<li><code>this</code> 不是函数自身；函数属性和函数的 <code>this</code> 绑定是两件事。</li>
+<li><code>this</code> 不是词法作用域，不能用来读取局部变量或调用者的局部变量。</li>
+<li>普通函数的 <code>this</code> 通常由调用形式决定；函数从对象属性中被提取后，调用形式会改变。</li>
+<li>箭头函数没有自己的 <code>this</code>，会词法继承创建位置外层的 <code>this</code>。</li>
+<li>分析 <code>this</code> 时，先识别函数类型和调用表达式，再考虑严格模式等边界条件。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this">MDN：this</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions">MDN：箭头函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call">MDN：Function.prototype.call()</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-scope-and-closures-appendices/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》附录：动态作用域、块作用域与箭头函数 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-this-binding-rules-part-2-chapter-2/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第二章：this 全面解析 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">this 解决的是什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%B8%80%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E8%87%AA%E8%BA%AB"><span class="toc-text">误区一：this 不是函数自身</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%BA%8C%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E7%9A%84%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">误区二：this 不是函数的词法作用域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E4%B8%8D%E2%80%9C%E5%B1%9E%E4%BA%8E%E2%80%9D%E5%AF%B9%E8%B1%A1"><span class="toc-text">函数不“属于”对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84-this-%E5%8F%96%E5%86%B3%E4%BA%8E%E8%B0%83%E7%94%A8%E5%BD%A2%E5%BC%8F"><span class="toc-text">普通函数的 this 取决于调用形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%98%AF%E8%AF%8D%E6%B3%95-this-%E7%9A%84%E4%BE%8B%E5%A4%96"><span class="toc-text">箭头函数是词法 this 的例外</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E9%87%8D%E5%A4%8D%E7%9A%84%E5%88%86%E6%9E%90%E6%AD%A5%E9%AA%A4"><span class="toc-text">一个可重复的分析步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E6%8F%90%E5%8F%96%E6%96%B9%E6%B3%95%E5%90%8E%E4%BC%9A%E6%80%8E%E6%A0%B7"><span class="toc-text">练习：提取方法后会怎样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#this-%E8%A7%A3%E5%86%B3%E7%9A%84%E6%98%AF%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">this 解决的是什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%B8%80%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E8%87%AA%E8%BA%AB"><span class="toc-text">误区一：this 不是函数自身</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%AF%E5%8C%BA%E4%BA%8C%EF%BC%9Athis-%E4%B8%8D%E6%98%AF%E5%87%BD%E6%95%B0%E7%9A%84%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">误区二：this 不是函数的词法作用域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E4%B8%8D%E2%80%9C%E5%B1%9E%E4%BA%8E%E2%80%9D%E5%AF%B9%E8%B1%A1"><span class="toc-text">函数不“属于”对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E5%87%BD%E6%95%B0%E7%9A%84-this-%E5%8F%96%E5%86%B3%E4%BA%8E%E8%B0%83%E7%94%A8%E5%BD%A2%E5%BC%8F"><span class="toc-text">普通函数的 this 取决于调用形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%98%AF%E8%AF%8D%E6%B3%95-this-%E7%9A%84%E4%BE%8B%E5%A4%96"><span class="toc-text">箭头函数是词法 this 的例外</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%8F%AF%E9%87%8D%E5%A4%8D%E7%9A%84%E5%88%86%E6%9E%90%E6%AD%A5%E9%AA%A4"><span class="toc-text">一个可重复的分析步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E6%8F%90%E5%8F%96%E6%96%B9%E6%B3%95%E5%90%8E%E4%BC%9A%E6%80%8E%E6%A0%B7"><span class="toc-text">练习：提取方法后会怎样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

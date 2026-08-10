@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/05/29/pilotsdeck-openbmb-ai-agent/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="PilotDeck 是由清华大学 THUNLP、面壁智能与 OpenBMB 联合开源的以 WorkSpace 为核心的智能体操作系统，通过白盒记忆、智能路由与 Always-on 三大能力，为多项目并行的 AI Agent 生产力场景提供了全新解决方案。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-05-29">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-05-29">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="PilotDeck">
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenBMB">
+        
+          <meta 
+            property="og:article:tag" 
+            content="任务调度">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%EF%BC%9AAI-Agent-%E7%9A%84%E4%B8%8B%E4%B8%80%E4%B8%AA%E7%93%B6%E9%A2%88%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">项目背景：AI Agent 的下一个瓶颈在哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%BB%A5-WorkSpace-%E4%B8%BA%E5%8E%9F%E5%AD%90%E5%8D%95%E4%BD%8D"><span class="toc-text">核心架构：以 WorkSpace 为原子单位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%99%BD%E7%9B%92%E8%AE%B0%E5%BF%86%EF%BC%88White-box-Memory%EF%BC%89"><span class="toc-text">1. 白盒记忆（White-box Memory）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%99%BA%E8%83%BD%E8%B7%AF%E7%94%B1%EF%BC%88Smart-Routing%EF%BC%89"><span class="toc-text">2. 智能路由（Smart Routing）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Always-on-%E5%B8%B8%E9%A9%BB%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Always-on 常驻执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%E4%B8%80%E8%A7%88"><span class="toc-text">主要功能一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="toc-text">快速上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/pilotsdeck-openbmb-ai-agent.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-05-28T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-05-29</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.9k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/PilotDeck/" 
+            class="post-meta-link">
+            PilotDeck
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/OpenBMB/" 
+            class="post-meta-link">
+            OpenBMB
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6/" 
+            class="post-meta-link">
+            任务调度
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>2026 年，AI Agent 领域进入了「从能用到好用」的关键转折期。Claude Code、Cursor、Codex 等工具已经证明大模型可以深度参与编程与知识工作，但当我们把场景从「单次对话」拉长到「多项目并行的长周期生产力创作」时，一系列核心问题浮出水面：记忆不透明、成本不可控、离线后任务停滞、多项目间上下文互相污染。</p>
+<p>2026 年 5 月 28 日，由清华大学 THUNLP 实验室、面壁智能（ModelBest）、OpenBMB 与 AI9Stars 联合研发的开源项目 <strong>PilotDeck</strong> 正式发布。它以「WorkSpace（工作舱）」为核心抽象，提出了一套面向生产力场景的智能体操作系统方案，试图从架构层面回答上述问题。</p>
+<h2 id="项目背景：AI-Agent-的下一个瓶颈在哪里？"><a href="#项目背景：AI-Agent-的下一个瓶颈在哪里？" class="headerlink" title="项目背景：AI Agent 的下一个瓶颈在哪里？"></a>项目背景：AI Agent 的下一个瓶颈在哪里？</h2><p>当前主流 AI Agent 工具各有侧重：Claude Code &#x2F; Cursor &#x2F; Trae Solo 将模型推理能力深度集成进编程 IDE；Claude Cowork 引入了项目隔离概念，把 Agent 带到桌面知识工作场景；WorkBuddy 打通 IM 生态，让 AI 在企业微信、飞书中触手可及。</p>
+<p>然而，当开发者需要同时推进多个项目——一边写游戏逻辑、一边做数据报告、一边运营自媒体内容——现有工具暴露出四个结构性短板：</p>
+<ol>
+<li><strong>记忆黑盒</strong>：AI 记住了什么、为什么记错，用户无从得知，更无法修改。</li>
+<li><strong>成本失控</strong>：所有任务一律调用最贵的旗舰模型，简单的排版润色也在烧 Opus 级别的 Token。</li>
+<li><strong>上下文污染</strong>：多项目共享同一个记忆池，A 项目的文风偏好可能「串台」到 B 项目。</li>
+<li><strong>人走即停</strong>：用户关闭电脑后，Agent 随之停止，无法自主推进长周期任务。</li>
+</ol>
+<p>PilotDeck 的设计正是围绕这四个痛点展开的。</p>
+<h2 id="核心架构：以-WorkSpace-为原子单位"><a href="#核心架构：以-WorkSpace-为原子单位" class="headerlink" title="核心架构：以 WorkSpace 为原子单位"></a>核心架构：以 WorkSpace 为原子单位</h2><p>PilotDeck 的架构哲学可以用一句话概括：<strong>一切以 WorkSpace 为边界</strong>。每个 WorkSpace 就像一个独立的「工作舱」，拥有自己专属的文件系统、记忆库与技能集（Skills）。多个 WorkSpace 可以并行运行，彼此完全隔离。</p>
+<p>在此基础上，PilotDeck 构建了三大支柱能力：</p>
+<h3 id="1-白盒记忆（White-box-Memory）"><a href="#1-白盒记忆（White-box-Memory）" class="headerlink" title="1. 白盒记忆（White-box Memory）"></a>1. 白盒记忆（White-box Memory）</h3><p>与传统 Agent 的黑盒记忆不同，PilotDeck 的记忆系统全链路可见——从记忆的生成、抽取、存储到使用，每个环节都可以查看和修改。当 AI 「记错」时，用户可以直接定位到出错的记忆条目并手动修正，而不必重开会话从头来过。</p>
+<p>更值得一提的是内置的 <strong>Dream 模式</strong>：系统会利用空闲时间自动归纳整理记忆（类似人类的「做梦」过程），并且支持一键回滚到整理前的状态，避免「越整理越乱」的问题。</p>
+<p>与黑盒 Agent 相比，PilotDeck 在可见性、可控性、可追溯、隔离性和可回滚五个维度上都有本质提升。例如，黑盒 Agent 的记忆写入后无法修改删除，上下文压缩后原始内容丢失；而 PilotDeck 按 WorkSpace 隔离记忆，支持随时编辑、删除和回滚。</p>
+<h3 id="2-智能路由（Smart-Routing）"><a href="#2-智能路由（Smart-Routing）" class="headerlink" title="2. 智能路由（Smart Routing）"></a>2. 智能路由（Smart Routing）</h3><p>PilotDeck 内置了任务难度识别机制。复杂的规划、推理任务自动分配给旗舰模型（如 Claude Sonnet 4.6、GPT-4o），而简单的文本润色、排版等任务则降级到轻量模型（如 MiniMax-M2.7），通过端云协同与精准匹配大幅降低 Token 消耗。</p>
+<p>实测数据非常亮眼。在小红书等社媒运营场景中，开启智能路由后，主 Agent 使用 Opus 4.5、子 Agent 使用 Sonnet 4.5 的方案，费用仅 $2.83，而全部使用 Opus 4.5 的方案费用高达 $12.58——<strong>节省约 70% 的成本</strong>。</p>
+<p>在更复杂的测试中（包括多语言播客推送、多源数据报告、领域论文综述、代码库架构文档等 7 个任务），采用「主 Sonnet 4.6 + 子 MiniMax-M2.7」的路由编排，以仅 $3.15 的成本取得了 70.6 分的综合评分，超越了单独使用 Claude Sonnet 4.6（$18.36，69.1 分）的表现——<strong>1&#x2F;6 的成本，更好的效果</strong>。</p>
+<h3 id="3-Always-on-常驻执行"><a href="#3-Always-on-常驻执行" class="headerlink" title="3. Always-on 常驻执行"></a>3. Always-on 常驻执行</h3><p>PilotDeck 突破了传统「你问我答」的交互模式。用户离开后，Agent 仍能在后台持续运行：主动发现潜在任务、执行长周期监控、将成果落地为本地文件，并生成摘要汇报等待用户回来查阅。这使得将 Agent 作为后台常驻助手成为真正可行的方案。</p>
+<h2 id="主要功能一览"><a href="#主要功能一览" class="headerlink" title="主要功能一览"></a>主要功能一览</h2><p>除了三大支柱能力，PilotDeck 还提供了完整的工程化支撑：</p>
+<ul>
+<li><strong>原生 MCP 支持</strong>：全面兼容 Model Context Protocol，可以无缝集成任何 MCP 服务器。</li>
+<li><strong>多前端一致性</strong>：Web UI、CLI 和 IM（企业微信&#x2F;飞书）三端行为一致，团队成员可以各取所需。</li>
+<li><strong>开放插件架构</strong>：通过 <code>plugin.json</code> 即可扩展系统能力，支持自定义 Tools &amp; Skills、生命周期钩子（如 <code>PreToolUse</code>、<code>UserPromptSubmit</code>）、自定义记忆存储 Provider 等。</li>
+<li><strong>多模型协议支持</strong>：兼容 OpenAI、Anthropic、DeepSeek、Qwen、Kimi、MiniMax 等多种模型提供商。</li>
+<li><strong>开箱即用的 Web UI</strong>：支持完整的 WorkSpace 管理、白盒记忆编辑与多智能体协作过程可视化。</li>
+</ul>
+<h2 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h2><p>PilotDeck 提供了三种安装方式，适配不同场景：</p>
+<p><strong>一键安装（推荐，macOS &#x2F; Linux）：</strong></p>
+<pre class="highlight"><code class="hljs bash">curl -fsSL https://raw.githubusercontent.com/OpenBMB/PilotDeck/main/install.sh | bash<br></code></pre>
+
+<p>脚本会自动配置 Node.js 22、克隆代码、安装依赖并编译前端。安装完成后：</p>
+<pre class="highlight"><code class="hljs bash">pilotdeck            <span class="hljs-comment"># 在 http://localhost:3001 启动服务</span><br>pilotdeck status     <span class="hljs-comment"># 查看运行状态</span><br></code></pre>
+
+<p><strong>源码安装（适合开发者）：</strong></p>
+<pre class="highlight"><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/OpenBMB/PilotDeck.git<br><span class="hljs-built_in">cd</span> PilotDeck<br>npm install<br><span class="hljs-built_in">cd</span> ui &amp;&amp; npm install &amp;&amp; <span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> ui &amp;&amp; npm run dev     <span class="hljs-comment"># 开发模式，访问 http://localhost:5173</span><br></code></pre>
+
+<p>然后在 <code>~/.pilotdeck/pilotdeck.yaml</code> 中配置模型 Provider，或直接在 Web UI 设置界面中可视化配置。</p>
+<p><strong>Docker Compose：</strong></p>
+<pre class="highlight"><code class="hljs bash">docker compose up -d<br></code></pre>
+
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>PilotDeck 团队展示了多个完整的端到端案例，且所有演示均通过智能路由在端侧模型上完成，无需调用云端旗舰模型：</p>
+<ul>
+<li><strong>工作文档生成</strong>：输入「调研中国大模型应用市场，整理成正式 HTML 白皮书」，Agent 自动完成调研、整理、排版全流程。</li>
+<li><strong>小游戏开发</strong>：用 Vibe Coding 模式完成 iOS AR 小游戏的开发。</li>
+<li><strong>AI 工程平台</strong>：从零构建 Embedding 低代码调优平台。</li>
+<li><strong>多语言内容运营</strong>：将英文播客自动推送为中、日、法、韩、西、阿六种语言版本。</li>
+</ul>
+<p>这些场景覆盖了文档写作、软件开发、AI 工程与内容运营四大方向，体现了 PilotDeck 作为通用生产力工具的潜力。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>PilotDeck 提出了一个清晰的设计主张：<strong>AI Agent 的生产力瓶颈不在模型能力，而在系统架构</strong>。通过 WorkSpace 级隔离解决上下文污染，通过白盒记忆解决记忆不可控，通过智能路由解决成本失控，通过 Always-on 解决人走即停——这四个问题的系统性回答，构成了 PilotDeck 区别于现有 Agent 工具的核心差异。</p>
+<p>项目采用 AGPL 3.0 协议开源，由清华大学 THUNLP、面壁智能、OpenBMB 和 AI9Stars 联合维护，社区活跃度正在快速增长。对于正在构建多 Agent 系统或寻求降低 Agent 运行成本的开发者来说，PilotDeck 值得深入研究。</p>
+<ul>
+<li>项目地址：<a target="_blank" rel="noopener" href="https://github.com/OpenBMB/PilotDeck">https://github.com/OpenBMB/PilotDeck</a></li>
+<li>官方网站：<a target="_blank" rel="noopener" href="https://pilotdeck.openbmb.cn/">https://pilotdeck.openbmb.cn</a></li>
+<li>在线演示：<a target="_blank" rel="noopener" href="https://pilotdeck.openbmb.cn/pilotdeck.github.io/demo/p/pilotdeck-demo">Live Demo</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/05/29/pilotdeck-stream-deck-flight-simulator/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">PilotDeck：让 Stream Deck 成为你的飞行仪表盘 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/05/27/harness-three-agent-architecture/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">用三个 AI Agent 替代一个：Harness 架构实践 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%EF%BC%9AAI-Agent-%E7%9A%84%E4%B8%8B%E4%B8%80%E4%B8%AA%E7%93%B6%E9%A2%88%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">项目背景：AI Agent 的下一个瓶颈在哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%BB%A5-WorkSpace-%E4%B8%BA%E5%8E%9F%E5%AD%90%E5%8D%95%E4%BD%8D"><span class="toc-text">核心架构：以 WorkSpace 为原子单位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%99%BD%E7%9B%92%E8%AE%B0%E5%BF%86%EF%BC%88White-box-Memory%EF%BC%89"><span class="toc-text">1. 白盒记忆（White-box Memory）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%99%BA%E8%83%BD%E8%B7%AF%E7%94%B1%EF%BC%88Smart-Routing%EF%BC%89"><span class="toc-text">2. 智能路由（Smart Routing）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Always-on-%E5%B8%B8%E9%A9%BB%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Always-on 常驻执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%E4%B8%80%E8%A7%88"><span class="toc-text">主要功能一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="toc-text">快速上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%83%8C%E6%99%AF%EF%BC%9AAI-Agent-%E7%9A%84%E4%B8%8B%E4%B8%80%E4%B8%AA%E7%93%B6%E9%A2%88%E5%9C%A8%E5%93%AA%E9%87%8C%EF%BC%9F"><span class="toc-text">项目背景：AI Agent 的下一个瓶颈在哪里？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%BB%A5-WorkSpace-%E4%B8%BA%E5%8E%9F%E5%AD%90%E5%8D%95%E4%BD%8D"><span class="toc-text">核心架构：以 WorkSpace 为原子单位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%99%BD%E7%9B%92%E8%AE%B0%E5%BF%86%EF%BC%88White-box-Memory%EF%BC%89"><span class="toc-text">1. 白盒记忆（White-box Memory）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%99%BA%E8%83%BD%E8%B7%AF%E7%94%B1%EF%BC%88Smart-Routing%EF%BC%89"><span class="toc-text">2. 智能路由（Smart Routing）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Always-on-%E5%B8%B8%E9%A9%BB%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Always-on 常驻执行</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%E4%B8%80%E8%A7%88"><span class="toc-text">主要功能一览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="toc-text">快速上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

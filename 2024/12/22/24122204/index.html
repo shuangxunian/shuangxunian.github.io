@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>vue路由面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="vue路由面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2024/12/22/24122204/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2024-12-22">
+      <meta 
+        property="og:article:modified_time" 
+        content="2024-12-22">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="vue">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81"><span class="toc-text">四、</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vue-Router-%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">1. Vue-Router 的懒加载如何实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%B7%AF%E7%94%B1%E7%9A%84hash%E5%92%8Chistory%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. 路由的hash和history模式的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-hash%E6%A8%A1%E5%BC%8F"><span class="toc-text">1. hash模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-history%E6%A8%A1%E5%BC%8F"><span class="toc-text">2. history模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">3. 两种模式对比</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84hash%E5%8F%98%E5%8C%96"><span class="toc-text">3. 如何获取页面的hash变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-route-%E5%92%8C-router-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">4. $route 和$router 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%EF%BC%9F%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E4%BC%A0%E8%BF%87%E6%9D%A5%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0%EF%BC%9F"><span class="toc-text">5. 如何定义动态路由？如何获取传过来的动态参数？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vue-router-%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90%E5%9C%A8%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">6. Vue-router 路由钩子在生命周期的体现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vue-router%E8%B7%B3%E8%BD%AC%E5%92%8Clocation-href%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">7. Vue-router跳转和location.href有什么区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-params%E5%92%8Cquery%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">8. params和query的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vue-router-%E5%AF%BC%E8%88%AA%E5%AE%88%E5%8D%AB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">9. Vue-router 导航守卫有哪些</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%AF%B9%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">10. 对前端路由的理解</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      vue路由面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/24122204.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2024-12-21T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2024-12-22</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.2k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/vue/" 
+            class="post-meta-link">
+            vue
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="四、"><a href="#四、" class="headerlink" title="四、"></a>四、</h2><h3 id="1-Vue-Router-的懒加载如何实现"><a href="#1-Vue-Router-的懒加载如何实现" class="headerlink" title="1. Vue-Router 的懒加载如何实现"></a>1. Vue-Router 的懒加载如何实现</h3><p>非懒加载：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">List</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@/components/list.vue&#x27;</span><br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> <span class="hljs-title class_">VueRouter</span>(&#123;<br>  <span class="hljs-attr">routes</span>: [<br>    &#123; <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/list&#x27;</span>, <span class="hljs-attr">component</span>: <span class="hljs-title class_">List</span> &#125;<br>  ]<br>&#125;)<br>复制代码<br></code></pre>
+
+<p>（1）方案一(常用)：使用箭头函数+import动态加载</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">List</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">import</span>(<span class="hljs-string">&#x27;@/components/list.vue&#x27;</span>)<br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> <span class="hljs-title class_">VueRouter</span>(&#123;<br>  <span class="hljs-attr">routes</span>: [<br>    &#123; <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/list&#x27;</span>, <span class="hljs-attr">component</span>: <span class="hljs-title class_">List</span> &#125;<br>  ]<br>&#125;)<br>复制代码<br></code></pre>
+
+<p>（2）方案二：使用箭头函数+require动态加载</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Router</span>(&#123;<br>  <span class="hljs-attr">routes</span>: [<br>   &#123;<br>     <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/list&#x27;</span>,<br>     <span class="hljs-attr">component</span>: <span class="hljs-function"><span class="hljs-params">resolve</span> =&gt;</span> <span class="hljs-built_in">require</span>([<span class="hljs-string">&#x27;@/components/list&#x27;</span>], resolve)<br>   &#125;<br>  ]<br>&#125;)<br>复制代码<br></code></pre>
+
+<p>（3）方案三：使用webpack的require.ensure技术，也可以实现按需加载。 这种情况下，多个路由指定相同的chunkName，会合并打包成一个js文件。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// r就是resolve</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">List</span> = r =&gt; <span class="hljs-built_in">require</span>.<span class="hljs-title function_">ensure</span>([], <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">r</span>(<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@/components/list&#x27;</span>)), <span class="hljs-string">&#x27;list&#x27;</span>);<br><span class="hljs-comment">// 路由也是正常的写法  这种是官方推荐的写的 按模块划分懒加载 </span><br><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Router</span>(&#123;<br>  <span class="hljs-attr">routes</span>: [<br>  &#123;<br>    <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/list&#x27;</span>,<br>    <span class="hljs-attr">component</span>: <span class="hljs-title class_">List</span>,<br>    <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;list&#x27;</span><br>  &#125;<br> ]<br>&#125;))<br>复制代码<br></code></pre>
+
+<h3 id="2-路由的hash和history模式的区别"><a href="#2-路由的hash和history模式的区别" class="headerlink" title="2. 路由的hash和history模式的区别"></a>2. 路由的hash和history模式的区别</h3><p>Vue-Router有两种模式：<strong>hash模式</strong>和<strong>history模式</strong>。默认的路由模式是hash模式。</p>
+<h4 id="1-hash模式"><a href="#1-hash模式" class="headerlink" title="1. hash模式"></a>1. hash模式</h4><p><strong>简介：</strong> hash模式是开发中默认的模式，它的URL带着一个#，例如：<a href="https://link.juejin.cn/?target=http://www.abc.com/%23/vue">www.abc.com/#/vue</a>，它的hash值就是<code>#/vue</code>。</p>
+<p><strong>特点</strong>：hash值会出现在URL里面，但是不会出现在HTTP请求中，对后端完全没有影响。所以改变hash值，不会重新加载页面。这种模式的浏览器支持度很好，低版本的IE浏览器也支持这种模式。hash路由被称为是前端路由，已经成为SPA（单页面应用）的标配。</p>
+<p><strong>原理：</strong> hash模式的主要原理就是<strong>onhashchange()事件</strong>：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">window</span>.<span class="hljs-property">onhashchange</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>)&#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(event.<span class="hljs-property">oldURL</span>, event.<span class="hljs-property">newURL</span>);<br>    <span class="hljs-keyword">let</span> hash = location.<span class="hljs-property">hash</span>.<span class="hljs-title function_">slice</span>(<span class="hljs-number">1</span>);<br>&#125;<br>复制代码<br></code></pre>
+
+<p>使用onhashchange()事件的好处就是，在页面的hash值发生变化时，无需向后端发起请求，window就可以监听事件的改变，并按规则加载相应的代码。除此之外，hash值变化对应的URL都会被浏览器记录下来，这样浏览器就能实现页面的前进和后退。虽然是没有请求后端服务器，但是页面的hash值和对应的URL关联起来了。</p>
+<h4 id="2-history模式"><a href="#2-history模式" class="headerlink" title="2. history模式"></a>2. history模式</h4><p><strong>简介：</strong> history模式的URL中没有#，它使用的是传统的路由分发模式，即用户在输入一个URL时，服务器会接收这个请求，并解析这个URL，然后做出相应的逻辑处理。 <strong>特点：</strong> 当使用history模式时，URL就像这样：<a href="https://link.juejin.cn/?target=http://abc.com/user/id">abc.com&#x2F;user&#x2F;id</a>。相比hash模式更加好看。但是，history模式需要后台配置支持。如果后台没有正确配置，访问时会返回404。 <strong>API：</strong> history api可以分为两大部分，切换历史状态和修改历史状态：</p>
+<ul>
+<li><strong>修改历史状态</strong>：包括了 HTML5 History Interface 中新增的 <code>pushState()</code> 和 <code>replaceState()</code> 方法，这两个方法应用于浏览器的历史记录栈，提供了对历史记录进行修改的功能。只是当他们进行修改时，虽然修改了url，但浏览器不会立即向后端发送请求。如果要做到改变url但又不刷新页面的效果，就需要前端用上这两个API。</li>
+<li><strong>切换历史状态：</strong> 包括<code>forward()</code>、<code>back()</code>、<code>go()</code>三个方法，对应浏览器的前进，后退，跳转操作。</li>
+</ul>
+<p>虽然history模式丢弃了丑陋的#。但是，它也有自己的缺点，就是在刷新页面的时候，如果没有相应的路由或资源，就会刷出404来。</p>
+<p>如果想要切换到history模式，就要进行以下配置（后端也要进行配置）：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> router = <span class="hljs-keyword">new</span> <span class="hljs-title class_">VueRouter</span>(&#123;<br>  <span class="hljs-attr">mode</span>: <span class="hljs-string">&#x27;history&#x27;</span>,<br>  <span class="hljs-attr">routes</span>: [...]<br>&#125;)<br>复制代码<br></code></pre>
+
+<h4 id="3-两种模式对比"><a href="#3-两种模式对比" class="headerlink" title="3. 两种模式对比"></a>3. 两种模式对比</h4><p>调用 history.pushState() 相比于直接修改 hash，存在以下优势:</p>
+<ul>
+<li>pushState() 设置的新 URL 可以是与当前 URL 同源的任意 URL；而 hash 只可修改 # 后面的部分，因此只能设置与当前 URL 同文档的 URL；</li>
+<li>pushState() 设置的新 URL 可以与当前 URL 一模一样，这样也会把记录添加到栈中；而 hash 设置的新值必须与原来不一样才会触发动作将记录添加到栈中；</li>
+<li>pushState() 通过 stateObject 参数可以添加任意类型的数据到记录中；而 hash 只可添加短字符串；</li>
+<li>pushState() 可额外设置 title 属性供后续使用。</li>
+<li>hash模式下，仅hash符号之前的url会被包含在请求中，后端如果没有做到对路由的全覆盖，也不会返回404错误；history模式下，前端的url必须和实际向后端发起请求的url一致，如果没有对用的路由处理，将返回404错误。</li>
+</ul>
+<p>hash模式和history模式都有各自的优势和缺陷，还是要根据实际情况选择性的使用。</p>
+<h3 id="3-如何获取页面的hash变化"><a href="#3-如何获取页面的hash变化" class="headerlink" title="3. 如何获取页面的hash变化"></a>3. 如何获取页面的hash变化</h3><p><strong>（1）监听$route的变化</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 监听,当路由发生变化的时候执行</span><br><span class="hljs-attr">watch</span>: &#123;<br>  <span class="hljs-attr">$route</span>: &#123;<br>    <span class="hljs-attr">handler</span>: <span class="hljs-keyword">function</span>(<span class="hljs-params">val, oldVal</span>)&#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(val);<br>    &#125;,<br>    <span class="hljs-comment">// 深度观察监听</span><br>    <span class="hljs-attr">deep</span>: <span class="hljs-literal">true</span><br>  &#125;<br>&#125;,<br>复制代码<br></code></pre>
+
+<p><strong>（2）window.location.hash读取#值</strong> window.location.hash 的值可读可写，读取来判断状态是否改变，写入时可以在不重载网页的前提下，添加一条历史访问记录。</p>
+<h3 id="4-route-和-router-的区别"><a href="#4-route-和-router-的区别" class="headerlink" title="4. $route 和$router 的区别"></a>4. <code>$route 和$router</code> 的区别</h3><ul>
+<li>$route 是“路由信息对象”，包括 path，params，hash，query，fullPath，matched，name 等路由信息参数</li>
+<li>$router 是“路由实例”对象包括了路由的跳转方法，钩子函数等。</li>
+</ul>
+<h3 id="5-如何定义动态路由？如何获取传过来的动态参数？"><a href="#5-如何定义动态路由？如何获取传过来的动态参数？" class="headerlink" title="5. 如何定义动态路由？如何获取传过来的动态参数？"></a>5. 如何定义动态路由？如何获取传过来的动态参数？</h3><p><strong>（1）param方式</strong></p>
+<ul>
+<li>配置路由格式：<code>/router/:id</code></li>
+<li>传递的方式：在path后面跟上对应的值</li>
+<li>传递后形成的路径：<code>/router/123</code></li>
+</ul>
+<p>1）路由定义</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//在APP.vue中</span><br>&lt;router-link :to=<span class="hljs-string">&quot;&#x27;/user/&#x27;+userId&quot;</span> replace&gt;用户&lt;/router-link&gt;    <br><br><span class="hljs-comment">//在index.js</span><br>&#123;<br>   <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/user/:userid&#x27;</span>,<br>   <span class="hljs-attr">component</span>: <span class="hljs-title class_">User</span>,<br>&#125;,<br>复制代码<br></code></pre>
+
+<p>2）路由跳转</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 方法1：</span><br>&lt;router-link :to=<span class="hljs-string">&quot;&#123; name: &#x27;users&#x27;, params: &#123; uname: wade &#125;&#125;&quot;</span>&gt;按钮&lt;/router-link<br><br><span class="hljs-comment">// 方法2：</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(&#123;<span class="hljs-attr">name</span>:<span class="hljs-string">&#x27;users&#x27;</span>,<span class="hljs-attr">params</span>:&#123;<span class="hljs-attr">uname</span>:wade&#125;&#125;)<br><br><span class="hljs-comment">// 方法3：</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(<span class="hljs-string">&#x27;/user/&#x27;</span> + wade)<br>复制代码<br></code></pre>
+
+<p>3）参数获取 通过 <code>$route.params.userid</code> 获取传递的值</p>
+<p><strong>（2）query方式</strong></p>
+<ul>
+<li>配置路由格式：<code>/router</code>，也就是普通配置</li>
+<li>传递的方式：对象中使用query的key作为传递方式</li>
+<li>传递后形成的路径：<code>/route?id=123</code></li>
+</ul>
+<p>1）路由定义</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//方式1：直接在router-link 标签上以对象的形式</span><br>&lt;router-link :to=<span class="hljs-string">&quot;&#123;path:&#x27;/profile&#x27;,query:&#123;name:&#x27;why&#x27;,age:28,height:188&#125;&#125;&quot;</span>&gt;档案&lt;/router-link&gt;<br><br><span class="hljs-comment">// 方式2：写成按钮以点击事件形式</span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&#x27;profileClick&#x27;</span>&gt;</span>我的<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span>    <br><br><span class="hljs-title function_">profileClick</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(&#123;<br>    <span class="hljs-attr">path</span>: <span class="hljs-string">&quot;/profile&quot;</span>,<br>    <span class="hljs-attr">query</span>: &#123;<br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;kobi&quot;</span>,<br>        <span class="hljs-attr">age</span>: <span class="hljs-string">&quot;28&quot;</span>,<br>        <span class="hljs-attr">height</span>: <span class="hljs-number">198</span><br>    &#125;<br>  &#125;);<br>&#125;<br>复制代码<br></code></pre>
+
+<p>2）跳转方法</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 方法1：</span><br>&lt;router-link :to=<span class="hljs-string">&quot;&#123; name: &#x27;users&#x27;, query: &#123; uname: james &#125;&#125;&quot;</span>&gt;按钮&lt;/router-link&gt;<br><br><span class="hljs-comment">// 方法2：</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;users&#x27;</span>, <span class="hljs-attr">query</span>:&#123; <span class="hljs-attr">uname</span>:james &#125;&#125;)<br><br><span class="hljs-comment">// 方法3：</span><br>&lt;router-link :to=<span class="hljs-string">&quot;&#123; path: &#x27;/user&#x27;, query: &#123; uname:james &#125;&#125;&quot;</span>&gt;按钮&lt;/router-link&gt;<br><br><span class="hljs-comment">// 方法4：</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(&#123; <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/user&#x27;</span>, <span class="hljs-attr">query</span>:&#123; <span class="hljs-attr">uname</span>:james &#125;&#125;)<br><br><span class="hljs-comment">// 方法5：</span><br><span class="hljs-variable language_">this</span>.<span class="hljs-property">$router</span>.<span class="hljs-title function_">push</span>(<span class="hljs-string">&#x27;/user?uname=&#x27;</span> + jsmes)<br>复制代码<br></code></pre>
+
+<p>3）获取参数</p>
+<pre class="highlight"><code class="hljs javascript">通过$route.<span class="hljs-property">query</span> 获取传递的值<br>复制代码<br></code></pre>
+
+<h3 id="6-Vue-router-路由钩子在生命周期的体现"><a href="#6-Vue-router-路由钩子在生命周期的体现" class="headerlink" title="6. Vue-router 路由钩子在生命周期的体现"></a>6. Vue-router 路由钩子在生命周期的体现</h3><p>一、Vue-Router导航守卫</p>
+<p>有的时候，需要通过路由来进行一些操作，比如最常见的登录权限验证，当用户满足条件时，才让其进入导航，否则就取消跳转，并跳到登录页面让其登录。 为此有很多种方法可以植入路由的导航过程：全局的，单个路由独享的，或者组件级的</p>
+<ol>
+<li>全局路由钩子</li>
+</ol>
+<p>vue-router全局有三个路由钩子;</p>
+<ul>
+<li>router.beforeEach 全局前置守卫 进入路由之前</li>
+<li>router.beforeResolve 全局解析守卫（2.5.0+）在 beforeRouteEnter 调用之后调用</li>
+<li>router.afterEach 全局后置钩子 进入路由之后</li>
+</ul>
+<p>具体使用∶</p>
+<ul>
+<li>beforeEach（判断是否登录了，没登录就跳转到登录页）</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">router.<span class="hljs-title function_">beforeEach</span>(<span class="hljs-function">(<span class="hljs-params">to, <span class="hljs-keyword">from</span>, next</span>) =&gt;</span> &#123;  <br>    <span class="hljs-keyword">let</span> ifInfo = <span class="hljs-title class_">Vue</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">$common</span>.<span class="hljs-title function_">getSession</span>(<span class="hljs-string">&#x27;userData&#x27;</span>);  <span class="hljs-comment">// 判断是否登录的存储信息</span><br>    <span class="hljs-keyword">if</span> (!ifInfo) &#123; <br>        <span class="hljs-comment">// sessionStorage里没有储存user信息    </span><br>        <span class="hljs-keyword">if</span> (to.<span class="hljs-property">path</span> == <span class="hljs-string">&#x27;/&#x27;</span>) &#123; <br>            <span class="hljs-comment">//如果是登录页面路径，就直接next()      </span><br>            <span class="hljs-title function_">next</span>();    <br>        &#125; <span class="hljs-keyword">else</span> &#123; <br>            <span class="hljs-comment">//不然就跳转到登录      </span><br>            <span class="hljs-title class_">Message</span>.<span class="hljs-title function_">warning</span>(<span class="hljs-string">&quot;请重新登录！&quot;</span>);     <br>            <span class="hljs-variable language_">window</span>.<span class="hljs-property">location</span>.<span class="hljs-property">href</span> = <span class="hljs-title class_">Vue</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">$loginUrl</span>;    <br>        &#125;  <br>    &#125; <span class="hljs-keyword">else</span> &#123;    <br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">next</span>();  <br>    &#125;<br>&#125;)<br>复制代码<br></code></pre>
+
+<ul>
+<li>afterEach （跳转之后滚动条回到顶部）</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">router.<span class="hljs-title function_">afterEach</span>(<span class="hljs-function">(<span class="hljs-params">to, <span class="hljs-keyword">from</span></span>) =&gt;</span> &#123;  <br>    <span class="hljs-comment">// 跳转之后滚动条回到顶部  </span><br>    <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">scrollTo</span>(<span class="hljs-number">0</span>,<span class="hljs-number">0</span>);<br>&#125;);<br>复制代码<br></code></pre>
+
+<ol>
+<li>单个路由独享钩子</li>
+</ol>
+<p><strong>beforeEnter</strong> 如果不想全局配置守卫的话，可以为某些路由单独配置守卫，有三个参数∶ to、from、next</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> [    <br>    &#123;        <br>        <span class="hljs-attr">path</span>: <span class="hljs-string">&#x27;/&#x27;</span>,        <br>        <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;login&#x27;</span>,        <br>        <span class="hljs-attr">component</span>: login,        <br>        <span class="hljs-attr">beforeEnter</span>: <span class="hljs-function">(<span class="hljs-params">to, <span class="hljs-keyword">from</span>, next</span>) =&gt;</span> &#123;          <br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;即将进入登录页面&#x27;</span>)          <br>            <span class="hljs-title function_">next</span>()        <br>        &#125;    <br>    &#125;<br>]<br>复制代码<br></code></pre>
+
+<ol>
+<li>组件内钩子</li>
+</ol>
+<p>beforeRouteUpdate、beforeRouteEnter、beforeRouteLeave</p>
+<p>这三个钩子都有三个参数∶to、from、next</p>
+<ul>
+<li>beforeRouteEnter∶ 进入组件前触发</li>
+<li>beforeRouteUpdate∶ 当前地址改变并且改组件被复用时触发，举例来说，带有动态参数的路径foo&#x2F;∶id，在 &#x2F;foo&#x2F;1 和 &#x2F;foo&#x2F;2 之间跳转的时候，由于会渲染同样的foa组件，这个钩子在这种情况下就会被调用</li>
+<li>beforeRouteLeave∶ 离开组件被调用</li>
+</ul>
+<p>注意点，beforeRouteEnter组件内还访问不到this，因为该守卫执行前组件实例还没有被创建，需要传一个回调给 next来访问，例如：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">beforeRouteEnter</span>(<span class="hljs-params">to, <span class="hljs-keyword">from</span>, next</span>) &#123;      <br>    <span class="hljs-title function_">next</span>(<span class="hljs-function"><span class="hljs-params">target</span> =&gt;</span> &#123;        <br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">from</span>.<span class="hljs-property">path</span> == <span class="hljs-string">&#x27;/classProcess&#x27;</span>) &#123;          <br>            target.<span class="hljs-property">isFromProcess</span> = <span class="hljs-literal">true</span>        <br>        &#125;      <br>    &#125;)    <br>&#125;<br>复制代码<br></code></pre>
+
+<p>二、Vue路由钩子在生命周期函数的体现</p>
+<ol>
+<li>完整的路由导航解析流程（不包括其他生命周期）</li>
+</ol>
+<ul>
+<li><p>触发进入其他路由。</p>
+</li>
+<li><p>调用要离开路由的组件守卫beforeRouteLeave</p>
+</li>
+<li><p>调用局前置守卫∶ beforeEach</p>
+</li>
+<li><p>在重用的组件里调用 beforeRouteUpdate</p>
+</li>
+<li><p>调用路由独享守卫 beforeEnter。</p>
+</li>
+<li><p>解析异步路由组件。</p>
+</li>
+<li><p>在将要进入的路由组件中调用 beforeRouteEnter</p>
+</li>
+<li><p>调用全局解析守卫 beforeResolve</p>
+</li>
+<li><p>导航被确认。</p>
+</li>
+<li><p>调用全局后置钩子的 afterEach 钩子。</p>
+</li>
+<li><p>触发DOM更新（mounted）。</p>
+</li>
+<li><p>执行beforeRouteEnter 守卫中传给 next 的回调函数</p>
+</li>
+</ul>
+<ol>
+<li>触发钩子的完整顺序</li>
+</ol>
+<p>路由导航、keep-alive、和组件生命周期钩子结合起来的，触发顺序，假设是从a组件离开，第一次进入b组件∶</p>
+<ul>
+<li>beforeRouteLeave：路由组件的组件离开路由前钩子，可取消路由离开。</li>
+<li>beforeEach：路由全局前置守卫，可用于登录验证、全局路由loading等。</li>
+<li>beforeEnter：路由独享守卫</li>
+<li>beforeRouteEnter：路由组件的组件进入路由前钩子。</li>
+<li>beforeResolve：路由全局解析守卫</li>
+<li>afterEach：路由全局后置钩子</li>
+<li>beforeCreate：组件生命周期，不能访问tAis。</li>
+<li>created;组件生命周期，可以访问tAis，不能访问dom。</li>
+<li>beforeMount：组件生命周期</li>
+<li>deactivated：离开缓存组件a，或者触发a的beforeDestroy和destroyed组件销毁钩子。</li>
+<li>mounted：访问&#x2F;操作dom。</li>
+<li>activated：进入缓存组件，进入a的嵌套子组件（如果有的话）。</li>
+<li>执行beforeRouteEnter回调函数next。</li>
+</ul>
+<ol>
+<li>导航行为被触发到导航完成的整个过程</li>
+</ol>
+<ul>
+<li>导航行为被触发，此时导航未被确认。</li>
+<li>在失活的组件里调用离开守卫 beforeRouteLeave。</li>
+<li>调用全局的 beforeEach守卫。</li>
+<li>在重用的组件里调用 beforeRouteUpdate 守卫(2.2+)。</li>
+<li>在路由配置里调用 beforeEnteY。</li>
+<li>解析异步路由组件（如果有）。</li>
+<li>在被激活的组件里调用 beforeRouteEnter。</li>
+<li>调用全局的 beforeResolve 守卫（2.5+），标示解析阶段完成。</li>
+<li>导航被确认。</li>
+<li>调用全局的 afterEach 钩子。</li>
+<li>非重用组件，开始组件实例的生命周期：beforeCreate&amp;created、beforeMount&amp;mounted</li>
+<li>触发 DOM 更新。</li>
+<li>用创建好的实例调用 beforeRouteEnter守卫中传给 next 的回调函数。</li>
+<li>导航完成</li>
+</ul>
+<h3 id="7-Vue-router跳转和location-href有什么区别"><a href="#7-Vue-router跳转和location-href有什么区别" class="headerlink" title="7. Vue-router跳转和location.href有什么区别"></a>7. Vue-router跳转和location.href有什么区别</h3><ul>
+<li>使用 <code>location.href= /url </code>来跳转，简单方便，但是刷新了页面；</li>
+<li>使用 <code>history.pushState( /url )</code> ，无刷新页面，静态跳转；</li>
+<li>引进 router ，然后使用 <code>router.push( /url )</code> 来跳转，使用了 <code>diff</code> 算法，实现了按需加载，减少了 dom 的消耗。其实使用 router 跳转和使用 <code>history.pushState()</code> 没什么差别的，因为vue-router就是用了 <code>history.pushState()</code> ，尤其是在history模式下。</li>
+</ul>
+<h3 id="8-params和query的区别"><a href="#8-params和query的区别" class="headerlink" title="8. params和query的区别"></a>8. params和query的区别</h3><p><strong>用法</strong>：query要用path来引入，params要用name来引入，接收参数都是类似的，分别是 <code>this.$route.query.name</code> 和 <code>this.$route.params.name</code> 。</p>
+<p><strong>url地址显示</strong>：query更加类似于ajax中get传参，params则类似于post，说的再简单一点，前者在浏览器地址栏中显示参数，后者则不显示</p>
+<p><strong>注意</strong>：query刷新不会丢失query里面的数据 params刷新会丢失 params里面的数据。</p>
+<h3 id="9-Vue-router-导航守卫有哪些"><a href="#9-Vue-router-导航守卫有哪些" class="headerlink" title="9. Vue-router 导航守卫有哪些"></a>9. Vue-router 导航守卫有哪些</h3><ul>
+<li>全局前置&#x2F;钩子：beforeEach、beforeResolve、afterEach</li>
+<li>路由独享的守卫：beforeEnter</li>
+<li>组件内的守卫：beforeRouteEnter、beforeRouteUpdate、beforeRouteLeave</li>
+</ul>
+<h3 id="10-对前端路由的理解"><a href="#10-对前端路由的理解" class="headerlink" title="10. 对前端路由的理解"></a>10. 对前端路由的理解</h3><p>在前端技术早期，一个 url 对应一个页面，如果要从 A 页面切换到 B 页面，那么必然伴随着页面的刷新。这个体验并不好，不过在最初也是无奈之举——用户只有在刷新页面的情况下，才可以重新去请求数据。</p>
+<p>后来，改变发生了——Ajax 出现了，它允许人们在不刷新页面的情况下发起请求；与之共生的，还有“不刷新页面即可更新页面内容”这种需求。在这样的背景下，出现了 <strong>SPA（单页面应用</strong>）。</p>
+<p>SPA极大地提升了用户体验，它允许页面在不刷新的情况下更新页面内容，使内容的切换更加流畅。但是在 SPA 诞生之初，人们并没有考虑到“定位”这个问题——在内容切换前后，页面的 URL 都是一样的，这就带来了两个问题：</p>
+<ul>
+<li>SPA 其实并不知道当前的页面“进展到了哪一步”。可能在一个站点下经过了反复的“前进”才终于唤出了某一块内容，但是此时只要刷新一下页面，一切就会被清零，必须重复之前的操作、才可以重新对内容进行定位——SPA 并不会“记住”你的操作。</li>
+<li>由于有且仅有一个 URL 给页面做映射，这对 SEO 也不够友好，搜索引擎无法收集全面的信息</li>
+</ul>
+<p>为了解决这个问题，前端路由出现了。</p>
+<p>前端路由可以帮助我们在仅有一个页面的情况下，“记住”用户当前走到了哪一步——为 SPA 中的各个视图匹配一个唯一标识。这意味着用户前进、后退触发的新内容，都会映射到不同的 URL 上去。此时即便他刷新页面，因为当前的 URL 可以标识出他所处的位置，因此内容也不会丢失。</p>
+<p>那么如何实现这个目的呢？首先要解决两个问题：</p>
+<ul>
+<li>当用户刷新页面时，浏览器会默认根据当前 URL 对资源进行重新定位（发送请求）。这个动作对 SPA 是不必要的，因为我们的 SPA 作为单页面，无论如何也只会有一个资源与之对应。此时若走正常的请求-刷新流程，反而会使用户的前进后退操作无法被记录。</li>
+<li>单页面应用对服务端来说，就是一个URL、一套资源，那么如何做到用“不同的URL”来映射不同的视图内容呢？</li>
+</ul>
+<p>从这两个问题来看，服务端已经完全救不了这个场景了。所以要靠咱们前端自力更生，不然怎么叫“前端路由”呢？作为前端，可以提供这样的解决思路：</p>
+<ul>
+<li>拦截用户的刷新操作，避免服务端盲目响应、返回不符合预期的资源内容。把刷新这个动作完全放到前端逻辑里消化掉。</li>
+<li>感知 URL 的变化。这里不是说要改造 URL、凭空制造出 N 个 URL 来。而是说 URL 还是那个 URL，只不过我们可以给它做一些微小的处理——这些处理并不会影响 URL 本身的性质，不会影响服务器对它的识别，只有我们前端感知的到。一旦我们感知到了，我们就根据这些变化、用 JS 去给它生成不同的内容。</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2024/12/22/24122203/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">vue组件通信面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2024/12/22/24122205/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">vue Vuex 面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81"><span class="toc-text">四、</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vue-Router-%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">1. Vue-Router 的懒加载如何实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%B7%AF%E7%94%B1%E7%9A%84hash%E5%92%8Chistory%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. 路由的hash和history模式的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-hash%E6%A8%A1%E5%BC%8F"><span class="toc-text">1. hash模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-history%E6%A8%A1%E5%BC%8F"><span class="toc-text">2. history模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">3. 两种模式对比</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84hash%E5%8F%98%E5%8C%96"><span class="toc-text">3. 如何获取页面的hash变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-route-%E5%92%8C-router-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">4. $route 和$router 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%EF%BC%9F%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E4%BC%A0%E8%BF%87%E6%9D%A5%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0%EF%BC%9F"><span class="toc-text">5. 如何定义动态路由？如何获取传过来的动态参数？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vue-router-%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90%E5%9C%A8%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">6. Vue-router 路由钩子在生命周期的体现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vue-router%E8%B7%B3%E8%BD%AC%E5%92%8Clocation-href%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">7. Vue-router跳转和location.href有什么区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-params%E5%92%8Cquery%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">8. params和query的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vue-router-%E5%AF%BC%E8%88%AA%E5%AE%88%E5%8D%AB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">9. Vue-router 导航守卫有哪些</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%AF%B9%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">10. 对前端路由的理解</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81"><span class="toc-text">四、</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-Vue-Router-%E7%9A%84%E6%87%92%E5%8A%A0%E8%BD%BD%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-text">1. Vue-Router 的懒加载如何实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%B7%AF%E7%94%B1%E7%9A%84hash%E5%92%8Chistory%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. 路由的hash和history模式的区别</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-hash%E6%A8%A1%E5%BC%8F"><span class="toc-text">1. hash模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-history%E6%A8%A1%E5%BC%8F"><span class="toc-text">2. history模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-text">3. 两种模式对比</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E9%A1%B5%E9%9D%A2%E7%9A%84hash%E5%8F%98%E5%8C%96"><span class="toc-text">3. 如何获取页面的hash变化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-route-%E5%92%8C-router-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">4. $route 和$router 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%A6%82%E4%BD%95%E5%AE%9A%E4%B9%89%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1%EF%BC%9F%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E4%BC%A0%E8%BF%87%E6%9D%A5%E7%9A%84%E5%8A%A8%E6%80%81%E5%8F%82%E6%95%B0%EF%BC%9F"><span class="toc-text">5. 如何定义动态路由？如何获取传过来的动态参数？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-Vue-router-%E8%B7%AF%E7%94%B1%E9%92%A9%E5%AD%90%E5%9C%A8%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">6. Vue-router 路由钩子在生命周期的体现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-Vue-router%E8%B7%B3%E8%BD%AC%E5%92%8Clocation-href%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">7. Vue-router跳转和location.href有什么区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-params%E5%92%8Cquery%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">8. params和query的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-Vue-router-%E5%AF%BC%E8%88%AA%E5%AE%88%E5%8D%AB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">9. Vue-router 导航守卫有哪些</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-%E5%AF%B9%E5%89%8D%E7%AB%AF%E8%B7%AF%E7%94%B1%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-text">10. 对前端路由的理解</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

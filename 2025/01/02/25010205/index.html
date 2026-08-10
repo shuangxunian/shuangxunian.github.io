@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>react Hooks面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="react Hooks面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2025/01/02/25010205/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:modified_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="react">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-React-Hook-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E5%AE%83%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">对 React Hook 的理解，它的实现原理是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-useState-%E8%A6%81%E4%BD%BF%E7%94%A8%E6%95%B0%E7%BB%84%E8%80%8C%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">为什么 useState 要使用数组而不是对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">数组的解构赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">对象的解构赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E8%A7%A3%E5%86%B3%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">React Hooks 解决了哪些问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hook-%E7%9A%84%E4%BD%BF%E7%94%A8%E9%99%90%E5%88%B6%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">React Hook 的使用限制有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useEffect-%E4%B8%8E-useLayoutEffect-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">useEffect 与 useLayoutEffect 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks%E5%9C%A8%E5%B9%B3%E6%97%B6%E5%BC%80%E5%8F%91%E4%B8%AD%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98%E5%92%8C%E5%8E%9F%E5%9B%A0"><span class="toc-text">React Hooks在平时开发中需要注意的问题和原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E5%92%8C%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%9F"><span class="toc-text">React Hooks 和生命周期的关系？</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      react Hooks面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/25010205.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2025-01-01T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2025-01-02</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/react/" 
+            class="post-meta-link">
+            react
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="对-React-Hook-的理解，它的实现原理是什么"><a href="#对-React-Hook-的理解，它的实现原理是什么" class="headerlink" title="对 React Hook 的理解，它的实现原理是什么"></a>对 React Hook 的理解，它的实现原理是什么</h2><p>React-Hooks 是 React 团队在 React 组件开发实践中，逐渐认知到的一个改进点，这背后其实涉及对<strong>类组件</strong>和<strong>函数组件</strong>两种组件形式的思考和侧重。</p>
+<p><strong>（1）类组件：</strong> 所谓类组件，就是基于 ES6 Class 这种写法，通过继承 React.Component 得来的 React 组件。以下是一个类组件：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">class</span> <span class="hljs-title class_">DemoClass</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">React.Component</span> &#123;<br>  state = &#123;<br>    <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;&quot;</span><br>  &#125;;<br>  <span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">//...</span><br>  &#125;<br>  changeText = <span class="hljs-function">(<span class="hljs-params">newText</span>) =&gt;</span> &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">setState</span>(&#123;<br>      <span class="hljs-attr">text</span>: newText<br>    &#125;);<br>  &#125;;<br><br>  <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> (<br>      <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;demoClass&quot;</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;this.state.text&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;this.changeText&#125;</span>&gt;</span>修改<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>    );<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>可以看出，React 类组件内部预置了相当多的“现成的东西”等着我们去调度&#x2F;定制，state 和生命周期就是这些“现成东西”中的典型。要想得到这些东西，难度也不大，只需要继承一个 React.Component 即可。</p>
+<p>当然，这也是类组件的一个不便，它太繁杂了，对于解决许多问题来说，编写一个类组件实在是一个过于复杂的姿势。复杂的姿势必然带来高昂的理解成本，这也是我们所不想看到的。除此之外，由于开发者编写的逻辑在封装后是和组件粘在一起的，这就使得<strong>类组件内部的逻辑难以实现拆分和复用。</strong></p>
+<p><strong>（2）函数组件</strong>：函数组件就是以函数的形态存在的 React 组件。早期并没有 React-Hooks，函数组件内部无法定义和维护 state，因此它还有一个别名叫“无状态组件”。以下是一个函数组件：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">DemoFunction</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-keyword">const</span> &#123; text &#125; = props<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;demoFunction&quot;</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>&#123;`函数组件接收的内容：[$&#123;text&#125;]`&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  );<br>&#125;<br></code></pre>
+
+<p>相比于类组件，函数组件肉眼可见的特质自然包括轻量、灵活、易于组织和维护、较低的学习成本等。</p>
+<p>通过对比，从形态上可以对两种组件做区分，它们之间的区别如下：</p>
+<ul>
+<li>类组件需要继承 class，函数组件不需要；</li>
+<li>类组件可以访问生命周期方法，函数组件不能；</li>
+<li>类组件中可以获取到实例化后的 this，并基于这个 this 做各种各样的事情，而函数组件不可以；</li>
+<li>类组件中可以定义并维护 state（状态），而函数组件不可以；</li>
+</ul>
+<p>除此之外，还有一些其他的不同。通过上面的区别，我们不能说谁好谁坏，它们各有自己的优势。在 React-Hooks 出现之前，<strong>类组件的能力边界明显强于函数组件。</strong></p>
+<p>实际上，类组件和函数组件之间，是面向对象和函数式编程这两套不同的设计思想之间的差异。而函数组件更加契合 React 框架的设计理念：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable constant_">UI</span>=<span class="hljs-title function_">render</span>(data);<br><span class="hljs-comment">// 或</span><br><span class="hljs-variable constant_">UI</span>=<span class="hljs-title function_">f</span>(data);<br></code></pre>
+
+<p>React 组件本身的定位就是函数，一个输入数据、输出 UI 的函数。作为开发者，我们编写的是声明式的代码，而 React 框架的主要工作，就是及时地把声明式的代码转换为命令式的 DOM 操作，把数据层面的描述映射到用户可见的 UI 变化中去。这就意味着从原则上来讲，React 的数据应该总是紧紧地和渲染绑定在一起的，而类组件做不到这一点。<strong>函数组件就真正地将数据和渲染绑定到了一起。函数组件是一个更加匹配其设计理念、也更有利于逻辑拆分与重用的组件表达形式。</strong></p>
+<p>为了能让开发者更好的的去编写函数式组件。于是，React-Hooks 便应运而生。</p>
+<p>React-Hooks 是一套能够使函数组件更强大、更灵活的“钩子”。</p>
+<p>函数组件比起类组件少了很多东西，比如生命周期、对 state 的管理等。这就给函数组件的使用带来了非常多的局限性，导致我们并不能使用函数这种形式，写出一个真正的全功能的组件。而React-Hooks 的出现，就是为了帮助函数组件补齐这些（相对于类组件来说）缺失的能力。</p>
+<p>如果说函数组件是一台轻巧的快艇，那么 React-Hooks 就是一个内容丰富的零部件箱。“重装战舰”所预置的那些设备，这个箱子里基本全都有，同时它还不强制你全都要，而是允许你自由地选择和使用你需要的那些能力，然后将这些能力以 Hook（钩子）的形式“钩”进你的组件里，从而定制出一个最适合你的“专属战舰”。</p>
+<h2 id="为什么-useState-要使用数组而不是对象"><a href="#为什么-useState-要使用数组而不是对象" class="headerlink" title="为什么 useState 要使用数组而不是对象"></a>为什么 useState 要使用数组而不是对象</h2><p>useState 的用法：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [count, setCount] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>)<br></code></pre>
+
+<p>可以看到 useState 返回的是一个数组，那么为什么是返回数组而不是返回对象呢？</p>
+<p>这里用到了解构赋值，所以先来看一下ES6 的解构赋值：</p>
+<h3 id="数组的解构赋值"><a href="#数组的解构赋值" class="headerlink" title="数组的解构赋值"></a>数组的解构赋值</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> foo = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>];<br><span class="hljs-keyword">const</span> [one, two, three] = foo;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(one);    <span class="hljs-comment">// 1</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(two);    <span class="hljs-comment">// 2</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(three);    <span class="hljs-comment">// 3</span><br></code></pre>
+
+<h3 id="对象的解构赋值"><a href="#对象的解构赋值" class="headerlink" title="对象的解构赋值"></a>对象的解构赋值</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> user = &#123;<br>  <span class="hljs-attr">id</span>: <span class="hljs-number">888</span>,<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;xiaoxin&quot;</span><br>&#125;;<br><span class="hljs-keyword">const</span> &#123; id, name &#125; = user;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(id);    <span class="hljs-comment">// 888</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(name);    <span class="hljs-comment">// &quot;xiaoxin&quot;</span><br></code></pre>
+
+<p>看完这两个例子，答案应该就出来了：</p>
+<ul>
+<li>如果 useState 返回的是数组，那么使用者可以对数组中的元素命名，代码看起来也比较干净</li>
+<li>如果 useState 返回的是对象，在解构对象的时候必须要和 useState 内部实现返回的对象同名，想要使用多次的话，必须得设置别名才能使用返回值</li>
+</ul>
+<p>下面来看看如果 useState 返回对象的情况：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 第一次使用</span><br><span class="hljs-keyword">const</span> &#123; state, setState &#125; = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>);<br><span class="hljs-comment">// 第二次使用</span><br><span class="hljs-keyword">const</span> &#123; <span class="hljs-attr">state</span>: counter, <span class="hljs-attr">setState</span>: setCounter &#125; = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>) <br></code></pre>
+
+<p>这里可以看到，返回对象的使用方式还是挺麻烦的，更何况实际项目中会使用的更频繁。 <strong>总结：</strong> useState 返回的是 array 而不是 object 的原因就是为了 <strong>降低使用的复杂度</strong>，返回数组的话可以直接根据顺序解构，而返回对象的话要想使用多次就需要定义别名了。</p>
+<h2 id="React-Hooks-解决了哪些问题？"><a href="#React-Hooks-解决了哪些问题？" class="headerlink" title="React Hooks 解决了哪些问题？"></a>React Hooks 解决了哪些问题？</h2><p>React Hooks 主要解决了以下问题：</p>
+<p><strong>（1）在组件之间复用状态逻辑很难</strong></p>
+<p>React 没有提供将可复用性行为“附加”到组件的途径（例如，把组件连接到 store）解决此类问题可以使用 render props 和 高阶组件。但是这类方案需要重新组织组件结构，这可能会很麻烦，并且会使代码难以理解。由 providers，consumers，高阶组件，render props 等其他抽象层组成的组件会形成“嵌套地狱”。尽管可以在 DevTools 过滤掉它们，但这说明了一个更深层次的问题：React 需要为共享状态逻辑提供更好的原生途径。</p>
+<p>可以使用 Hook 从组件中提取状态逻辑，使得这些逻辑可以单独测试并复用。Hook 使我们在无需修改组件结构的情况下复用状态逻辑。 这使得在组件间或社区内共享 Hook 变得更便捷。</p>
+<p><strong>（2）复杂组件变得难以理解</strong></p>
+<p>在组件中，每个生命周期常常包含一些不相关的逻辑。例如，组件常常在 componentDidMount 和 componentDidUpdate 中获取数据。但是，同一个 componentDidMount 中可能也包含很多其它的逻辑，如设置事件监听，而之后需在 componentWillUnmount 中清除。相互关联且需要对照修改的代码被进行了拆分，而完全不相关的代码却在同一个方法中组合在一起。如此很容易产生 bug，并且导致逻辑不一致。</p>
+<p>在多数情况下，不可能将组件拆分为更小的粒度，因为状态逻辑无处不在。这也给测试带来了一定挑战。同时，这也是很多人将 React 与状态管理库结合使用的原因之一。但是，这往往会引入了很多抽象概念，需要你在不同的文件之间来回切换，使得复用变得更加困难。</p>
+<p>为了解决这个问题，Hook 将组件中相互关联的部分拆分成更小的函数（比如设置订阅或请求数据），而并非强制按照生命周期划分。你还可以使用 reducer 来管理组件的内部状态，使其更加可预测。</p>
+<p><strong>（3）难以理解的 class</strong></p>
+<p>除了代码复用和代码管理会遇到困难外，class 是学习 React 的一大屏障。我们必须去理解 JavaScript 中 this 的工作方式，这与其他语言存在巨大差异。还不能忘记绑定事件处理器。没有稳定的语法提案，这些代码非常冗余。大家可以很好地理解 props，state 和自顶向下的数据流，但对 class 却一筹莫展。即便在有经验的 React 开发者之间，对于函数组件与 class 组件的差异也存在分歧，甚至还要区分两种组件的使用场景。</p>
+<p>为了解决这些问题，Hook 使你在非 class 的情况下可以使用更多的 React 特性。 从概念上讲，React 组件一直更像是函数。而 Hook 则拥抱了函数，同时也没有牺牲 React 的精神原则。Hook 提供了问题的解决方案，无需学习复杂的函数式或响应式编程技术</p>
+<h2 id="React-Hook-的使用限制有哪些？"><a href="#React-Hook-的使用限制有哪些？" class="headerlink" title="React Hook 的使用限制有哪些？"></a>React Hook 的使用限制有哪些？</h2><p>React Hooks 的限制主要有两条：</p>
+<ul>
+<li>不要在循环、条件或嵌套函数中调用 Hook；</li>
+<li>在 React 的函数组件中调用 Hook。</li>
+</ul>
+<p>那为什么会有这样的限制呢？Hooks 的设计初衷是为了改进 React 组件的开发模式。在旧有的开发模式下遇到了三个问题。</p>
+<ul>
+<li>组件之间难以复用状态逻辑。过去常见的解决方案是高阶组件、render props 及状态管理框架。</li>
+<li>复杂的组件变得难以理解。生命周期函数与业务逻辑耦合太深，导致关联部分难以拆分。</li>
+<li>人和机器都很容易混淆类。常见的有 this 的问题，但在 React 团队中还有类难以优化的问题，希望在编译优化层面做出一些改进。</li>
+</ul>
+<p>这三个问题在一定程度上阻碍了 React 的后续发展，所以为了解决这三个问题，Hooks <strong>基于函数组件</strong>开始设计。然而第三个问题决定了 Hooks 只支持函数组件。</p>
+<p>那为什么不要在循环、条件或嵌套函数中调用 Hook 呢？因为 Hooks 的设计是基于数组实现。在调用时按顺序加入数组中，如果使用循环、条件或嵌套函数很有可能导致数组取值错位，执行错误的 Hook。当然，实质上 React 的源码里不是数组，是链表。</p>
+<p>这些限制会在编码上造成一定程度的心智负担，新手可能会写错，为了避免这样的情况，可以引入 ESLint 的 Hooks 检查插件进行预防。</p>
+<h2 id="useEffect-与-useLayoutEffect-的区别"><a href="#useEffect-与-useLayoutEffect-的区别" class="headerlink" title="useEffect 与 useLayoutEffect 的区别"></a>useEffect 与 useLayoutEffect 的区别</h2><p><strong>（1）共同点</strong></p>
+<ul>
+<li><strong>运用效果：</strong> useEffect 与 useLayoutEffect 两者都是用于处理副作用，这些副作用包括改变 DOM、设置订阅、操作定时器等。在函数组件内部操作副作用是不被允许的，所以需要使用这两个函数去处理。</li>
+<li><strong>使用方式：</strong> useEffect 与 useLayoutEffect 两者底层的函数签名是完全一致的，都是调用的 mountEffectImpl方法，在使用上也没什么差异，基本可以直接替换。</li>
+</ul>
+<p><strong>（2）不同点</strong></p>
+<ul>
+<li><strong>使用场景：</strong> useEffect 在 React 的渲染过程中是被异步调用的，用于绝大多数场景；而 useLayoutEffect 会在所有的 DOM 变更之后同步调用，主要用于处理 DOM 操作、调整样式、避免页面闪烁等问题。也正因为是同步处理，所以需要避免在 useLayoutEffect 做计算量较大的耗时任务从而造成阻塞。</li>
+<li><strong>使用效果：</strong> useEffect是按照顺序执行代码的，改变屏幕像素之后执行（先渲染，后改变DOM），当改变屏幕内容时可能会产生闪烁；useLayoutEffect是改变屏幕像素之前就执行了（会推迟页面显示的事件，先改变DOM后渲染），不会产生闪烁。<strong>useLayoutEffect总是比useEffect先执行。</strong></li>
+</ul>
+<p>在未来的趋势上，两个 API 是会长期共存的，暂时没有删减合并的计划，需要开发者根据场景去自行选择。React 团队的建议非常实用，如果实在分不清，先用 useEffect，一般问题不大；如果页面有异常，再直接替换为 useLayoutEffect 即可。</p>
+<h2 id="React-Hooks在平时开发中需要注意的问题和原因"><a href="#React-Hooks在平时开发中需要注意的问题和原因" class="headerlink" title="React Hooks在平时开发中需要注意的问题和原因"></a>React Hooks在平时开发中需要注意的问题和原因</h2><p>（1）<strong>不要在循环，条件或嵌套函数中调用Hook，必须始终在 React函数的顶层使用Hook</strong></p>
+<p>这是因为React需要利用调用顺序来正确更新相应的状态，以及调用相应的钩子函数。一旦在循环或条件分支语句中调用Hook，就容易导致调用顺序的不一致性，从而产生难以预料到的后果。</p>
+<p><strong>（2）使用useState时候，使用push，pop，splice等直接更改数组对象的坑</strong></p>
+<p>使用push直接更改数组无法获取到新值，应该采用析构方式，但是在class里面不会有这个问题。代码示例：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Indicatorfilter</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">let</span> [num,setNums] = <span class="hljs-title function_">useState</span>([<span class="hljs-number">0</span>,<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>])<br>  <span class="hljs-keyword">const</span> <span class="hljs-title function_">test</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>    <span class="hljs-comment">// 这里坑是直接采用push去更新num</span><br>    <span class="hljs-comment">// setNums(num)是无法更新num的</span><br>    <span class="hljs-comment">// 必须使用num = [...num ,1]</span><br>    num.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>    <span class="hljs-comment">// num = [...num ,1]</span><br>    <span class="hljs-title function_">setNums</span>(num)<br>  &#125;<br><span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&#x27;filter&#x27;</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;test&#125;</span>&gt;</span>测试<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">          &#123;num.map((item,index) =&gt; (</span><br><span class="language-xml">              <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;index&#125;</span>&gt;</span>&#123;item&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">          ))&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  )<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Indicatorfilter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">React.Component</span>&lt;any,any&gt;&#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">props:any</span>)&#123;<br>      <span class="hljs-variable language_">super</span>(props)<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span> = &#123;<br>          <span class="hljs-attr">nums</span>:[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]<br>      &#125;<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">test</span> = <span class="hljs-variable language_">this</span>.<span class="hljs-property">test</span>.<span class="hljs-title function_">bind</span>(<span class="hljs-variable language_">this</span>)<br>  &#125;<br><br>  <span class="hljs-title function_">test</span>(<span class="hljs-params"></span>)&#123;<br>      <span class="hljs-comment">// class采用同样的方式是没有问题的</span><br>      <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>.<span class="hljs-property">nums</span>.<span class="hljs-title function_">push</span>(<span class="hljs-number">1</span>)<br>      <span class="hljs-variable language_">this</span>.<span class="hljs-title function_">setState</span>(&#123;<br>          <span class="hljs-attr">nums</span>: <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>.<span class="hljs-property">nums</span><br>      &#125;)<br>  &#125;<br><br>  <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>      <span class="hljs-keyword">let</span> &#123;nums&#125; = <span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span><br>      <span class="hljs-keyword">return</span>(<br>          <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">              <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;this.test&#125;</span>&gt;</span>测试<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                      &#123;nums.map((item:any,index:number) =&gt; (</span><br><span class="language-xml">                          <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;index&#125;</span>&gt;</span>&#123;item&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                      ))&#125;</span><br><span class="language-xml">                  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><br>      )<br>  &#125;<br>&#125;<br></code></pre>
+
+<p>（3）<strong>useState设置状态的时候，只有第一次生效，后期需要更新状态，必须通过useEffect</strong></p>
+<p>TableDeail是一个公共组件，在调用它的父组件里面，我们通过set改变columns的值，以为传递给TableDeail 的 columns是最新的值，所以tabColumn每次也是最新的值，但是实际tabColumn是最开始的值，不会随着columns的更新而更新：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title function_">TableDeail</span> = (<span class="hljs-params">&#123;</span><br><span class="hljs-params">    columns,</span><br><span class="hljs-params">&#125;:TableData</span>) =&gt; &#123;<br>    <span class="hljs-keyword">const</span> [tabColumn, setTabColumn] = <span class="hljs-title function_">useState</span>(columns) <br>&#125;<br><br><span class="hljs-comment">// 正确的做法是通过useEffect改变这个值</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">TableDeail</span> = (<span class="hljs-params">&#123;</span><br><span class="hljs-params">    columns,</span><br><span class="hljs-params">&#125;:TableData</span>) =&gt; &#123;<br>    <span class="hljs-keyword">const</span> [tabColumn, setTabColumn] = <span class="hljs-title function_">useState</span>(columns) <br>    <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span>&#123;<span class="hljs-title function_">setTabColumn</span>(columns)&#125;,[columns])<br>&#125;<br><br></code></pre>
+
+<p><strong>（4）善用useCallback</strong></p>
+<p>父组件传递给子组件事件句柄时，如果我们没有任何参数变动可能会选用useMemo。但是每一次父组件渲染子组件即使没变化也会跟着渲染一次。</p>
+<p><strong>（5）不要滥用useContext</strong></p>
+<p>可以使用基于 useContext 封装的状态管理工具。</p>
+<h2 id="React-Hooks-和生命周期的关系？"><a href="#React-Hooks-和生命周期的关系？" class="headerlink" title="React Hooks 和生命周期的关系？"></a>React Hooks 和生命周期的关系？</h2><p><strong>函数组件</strong> 的本质是函数，没有 state 的概念的，因此<strong>不存在生命周期</strong>一说，仅仅是一个 <strong>render 函数</strong>而已。 但是引入 <strong>Hooks</strong> 之后就变得不同了，它能让组件在不使用 class 的情况下拥有 state，所以就有了生命周期的概念，所谓的生命周期其实就是 <code>useState</code>、 <code>useEffect()</code> 和 <code>useLayoutEffect()</code> 。</p>
+<p>即：<strong>Hooks 组件（使用了Hooks的函数组件）有生命周期，而函数组件（未使用Hooks的函数组件）是没有生命周期的</strong>。</p>
+<p>下面是具体的 class 与 Hooks 的<strong>生命周期对应关系</strong>：</p>
+<ul>
+<li><code>constructor</code>：函数组件不需要构造函数，可以通过调用 <code>**useState 来初始化 state**</code>。如果计算的代价比较昂贵，也可以传一个函数给 <code>useState</code>。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> [num, <span class="hljs-title class_">UpdateNum</span>] = <span class="hljs-title function_">useState</span>(<span class="hljs-number">0</span>)<br></code></pre>
+
+<ul>
+<li><code>getDerivedStateFromProps</code>：一般情况下，我们不需要使用它，可以在<strong>渲染过程中更新 state</strong>，以达到实现 <code>getDerivedStateFromProps</code> 的目的。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">ScrollView</span>(<span class="hljs-params">&#123;row&#125;</span>) &#123;<br>  <span class="hljs-keyword">let</span> [isScrollingDown, setIsScrollingDown] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">false</span>);<br>  <span class="hljs-keyword">let</span> [prevRow, setPrevRow] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">null</span>);<br>  <span class="hljs-keyword">if</span> (row !== prevRow) &#123;<br>    <span class="hljs-comment">// Row 自上次渲染以来发生过改变。更新 isScrollingDown。</span><br>    <span class="hljs-title function_">setIsScrollingDown</span>(prevRow !== <span class="hljs-literal">null</span> &amp;&amp; row &gt; prevRow);<br>    <span class="hljs-title function_">setPrevRow</span>(row);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`Scrolling down: <span class="hljs-subst">$&#123;isScrollingDown&#125;</span>`</span>;<br>&#125;<br></code></pre>
+
+<p>React 会立即退出第一次渲染并用更新后的 state 重新运行组件以避免耗费太多性能。</p>
+<ul>
+<li><code>shouldComponentUpdate</code>：可以用 <code>**React.memo**</code> 包裹一个组件来对它的 <code>props</code> 进行浅比较</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> <span class="hljs-title class_">Button</span> = <span class="hljs-title class_">React</span>.<span class="hljs-title function_">memo</span>(<span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> &#123;  <span class="hljs-comment">// 具体的组件&#125;);</span><br>复制代码<br></code></pre>
+
+<p>注意：<code>**React.memo 等效于 **``**PureComponent**</code>，它只浅比较 props。这里也可以使用 <code>useMemo</code> 优化每一个节点。</p>
+<ul>
+<li><code>render</code>：这是函数组件体本身。</li>
+<li><code>componentDidMount</code>, <code>componentDidUpdate</code>： <code>useLayoutEffect</code> 与它们两的调用阶段是一样的。但是，我们推荐你<strong>一开始先用 useEffect</strong>，只有当它出问题的时候再尝试使用 <code>useLayoutEffect</code>。<code>useEffect</code> 可以表达所有这些的组合。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// componentDidMount</span><br><span class="hljs-title function_">useEffect</span>(<span class="hljs-function">()=&gt;</span>&#123;<br>  <span class="hljs-comment">// 需要在 componentDidMount 执行的内容</span><br>&#125;, [])<br><span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123; <br>  <span class="hljs-comment">// 在 componentDidMount，以及 count 更改时 componentDidUpdate 执行的内容</span><br>  <span class="hljs-variable language_">document</span>.<span class="hljs-property">title</span> = <span class="hljs-string">`You clicked <span class="hljs-subst">$&#123;count&#125;</span> times`</span>; <br>  <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-comment">// 需要在 count 更改时 componentDidUpdate（先于 document.title = ... 执行，遵守先清理后更新）</span><br>    <span class="hljs-comment">// 以及 componentWillUnmount 执行的内容       </span><br>  &#125; <span class="hljs-comment">// 当函数中 Cleanup 函数会按照在代码中定义的顺序先后执行，与函数本身的特性无关</span><br>&#125;, [count]); <span class="hljs-comment">// 仅在 count 更改时更新</span><br></code></pre>
+
+<p><strong>请记得 React 会等待浏览器完成画面渲染之后才会延迟调用 ，因此会使得额外操作很方便</strong></p>
+<ul>
+<li><code>componentWillUnmount</code>：相当于 <code>useEffect </code>里面返回的 <code>cleanup</code> 函数</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// componentDidMount/componentWillUnmount</span><br><span class="hljs-title function_">useEffect</span>(<span class="hljs-function">()=&gt;</span>&#123;<br>  <span class="hljs-comment">// 需要在 componentDidMount 执行的内容</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">cleanup</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">// 需要在 componentWillUnmount 执行的内容      </span><br>  &#125;<br>&#125;, [])<br></code></pre>
+
+<ul>
+<li><code>componentDidCatch</code> and <code>getDerivedStateFromError</code>：目前<strong>还没有</strong>这些方法的 Hook 等价写法，但很快会加上。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>class 组件</strong></th>
+<th><strong>Hooks 组件</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>constructor</td>
+<td>useState</td>
+</tr>
+<tr>
+<td>getDerivedStateFromProps</td>
+<td>useState 里面 update 函数</td>
+</tr>
+<tr>
+<td>shouldComponentUpdate</td>
+<td>useMemo</td>
+</tr>
+<tr>
+<td>render</td>
+<td>函数本身</td>
+</tr>
+<tr>
+<td>componentDidMount</td>
+<td>useEffect</td>
+</tr>
+<tr>
+<td>componentDidUpdate</td>
+<td>useEffect</td>
+</tr>
+<tr>
+<td>componentWillUnmount</td>
+<td>useEffect 里面返回的函数</td>
+</tr>
+<tr>
+<td>componentDidCatch</td>
+<td>无</td>
+</tr>
+<tr>
+<td>getDerivedStateFromError</td>
+<td>无</td>
+</tr>
+</tbody></table>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2025/01/02/25010204/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">react Redux面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2025/01/02/25010206/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">react虚拟DOM面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-React-Hook-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E5%AE%83%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">对 React Hook 的理解，它的实现原理是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-useState-%E8%A6%81%E4%BD%BF%E7%94%A8%E6%95%B0%E7%BB%84%E8%80%8C%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">为什么 useState 要使用数组而不是对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">数组的解构赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">对象的解构赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E8%A7%A3%E5%86%B3%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">React Hooks 解决了哪些问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hook-%E7%9A%84%E4%BD%BF%E7%94%A8%E9%99%90%E5%88%B6%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">React Hook 的使用限制有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useEffect-%E4%B8%8E-useLayoutEffect-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">useEffect 与 useLayoutEffect 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks%E5%9C%A8%E5%B9%B3%E6%97%B6%E5%BC%80%E5%8F%91%E4%B8%AD%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98%E5%92%8C%E5%8E%9F%E5%9B%A0"><span class="toc-text">React Hooks在平时开发中需要注意的问题和原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E5%92%8C%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%9F"><span class="toc-text">React Hooks 和生命周期的关系？</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-React-Hook-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E5%AE%83%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">对 React Hook 的理解，它的实现原理是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-useState-%E8%A6%81%E4%BD%BF%E7%94%A8%E6%95%B0%E7%BB%84%E8%80%8C%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">为什么 useState 要使用数组而不是对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">数组的解构赋值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="toc-text">对象的解构赋值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E8%A7%A3%E5%86%B3%E4%BA%86%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="toc-text">React Hooks 解决了哪些问题？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hook-%E7%9A%84%E4%BD%BF%E7%94%A8%E9%99%90%E5%88%B6%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="toc-text">React Hook 的使用限制有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#useEffect-%E4%B8%8E-useLayoutEffect-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">useEffect 与 useLayoutEffect 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks%E5%9C%A8%E5%B9%B3%E6%97%B6%E5%BC%80%E5%8F%91%E4%B8%AD%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E9%97%AE%E9%A2%98%E5%92%8C%E5%8E%9F%E5%9B%A0"><span class="toc-text">React Hooks在平时开发中需要注意的问题和原因</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#React-Hooks-%E5%92%8C%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%9F"><span class="toc-text">React Hooks 和生命周期的关系？</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

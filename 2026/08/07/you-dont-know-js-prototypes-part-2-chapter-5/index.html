@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》第二部分第五章：原型</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》第二部分第五章：原型">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-prototypes-part-2-chapter-5/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="理解对象的 [[Prototype]] 委托链、属性屏蔽、函数 prototype 与 constructor 的区别，以及 Object.create、instanceof 和无原型字典的边界。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="对象">
+        
+          <meta 
+            property="og:article:tag" 
+            content="原型">
+        
+          <meta 
+            property="og:article:tag" 
+            content="instanceof">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Prototype-%EF%BC%9A%E5%AF%B9%E8%B1%A1%E9%97%B4%E7%9A%84%E5%A7%94%E6%89%98%E5%85%B3%E8%81%94"><span class="toc-text">[[Prototype]]：对象间的委托关联</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E5%A6%82%E4%BD%95%E8%AF%BB%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-text">原型链如何读取属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%B1%8F%E8%94%BD%EF%BC%9A%E5%86%99%E5%85%A5%E4%B8%BA%E4%BD%95%E4%B8%8D%E6%80%BB%E6%98%AF%E6%94%B9%E5%8E%9F%E5%9E%8B"><span class="toc-text">属性屏蔽：写入为何不总是改原型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9E%E4%BC%9A%E5%85%88%E8%AF%BB%E5%90%8E%E5%86%99"><span class="toc-text">自增会先读后写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84-prototype-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E7%9A%84-Prototype"><span class="toc-text">函数的 prototype 与对象的 [[Prototype]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constructor-%E6%98%AF%E7%BA%A6%E5%AE%9A%E6%80%A7%E5%B1%9E%E6%80%A7%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%8F%AF%E9%9D%A0%E7%B1%BB%E5%9E%8B%E6%A0%87%E7%AD%BE"><span class="toc-text">constructor 是约定性属性，不是可靠类型标签</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E8%B0%83%E7%94%A8%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%85%B3%E8%81%94"><span class="toc-text">构造调用与原型关联</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%BC%8F%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF%E7%9A%84%E6%AD%A3%E7%A1%AE%E8%B5%B7%E7%82%B9"><span class="toc-text">类式原型继承的正确起点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7"><span class="toc-text">无原型对象与原型判断工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%AF%BB%E5%8F%96%E6%9D%A5%E8%87%AA%E5%93%AA%E9%87%8C%EF%BC%8C%E5%86%99%E5%85%A5%E5%8F%91%E7%94%9F%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">练习：读取来自哪里，写入发生在哪里</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》第二部分第五章：原型
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-prototypes-part-2-chapter-5.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%AF%B9%E8%B1%A1/" 
+            class="post-meta-link">
+            对象
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%8E%9F%E5%9E%8B/" 
+            class="post-meta-link">
+            原型
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/instanceof/" 
+            class="post-meta-link">
+            instanceof
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本文承接<a href="/2026/08/07/you-dont-know-js-mixins-and-classes-part-2-chapter-4/">混合对象“类”</a>。原型不是对象的“父类副本”，而是一条属性查找时可委托给其他对象的关联。下一章将以 OLOO（Objects Linked to Other Objects）进一步讨论如何直接设计这种关联。</p>
+</blockquote>
+<h2 id="Prototype-：对象间的委托关联"><a href="#Prototype-：对象间的委托关联" class="headerlink" title="[[Prototype]]：对象间的委托关联"></a><code>[[Prototype]]</code>：对象间的委托关联</h2><p>普通对象具有内部的 <code>[[Prototype]]</code> 链接，它要么引用另一个对象，要么为 <code>null</code>。当对象自身没有某个属性时，属性读取可以沿该链接继续查找，这便形成原型链。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> parent = &#123; <span class="hljs-attr">value</span>: <span class="hljs-number">2</span> &#125;;<br><span class="hljs-keyword">const</span> child = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(parent);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(child) === parent); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(child.<span class="hljs-property">value</span>); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p><code>Object.getPrototypeOf(obj)</code> 是读取直接原型的标准 API；<code>Object.create(proto)</code> 则创建一个以 <code>proto</code> 为原型的新对象。应优先使用这两个 API。</p>
+<p><code>obj.__proto__</code> 是历史遗留访问器，在现代环境中存在规范化的兼容定义，但不适合作为业务代码的原型操作 API。它容易与对象字面量中的特殊 <code>__proto__</code> 语法混淆，也不适用于所有无原型对象。更不要频繁调用 <code>Object.setPrototypeOf()</code> 修改已创建对象的原型，这通常会损害运行时优化；应在创建阶段建立关联。</p>
+<h3 id="原型链如何读取属性"><a href="#原型链如何读取属性" class="headerlink" title="原型链如何读取属性"></a>原型链如何读取属性</h3><p>读取 <code>obj.key</code> 可用下面的简化过程理解：</p>
+<ol>
+<li>在 <code>obj</code> 自身属性中查找 <code>key</code>；</li>
+<li>若不存在，继续查 <code>Object.getPrototypeOf(obj)</code>；</li>
+<li>重复直到原型为 <code>null</code>；</li>
+<li>仍未找到时，结果为 <code>undefined</code>。</li>
+</ol>
+<p>多数普通对象的链最终会经过 <code>Object.prototype</code>，其中包含 <code>toString</code>、<code>valueOf</code>、<code>hasOwnProperty</code>、<code>isPrototypeOf</code> 等通用方法。但这不是所有对象的强制终点：<code>Object.create(null)</code> 的原型直接为 <code>null</code>，不同 realm 的内建对象也拥有各自的原型对象。</p>
+<p>原型链只参与属性查找，不会复制属性。<code>child.value</code> 得到 <code>parent.value</code>，并不表示 <code>child</code> 获得了一个自己的 <code>value</code>。</p>
+<h2 id="属性屏蔽：写入为何不总是改原型"><a href="#属性屏蔽：写入为何不总是改原型" class="headerlink" title="属性屏蔽：写入为何不总是改原型"></a>属性屏蔽：写入为何不总是改原型</h2><p>当原型链上已有同名属性，对当前对象赋值时会发生不同结果。最常见的一种是创建自身同名属性，从而遮蔽（shadow）原型属性：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> parent = &#123; <span class="hljs-attr">value</span>: <span class="hljs-number">1</span> &#125;;<br><span class="hljs-keyword">const</span> child = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(parent);<br><br>child.<span class="hljs-property">value</span> = <span class="hljs-number">99</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(child.<span class="hljs-property">value</span>); <span class="hljs-comment">// 99</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(parent.<span class="hljs-property">value</span>); <span class="hljs-comment">// 1</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(child, <span class="hljs-string">&quot;value&quot;</span>)); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>这个结果成立的前提是：自身没有阻止写入的属性，原型上的同名数据属性可写，且 <code>child</code> 可扩展。属性赋值实际对应规范中的 <code>[[Set]]</code>，还要考虑访问器和完整性限制。</p>
+<table>
+<thead>
+<tr>
+<th>原型上的同名属性</th>
+<th><code>child.key = value</code> 的结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可写数据属性</td>
+<td>通常在 <code>child</code> 上创建可写自身属性，遮蔽原型</td>
+</tr>
+<tr>
+<td>不可写数据属性</td>
+<td>赋值失败；严格模式抛出 <code>TypeError</code></td>
+</tr>
+<tr>
+<td>带 setter 的访问器</td>
+<td>调用 setter，通常不创建同名自身属性</td>
+</tr>
+<tr>
+<td>只有 getter 的访问器</td>
+<td>赋值失败；严格模式抛出 <code>TypeError</code></td>
+</tr>
+</tbody></table>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> parent = &#123;<br>  <span class="hljs-keyword">set</span> <span class="hljs-title function_">score</span>(<span class="hljs-params">value</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">_score</span> = value;<br>  &#125;,<br>&#125;;<br><span class="hljs-keyword">const</span> child = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(parent);<br><br>child.<span class="hljs-property">score</span> = <span class="hljs-number">10</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(child, <span class="hljs-string">&quot;score&quot;</span>)); <span class="hljs-comment">// false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(child.<span class="hljs-property">_score</span>); <span class="hljs-comment">// 10</span><br></code></pre>
+
+<p>setter 以接收者 <code>child</code> 作为 <code>this</code> 执行，因此上例创建的是 <code>child._score</code>，不是 <code>child.score</code>。若确实要绕过继承而定义自身属性，可以使用 <code>Object.defineProperty()</code>，前提是目标对象可扩展；但不应把它当作对原型 API 设计的常规修补手段。</p>
+<h3 id="自增会先读后写"><a href="#自增会先读后写" class="headerlink" title="自增会先读后写"></a>自增会先读后写</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> parent = &#123; <span class="hljs-attr">count</span>: <span class="hljs-number">2</span> &#125;;<br><span class="hljs-keyword">const</span> child = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(parent);<br><br>child.<span class="hljs-property">count</span> += <span class="hljs-number">1</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(child.<span class="hljs-property">count</span>); <span class="hljs-comment">// 3</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(parent.<span class="hljs-property">count</span>); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p><code>child.count += 1</code> 会先沿原型链读取到 <code>2</code>，再尝试把 <code>3</code> 写回 <code>child.count</code>。在本例中写入创建自身属性，于是产生遮蔽。这不是“修改了原型再复制”，而是一次读取委托加一次自身写入。</p>
+<h2 id="函数的-prototype-与对象的-Prototype"><a href="#函数的-prototype-与对象的-Prototype" class="headerlink" title="函数的 prototype 与对象的 [[Prototype]]"></a>函数的 <code>prototype</code> 与对象的 <code>[[Prototype]]</code></h2><p>这两个名称很像，却不是同一个东西：</p>
+<ul>
+<li>**对象的 <code>[[Prototype]]</code>**：该对象属性查找时要委托给谁；</li>
+<li><strong>构造函数的 <code>prototype</code> 属性</strong>：使用 <code>new Fn()</code> 创建对象时，新对象应关联到哪个原型对象。</li>
+</ul>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Foo</span>(<span class="hljs-params"></span>) &#123;&#125;<br><br><span class="hljs-keyword">const</span> instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Foo</span>();<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(instance) === <span class="hljs-title class_">Foo</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(<span class="hljs-title class_">Foo</span>) === <span class="hljs-title class_">Function</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><code>Foo.prototype</code> 不是 <code>Foo</code> 自己的原型，<code>Object.getPrototypeOf(Foo)</code> 才是。并且不是所有函数值都可构造：箭头函数和方法简写不能作为 <code>new</code> 的目标，因此不能把“每个函数都有可供实例使用的 <code>prototype</code>”当成通用规则。</p>
+<h2 id="constructor-是约定性属性，不是可靠类型标签"><a href="#constructor-是约定性属性，不是可靠类型标签" class="headerlink" title="constructor 是约定性属性，不是可靠类型标签"></a><code>constructor</code> 是约定性属性，不是可靠类型标签</h2><p>默认创建的 <code>Foo.prototype</code> 通常有一个 <code>constructor</code> 属性指回 <code>Foo</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Foo</span>(<span class="hljs-params"></span>) &#123;&#125;<br><span class="hljs-keyword">const</span> instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Foo</span>();<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(instance.<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Foo</span>); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>实例通常没有自己的 <code>constructor</code>，上例是沿原型链找到的。若替换原型对象，这个约定很容易丢失或变成不符合预期的值：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Foo</span>(<span class="hljs-params"></span>) &#123;&#125;<br><span class="hljs-title class_">Foo</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = &#123; <span class="hljs-title function_">greet</span>(<span class="hljs-params"></span>) &#123;&#125; &#125;;<br><br><span class="hljs-keyword">const</span> instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Foo</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(instance.<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Foo</span>); <span class="hljs-comment">// false</span><br></code></pre>
+
+<p>因此，不要用 <code>obj.constructor</code> 做运行时类型验证。<code>Object.prototype.toString.call(value)</code> 对内建值有时有帮助，但可受 <code>Symbol.toStringTag</code> 和跨 realm 影响，也不是万能“真实类型”判断。对数组使用 <code>Array.isArray()</code>；对业务对象使用显式标签、schema 校验或可靠的领域不变量。</p>
+<h2 id="构造调用与原型关联"><a href="#构造调用与原型关联" class="headerlink" title="构造调用与原型关联"></a>构造调用与原型关联</h2><p>对可构造函数执行 <code>new Foo(args)</code> 时，可以将过程理解为：</p>
+<ol>
+<li>创建一个新对象，并将新对象的 <code>[[Prototype]]</code> 设为当时的 <code>Foo.prototype</code>（若它是对象）；</li>
+<li>以新对象为 <code>this</code> 执行 <code>Foo</code>；</li>
+<li>若 <code>Foo</code> 显式返回对象或函数，使用该返回值；否则返回新对象。</li>
+</ol>
+<p>这解释了为什么后续替换 <code>Foo.prototype</code> 不会改变已创建实例的原型链接：每次 <code>new</code> 只在创建当时读取一次 <code>Foo.prototype</code>。</p>
+<h2 id="类式原型继承的正确起点"><a href="#类式原型继承的正确起点" class="headerlink" title="类式原型继承的正确起点"></a>类式原型继承的正确起点</h2><p>若维护使用构造函数的旧代码，建立原型关联时应避免执行父构造函数：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Parent</span>(<span class="hljs-params">name</span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span> = name;<br>&#125;<br><br><span class="hljs-title class_">Parent</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">say</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">say</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>;<br>&#125;;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Child</span>(<span class="hljs-params">name, level</span>) &#123;<br>  <span class="hljs-title class_">Parent</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>, name); <span class="hljs-comment">// 初始化当前实例的自有状态</span><br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">level</span> = level;<br>&#125;<br><br><span class="hljs-title class_">Child</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-title class_">Parent</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>);<br><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(<span class="hljs-title class_">Child</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>, <span class="hljs-string">&quot;constructor&quot;</span>, &#123;<br>  <span class="hljs-attr">value</span>: <span class="hljs-title class_">Child</span>,<br>  <span class="hljs-attr">writable</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>&#125;);<br><br><span class="hljs-keyword">const</span> child = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Child</span>(<span class="hljs-string">&quot;Ada&quot;</span>, <span class="hljs-number">2</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(child.<span class="hljs-title function_">say</span>()); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p><code>Child.prototype = new Parent()</code> 会在建立原型链时运行父构造函数，并将父实例属性放入 <code>Child.prototype</code>。对象或数组等可变属性会被所有未遮蔽它们的子实例共享，构造函数副作用也会提前发生。<code>Object.create(Parent.prototype)</code> 只建立所需的委托关系。</p>
+<p>这类“继承”模式仍是用构造函数模拟类层级。它有实际用途，但不是唯一设计方案；下一章的 OLOO 会直接从对象委托关系组织行为。</p>
+<h2 id="无原型对象与原型判断工具"><a href="#无原型对象与原型判断工具" class="headerlink" title="无原型对象与原型判断工具"></a>无原型对象与原型判断工具</h2><p><code>Object.create(null)</code> 创建的对象的 <code>[[Prototype]]</code> 就是 <code>null</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> dictionary = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>);<br>dictionary.<span class="hljs-property">scope</span> = <span class="hljs-string">&quot;lexical&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(dictionary)); <span class="hljs-comment">// null</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(dictionary, <span class="hljs-string">&quot;scope&quot;</span>)); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>它适合需要避免原型键干扰的纯字典。没有原型不代表没有属性，只是属性查找不会继续委托到 <code>Object.prototype</code>；直接调用 <code>dictionary.hasOwnProperty</code> 会失败。</p>
+<p>常见原型相关工具的含义如下：</p>
+<table>
+<thead>
+<tr>
+<th>API &#x2F; 运算符</th>
+<th>用途与边界</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Object.getPrototypeOf(obj)</code></td>
+<td>返回直接原型或 <code>null</code></td>
+</tr>
+<tr>
+<td><code>proto.isPrototypeOf(obj)</code></td>
+<td>判断 <code>proto</code> 是否出现在 <code>obj</code> 的原型链上；无原型对象需通过 <code>Object.prototype.isPrototypeOf.call</code> 使用</td>
+</tr>
+<tr>
+<td><code>obj instanceof Fn</code></td>
+<td>判断 <code>Fn.prototype</code> 是否出现在 <code>obj</code> 的原型链上</td>
+</tr>
+<tr>
+<td><code>Object.hasOwn(obj, key)</code></td>
+<td>只判断自身是否有属性，不用于原型关系判断</td>
+</tr>
+</tbody></table>
+<p><code>instanceof</code> 很适合判断同一 realm 中由特定构造函数&#x2F;类创建的实例，但不能作为通用类型系统：跨 iframe&#x2F;realm 时会失败，且类可自定义 <code>Symbol.hasInstance</code>，构造函数的 <code>prototype</code> 也可能被替换。</p>
+<h2 id="练习：读取来自哪里，写入发生在哪里"><a href="#练习：读取来自哪里，写入发生在哪里" class="headerlink" title="练习：读取来自哪里，写入发生在哪里"></a>练习：读取来自哪里，写入发生在哪里</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> base = &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&quot;reader&quot;</span> &#125;;<br><span class="hljs-keyword">const</span> account = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(base);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(account.<span class="hljs-property">role</span>);<br>account.<span class="hljs-property">role</span> = <span class="hljs-string">&quot;author&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(base.<span class="hljs-property">role</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(account, <span class="hljs-string">&quot;role&quot;</span>));<br></code></pre>
+
+<details>
+<summary>查看解析</summary>
+
+<p>依次输出 <code>&quot;reader&quot;</code>、<code>&quot;reader&quot;</code>、<code>true</code>。</p>
+<p>第一次读取沿原型链从 <code>base</code> 找到 <code>role</code>。随后赋值在 <code>account</code> 上创建自身 <code>role</code> 属性，遮蔽原型值，不会修改 <code>base.role</code>。</p>
+</details>
+
+<h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><ol>
+<li><code>[[Prototype]]</code> 是对象属性查找时的委托链接，值可以是对象或 <code>null</code>；<code>Object.create</code> 是建立关联的标准方式。</li>
+<li>读取会沿原型链向上查找，属性不会因此被复制到当前对象。</li>
+<li>写入受自身属性、原型描述符、setter、严格模式和对象可扩展性共同影响；可写继承属性常被自身属性遮蔽。</li>
+<li><code>Foo.prototype</code> 指定 <code>new Foo()</code> 实例的原型，不是 <code>Foo</code> 自己的原型；并非所有函数都可构造。</li>
+<li><code>constructor</code> 是易丢失的约定属性，<code>instanceof</code> 只回答原型链关联问题，二者都不应被当作万能类型判断。</li>
+<li>构造函数继承应使用 <code>Object.create(Parent.prototype)</code>，避免用父实例作为子原型。</li>
+<li><code>Object.create(null)</code> 适合无原型字典；存在性检查优先使用 <code>Object.hasOwn</code>。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain">MDN：继承与原型链</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf">MDN：Object.getPrototypeOf()</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create">MDN：Object.create()</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/instanceof">MDN：instanceof</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-mixins-and-classes-part-2-chapter-4/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第四章：混合对象“类” </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-behavior-delegation-oloo-part-2-chapter-6/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第六章：行为委托与 ES6 class </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Prototype-%EF%BC%9A%E5%AF%B9%E8%B1%A1%E9%97%B4%E7%9A%84%E5%A7%94%E6%89%98%E5%85%B3%E8%81%94"><span class="toc-text">[[Prototype]]：对象间的委托关联</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E5%A6%82%E4%BD%95%E8%AF%BB%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-text">原型链如何读取属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%B1%8F%E8%94%BD%EF%BC%9A%E5%86%99%E5%85%A5%E4%B8%BA%E4%BD%95%E4%B8%8D%E6%80%BB%E6%98%AF%E6%94%B9%E5%8E%9F%E5%9E%8B"><span class="toc-text">属性屏蔽：写入为何不总是改原型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9E%E4%BC%9A%E5%85%88%E8%AF%BB%E5%90%8E%E5%86%99"><span class="toc-text">自增会先读后写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84-prototype-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E7%9A%84-Prototype"><span class="toc-text">函数的 prototype 与对象的 [[Prototype]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constructor-%E6%98%AF%E7%BA%A6%E5%AE%9A%E6%80%A7%E5%B1%9E%E6%80%A7%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%8F%AF%E9%9D%A0%E7%B1%BB%E5%9E%8B%E6%A0%87%E7%AD%BE"><span class="toc-text">constructor 是约定性属性，不是可靠类型标签</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E8%B0%83%E7%94%A8%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%85%B3%E8%81%94"><span class="toc-text">构造调用与原型关联</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%BC%8F%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF%E7%9A%84%E6%AD%A3%E7%A1%AE%E8%B5%B7%E7%82%B9"><span class="toc-text">类式原型继承的正确起点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7"><span class="toc-text">无原型对象与原型判断工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%AF%BB%E5%8F%96%E6%9D%A5%E8%87%AA%E5%93%AA%E9%87%8C%EF%BC%8C%E5%86%99%E5%85%A5%E5%8F%91%E7%94%9F%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">练习：读取来自哪里，写入发生在哪里</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Prototype-%EF%BC%9A%E5%AF%B9%E8%B1%A1%E9%97%B4%E7%9A%84%E5%A7%94%E6%89%98%E5%85%B3%E8%81%94"><span class="toc-text">[[Prototype]]：对象间的委托关联</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E5%A6%82%E4%BD%95%E8%AF%BB%E5%8F%96%E5%B1%9E%E6%80%A7"><span class="toc-text">原型链如何读取属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%B1%8F%E8%94%BD%EF%BC%9A%E5%86%99%E5%85%A5%E4%B8%BA%E4%BD%95%E4%B8%8D%E6%80%BB%E6%98%AF%E6%94%B9%E5%8E%9F%E5%9E%8B"><span class="toc-text">属性屏蔽：写入为何不总是改原型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9E%E4%BC%9A%E5%85%88%E8%AF%BB%E5%90%8E%E5%86%99"><span class="toc-text">自增会先读后写</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84-prototype-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E7%9A%84-Prototype"><span class="toc-text">函数的 prototype 与对象的 [[Prototype]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#constructor-%E6%98%AF%E7%BA%A6%E5%AE%9A%E6%80%A7%E5%B1%9E%E6%80%A7%EF%BC%8C%E4%B8%8D%E6%98%AF%E5%8F%AF%E9%9D%A0%E7%B1%BB%E5%9E%8B%E6%A0%87%E7%AD%BE"><span class="toc-text">constructor 是约定性属性，不是可靠类型标签</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E8%B0%83%E7%94%A8%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%85%B3%E8%81%94"><span class="toc-text">构造调用与原型关联</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%BC%8F%E5%8E%9F%E5%9E%8B%E7%BB%A7%E6%89%BF%E7%9A%84%E6%AD%A3%E7%A1%AE%E8%B5%B7%E7%82%B9"><span class="toc-text">类式原型继承的正确起点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%8E%9F%E5%9E%8B%E5%88%A4%E6%96%AD%E5%B7%A5%E5%85%B7"><span class="toc-text">无原型对象与原型判断工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%AF%BB%E5%8F%96%E6%9D%A5%E8%87%AA%E5%93%AA%E9%87%8C%EF%BC%8C%E5%86%99%E5%85%A5%E5%8F%91%E7%94%9F%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="toc-text">练习：读取来自哪里，写入发生在哪里</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑪：Failover 重试逻辑完整拆解</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑪：Failover 重试逻辑完整拆解">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/13/2026-07-13-openclaw-source-code-analysis-11-failover/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="当 LLM API 返回 401、429、503 或 context overflow 时，OpenClaw 如何优雅降级——rotate_profile、fallback_model、compaction 的完整决策矩阵。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Failover">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Retry Logic">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Error Handling">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%94%84-Failover-%E9%87%8D%E8%AF%95%E9%80%BB%E8%BE%91%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">🔄 Failover 重试逻辑：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%BB%E5%BE%AA%E7%8E%AF%E9%87%8C%E7%9A%84%E4%B8%A4%E6%9D%A1%E5%88%86%E6%94%AF"><span class="toc-text">全局视角：主循环里的两条分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-A%EF%BC%9APrompt-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E5%9C%A8-run-ts-%E9%87%8C%E5%8E%9F%E5%9C%B0%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 A：Prompt 阶段 Failover（在 run.ts 里原地处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prompt-%E9%98%B6%E6%AE%B5%E7%9A%84%E4%B8%89%E4%B8%AA%E5%86%B3%E7%AD%96%E5%88%86%E6%94%AF"><span class="toc-text">Prompt 阶段的三个决策分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E4%BB%A3%E7%A0%81"><span class="toc-text">具体代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-B%EF%BC%9AAssistant-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E7%94%B1-handleAssistantFailover-%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 B：Assistant 阶段 Failover（由 handleAssistantFailover 处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#B1-Context-Overflow%EF%BC%88%E4%B8%8A%E4%B8%8B%E6%96%87%E6%BA%A2%E5%87%BA%EF%BC%89"><span class="toc-text">B1: Context Overflow（上下文溢出）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B2-8-%E7%A7%8D-Assistant-Failover-%E5%88%86%E7%B1%BB"><span class="toc-text">B2: 8 种 Assistant Failover 分类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84-Failover-%E7%9F%A9%E9%98%B5"><span class="toc-text">完整的 Failover 矩阵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rotate-profile-%E6%9C%BA%E5%88%B6"><span class="toc-text">rotate_profile 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fallback-model-%E6%9C%BA%E5%88%B6"><span class="toc-text">fallback_model 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%AD%BE%E5%90%8D%E5%AF%B9%E6%AF%94"><span class="toc-text">函数签名对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E9%99%90%E5%88%B6"><span class="toc-text">关键限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="toc-text">完整时序图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑪：Failover 重试逻辑完整拆解
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-13-openclaw-source-code-analysis-11-failover.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-13T07:43:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Failover/" 
+            class="post-meta-link">
+            Failover
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Retry-Logic/" 
+            class="post-meta-link">
+            Retry Logic
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Error-Handling/" 
+            class="post-meta-link">
+            Error Handling
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="🔄-Failover-重试逻辑：完整拆解"><a href="#🔄-Failover-重试逻辑：完整拆解" class="headerlink" title="🔄 Failover 重试逻辑：完整拆解"></a>🔄 Failover 重试逻辑：完整拆解</h1><h2 id="全局视角：主循环里的两条分支"><a href="#全局视角：主循环里的两条分支" class="headerlink" title="全局视角：主循环里的两条分支"></a>全局视角：主循环里的两条分支</h2><p><code>while(true)</code> 主循环里的每一次 LLM 调用，结果只有两种可能导致重试：</p>
+<pre class="highlight"><code class="hljs awk"><span class="hljs-keyword">while</span> (true) &#123;<br> runLoopIterations++<br><br> <span class="hljs-regexp">//</span> ── 发 prompt 给 LLM ──<br> const attempt = await runEmbeddedAttemptWithBackend(&#123;...&#125;)<br><br> <span class="hljs-regexp">//</span> 错误发生在什么时候？<br><br> <span class="hljs-regexp">//</span> ← 分支 A：Prompt 阶段错误<br> <span class="hljs-regexp">//</span> 请求根本没发出去 / 发出去但 HTTP 直接报错<br> <span class="hljs-regexp">//</span> (网络断开、<span class="hljs-number">502</span>、API key 无效、rate limit...)<br> <span class="hljs-regexp">//</span> attempt.error 有值<br><br> <span class="hljs-regexp">//</span> ← 分支 B：Assistant 阶段错误<br> <span class="hljs-regexp">//</span> 请求发出去了，LLM 返回了 assistant message<br> <span class="hljs-regexp">//</span> 但内容是错误（stop_reason=error、回复了空文本、连续 tool call 无文本...）<br> <span class="hljs-regexp">//</span> attempt.error 为空，但 assistantTexts 有异常<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="分支-A：Prompt-阶段-Failover（在-run-ts-里原地处理）"><a href="#分支-A：Prompt-阶段-Failover（在-run-ts-里原地处理）" class="headerlink" title="分支 A：Prompt 阶段 Failover（在 run.ts 里原地处理）"></a>分支 A：Prompt 阶段 Failover（在 run.ts 里原地处理）</h2><p>Prompt 阶段指：<code>session.prompt()</code> 抛出异常。即<strong>HTTP 请求直接就失败了</strong>。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// run.ts:1335-1455 (简化)</span><br><br><span class="hljs-keyword">const</span> promptFailoverReason = <span class="hljs-title function_">classifyFailoverReason</span>(errorText, &#123; provider &#125;);<br><span class="hljs-comment">// 分类错误 → 返回一个 FailoverReason:</span><br><span class="hljs-comment">// &quot;auth&quot; → 401, 403</span><br><span class="hljs-comment">// &quot;rate_limit&quot; → 429</span><br><span class="hljs-comment">// &quot;overloaded&quot; → 503, 529</span><br><span class="hljs-comment">// &quot;billing&quot; → 402</span><br><span class="hljs-comment">// &quot;timeout&quot; → 请求超时</span><br><span class="hljs-comment">// &quot;model_not_found&quot; → 404</span><br><span class="hljs-comment">// &quot;format&quot; → 未知的 HTTP 状态码</span><br><span class="hljs-comment">// &quot;unknown&quot; → 无法分类的错误</span><br><br><span class="hljs-comment">// 然后根据是否有 fallback 配置，做不同的决策：</span><br><span class="hljs-keyword">const</span> promptFailoverDecision = <span class="hljs-title function_">resolveRunFailoverDecision</span>(&#123;<br> <span class="hljs-attr">stage</span>: <span class="hljs-string">&quot;prompt&quot;</span>,<br> aborted,<br> fallbackConfigured, <span class="hljs-comment">// ← 是否配置了 &quot;如果模型 A 挂了用模型 B&quot;</span><br> <span class="hljs-attr">failoverReason</span>: promptFailoverReason,<br>&#125;);<br></code></pre>
+
+<h3 id="Prompt-阶段的三个决策分支"><a href="#Prompt-阶段的三个决策分支" class="headerlink" title="Prompt 阶段的三个决策分支"></a>Prompt 阶段的三个决策分支</h3><pre class="highlight"><code class="hljs gauss">没有 fallback 配置          有 fallback 配置<br>┌──────────────────────┐    ┌──────────────────────────┐<br>│                      │    │                          │<br>│ rotate_profile（换 <span class="hljs-built_in">key</span>）│    │ <span class="hljs-number">1.</span> <span class="hljs-built_in">rotate_profile</span> (先换 <span class="hljs-built_in">key</span>)│<br>│       ↓              │    │       ↓                  │<br>│   又有新 <span class="hljs-built_in">key</span>?         │    │ <span class="hljs-number">2.</span> 如果换 <span class="hljs-built_in">key</span> 没用:       │<br>│   ├─ 有 → <span class="hljs-keyword">continue</span>   │    │    <span class="hljs-built_in">fallback_model</span>(换模型) │<br>│   └─ 没有 →          │    │       ↓                  │<br>│     surface_error     │    │ <span class="hljs-number">3.</span> 如果换模型也没用:      │<br>│     → 返回错误给用户    │    │    surface_error         │<br>│                      │    │    → 返回错误给用户        │<br>└──────────────────────┘    └──────────────────────────┘<br></code></pre>
+
+<h3 id="具体代码"><a href="#具体代码" class="headerlink" title="具体代码"></a>具体代码</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 情况 1: rotate_profile — 换下一个 API key</span><br><span class="hljs-keyword">if</span> (promptFailoverDecision.<span class="hljs-property">action</span> === <span class="hljs-string">&quot;rotate_profile&quot;</span>) &#123;<br> <span class="hljs-keyword">const</span> advanced = <span class="hljs-keyword">await</span> <span class="hljs-title function_">advanceAuthProfile</span>();<br> <span class="hljs-comment">// advanced = true → 继续 while 循环，用新 key 重试</span><br> <span class="hljs-comment">// advanced = false → 降级为 surface_error</span><br><br> <span class="hljs-keyword">if</span> (advanced) &#123;<br> <span class="hljs-keyword">continue</span>; <span class="hljs-comment">// ← 回到 while(true) 顶部，用新 key</span><br> &#125;<br> <span class="hljs-comment">// 所有 key 都失败 → surface_error</span><br>&#125;<br><br><span class="hljs-comment">// 情况 2: fallback_model — 换模型</span><br><span class="hljs-keyword">if</span> (promptFailoverDecision.<span class="hljs-property">action</span> === <span class="hljs-string">&quot;fallback_model&quot;</span>) &#123;<br> <span class="hljs-comment">// 应用到配置中定义的 &quot;fallback 模型&quot;</span><br> provider = fallbackProvider;<br> modelId = fallbackModel;<br> <span class="hljs-keyword">continue</span>; <span class="hljs-comment">// ← 回到 while(true) 顶部，用新模型</span><br>&#125;<br><br><span class="hljs-comment">// 情况 3: surface_error — 放弃重试，返回错误</span><br><span class="hljs-keyword">if</span> (promptFailoverDecision.<span class="hljs-property">action</span> === <span class="hljs-string">&quot;surface_error&quot;</span>) &#123;<br> <span class="hljs-keyword">return</span> &#123;<br> <span class="hljs-attr">result</span>: <span class="hljs-string">&quot;surface_error&quot;</span>,<br> <span class="hljs-attr">error</span>: <span class="hljs-string">&quot;无法连接到 AI 服务，请稍后重试...&quot;</span><br> &#125;;<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="分支-B：Assistant-阶段-Failover（由-handleAssistantFailover-处理）"><a href="#分支-B：Assistant-阶段-Failover（由-handleAssistantFailover-处理）" class="headerlink" title="分支 B：Assistant 阶段 Failover（由 handleAssistantFailover 处理）"></a>分支 B：Assistant 阶段 Failover（由 <code>handleAssistantFailover</code> 处理）</h2><p>Assistant 阶段指：<code>session.prompt()</code> 返回了，但 LLM 的输出<strong>本身有问题</strong>。</p>
+<h3 id="B1-Context-Overflow（上下文溢出）"><a href="#B1-Context-Overflow（上下文溢出）" class="headerlink" title="B1: Context Overflow（上下文溢出）"></a>B1: Context Overflow（上下文溢出）</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 优先级最高！在 check assist failure 之前处理</span><br><br><span class="hljs-comment">// 溢出恢复步骤 1: 截断 oversized tool results</span><br><span class="hljs-keyword">if</span> (truncateOversizedToolResults) &#123;<br> <span class="hljs-comment">// &quot;这个 tool result 的 stdout 有 500KB，截到 50KB&quot;</span><br> <span class="hljs-keyword">continue</span>; <span class="hljs-comment">// 重试</span><br>&#125;<br><br><span class="hljs-comment">// 溢出恢复步骤 2: Compaction</span><br><span class="hljs-keyword">if</span> (overflowCompactionAttempts &lt; <span class="hljs-number">3</span>) &#123;<br> overflowCompactionAttempts++;<br> <span class="hljs-comment">// 调 compact() → 生成摘要 → 截掉历史</span><br> <span class="hljs-keyword">continue</span>; <span class="hljs-comment">// 用 compact 后的上下文重试</span><br>&#125;<br><br><span class="hljs-comment">// 溢出恢复步骤 3: 如果 compact 也没用</span><br><span class="hljs-keyword">if</span> (overflowCompactionAttempts &gt;= <span class="hljs-number">3</span>) &#123;<br> <span class="hljs-comment">// 降级到 fallback_model</span><br> <span class="hljs-comment">// 这说明当前模型 &quot;不够聪明&quot; 或 context window 太小</span><br>&#125;<br></code></pre>
+
+<h3 id="B2-8-种-Assistant-Failover-分类"><a href="#B2-8-种-Assistant-Failover-分类" class="headerlink" title="B2: 8 种 Assistant Failover 分类"></a>B2: 8 种 Assistant Failover 分类</h3><p><code>handleAssistantFailover()</code> 根据 LLM 的输出状态做分类：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// assistant-failover.ts</span><br><br><span class="hljs-keyword">const</span> authFailure = <span class="hljs-title function_">isAuthAssistantError</span>(msg); <span class="hljs-comment">// 401/403 在响应体里</span><br><span class="hljs-keyword">const</span> rateLimitFailure = <span class="hljs-title function_">isRateLimitAssistantError</span>(msg); <span class="hljs-comment">// 429 在响应体里</span><br><span class="hljs-keyword">const</span> billingFailure = <span class="hljs-title function_">isBillingAssistantError</span>(msg); <span class="hljs-comment">// 402</span><br><span class="hljs-keyword">const</span> failoverFailure = <span class="hljs-title function_">isFailoverAssistantError</span>(msg); <span class="hljs-comment">// 503/529</span><br><span class="hljs-keyword">const</span> timedOut = failoverReason === <span class="hljs-string">&quot;timeout&quot;</span>; <span class="hljs-comment">// 请求超时</span><br><span class="hljs-keyword">const</span> idleTimedOut = <span class="hljs-literal">false</span>; <span class="hljs-comment">// 模型返回 0 token 的文本</span><br><span class="hljs-keyword">const</span> formatError = cloudCodeAssistFormatError; <span class="hljs-comment">// 工具调用格式错误</span><br><span class="hljs-keyword">const</span> imageError = imageDimensionError !== <span class="hljs-literal">null</span>; <span class="hljs-comment">// 图片太大</span><br></code></pre>
+
+<p>每种错误的处理逻辑：</p>
+<pre class="highlight"><code class="hljs erlang">问题                           决策<br>─────────────────────────────────────────────────────────────<br><span class="hljs-function"><span class="hljs-title">auth</span> <span class="hljs-params">(<span class="hljs-number">401</span>/<span class="hljs-number">403</span>)</span></span><br><span class="hljs-function"> → <span class="hljs-title">rotate_profile</span> <span class="hljs-params">(换 API key)</span></span><br><span class="hljs-function"> → 新 <span class="hljs-title">key</span> 有效 → <span class="hljs-title">continue</span> 重试</span><br><span class="hljs-function"> → 所有 <span class="hljs-title">key</span> 都 <span class="hljs-title">failed</span> → <span class="hljs-title">fallback_model</span> 或 <span class="hljs-title">surface_error</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">rate_limit</span> <span class="hljs-params">(<span class="hljs-number">429</span>)</span></span><br><span class="hljs-function"> → <span class="hljs-title">rotate_profile</span> <span class="hljs-params">(换 key)</span></span><br><span class="hljs-function"> → 如果换 <span class="hljs-title">key</span> 也没用 → <span class="hljs-title">fallback_model</span></span><br><span class="hljs-function"> → <span class="hljs-title">backoff</span> 等待一段时间再重试</span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">overloaded</span> <span class="hljs-params">(<span class="hljs-number">503</span>/<span class="hljs-number">529</span>)</span></span><br><span class="hljs-function"> → <span class="hljs-title">rotate_profile</span> <span class="hljs-params">(最多 <span class="hljs-number">5</span> 次)</span></span><br><span class="hljs-function"> → 超过 5 次 → <span class="hljs-title">fallback_model</span></span><br><span class="hljs-function"> → 换模型前 <span class="hljs-title">backoff</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">billing</span> <span class="hljs-params">(<span class="hljs-number">402</span>)</span></span><br><span class="hljs-function"> → <span class="hljs-title">rotate_profile</span> <span class="hljs-params">(换 card / key)</span></span><br><span class="hljs-function"> → 或者 <span class="hljs-title">surface_error</span> <span class="hljs-params">(告诉用户欠费了)</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">timeout</span></span><br><span class="hljs-function"> → <span class="hljs-title">same_model_idle_timeout_retry</span> <span class="hljs-params">(最多 <span class="hljs-number">3</span> 次)</span></span><br><span class="hljs-function"> → → 用同一个模型重试（某些模型偶尔会&quot;发呆&quot;）</span><br><span class="hljs-function"> → 超过 3 次 → <span class="hljs-title">surface_error</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">idle_timeout</span> <span class="hljs-params">(LLM 返回 <span class="hljs-number">0</span> token)</span></span><br><span class="hljs-function"> → 检查是否是 <span class="hljs-title">ack_execution_fast_path</span></span><br><span class="hljs-function"> → 如果是 → 用 &quot;你上次没有回复，请给出完整回复&quot; 指令重试</span><br><span class="hljs-function"> → 如果不是 → <span class="hljs-title">surface_error</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">thinking_unsupported</span> <span class="hljs-params">(模型不支持推理模式)</span></span><br><span class="hljs-function"> → <span class="hljs-title">thinkLevel</span> = 降级 → <span class="hljs-title">continue</span></span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">format_error</span> <span class="hljs-params">(工具调用格式错误)</span></span><br><span class="hljs-function"> → 清理工具参数 → 用 <span class="hljs-title">sanitized</span> <span class="hljs-title">tool</span> <span class="hljs-title">calls</span> 重试</span><br><span class="hljs-function"></span><br><span class="hljs-function"><span class="hljs-title">image_dimension_error</span> <span class="hljs-params">(图片太大)</span></span><br><span class="hljs-function"> → 不重试 → <span class="hljs-title">surface_error</span>（不回到 <span class="hljs-title">while</span> 循环）</span><br></code></pre>
+
+<hr>
+<h2 id="完整的-Failover-矩阵"><a href="#完整的-Failover-矩阵" class="headerlink" title="完整的 Failover 矩阵"></a>完整的 Failover 矩阵</h2><pre class="highlight"><code class="hljs tap">┌────────────────┬──────────────────┬──────────────────┬────────────────────┐<br>│ 错误类型        │ 识别方式          │ 策略<span class="hljs-number"> 1 </span>           │ 策略<span class="hljs-number"> 2 </span>(fallback)   │<br>├────────────────┼──────────────────┼──────────────────┼────────────────────┤<br>│ auth           │ HTTP 401/403    │ rotate_profile   │ fallback_model     │<br>│ auth_permanent │ 多次 auth 失败   │ surface_error    │ —                  │<br>│ rate_limit     │ HTTP<span class="hljs-number"> 429 </span>       │ rotate_profile   │ backoff + retry    │<br>│ overloaded     │ HTTP 503/529    │ rotate_profile   │ fallback_model     │<br>│ billing        │ HTTP<span class="hljs-number"> 402 </span>       │ rotate_profile   │ surface_error      │<br>│ timeout        │ 请求超时         │ same_model重试   │ surface_error      │<br>│ context_overflow│ token 超限      │ compact ×3      │ fallback_model     │<br>│ thinking       │ 模型不支持推理    │ 降级thinkLevel   │ —                  │<br>│ format         │ tool_call格式错误 │ sanitize后重试   │ —                  │<br>│ idle           │ LLM 输出<span class="hljs-number"> 0 </span>token │ ack快路径重试     │ surface_error      │<br>│ empty_response │ 空回复           │ 追加指令重试      │ surface_error      │<br>│ image_size     │ 图片超尺寸        │ surface_error    │ —                  │<br>│ model_not_found│ HTTP<span class="hljs-number"> 404 </span>       │ surface_error    │ fallback_model     │<br>└────────────────┴──────────────────┴──────────────────┴────────────────────┘<br></code></pre>
+
+<hr>
+<h2 id="rotate-profile-机制"><a href="#rotate-profile-机制" class="headerlink" title="rotate_profile 机制"></a>rotate_profile 机制</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// run.ts:384-405</span><br><span class="hljs-keyword">const</span> &#123; advanceAuthProfile &#125; = <span class="hljs-title function_">createEmbeddedRunAuthController</span>(&#123;<br> config, authStorage, profileCandidates<br>&#125;);<br><br><span class="hljs-comment">// advanceAuthProfile() 做了：</span><br><span class="hljs-comment">// 1. 标记当前 profile 失败（原因: auth/rate_limit/timeout）</span><br><span class="hljs-comment">// 2. 取下一个 profile</span><br><span class="hljs-comment">// 3. 重新拿 API key</span><br><span class="hljs-comment">// 4. 返回 true（有新 key）或 false（所有 key 都失败了）</span><br><br><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br> <span class="hljs-keyword">const</span> attempt = <span class="hljs-keyword">await</span> <span class="hljs-title function_">runEmbeddedAttemptWithBackend</span>(&#123;...&#125;);<br><br> <span class="hljs-keyword">if</span> (failoverReason === <span class="hljs-string">&quot;auth&quot;</span>) &#123;<br> <span class="hljs-keyword">const</span> advanced = <span class="hljs-keyword">await</span> <span class="hljs-title function_">advanceAuthProfile</span>();<br> <span class="hljs-keyword">if</span> (advanced) &#123;<br> lastProfileId = newProfile;<br> apiKeyInfo = newKey;<br> <span class="hljs-keyword">continue</span>; <span class="hljs-comment">// ← 用新 key 重试</span><br> &#125;<br> <span class="hljs-comment">// 没有更多 key → surface_error</span><br> &#125;<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="fallback-model-机制"><a href="#fallback-model-机制" class="headerlink" title="fallback_model 机制"></a>fallback_model 机制</h2><p>在配置里可以指定备选模型：</p>
+<pre class="highlight"><code class="hljs yaml"><span class="hljs-comment"># openclaw.yml</span><br><span class="hljs-attr">agents:</span><br> <span class="hljs-attr">defaults:</span><br> <span class="hljs-attr">model:</span> <span class="hljs-string">deepseek/deepseek-chat</span><br> <span class="hljs-attr">fallbacks:</span><br> <span class="hljs-bullet">-</span> <span class="hljs-attr">model:</span> <span class="hljs-string">openai/gpt-4o</span> <span class="hljs-comment"># 如果 deepseek 挂了</span><br> <span class="hljs-bullet">-</span> <span class="hljs-attr">model:</span> <span class="hljs-string">anthropic/claude-3-5</span> <span class="hljs-comment"># 如果 gpt-4o 也挂了</span><br></code></pre>
+
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 当 fallback_model 被触发：</span><br>provider = <span class="hljs-string">&quot;openai&quot;</span>;<br>modelId = <span class="hljs-string">&quot;gpt-4o&quot;</span>;<br>lastRetryFailoverReason = failoverReason;<br><span class="hljs-keyword">continue</span>; <span class="hljs-comment">// ← 回到 while(true) 顶部，用备选模型从头开始</span><br></code></pre>
+
+<hr>
+<h2 id="函数签名对比"><a href="#函数签名对比" class="headerlink" title="函数签名对比"></a>函数签名对比</h2><pre class="highlight"><code class="hljs reasonml">resolve<span class="hljs-constructor">RunFailoverDecision(&#123; <span class="hljs-params">stage</span>, <span class="hljs-params">fallbackConfigured</span>, <span class="hljs-params">failoverReason</span> &#125;)</span><br> │<br> ├── 无 fallback 配置:<br> │    auth/rate_limit/overloaded/timeout → rotate_profile<br> │    billing → surface_error<br> │    unknown → surface_error<br> │<br> └── 有 fallback 配置:<br>      rotate_profile 成功后 → continue_normal<br>      rotate_profile 失败后 → fallback_model<br>      fallback_model 也失败 → surface_error<br></code></pre>
+
+<hr>
+<h2 id="关键限制"><a href="#关键限制" class="headerlink" title="关键限制"></a>关键限制</h2><pre class="highlight"><code class="hljs tap">限制项                                    代码位置<br>─────────────────────────────────────────────────────────<br>MAX_RUN_LOOP_ITERATIONS = ~20            run.ts:478<br> → 无论什么原因，最多重试<span class="hljs-number"> 20 </span>次<br><br>MAX_OVERFLOW_COMPACTION_ATTEMPTS =<span class="hljs-number"> 3 </span>   run.ts:470<br> → context overflow 最多 compact<span class="hljs-number"> 3 </span>次<br><br>MAX_TIMEOUT_COMPACTION_ATTEMPTS =<span class="hljs-number"> 2 </span>    run.ts:494<br> → timeout 最多 compact<span class="hljs-number"> 2 </span>次<br><br>sameModelIdleTimeoutRetries =<span class="hljs-number"> 3 </span>        run.ts:482<br> → 同模型 idle timeout 最多重试<span class="hljs-number"> 3 </span>次<br><br>overloadProfileRotationLimit =<span class="hljs-number"> 5 </span>       assistant-failover.ts:119<br> → overload 最多轮换<span class="hljs-number"> 5 </span>个 profile<br><br>rateLimitProfileFallbackLimit           run.ts:516<br> → rate limit 最多轮换到指定上限<br></code></pre>
+
+<hr>
+<h2 id="完整时序图"><a href="#完整时序图" class="headerlink" title="完整时序图"></a>完整时序图</h2><pre class="highlight"><code class="hljs csharp">┌─────────────────────────────────────────────────────────────┐<br>│ <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) 主循环                                            │<br>│                                                               │<br>│ <span class="hljs-function">t0 <span class="hljs-title">resolveFailedPromptMode</span>() → 添加重试指令到 prompt          │</span><br><span class="hljs-function">│ t1 <span class="hljs-title">advanceAuthProfile</span>() → 换下一个 API <span class="hljs-title">key</span> (<span class="hljs-params">如果需要</span>)         │</span><br><span class="hljs-function">│ t2 <span class="hljs-title">runEmbeddedAttemptWithBackend</span>() → 发请求                  │</span><br><span class="hljs-function">│    │                                                          │</span><br><span class="hljs-function">│    ├── 成功 → 检查 assistantTexts                             │</span><br><span class="hljs-function">│    │    ├── 有正常文本 → 退出循环，返回结果                     │</span><br><span class="hljs-function">│    │    ├── 只有 tool calls → 加 &quot;请回复文字&quot; 指令 → <span class="hljs-keyword">continue</span>  │</span><br><span class="hljs-function">│    │    ├── 空回复 → idle_timeout → 重试 ×3 → surface_error   │</span><br><span class="hljs-function">│    │    └── context overflow → compact ×3 → fallback_model    │</span><br><span class="hljs-function">│    │                                                          │</span><br><span class="hljs-function">│    └── 失败（抛出异常）                                        │</span><br><span class="hljs-function">│         ├── <span class="hljs-title">classifyFailoverReason</span>() → auth/rate_limit/...   │</span><br><span class="hljs-function">│         ├── <span class="hljs-title">resolveRunFailoverDecision</span>() → 决策              │</span><br><span class="hljs-function">│         │    ├── rotate_profile → 换 key → <span class="hljs-keyword">continue</span>          │</span><br><span class="hljs-function">│         │    ├── fallback_model → 换模型 → <span class="hljs-keyword">continue</span>           │</span><br><span class="hljs-function">│         │    ├── surface_error → 返回错误给调用者              │</span><br><span class="hljs-function">│         │    └── backoff → 等待 → <span class="hljs-keyword">continue</span>                    │</span><br><span class="hljs-function">│         └── 如果 runLoopIterations &gt; 20 → 强制退出            │</span><br><span class="hljs-function">└─────────────────────────────────────────────────────────────┘</span><br></code></pre>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th>设计原则</th>
+<th>体现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>优雅降级</strong></td>
+<td>先换 key → 不行换模型 → 不行告诉用户</td>
+</tr>
+<tr>
+<td><strong>防止无限重试</strong></td>
+<td>最多 20 次总重试，每种策略有单独上限</td>
+</tr>
+<tr>
+<td><strong>智能判断</strong></td>
+<td>auth 错误不重试同 key，timeout 可以同模型重试 3 次</td>
+</tr>
+<tr>
+<td><strong>上下文保护</strong></td>
+<td>context overflow 走 compact 而不是换模型（语义不同）</td>
+</tr>
+<tr>
+<td><strong>用户可见</strong></td>
+<td>surface_error 时返回人类可读的错误信息</td>
+</tr>
+</tbody></table>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-es6-class-appendix-part-2/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分附录 A：ES6 中的 class </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-10-tool-calling-mechanism/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%94%84-Failover-%E9%87%8D%E8%AF%95%E9%80%BB%E8%BE%91%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">🔄 Failover 重试逻辑：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%BB%E5%BE%AA%E7%8E%AF%E9%87%8C%E7%9A%84%E4%B8%A4%E6%9D%A1%E5%88%86%E6%94%AF"><span class="toc-text">全局视角：主循环里的两条分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-A%EF%BC%9APrompt-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E5%9C%A8-run-ts-%E9%87%8C%E5%8E%9F%E5%9C%B0%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 A：Prompt 阶段 Failover（在 run.ts 里原地处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prompt-%E9%98%B6%E6%AE%B5%E7%9A%84%E4%B8%89%E4%B8%AA%E5%86%B3%E7%AD%96%E5%88%86%E6%94%AF"><span class="toc-text">Prompt 阶段的三个决策分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E4%BB%A3%E7%A0%81"><span class="toc-text">具体代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-B%EF%BC%9AAssistant-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E7%94%B1-handleAssistantFailover-%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 B：Assistant 阶段 Failover（由 handleAssistantFailover 处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#B1-Context-Overflow%EF%BC%88%E4%B8%8A%E4%B8%8B%E6%96%87%E6%BA%A2%E5%87%BA%EF%BC%89"><span class="toc-text">B1: Context Overflow（上下文溢出）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B2-8-%E7%A7%8D-Assistant-Failover-%E5%88%86%E7%B1%BB"><span class="toc-text">B2: 8 种 Assistant Failover 分类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84-Failover-%E7%9F%A9%E9%98%B5"><span class="toc-text">完整的 Failover 矩阵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rotate-profile-%E6%9C%BA%E5%88%B6"><span class="toc-text">rotate_profile 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fallback-model-%E6%9C%BA%E5%88%B6"><span class="toc-text">fallback_model 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%AD%BE%E5%90%8D%E5%AF%B9%E6%AF%94"><span class="toc-text">函数签名对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E9%99%90%E5%88%B6"><span class="toc-text">关键限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="toc-text">完整时序图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%F0%9F%94%84-Failover-%E9%87%8D%E8%AF%95%E9%80%BB%E8%BE%91%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">🔄 Failover 重试逻辑：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E8%A7%86%E8%A7%92%EF%BC%9A%E4%B8%BB%E5%BE%AA%E7%8E%AF%E9%87%8C%E7%9A%84%E4%B8%A4%E6%9D%A1%E5%88%86%E6%94%AF"><span class="toc-text">全局视角：主循环里的两条分支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-A%EF%BC%9APrompt-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E5%9C%A8-run-ts-%E9%87%8C%E5%8E%9F%E5%9C%B0%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 A：Prompt 阶段 Failover（在 run.ts 里原地处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prompt-%E9%98%B6%E6%AE%B5%E7%9A%84%E4%B8%89%E4%B8%AA%E5%86%B3%E7%AD%96%E5%88%86%E6%94%AF"><span class="toc-text">Prompt 阶段的三个决策分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E4%BB%A3%E7%A0%81"><span class="toc-text">具体代码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%94%AF-B%EF%BC%9AAssistant-%E9%98%B6%E6%AE%B5-Failover%EF%BC%88%E7%94%B1-handleAssistantFailover-%E5%A4%84%E7%90%86%EF%BC%89"><span class="toc-text">分支 B：Assistant 阶段 Failover（由 handleAssistantFailover 处理）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#B1-Context-Overflow%EF%BC%88%E4%B8%8A%E4%B8%8B%E6%96%87%E6%BA%A2%E5%87%BA%EF%BC%89"><span class="toc-text">B1: Context Overflow（上下文溢出）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B2-8-%E7%A7%8D-Assistant-Failover-%E5%88%86%E7%B1%BB"><span class="toc-text">B2: 8 种 Assistant Failover 分类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84-Failover-%E7%9F%A9%E9%98%B5"><span class="toc-text">完整的 Failover 矩阵</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rotate-profile-%E6%9C%BA%E5%88%B6"><span class="toc-text">rotate_profile 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fallback-model-%E6%9C%BA%E5%88%B6"><span class="toc-text">fallback_model 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E7%AD%BE%E5%90%8D%E5%AF%B9%E6%AF%94"><span class="toc-text">函数签名对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E9%99%90%E5%88%B6"><span class="toc-text">关键限制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="toc-text">完整时序图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

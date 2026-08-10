@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》附录：动态作用域、块作用域与箭头函数</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》附录：动态作用域、块作用域与箭头函数">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-scope-and-closures-appendices/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="梳理作用域与闭包部分的四个附录：动态作用域的对照、旧环境的块作用域替代方案、箭头函数的词法 this，以及第一部分的现代实践总览。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="作用域">
+        
+          <meta 
+            property="og:article:tag" 
+            content="闭包">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="箭头函数">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">附录 A：动态作用域与词法作用域</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%9F%A5%E6%89%BE%E4%BE%9D%E6%8D%AE"><span class="toc-text">两种查找依据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#this-%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">this 不等于动态作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-B%EF%BC%9A%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E5%8E%86%E5%8F%B2%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="toc-text">附录 B：块作用域的历史替代方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#catch-%E5%8F%82%E6%95%B0%E7%9A%84%E5%B1%80%E9%83%A8%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="toc-text">catch 参数的局部可见性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E4%B8%8D%E6%98%AF%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E7%AD%89%E4%BB%B7%E6%9B%BF%E8%BA%AB"><span class="toc-text">IIFE 不是块作用域的等价替身</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A7%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%9C%AA%E6%A0%87%E5%87%86%E5%8C%96%E8%AF%AD%E6%B3%95"><span class="toc-text">旧工具与未标准化语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-C%EF%BC%9A%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E8%AF%8D%E6%B3%95-this"><span class="toc-text">附录 C：箭头函数与词法 this</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E8%87%AA%E5%B7%B1%E7%9A%84%E8%B0%83%E7%94%A8%E8%80%85%E7%BB%91%E5%AE%9A"><span class="toc-text">箭头函数没有自己的调用者绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E4%BD%BF%E7%94%A8%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">什么时候不该使用箭头函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-D%EF%BC%9A%E8%87%B4%E8%B0%A2"><span class="toc-text">附录 D：致谢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BA%B2%EF%BC%9A%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E9%97%AD%E5%8C%85"><span class="toc-text">第一部分总纲：作用域与闭包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F%E6%98%AF%E6%A0%B9%E5%9F%BA"><span class="toc-text">1. 词法作用域是根基</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%8F%90%E5%8D%87%E5%85%B3%E6%B3%A8%E7%BB%91%E5%AE%9A%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">2. 提升关注绑定的创建与初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-LHS-x2F-RHS-%E6%98%AF%E8%AF%BB%E5%86%99%E6%96%B9%E5%90%91%E7%9A%84%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">3. LHS&#x2F;RHS 是读写方向的心智模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%97%AD%E5%8C%85%E8%AE%A9%E7%8A%B6%E6%80%81%E8%B7%A8%E8%B6%8A%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="toc-text">4. 闭包让状态跨越执行时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%94%A8%E7%8E%B0%E4%BB%A3%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86%E8%BE%B9%E7%95%8C"><span class="toc-text">5. 用现代模块划分边界</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E6%B8%85%E5%8D%95"><span class="toc-text">工程实践清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》附录：动态作用域、块作用域与箭头函数
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-scope-and-closures-appendices.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.1k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E4%BD%9C%E7%94%A8%E5%9F%9F/" 
+            class="post-meta-link">
+            作用域
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%97%AD%E5%8C%85/" 
+            class="post-meta-link">
+            闭包
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0/" 
+            class="post-meta-link">
+            箭头函数
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本文为《你不知道的 JavaScript（上卷）》第一部分“作用域与闭包”的附录收束。书中部分工具和兼容方案产生于 ES6 普及之前，本文会标明其历史背景，并给出现代 JavaScript 的对应做法。</p>
+</blockquote>
+<h2 id="附录-A：动态作用域与词法作用域"><a href="#附录-A：动态作用域与词法作用域" class="headerlink" title="附录 A：动态作用域与词法作用域"></a>附录 A：动态作用域与词法作用域</h2><h3 id="两种查找依据"><a href="#两种查找依据" class="headerlink" title="两种查找依据"></a>两种查找依据</h3><p>JavaScript 的普通标识符查找采用<strong>词法作用域</strong>：函数可以访问哪些外层绑定，由函数在源码中的嵌套位置决定，而不是由谁调用它决定。</p>
+<p>动态作用域（dynamic scope）采用另一套规则：查找会沿当前调用栈向上，调用者的局部变量可能影响被调用函数的变量解析。一些语言或语言特性提供过这种机制，但 JavaScript 的普通变量查找不采用它。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> value = <span class="hljs-number">2</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">readValue</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(value);<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">caller</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> value = <span class="hljs-number">3</span>;<br>  <span class="hljs-title function_">readValue</span>();<br>&#125;<br><br><span class="hljs-title function_">caller</span>(); <span class="hljs-comment">// 2</span><br></code></pre>
+
+<p><code>readValue</code> 定义在全局作用域，其词法外层只包含全局环境，因此输出 <code>2</code>。若这是动态作用域语言，<code>readValue()</code> 可能沿调用栈找到 <code>caller</code> 中的 <code>value</code> 并输出 <code>3</code>。</p>
+<h3 id="this-不等于动态作用域"><a href="#this-不等于动态作用域" class="headerlink" title="this 不等于动态作用域"></a><code>this</code> 不等于动态作用域</h3><p><code>this</code> 的值在普通函数中通常由调用形式决定，表面上与动态作用域一样都和“调用位置”有关。但它不是标识符作用域链的一环，也不会让函数读取调用者的局部变量。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">show</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>);<br>&#125;<br><br><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>, show &#125;;<br>user.<span class="hljs-title function_">show</span>(); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p>这里 <code>this</code> 由 <code>user.show()</code> 的调用形式确定；而 <code>show</code> 中的普通变量依然按其定义位置的词法作用域查找。把 <code>this</code> 叫作“动态作用域”会混淆两个独立的语言机制。</p>
+<h2 id="附录-B：块作用域的历史替代方案"><a href="#附录-B：块作用域的历史替代方案" class="headerlink" title="附录 B：块作用域的历史替代方案"></a>附录 B：块作用域的历史替代方案</h2><p>在 <code>let</code>&#x2F;<code>const</code> 成为通用能力以前，开发者确实使用过 <code>catch</code> 参数或 IIFE 来缩小标识符可见范围。这些写法今天主要用于阅读旧代码，而不是新增代码。</p>
+<h3 id="catch-参数的局部可见性"><a href="#catch-参数的局部可见性" class="headerlink" title="catch 参数的局部可见性"></a><code>catch</code> 参数的局部可见性</h3><p><code>catch</code> 的异常绑定只在对应的 <code>catch</code> 块中可用：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">try</span> &#123;<br>  <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>(<span class="hljs-string">&quot;failed&quot;</span>);<br>&#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error.<span class="hljs-property">message</span>); <span class="hljs-comment">// &quot;failed&quot;</span><br>&#125;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(error); <span class="hljs-comment">// ReferenceError</span><br></code></pre>
+
+<p>早期代码有时会刻意 <code>throw</code> 一个值，只为借用这个局部绑定作为“块作用域”。这种技巧会把控制流和变量声明混在一起，不适合业务代码。现代代码直接使用 <code>let</code> 和 <code>const</code>。</p>
+<h3 id="IIFE-不是块作用域的等价替身"><a href="#IIFE-不是块作用域的等价替身" class="headerlink" title="IIFE 不是块作用域的等价替身"></a>IIFE 不是块作用域的等价替身</h3><p>IIFE 能创建函数作用域：</p>
+<pre class="highlight"><code class="hljs js">(<span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">var</span> temporary = <span class="hljs-string">&quot;inside&quot;</span>;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(temporary);<br>&#125;());<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(temporary); <span class="hljs-comment">// ReferenceError</span><br></code></pre>
+
+<p>但函数边界与代码块边界并不相同。IIFE 会创建新的 <code>this</code>、<code>arguments</code> 和 <code>return</code> 边界，也不能让 <code>break</code>&#x2F;<code>continue</code> 穿过函数边界去控制外部循环。因此它不能无差别替换块作用域。</p>
+<h3 id="旧工具与未标准化语法"><a href="#旧工具与未标准化语法" class="headerlink" title="旧工具与未标准化语法"></a>旧工具与未标准化语法</h3><p>Traceur 等早期转译器曾探索以辅助函数、闭包或其他代码生成策略实现 ES6 特性；不同版本和不同语法的输出并不相同，不能概括为“<code>let</code> 一定被编译成 <code>try/catch</code>”。</p>
+<p>书中提到的 <code>let (x = 2) &#123; ... &#125;</code> 属于历史上的非标准&#x2F;提案语法，没有进入现代 ECMAScript。不要在新代码中使用，也不需要引入专门工具支持它。对于需要兼容旧运行时的项目，应由当前构建工具根据目标浏览器生成适当的转换代码，并以真实兼容性测试为准。</p>
+<h2 id="附录-C：箭头函数与词法-this"><a href="#附录-C：箭头函数与词法-this" class="headerlink" title="附录 C：箭头函数与词法 this"></a>附录 C：箭头函数与词法 <code>this</code></h2><p>箭头函数没有自己的 <code>this</code> 绑定。它会从创建位置的外层作用域取得 <code>this</code>，这通常被称为**词法 <code>this</code>**。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Timer</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">seconds</span> = <span class="hljs-number">0</span>;<br><br>  <span class="hljs-built_in">setInterval</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">seconds</span> += <span class="hljs-number">1</span>;<br>  &#125;, <span class="hljs-number">1000</span>);<br>&#125;<br></code></pre>
+
+<p>箭头回调中的 <code>this</code> 继承自 <code>Timer</code> 调用所创建的 <code>this</code>，不再需要过去常见的 <code>const self = this</code> 或 <code>function () &#123;&#125;.bind(this)</code> 写法。</p>
+<h3 id="箭头函数没有自己的调用者绑定"><a href="#箭头函数没有自己的调用者绑定" class="headerlink" title="箭头函数没有自己的调用者绑定"></a>箭头函数没有自己的调用者绑定</h3><p><code>call</code>、<code>apply</code>、<code>bind</code> 无法改变箭头函数已经捕获的 <code>this</code>。箭头函数也没有自己的 <code>arguments</code>、<code>super</code> 或 <code>new.target</code> 绑定，且不能作为构造函数使用：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">readThis</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-variable language_">this</span>;<br><br>readThis.<span class="hljs-title function_">call</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;ignored&quot;</span> &#125;); <span class="hljs-comment">// 仍返回创建位置的 this</span><br><span class="hljs-keyword">new</span> <span class="hljs-title function_">readThis</span>(); <span class="hljs-comment">// TypeError</span><br></code></pre>
+
+<p>若需要访问外层函数的实参，箭头函数可以读取外层的 <code>arguments</code>，但更清晰的现代写法通常是使用剩余参数：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">sum</span> = (<span class="hljs-params">...numbers</span>) =&gt; numbers.<span class="hljs-title function_">reduce</span>(<span class="hljs-function">(<span class="hljs-params">total, number</span>) =&gt;</span> total + number, <span class="hljs-number">0</span>);<br></code></pre>
+
+<h3 id="什么时候不该使用箭头函数"><a href="#什么时候不该使用箭头函数" class="headerlink" title="什么时候不该使用箭头函数"></a>什么时候不该使用箭头函数</h3><p>箭头函数不是“更短的普通函数”。以下场景通常应使用普通函数或方法简写，因为它们需要动态接收者或构造能力：</p>
+<ul>
+<li>对象方法需要由调用者决定 <code>this</code>；</li>
+<li>原型方法需要使用实例 <code>this</code>；</li>
+<li>DOM 事件处理器需要框架&#x2F;浏览器提供的处理器 <code>this</code>；</li>
+<li>构造函数，或需要 <code>arguments</code> 的旧接口实现。</li>
+</ul>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> counter = &#123;<br>  <span class="hljs-attr">value</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-title function_">increment</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> += <span class="hljs-number">1</span>;<br>  &#125;,<br>&#125;;<br><br>counter.<span class="hljs-title function_">increment</span>();<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(counter.<span class="hljs-property">value</span>); <span class="hljs-comment">// 1</span><br></code></pre>
+
+<p>大型项目不应简单规定“全部使用箭头函数”或“全部使用 <code>bind</code>”。应根据函数是否需要自己的 <code>this</code> 选择形式，并让团队通过 lint 规则和代码审查保持一致。</p>
+<h2 id="附录-D：致谢"><a href="#附录-D：致谢" class="headerlink" title="附录 D：致谢"></a>附录 D：致谢</h2><p>致谢部分记录作者对社区、读者、译者和开源贡献者的感谢，没有需要额外展开的技术概念。它也提醒我们：语言特性、浏览器实现与工程实践，始终由社区长期协作推进。</p>
+<h2 id="第一部分总纲：作用域与闭包"><a href="#第一部分总纲：作用域与闭包" class="headerlink" title="第一部分总纲：作用域与闭包"></a>第一部分总纲：作用域与闭包</h2><h3 id="1-词法作用域是根基"><a href="#1-词法作用域是根基" class="headerlink" title="1. 词法作用域是根基"></a>1. 词法作用域是根基</h3><ul>
+<li>标识符的查找路径由代码书写时的嵌套关系确定，从当前作用域逐层向外查找。</li>
+<li>内层同名绑定会遮蔽外层绑定；<code>this</code>、对象属性和原型链遵循各自的规则。</li>
+<li><code>eval</code>、<code>with</code> 和字符串代码执行会破坏静态可分析性，并带来安全与维护风险，应避免使用。</li>
+</ul>
+<h3 id="2-提升关注绑定的创建与初始化"><a href="#2-提升关注绑定的创建与初始化" class="headerlink" title="2. 提升关注绑定的创建与初始化"></a>2. 提升关注绑定的创建与初始化</h3><ul>
+<li><code>var</code> 绑定在执行前已初始化为 <code>undefined</code>；函数声明在执行前已关联函数对象。</li>
+<li><code>let</code>、<code>const</code>、<code>class</code> 绑定也会预先创建，但在初始化前处于暂时性死区（TDZ）。</li>
+<li>与其记忆“声明谁优先”，不如分析当前绑定属于哪个作用域、何时初始化、是否被后续赋值覆盖。</li>
+</ul>
+<h3 id="3-LHS-x2F-RHS-是读写方向的心智模型"><a href="#3-LHS-x2F-RHS-是读写方向的心智模型" class="headerlink" title="3. LHS&#x2F;RHS 是读写方向的心智模型"></a>3. LHS&#x2F;RHS 是读写方向的心智模型</h3><ul>
+<li>RHS 读取标识符当前的值，LHS 查找可写入的绑定。</li>
+<li>未解析的读取通常产生 <code>ReferenceError</code>；取得值后却执行非法操作通常产生 <code>TypeError</code>。</li>
+<li>严格模式与 ES 模块会阻止未声明赋值形成隐式全局变量。</li>
+</ul>
+<h3 id="4-闭包让状态跨越执行时间"><a href="#4-闭包让状态跨越执行时间" class="headerlink" title="4. 闭包让状态跨越执行时间"></a>4. 闭包让状态跨越执行时间</h3><ul>
+<li>函数可在定义位置的执行结束后继续访问外层绑定。</li>
+<li>回调、异步任务、节流、防抖、记忆化缓存和模块封装都依赖这一能力。</li>
+<li><code>for (let ...)</code> 的每轮独立绑定解决了 <code>var</code> 循环回调共享单一变量的问题。</li>
+</ul>
+<h3 id="5-用现代模块划分边界"><a href="#5-用现代模块划分边界" class="headerlink" title="5. 用现代模块划分边界"></a>5. 用现代模块划分边界</h3><ul>
+<li>ES 模块提供文件级作用域、静态依赖关系和明确的公开 API，是当前模块化首选。</li>
+<li>经典 IIFE&#x2F;工厂模块仍有助于理解闭包，也可用于维护遗留脚本。</li>
+<li>作用域封装不是安全沙箱；API 设计、输入校验和权限控制仍不可替代。</li>
+</ul>
+<h2 id="工程实践清单"><a href="#工程实践清单" class="headerlink" title="工程实践清单"></a>工程实践清单</h2><ol>
+<li>新代码默认 <code>const</code>，仅在需要重新赋值时使用 <code>let</code>；避免新的 <code>var</code>。</li>
+<li>声明靠近首次使用处，保持变量生命周期与可见范围尽量小。</li>
+<li>禁用 <code>eval</code>、<code>with</code> 和字符串形式的计时器；通过 ESLint 的 <code>no-eval</code>、<code>no-with</code>、<code>no-implied-eval</code> 等规则持续检查。</li>
+<li>使用 ES 模块并明确 <code>export</code> API；不要用全局变量或 IIFE 代替清晰的模块边界。</li>
+<li>回调中需要外层 <code>this</code> 时使用箭头函数；需要动态 <code>this</code> 时使用普通函数或方法简写。</li>
+<li>对长期事件监听、计时器、订阅和缓存设计显式清理路径，避免闭包意外保留不再需要的数据。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Closures">MDN：闭包</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions">MDN：箭头函数</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules">MDN：JavaScript 模块</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Strict_mode">MDN：严格模式</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-closure-chapter-5/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第五章：作用域闭包 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-this-introduction-part-2-chapter-1/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第一章：关于 this </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">附录 A：动态作用域与词法作用域</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%9F%A5%E6%89%BE%E4%BE%9D%E6%8D%AE"><span class="toc-text">两种查找依据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#this-%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">this 不等于动态作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-B%EF%BC%9A%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E5%8E%86%E5%8F%B2%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="toc-text">附录 B：块作用域的历史替代方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#catch-%E5%8F%82%E6%95%B0%E7%9A%84%E5%B1%80%E9%83%A8%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="toc-text">catch 参数的局部可见性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E4%B8%8D%E6%98%AF%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E7%AD%89%E4%BB%B7%E6%9B%BF%E8%BA%AB"><span class="toc-text">IIFE 不是块作用域的等价替身</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A7%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%9C%AA%E6%A0%87%E5%87%86%E5%8C%96%E8%AF%AD%E6%B3%95"><span class="toc-text">旧工具与未标准化语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-C%EF%BC%9A%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E8%AF%8D%E6%B3%95-this"><span class="toc-text">附录 C：箭头函数与词法 this</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E8%87%AA%E5%B7%B1%E7%9A%84%E8%B0%83%E7%94%A8%E8%80%85%E7%BB%91%E5%AE%9A"><span class="toc-text">箭头函数没有自己的调用者绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E4%BD%BF%E7%94%A8%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">什么时候不该使用箭头函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-D%EF%BC%9A%E8%87%B4%E8%B0%A2"><span class="toc-text">附录 D：致谢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BA%B2%EF%BC%9A%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E9%97%AD%E5%8C%85"><span class="toc-text">第一部分总纲：作用域与闭包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F%E6%98%AF%E6%A0%B9%E5%9F%BA"><span class="toc-text">1. 词法作用域是根基</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%8F%90%E5%8D%87%E5%85%B3%E6%B3%A8%E7%BB%91%E5%AE%9A%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">2. 提升关注绑定的创建与初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-LHS-x2F-RHS-%E6%98%AF%E8%AF%BB%E5%86%99%E6%96%B9%E5%90%91%E7%9A%84%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">3. LHS&#x2F;RHS 是读写方向的心智模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%97%AD%E5%8C%85%E8%AE%A9%E7%8A%B6%E6%80%81%E8%B7%A8%E8%B6%8A%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="toc-text">4. 闭包让状态跨越执行时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%94%A8%E7%8E%B0%E4%BB%A3%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86%E8%BE%B9%E7%95%8C"><span class="toc-text">5. 用现代模块划分边界</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E6%B8%85%E5%8D%95"><span class="toc-text">工程实践清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">附录 A：动态作用域与词法作用域</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E6%9F%A5%E6%89%BE%E4%BE%9D%E6%8D%AE"><span class="toc-text">两种查找依据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#this-%E4%B8%8D%E7%AD%89%E4%BA%8E%E5%8A%A8%E6%80%81%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="toc-text">this 不等于动态作用域</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-B%EF%BC%9A%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E5%8E%86%E5%8F%B2%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="toc-text">附录 B：块作用域的历史替代方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#catch-%E5%8F%82%E6%95%B0%E7%9A%84%E5%B1%80%E9%83%A8%E5%8F%AF%E8%A7%81%E6%80%A7"><span class="toc-text">catch 参数的局部可见性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IIFE-%E4%B8%8D%E6%98%AF%E5%9D%97%E4%BD%9C%E7%94%A8%E5%9F%9F%E7%9A%84%E7%AD%89%E4%BB%B7%E6%9B%BF%E8%BA%AB"><span class="toc-text">IIFE 不是块作用域的等价替身</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A7%E5%B7%A5%E5%85%B7%E4%B8%8E%E6%9C%AA%E6%A0%87%E5%87%86%E5%8C%96%E8%AF%AD%E6%B3%95"><span class="toc-text">旧工具与未标准化语法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-C%EF%BC%9A%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E4%B8%8E%E8%AF%8D%E6%B3%95-this"><span class="toc-text">附录 C：箭头函数与词法 this</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0%E6%B2%A1%E6%9C%89%E8%87%AA%E5%B7%B1%E7%9A%84%E8%B0%83%E7%94%A8%E8%80%85%E7%BB%91%E5%AE%9A"><span class="toc-text">箭头函数没有自己的调用者绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%B8%8D%E8%AF%A5%E4%BD%BF%E7%94%A8%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="toc-text">什么时候不该使用箭头函数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-D%EF%BC%9A%E8%87%B4%E8%B0%A2"><span class="toc-text">附录 D：致谢</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%E6%80%BB%E7%BA%B2%EF%BC%9A%E4%BD%9C%E7%94%A8%E5%9F%9F%E4%B8%8E%E9%97%AD%E5%8C%85"><span class="toc-text">第一部分总纲：作用域与闭包</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%AF%8D%E6%B3%95%E4%BD%9C%E7%94%A8%E5%9F%9F%E6%98%AF%E6%A0%B9%E5%9F%BA"><span class="toc-text">1. 词法作用域是根基</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%8F%90%E5%8D%87%E5%85%B3%E6%B3%A8%E7%BB%91%E5%AE%9A%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">2. 提升关注绑定的创建与初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-LHS-x2F-RHS-%E6%98%AF%E8%AF%BB%E5%86%99%E6%96%B9%E5%90%91%E7%9A%84%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B"><span class="toc-text">3. LHS&#x2F;RHS 是读写方向的心智模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%97%AD%E5%8C%85%E8%AE%A9%E7%8A%B6%E6%80%81%E8%B7%A8%E8%B6%8A%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="toc-text">4. 闭包让状态跨越执行时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%94%A8%E7%8E%B0%E4%BB%A3%E6%A8%A1%E5%9D%97%E5%88%92%E5%88%86%E8%BE%B9%E7%95%8C"><span class="toc-text">5. 用现代模块划分边界</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%E6%B8%85%E5%8D%95"><span class="toc-text">工程实践清单</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

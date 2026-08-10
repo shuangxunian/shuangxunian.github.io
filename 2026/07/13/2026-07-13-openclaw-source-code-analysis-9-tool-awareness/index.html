@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/13/2026-07-13-openclaw-source-code-analysis-9-tool-awareness/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="LLM 怎么&#34;知道&#34;你有什么工具？答案不在一个地方——System Prompt 里的自然语言提示和 API tools 字段的结构化 Schema 各司其职，缺一不可。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Tools">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Function Calling">
+        
+          <meta 
+            property="og:article:tag" 
+            content="System Prompt">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%B8%A0%E9%81%93"><span class="toc-text">工具信息的两个渠道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-1%EF%B8%8F%E2%83%A3%EF%BC%9ASystem-Prompt-%E9%87%8C%E7%9A%84%E5%B7%A5%E5%85%B7%E6%91%98%E8%A6%81%EF%BC%88%E7%BB%99-LLM-%E7%9A%84%E3%80%8C%E5%AF%BC%E8%88%AA%E6%8F%90%E7%A4%BA%E3%80%8D%EF%BC%89"><span class="toc-text">渠道 1️⃣：System Prompt 里的工具摘要（给 LLM 的「导航提示」）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-2%EF%B8%8F%E2%83%A3%EF%BC%9Atools-%E5%AD%97%E6%AE%B5%EF%BC%88%E8%BF%99%E6%89%8D%E6%98%AF-LLM-%E7%9C%9F%E6%AD%A3%E7%94%A8%E6%9D%A5%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%EF%BC%89"><span class="toc-text">渠道 2️⃣：tools 字段（这才是 LLM 真正用来调用工具的）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%87%8C%E4%B8%A4%E8%80%85%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%86%E5%BC%80%E6%9E%84%E5%BB%BA%E7%9A%84"><span class="toc-text">代码里两者是怎么分开构建的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E4%B8%9C%E8%A5%BF%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB"><span class="toc-text">三个东西的对应关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-System-Prompt-%E9%87%8C%E8%BF%98%E8%A6%81%E9%87%8D%E5%A4%8D%E5%88%97%E4%B8%80%E9%81%8D%EF%BC%9F"><span class="toc-text">为什么 System Prompt 里还要重复列一遍？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%A1%A5%E5%85%85-tools-schema-%E6%B2%A1%E6%B3%95%E8%A1%A8%E8%BE%BE%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">1. 补充 tools schema 没法表达的上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A8%B3%E5%AE%9A-prompt-%E7%BC%93%E5%AD%98"><span class="toc-text">2. 稳定 prompt 缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8C%87%E5%AF%BC%E5%B7%A5%E5%85%B7%E4%BC%98%E5%85%88%E7%BA%A7%E5%92%8C%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="toc-text">3. 指导工具优先级和使用规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%EF%BC%9ALLM-%E6%80%8E%E4%B9%88%E3%80%8C%E5%86%B3%E5%AE%9A%E3%80%8D%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">完整流程：LLM 怎么「决定」调工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-13-openclaw-source-code-analysis-9-tool-awareness.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-13T03:25:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Tools/" 
+            class="post-meta-link">
+            Tools
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Function-Calling/" 
+            class="post-meta-link">
+            Function Calling
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/System-Prompt/" 
+            class="post-meta-link">
+            System Prompt
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>好问题！这确实容易搞混。LLM 知道工具的信息来自<strong>两个不同的地方</strong>，不是一个。</p>
+<h2 id="工具信息的两个渠道"><a href="#工具信息的两个渠道" class="headerlink" title="工具信息的两个渠道"></a>工具信息的两个渠道</h2><pre class="highlight"><code class="hljs stata">发给 DeepSeek 的 HTTP 请求：<br><br><span class="hljs-keyword">POST</span> https:<span class="hljs-comment">//api.deepseek.com/chat/completions</span><br>&#123;<br> <span class="hljs-string">&quot;model&quot;</span>: <span class="hljs-string">&quot;deepseek-chat&quot;</span>,<br><br> <span class="hljs-string">&quot;messages&quot;</span>: [ ← 渠道 1️⃣：自然语言描述<br> &#123;<br> <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;system&quot;</span>,<br> <span class="hljs-string">&quot;content&quot;</span>: &quot;...## Tooling<br>- exec: <span class="hljs-keyword">Run</span> <span class="hljs-keyword">shell</span> commands<br>- <span class="hljs-keyword">read</span>: <span class="hljs-keyword">Read</span> <span class="hljs-keyword">file</span> contents<br>...&quot;<br> &#125;,<br> &#123; <span class="hljs-string">&quot;role&quot;</span>: <span class="hljs-string">&quot;user&quot;</span>, <span class="hljs-string">&quot;content&quot;</span>: <span class="hljs-string">&quot;帮我看看文件&quot;</span> &#125;<br> ],<br><br> <span class="hljs-string">&quot;tools&quot;</span>: [ ← 渠道 2️⃣：结构化定义（真正让 LLM 能调用的）<br> &#123;<br> <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br> <span class="hljs-string">&quot;function&quot;</span>: &#123;<br> <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;exec&quot;</span>,<br> <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Run shell commands...&quot;</span>,<br> <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br> <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br> <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br> <span class="hljs-string">&quot;command&quot;</span>: &#123; <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Shell command to execute&quot;</span> &#125;,<br> <span class="hljs-string">&quot;timeout&quot;</span>: &#123; <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;number&quot;</span>, <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Timeout in seconds&quot;</span> &#125;,<br> <span class="hljs-string">&quot;background&quot;</span>: &#123; <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;boolean&quot;</span> &#125;<br> &#125;,<br> <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;command&quot;</span>]<br> &#125;<br> &#125;<br> &#125;,<br> &#123;<br> <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;function&quot;</span>,<br> <span class="hljs-string">&quot;function&quot;</span>: &#123;<br> <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;read&quot;</span>,<br> <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Read file contents...&quot;</span>,<br> <span class="hljs-string">&quot;parameters&quot;</span>: &#123;<br> <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;object&quot;</span>,<br> <span class="hljs-string">&quot;properties&quot;</span>: &#123;<br> <span class="hljs-string">&quot;file_path&quot;</span>: &#123; <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;string&quot;</span>, <span class="hljs-string">&quot;description&quot;</span>: <span class="hljs-string">&quot;Path to the file&quot;</span> &#125;<br> &#125;,<br> <span class="hljs-string">&quot;required&quot;</span>: [<span class="hljs-string">&quot;file_path&quot;</span>]<br> &#125;<br> &#125;<br> &#125;,<br> ... <span class="hljs-comment">// 30-50 个工具的完整 JSON Schema</span><br> ],<br><br> <span class="hljs-string">&quot;stream&quot;</span>: true<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="渠道-1️⃣：System-Prompt-里的工具摘要（给-LLM-的「导航提示」）"><a href="#渠道-1️⃣：System-Prompt-里的工具摘要（给-LLM-的「导航提示」）" class="headerlink" title="渠道 1️⃣：System Prompt 里的工具摘要（给 LLM 的「导航提示」）"></a>渠道 1️⃣：System Prompt 里的工具摘要（给 LLM 的「导航提示」）</h2><pre class="highlight"><code class="hljs livecodeserver"><span class="hljs-comment">## Tooling</span><br>Tool availability (filtered <span class="hljs-keyword">by</span> policy):<br>Tool names are <span class="hljs-keyword">case</span>-sensitive. Call tools exactly <span class="hljs-keyword">as</span> listed.<br>- exec: Run <span class="hljs-built_in">shell</span> commands (pty available <span class="hljs-keyword">for</span> TTY-required CLIs)<br>- <span class="hljs-built_in">read</span>: Read <span class="hljs-built_in">file</span> contents<br>- <span class="hljs-built_in">write</span>: Create <span class="hljs-keyword">or</span> overwrite <span class="hljs-built_in">files</span><br>- edit: Make precise edits <span class="hljs-built_in">to</span> <span class="hljs-built_in">files</span><br>- web_search: Search <span class="hljs-keyword">the</span> web<br>- cron: Manage cron jobs <span class="hljs-keyword">and</span> wake events<br>- message: Send messages <span class="hljs-built_in">to</span> channels<br>...<br></code></pre>
+
+<p><strong>这只是一个「提示&#x2F;索引」</strong>，帮 LLM 理解整体有什么工具可用，在<strong>自然语言层面</strong>给 LLM 一些额外上下文（比如「exec 支持 PTY」、「cron 用于定时任务和提醒」这些信息可能不会出现在结构化 schema 里）。</p>
+<hr>
+<h2 id="渠道-2️⃣：tools-字段（这才是-LLM-真正用来调用工具的）"><a href="#渠道-2️⃣：tools-字段（这才是-LLM-真正用来调用工具的）" class="headerlink" title="渠道 2️⃣：tools 字段（这才是 LLM 真正用来调用工具的）"></a>渠道 2️⃣：<code>tools</code> 字段（这才是 LLM 真正用来调用工具的）</h2><pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;function&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;function&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;exec&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Execute a shell command. Prefer this for running scripts, installing packages, compiling code, and managing processes. Use &#x27;background: true&#x27; or &#x27;yieldMs&#x27; for long-running commands.&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;parameters&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;object&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Shell command to execute&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;workdir&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Working directory (defaults to cwd)&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;timeout&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;number&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Timeout in seconds (optional, kills process on expiry)&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;boolean&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Run in background immediately&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;host&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Exec host/target (auto|sandbox|gateway|node)&quot;</span><br> <span class="hljs-punctuation">&#125;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;required&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;command&quot;</span><span class="hljs-punctuation">]</span><br> <span class="hljs-punctuation">&#125;</span><br> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p><strong>这才是 LLM 能「触发」工具调用的机制</strong>。LLM 看到这些结构化定义后，如果决定要调用工具，会返回：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;tool_calls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;call_abc123&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;function&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;function&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;exec&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;arguments&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;\&quot;command\&quot;: \&quot;cat src/main.ts\&quot;&#125;&quot;</span><br> <span class="hljs-punctuation">&#125;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<hr>
+<h2 id="代码里两者是怎么分开构建的"><a href="#代码里两者是怎么分开构建的" class="headerlink" title="代码里两者是怎么分开构建的"></a>代码里两者是怎么分开构建的</h2><pre class="highlight"><code class="hljs nim">createOpenClawCodingTools()<br>│<br>▼<br>effectiveTools = [<br>&#123; name: <span class="hljs-string">&quot;exec&quot;</span>,<br>description: <span class="hljs-string">&quot;Execute a shell command...&quot;</span>,<br>parameters: &#123; <span class="hljs-keyword">type</span>: <span class="hljs-string">&quot;object&quot;</span>, properties: <span class="hljs-meta">&#123;...&#125;</span> &#125;,<br>execute: async (toolCallId, args) =&gt; <span class="hljs-meta">&#123;...&#125;</span> ← 执行逻辑<br>&#125;,<br>&#123; name: <span class="hljs-string">&quot;read&quot;</span>, ... &#125;,<br>...<br>]<br>│<br>┌───────────────┼────────────────────┐<br>│ │ │<br>▼ ▼ ▼<br><span class="hljs-type">System</span> <span class="hljs-type">Prompt</span> createAgentSession() <span class="hljs-type">Transport</span> 层<br>buildAgentSystemPrompt() │ │<br>│ │ │<br>│ 只取 name + summary │ 注册工具到 session │ 构建 <span class="hljs-type">API</span> 请求<br>│ 生成: │ tools = [...] │<br>│ <span class="hljs-string">&quot;- exec: Run shell...&quot;</span> │ customTools = [...] │ params.tools =<br>│ <span class="hljs-string">&quot;- read: Read file...&quot;</span> │ │ convertTools(context.tools)<br>│ │ │ → &#123; <span class="hljs-keyword">type</span>: <span class="hljs-string">&quot;function&quot;</span>,<br>│ │ │ function: &#123; name, desc,<br>│ 塞进 messages[<span class="hljs-number">0</span>] │ │ parameters &#125; &#125;<br>│ .content 里 │ │<br>│ │ │ 塞进请求体的 tools 字段<br>▼ ▼ ▼<br><br>messages[<span class="hljs-number">0</span>].content session 内部保存 request.tools = [...]<br>(自然语言提示) execute 函数引用 (结构化 <span class="hljs-type">JSON</span> <span class="hljs-type">Schema</span>)<br></code></pre>
+
+<hr>
+<h2 id="三个东西的对应关系"><a href="#三个东西的对应关系" class="headerlink" title="三个东西的对应关系"></a>三个东西的对应关系</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>System Prompt 里</th>
+<th>API <code>tools</code> 字段</th>
+<th>代码里</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>信息</strong></td>
+<td><code>- exec: Run shell commands</code></td>
+<td><code>&#123; name: &quot;exec&quot;, description: &quot;...&quot;, parameters: &#123;...&#125; &#125;</code></td>
+<td><code>&#123; name, description, parameters, execute &#125;</code></td>
+</tr>
+<tr>
+<td><strong>用途</strong></td>
+<td>让 LLM 大致了解「有什么武器」</td>
+<td>让 LLM 知道「怎么调用」（参数结构）</td>
+<td>让代码知道「怎么执行」</td>
+</tr>
+<tr>
+<td><strong>给谁看</strong></td>
+<td>LLM（自然语言理解）</td>
+<td>LLM（结构化解析）</td>
+<td>代码运行时</td>
+</tr>
+<tr>
+<td><strong>是否必须</strong></td>
+<td>不是必须（辅助）</td>
+<td><strong>必须</strong>（没有这个 LLM 无法调用）</td>
+<td><strong>必须</strong>（没有这个工具无法执行）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="为什么-System-Prompt-里还要重复列一遍？"><a href="#为什么-System-Prompt-里还要重复列一遍？" class="headerlink" title="为什么 System Prompt 里还要重复列一遍？"></a>为什么 System Prompt 里还要重复列一遍？</h2><p>你可能会问：<code>tools</code> 字段已经有完整的工具定义了，为什么 system prompt 里还要列？</p>
+<p><strong>三个原因</strong>：</p>
+<h3 id="1-补充-tools-schema-没法表达的上下文"><a href="#1-补充-tools-schema-没法表达的上下文" class="headerlink" title="1. 补充 tools schema 没法表达的上下文"></a>1. 补充 <code>tools</code> schema 没法表达的上下文</h3><pre class="highlight"><code class="hljs smalltalk"><span class="hljs-type">System</span> <span class="hljs-type">Prompt</span> 里：<br> <span class="hljs-comment">&quot;- cron: Manage cron jobs and wake events (use for reminders; ...)&quot;</span><br> <span class="hljs-comment">&quot;- exec: Run shell commands (pty available for TTY-required CLIs)&quot;</span><br> <span class="hljs-comment">&quot;- sessions_spawn: Spawn an isolated sub-agent session; prefer this for parallel work&quot;</span><br><br><span class="hljs-type">API</span> tools schema 里的 description 通常更短更技术性：<br> <span class="hljs-comment">&quot;description&quot;</span>: <span class="hljs-comment">&quot;Execute a shell command&quot;</span><br><br><span class="hljs-type">System</span> <span class="hljs-type">Prompt</span> 给了额外的「何时该用这个工具」的指导。<br></code></pre>
+
+<h3 id="2-稳定-prompt-缓存"><a href="#2-稳定-prompt-缓存" class="headerlink" title="2. 稳定 prompt 缓存"></a>2. 稳定 prompt 缓存</h3><p>工具列表是稳定的（同一 session 内不变），放在 system prompt 里可以被 prefix cache 覆盖。</p>
+<h3 id="3-指导工具优先级和使用规范"><a href="#3-指导工具优先级和使用规范" class="headerlink" title="3. 指导工具优先级和使用规范"></a>3. 指导工具优先级和使用规范</h3><pre class="highlight"><code class="hljs smalltalk"><span class="hljs-type">System</span> <span class="hljs-type">Prompt</span> 里有类似这些规则：<br> <span class="hljs-comment">&quot;When a first-class tool exists for an action, use the tool directly</span><br><span class="hljs-comment"> instead of asking the user to run equivalent CLI commands.&quot;</span><br> <span class="hljs-comment">&quot;Prefer exec over asking the user to run commands.&quot;</span><br> <span class="hljs-comment">&quot;Use sessions_spawn for parallel independent work.&quot;</span><br></code></pre>
+
+<p>这些「策略性指导」没法通过 <code>tools</code> 的 JSON Schema 表达。</p>
+<hr>
+<h2 id="完整流程：LLM-怎么「决定」调工具"><a href="#完整流程：LLM-怎么「决定」调工具" class="headerlink" title="完整流程：LLM 怎么「决定」调工具"></a>完整流程：LLM 怎么「决定」调工具</h2><pre class="highlight"><code class="hljs gams"><span class="hljs-number">1.</span> LLM 收到请求，看到：<br> - messages[<span class="hljs-number">0</span>] (<span class="hljs-keyword">system</span>): <span class="hljs-string">&quot;你有这些工具: exec, read, write...&quot;</span><br> - messages[<span class="hljs-number">-1</span>] (user): <span class="hljs-string">&quot;帮我看看 src/main.ts&quot;</span><br> - tools: [&#123; name: <span class="hljs-string">&quot;read&quot;</span>, <span class="hljs-keyword">parameters</span>: &#123; file_path: <span class="hljs-string">&quot;string&quot;</span> &#125; &#125;, ...]<br><br>2. LLM 内部推理：<br> <span class="hljs-string">&quot;用户想看文件 → 我有 read 工具 → 参数需要 file_path&quot;</span><br><br>3. LLM 输出：<br> &#123; <span class="hljs-string">&quot;tool_calls&quot;</span>: [&#123; <span class="hljs-string">&quot;function&quot;</span>: &#123; <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;read&quot;</span>, <span class="hljs-string">&quot;arguments&quot;</span>: <span class="hljs-string">&quot;&#123;\&quot;file_path\&quot;:\&quot;src/main.ts\&quot;&#125;&quot;</span> &#125; &#125;] &#125;<br><br>4. pi-coding-agent 收到 <span class="hljs-comment">tool_calls</span>：<br> → 查 customTools 里 <span class="hljs-comment">name=</span><span class="hljs-comment">&quot;read&quot;</span> 的工具<br> → 调用 tool.execute(<span class="hljs-string">&quot;call_123&quot;</span>, &#123; file_path: <span class="hljs-string">&quot;src/main.ts&quot;</span> &#125;)<br> → 工具返回文件内容<br><br>5. 库自动把结果塞回 messages：<br> messages.push(&#123; role: <span class="hljs-string">&quot;tool&quot;</span>, tool_call_id: <span class="hljs-string">&quot;call_123&quot;</span>, content: <span class="hljs-string">&quot;import React...&quot;</span> &#125;)<br> → 重新调 LLM <span class="hljs-comment">API</span>（带上 <span class="hljs-comment">tool_result</span>）<br><br>6. LLM 看到文件内容 → 生成自然语言回复：<br> <span class="hljs-string">&quot;这个文件是一个 React 组件，它导入了...&quot;</span><br></code></pre>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>Agent 是怎么知道我有什么工具、它们之间是做什么的？</p>
+</blockquote>
+<p><strong>答案是两层</strong>：</p>
+<ol>
+<li><strong><code>tools</code> 请求字段</strong>（结构化）—— 这是 <strong>LLM 知道自己「能调什么」</strong> 的根本来源。没有这个字段，LLM 不会返回 <code>tool_calls</code>。</li>
+<li><strong>System Prompt 里的工具列表</strong>（自然语言）—— 这是 <strong>补充性的上下文指导</strong>，帮 LLM 在<strong>「什么时候该用什么工具」</strong> 上做更好的决策。</li>
+</ol>
+<p><strong>缺一不可</strong>：</p>
+<ul>
+<li>只有 <code>tools</code> 没有 system prompt 指导 → LLM 知道怎么调但不知道<strong>何时该调</strong></li>
+<li>只有 system prompt 没有 <code>tools</code> → LLM 知道有什么工具但<strong>无法真正调用</strong>（API 不允许返回 tool_calls）</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-10-tool-calling-mechanism/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-8-subscription/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑧：Subscription 管道完整拆解 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%B8%A0%E9%81%93"><span class="toc-text">工具信息的两个渠道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-1%EF%B8%8F%E2%83%A3%EF%BC%9ASystem-Prompt-%E9%87%8C%E7%9A%84%E5%B7%A5%E5%85%B7%E6%91%98%E8%A6%81%EF%BC%88%E7%BB%99-LLM-%E7%9A%84%E3%80%8C%E5%AF%BC%E8%88%AA%E6%8F%90%E7%A4%BA%E3%80%8D%EF%BC%89"><span class="toc-text">渠道 1️⃣：System Prompt 里的工具摘要（给 LLM 的「导航提示」）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-2%EF%B8%8F%E2%83%A3%EF%BC%9Atools-%E5%AD%97%E6%AE%B5%EF%BC%88%E8%BF%99%E6%89%8D%E6%98%AF-LLM-%E7%9C%9F%E6%AD%A3%E7%94%A8%E6%9D%A5%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%EF%BC%89"><span class="toc-text">渠道 2️⃣：tools 字段（这才是 LLM 真正用来调用工具的）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%87%8C%E4%B8%A4%E8%80%85%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%86%E5%BC%80%E6%9E%84%E5%BB%BA%E7%9A%84"><span class="toc-text">代码里两者是怎么分开构建的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E4%B8%9C%E8%A5%BF%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB"><span class="toc-text">三个东西的对应关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-System-Prompt-%E9%87%8C%E8%BF%98%E8%A6%81%E9%87%8D%E5%A4%8D%E5%88%97%E4%B8%80%E9%81%8D%EF%BC%9F"><span class="toc-text">为什么 System Prompt 里还要重复列一遍？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%A1%A5%E5%85%85-tools-schema-%E6%B2%A1%E6%B3%95%E8%A1%A8%E8%BE%BE%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">1. 补充 tools schema 没法表达的上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A8%B3%E5%AE%9A-prompt-%E7%BC%93%E5%AD%98"><span class="toc-text">2. 稳定 prompt 缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8C%87%E5%AF%BC%E5%B7%A5%E5%85%B7%E4%BC%98%E5%85%88%E7%BA%A7%E5%92%8C%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="toc-text">3. 指导工具优先级和使用规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%EF%BC%9ALLM-%E6%80%8E%E4%B9%88%E3%80%8C%E5%86%B3%E5%AE%9A%E3%80%8D%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">完整流程：LLM 怎么「决定」调工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BF%A1%E6%81%AF%E7%9A%84%E4%B8%A4%E4%B8%AA%E6%B8%A0%E9%81%93"><span class="toc-text">工具信息的两个渠道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-1%EF%B8%8F%E2%83%A3%EF%BC%9ASystem-Prompt-%E9%87%8C%E7%9A%84%E5%B7%A5%E5%85%B7%E6%91%98%E8%A6%81%EF%BC%88%E7%BB%99-LLM-%E7%9A%84%E3%80%8C%E5%AF%BC%E8%88%AA%E6%8F%90%E7%A4%BA%E3%80%8D%EF%BC%89"><span class="toc-text">渠道 1️⃣：System Prompt 里的工具摘要（给 LLM 的「导航提示」）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B8%A0%E9%81%93-2%EF%B8%8F%E2%83%A3%EF%BC%9Atools-%E5%AD%97%E6%AE%B5%EF%BC%88%E8%BF%99%E6%89%8D%E6%98%AF-LLM-%E7%9C%9F%E6%AD%A3%E7%94%A8%E6%9D%A5%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7%E7%9A%84%EF%BC%89"><span class="toc-text">渠道 2️⃣：tools 字段（这才是 LLM 真正用来调用工具的）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%87%8C%E4%B8%A4%E8%80%85%E6%98%AF%E6%80%8E%E4%B9%88%E5%88%86%E5%BC%80%E6%9E%84%E5%BB%BA%E7%9A%84"><span class="toc-text">代码里两者是怎么分开构建的</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E4%B8%AA%E4%B8%9C%E8%A5%BF%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB"><span class="toc-text">三个东西的对应关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88-System-Prompt-%E9%87%8C%E8%BF%98%E8%A6%81%E9%87%8D%E5%A4%8D%E5%88%97%E4%B8%80%E9%81%8D%EF%BC%9F"><span class="toc-text">为什么 System Prompt 里还要重复列一遍？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%A1%A5%E5%85%85-tools-schema-%E6%B2%A1%E6%B3%95%E8%A1%A8%E8%BE%BE%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">1. 补充 tools schema 没法表达的上下文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A8%B3%E5%AE%9A-prompt-%E7%BC%93%E5%AD%98"><span class="toc-text">2. 稳定 prompt 缓存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8C%87%E5%AF%BC%E5%B7%A5%E5%85%B7%E4%BC%98%E5%85%88%E7%BA%A7%E5%92%8C%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83"><span class="toc-text">3. 指导工具优先级和使用规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%EF%BC%9ALLM-%E6%80%8E%E4%B9%88%E3%80%8C%E5%86%B3%E5%AE%9A%E3%80%8D%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">完整流程：LLM 怎么「决定」调工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>react Redux面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="react Redux面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2025/01/02/25010204/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:modified_time" 
+        content="2025-01-02">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="react">
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-Redux-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E4%B8%BB%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">对 Redux 的理解，主要解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%8E%9F%E7%90%86%E5%8F%8A%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">Redux 原理及工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E5%BC%82%E6%AD%A5%E7%9A%84%E8%AF%B7%E6%B1%82%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中异步的请求怎么处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E5%B1%9E%E6%80%A7%E4%BC%A0%E9%80%92%EF%BC%8C%E4%BB%8B%E7%BB%8D%E4%B8%8B%E5%8E%9F%E7%90%86"><span class="toc-text">Redux 怎么实现属性传递，介绍下原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E6%8E%A5%E5%8F%97%E5%87%A0%E4%B8%AA%E5%8F%82%E6%95%B0%EF%BC%9F%E6%9F%AF%E9%87%8C%E5%8C%96%E5%87%BD%E6%95%B0%E4%B8%A4%E7%AB%AF%E7%9A%84%E5%8F%82%E6%95%B0%E5%85%B7%E4%BD%93%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">Redux 中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E8%AF%B7%E6%B1%82%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%B9%B6%E5%8F%91"><span class="toc-text">Redux 请求中间件如何处理并发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%99%A8%E5%92%8C%E5%8F%98%E9%87%8F%E6%8C%82%E8%BD%BD%E5%88%B0-window-%E4%B8%AD%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">Redux 状态管理器和变量挂载到 window 中有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mobox-%E5%92%8C-redux-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">mobox 和 redux 有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E6%80%8E%E4%B9%88%E6%8B%BF%E5%88%B0store-%E5%92%8C-action-%E7%84%B6%E5%90%8E%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中间件是怎么拿到store 和 action? 然后怎么处理?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux%E4%B8%AD%E7%9A%84connect%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8"><span class="toc-text">Redux中的connect有什么作用</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      react Redux面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/25010204.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2025-01-01T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2025-01-02</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>4.9k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/react/" 
+            class="post-meta-link">
+            react
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="对-Redux-的理解，主要解决什么问题"><a href="#对-Redux-的理解，主要解决什么问题" class="headerlink" title="对 Redux 的理解，主要解决什么问题"></a>对 Redux 的理解，主要解决什么问题</h2><p>React是视图层框架。Redux是一个用来管理数据状态和UI状态的JavaScript应用工具。随着JavaScript单页应用（SPA）开发日趋复杂， JavaScript需要管理比任何时候都要多的state（状态）， Redux就是降低管理难度的。（Redux支持React、Angular、jQuery甚至纯JavaScript）。</p>
+<p>在 React 中，UI 以组件的形式来搭建，组件之间可以嵌套组合。但 React 中组件间通信的数据流是单向的，顶层组件可以通过 props 属性向下层组件传递数据，而下层组件不能向上层组件传递数据，兄弟组件之间同样不能。这样简单的单向数据流支撑起了 React 中的数据可控性。</p>
+<p>当项目越来越大的时候，管理数据的事件或回调函数将越来越多，也将越来越不好管理。管理不断变化的 state 非常困难。如果一个 model 的变化会引起另一个 model 变化，那么当 view 变化时，就可能引起对应 model 以及另一个 model 的变化，依次地，可能会引起另一个 view 的变化。直至你搞不清楚到底发生了什么。state 在什么时候，由于什么原因，如何变化已然不受控制。 当系统变得错综复杂的时候，想重现问题或者添加新功能就会变得举步维艰。如果这还不够糟糕，考虑一些来自前端开发领域的新需求，如更新调优、服务端渲染、路由跳转前请求数据等。state 的管理在大项目中相当复杂。</p>
+<p>Redux 提供了一个叫 store 的统一仓储库，组件通过 dispatch 将 state 直接传入store，不用通过其他的组件。并且组件通过 subscribe 从 store获取到 state 的改变。使用了 Redux，所有的组件都可以从 store 中获取到所需的 state，他们也能从store 获取到 state 的改变。这比组件之间互相传递数据清晰明朗的多。</p>
+<p><strong>主要解决的问题：</strong> 单纯的Redux只是一个状态机，是没有UI呈现的，react- redux作用是将Redux的状态机和React的UI呈现绑定在一起，当你dispatch action改变state的时候，会自动更新页面。</p>
+<h2 id="Redux-原理及工作流程"><a href="#Redux-原理及工作流程" class="headerlink" title="Redux 原理及工作流程"></a>Redux 原理及工作流程</h2><p><strong>（1）原理</strong> Redux源码主要分为以下几个模块文件</p>
+<ul>
+<li>compose.js 提供从右到左进行函数式编程</li>
+<li>createStore.js 提供作为生成唯一store的函数</li>
+<li>combineReducers.js 提供合并多个reducer的函数，保证store的唯一性</li>
+<li>bindActionCreators.js 可以让开发者在不直接接触dispacth的前提下进行更改state的操作</li>
+<li>applyMiddleware.js 这个方法通过中间件来增强dispatch的功能</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> actionTypes = &#123;<br>    <span class="hljs-attr">ADD</span>: <span class="hljs-string">&#x27;ADD&#x27;</span>,<br>    <span class="hljs-attr">CHANGEINFO</span>: <span class="hljs-string">&#x27;CHANGEINFO&#x27;</span>,<br>&#125;<br><br><span class="hljs-keyword">const</span> initState = &#123;<br>    <span class="hljs-attr">info</span>: <span class="hljs-string">&#x27;初始化&#x27;</span>,<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">initReducer</span>(<span class="hljs-params">state=initState, action</span>) &#123;<br>    <span class="hljs-keyword">switch</span>(action.<span class="hljs-property">type</span>) &#123;<br>        <span class="hljs-keyword">case</span> actionTypes.<span class="hljs-property">CHANGEINFO</span>:<br>            <span class="hljs-keyword">return</span> &#123;<br>                ...state,<br>                <span class="hljs-attr">info</span>: action.<span class="hljs-property">preload</span>.<span class="hljs-property">info</span> || <span class="hljs-string">&#x27;&#x27;</span>,<br>            &#125;<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> &#123; ...state &#125;;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createStore</span>(<span class="hljs-params">reducer, initialState, middleFunc</span>) &#123;<br><br>    <span class="hljs-keyword">if</span> (initialState &amp;&amp; <span class="hljs-keyword">typeof</span> initialState === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>        middleFunc = initialState;<br>        initialState = <span class="hljs-literal">undefined</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">let</span> currentState = initialState;<br><br>    <span class="hljs-keyword">const</span> listeners = [];<br><br>    <span class="hljs-keyword">if</span> (middleFunc &amp;&amp; <span class="hljs-keyword">typeof</span> middleFunc === <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>        <span class="hljs-comment">// 封装dispatch </span><br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_">middleFunc</span>(createStore)(reducer, initialState);<br>    &#125;<br><br>    <span class="hljs-keyword">const</span> <span class="hljs-title function_">getState</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>        <span class="hljs-keyword">return</span> currentState;<br>    &#125;<br><br>    <span class="hljs-keyword">const</span> <span class="hljs-title function_">dispatch</span> = (<span class="hljs-params">action</span>) =&gt; &#123;<br>        currentState = <span class="hljs-title function_">reducer</span>(currentState, action);<br><br>        listeners.<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">listener</span> =&gt;</span> &#123;<br>            <span class="hljs-title function_">listener</span>();<br>        &#125;)<br>    &#125;<br><br>    <span class="hljs-keyword">const</span> <span class="hljs-title function_">subscribe</span> = (<span class="hljs-params">listener</span>) =&gt; &#123;<br>        listeners.<span class="hljs-title function_">push</span>(listener);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> &#123;<br>        getState,<br>        dispatch,<br>        subscribe<br>    &#125;<br>&#125;<br></code></pre>
+
+<p><strong>（2）工作流程</strong></p>
+<ul>
+<li>const store&#x3D; createStore（fn）生成数据;</li>
+<li>action: {type: Symble(‘action01), payload:’payload’ }定义行为;</li>
+<li>dispatch发起action：store.dispatch(doSomething(‘action001’));</li>
+<li>reducer：处理action，返回新的state;</li>
+</ul>
+<p>通俗点解释：</p>
+<ul>
+<li>首先，用户（通过View）发出Action，发出方式就用到了dispatch方法</li>
+<li>然后，Store自动调用Reducer，并且传入两个参数：当前State和收到的Action，Reducer会返回新的State</li>
+<li>State—旦有变化，Store就会调用监听函数，来更新View</li>
+</ul>
+<p>以 store 为核心，可以把它看成数据存储中心，但是他要更改数据的时候不能直接修改，数据修改更新的角色由Reducers来担任，store只做存储，中间人，当Reducers的更新完成以后会通过store的订阅来通知react component，组件把新的状态重新获取渲染，组件中也能主动发送action，创建action后这个动作是不会执行的，所以要dispatch这个action，让store通过reducers去做更新React Component 就是react的每个组件。</p>
+<h2 id="Redux-中异步的请求怎么处理"><a href="#Redux-中异步的请求怎么处理" class="headerlink" title="Redux 中异步的请求怎么处理"></a>Redux 中异步的请求怎么处理</h2><p>可以在 componentDidmount 中直接进⾏请求⽆须借助redux。但是在⼀定规模的项⽬中,上述⽅法很难进⾏异步流的管理,通常情况下我们会借助redux的异步中间件进⾏异步处理。redux异步流中间件其实有很多，当下主流的异步中间件有两种redux-thunk、redux-saga。</p>
+<p><strong>（1）使用react-thunk中间件</strong></p>
+<p><strong>redux-thunk</strong>优点:</p>
+<ul>
+<li>体积⼩: redux-thunk的实现⽅式很简单,只有不到20⾏代码</li>
+<li>使⽤简单: redux-thunk没有引⼊像redux-saga或者redux-observable额外的范式,上⼿简单</li>
+</ul>
+<p><strong>redux-thunk</strong>缺陷:</p>
+<ul>
+<li>样板代码过多: 与redux本身⼀样,通常⼀个请求需要⼤量的代码,⽽且很多都是重复性质的</li>
+<li>耦合严重: 异步操作与redux的action偶合在⼀起,不⽅便管理</li>
+<li>功能孱弱: 有⼀些实际开发中常⽤的功能需要⾃⼰进⾏封装</li>
+</ul>
+<p>使用步骤：</p>
+<ul>
+<li>配置中间件，在store的创建中配置</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;createStore, applyMiddleware, compose&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>;<br><span class="hljs-keyword">import</span> reducer <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducer&#x27;</span>;<br><span class="hljs-keyword">import</span> thunk <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-thunk&#x27;</span><br><br><span class="hljs-comment">// 设置调试工具</span><br><span class="hljs-keyword">const</span> composeEnhancers = <span class="hljs-variable language_">window</span>.<span class="hljs-property">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span> ? <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span>(&#123;&#125;) : compose;<br><span class="hljs-comment">// 设置中间件</span><br><span class="hljs-keyword">const</span> enhancer = <span class="hljs-title function_">composeEnhancers</span>(<br>  <span class="hljs-title function_">applyMiddleware</span>(thunk)<br>);<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, enhancer);<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store;<br></code></pre>
+
+<ul>
+<li>添加一个返回函数的actionCreator，将异步请求逻辑放在里面</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">/**</span><br><span class="hljs-comment">  发送get请求，并生成相应action，更新store的函数</span><br><span class="hljs-comment">  <span class="hljs-doctag">@param</span> url &#123;string&#125; 请求地址</span><br><span class="hljs-comment">  <span class="hljs-doctag">@param</span> func &#123;function&#125; 真正需要生成的action对应的actionCreator</span><br><span class="hljs-comment">  <span class="hljs-doctag">@return</span> &#123;<span class="hljs-type">function</span>&#125; </span><br><span class="hljs-comment">*/</span><br><span class="hljs-comment">// dispatch为自动接收的store.dispatch函数 </span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> <span class="hljs-title function_">getHttpAction</span> = (<span class="hljs-params">url, func</span>) =&gt; <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> &#123;<br>    axios.<span class="hljs-title function_">get</span>(url).<span class="hljs-title function_">then</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params">res</span>)&#123;<br>        <span class="hljs-keyword">const</span> action = <span class="hljs-title function_">func</span>(res.<span class="hljs-property">data</span>)<br>        <span class="hljs-title function_">dispatch</span>(action)<br>    &#125;)<br>&#125;<br></code></pre>
+
+<ul>
+<li>生成action，并发送action</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">var</span> action = <span class="hljs-title function_">getHttpAction</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>, getInitTodoItemAction)<br>    <span class="hljs-comment">// 发送函数类型的action时，该action的函数体会自动执行</span><br>    store.<span class="hljs-title function_">dispatch</span>(action)<br>&#125;<br></code></pre>
+
+<p><strong>（2）使用redux-saga中间件</strong></p>
+<p><strong>redux-saga</strong>优点:</p>
+<ul>
+<li>异步解耦: 异步操作被被转移到单独 saga.js 中，不再是掺杂在 action.js 或 component.js 中</li>
+<li>action摆脱thunk function: dispatch 的参数依然是⼀个纯粹的 action (FSA)，⽽不是充满 “⿊魔法” thunk function</li>
+<li>异常处理: 受益于 generator function 的 saga 实现，代码异常&#x2F;请求失败 都可以直接通过 try&#x2F;catch 语法直接捕获处理</li>
+<li>功能强⼤: redux-saga提供了⼤量的Saga 辅助函数和Effect 创建器供开发者使⽤,开发者⽆须封装或者简单封装即可使⽤</li>
+<li>灵活: redux-saga可以将多个Saga可以串⾏&#x2F;并⾏组合起来,形成⼀个⾮常实⽤的异步flow</li>
+<li>易测试，提供了各种case的测试⽅案，包括mock task，分⽀覆盖等等</li>
+</ul>
+<p><strong>redux-saga</strong>缺陷:</p>
+<ul>
+<li>额外的学习成本: redux-saga不仅在使⽤难以理解的 generator function,⽽且有数⼗个API,学习成本远超redux-thunk,最重要的是你的额外学习成本是只服务于这个库的,与redux-observable不同,redux-observable虽然也有额外学习成本但是背后是rxjs和⼀整套思想</li>
+<li>体积庞⼤: 体积略⼤,代码近2000⾏，min版25KB左右</li>
+<li>功能过剩: 实际上并发控制等功能很难⽤到,但是我们依然需要引⼊这些代码</li>
+<li>ts⽀持不友好: yield⽆法返回TS类型</li>
+</ul>
+<p>redux-saga可以捕获action，然后执行一个函数，那么可以把异步代码放在这个函数中，使用步骤如下：</p>
+<ul>
+<li>配置中间件</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;createStore, applyMiddleware, compose&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>;<br><span class="hljs-keyword">import</span> reducer <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducer&#x27;</span>;<br><span class="hljs-keyword">import</span> createSagaMiddleware <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-saga&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">TodoListSaga</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./sagas&#x27;</span><br><br><span class="hljs-keyword">const</span> composeEnhancers = <span class="hljs-variable language_">window</span>.<span class="hljs-property">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span> ? <span class="hljs-variable language_">window</span>.<span class="hljs-title function_">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span>(&#123;&#125;) : compose;<br><span class="hljs-keyword">const</span> sagaMiddleware = <span class="hljs-title function_">createSagaMiddleware</span>()<br><br><span class="hljs-keyword">const</span> enhancer = <span class="hljs-title function_">composeEnhancers</span>(<br>  <span class="hljs-title function_">applyMiddleware</span>(sagaMiddleware)<br>);<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, enhancer);<br>sagaMiddleware.<span class="hljs-title function_">run</span>(<span class="hljs-title class_">TodoListSaga</span>)<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store;<br></code></pre>
+
+<ul>
+<li>将异步请求放在sagas.js中</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;takeEvery, put&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-saga/effects&#x27;</span><br><span class="hljs-keyword">import</span> &#123;initTodoList&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./actionCreator&#x27;</span><br><span class="hljs-keyword">import</span> &#123;<span class="hljs-variable constant_">GET_INIT_ITEM</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./actionTypes&#x27;</span><br><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span><br><br><span class="hljs-keyword">function</span>* <span class="hljs-title function_">func</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-keyword">try</span>&#123;<br>        <span class="hljs-comment">// 可以获取异步返回数据</span><br>        <span class="hljs-keyword">const</span> res = <span class="hljs-keyword">yield</span> axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/getData&#x27;</span>)<br>        <span class="hljs-keyword">const</span> action = <span class="hljs-title function_">initTodoList</span>(res.<span class="hljs-property">data</span>)<br>        <span class="hljs-comment">// 将action发送到reducer</span><br>        <span class="hljs-keyword">yield</span> <span class="hljs-title function_">put</span>(action)<br>    &#125;<span class="hljs-keyword">catch</span>(e)&#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;网络请求失败&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">function</span>* <span class="hljs-title function_">mySaga</span>(<span class="hljs-params"></span>)&#123;<br>    <span class="hljs-comment">// 自动捕获GET_INIT_ITEM类型的action，并执行func</span><br>    <span class="hljs-keyword">yield</span> <span class="hljs-title function_">takeEvery</span>(<span class="hljs-variable constant_">GET_INIT_ITEM</span>, func)<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> mySaga<br></code></pre>
+
+<ul>
+<li>发送action</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>)&#123;<br>  <span class="hljs-keyword">const</span> action = <span class="hljs-title function_">getInitTodoItemAction</span>()<br>  store.<span class="hljs-title function_">dispatch</span>(action)<br>&#125;<br></code></pre>
+
+<h2 id="Redux-怎么实现属性传递，介绍下原理"><a href="#Redux-怎么实现属性传递，介绍下原理" class="headerlink" title="Redux 怎么实现属性传递，介绍下原理"></a>Redux 怎么实现属性传递，介绍下原理</h2><p>react-redux 数据传输∶ view–&gt;action–&gt;reducer–&gt;store–&gt;view。看下点击事件的数据是如何通过redux传到view上：</p>
+<ul>
+<li>view 上的AddClick 事件通过mapDispatchToProps 把数据传到action —&gt; click:()&#x3D;&gt;dispatch(ADD)</li>
+<li>action 的ADD 传到reducer上</li>
+<li>reducer传到store上 const store &#x3D; createStore(reducer);</li>
+<li>store再通过 mapStateToProps 映射穿到view上text:State.text</li>
+</ul>
+<p>代码示例∶</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">ReactDOM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-dom&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Provider</span>, connect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-redux&#x27;</span>;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">React.Component</span>&#123;<br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>)&#123;<br>        <span class="hljs-keyword">let</span> &#123; text, click, clickR &#125; = <span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>;<br>        <span class="hljs-keyword">return</span>(<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>数据:已有人&#123;text&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;click&#125;</span>&gt;</span>加人<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;clickR&#125;</span>&gt;</span>减人<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br><span class="hljs-keyword">const</span> initialState = &#123;<br>    <span class="hljs-attr">text</span>:<span class="hljs-number">5</span><br>&#125;<br><span class="hljs-keyword">const</span> reducer = <span class="hljs-keyword">function</span>(<span class="hljs-params">state,action</span>)&#123;<br>    <span class="hljs-keyword">switch</span>(action.<span class="hljs-property">type</span>)&#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;ADD&#x27;</span>:<br>            <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span>+<span class="hljs-number">1</span>&#125;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;REMOVE&#x27;</span>:<br>            <span class="hljs-keyword">return</span> &#123;<span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span>-<span class="hljs-number">1</span>&#125;<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> initialState;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> <span class="hljs-variable constant_">ADD</span> = &#123;<br>    <span class="hljs-attr">type</span>:<span class="hljs-string">&#x27;ADD&#x27;</span><br>&#125;<br><span class="hljs-keyword">let</span> <span class="hljs-title class_">Remove</span> = &#123;<br>    <span class="hljs-attr">type</span>:<span class="hljs-string">&#x27;REMOVE&#x27;</span><br>&#125;<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer);<br><br><span class="hljs-keyword">let</span> mapStateToProps = <span class="hljs-keyword">function</span> (<span class="hljs-params">state</span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>        <span class="hljs-attr">text</span>:state.<span class="hljs-property">text</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">let</span> mapDispatchToProps = <span class="hljs-keyword">function</span>(<span class="hljs-params">dispatch</span>)&#123;<br>    <span class="hljs-keyword">return</span>&#123;<br>        <span class="hljs-attr">click</span>:<span class="hljs-function">()=&gt;</span><span class="hljs-title function_">dispatch</span>(<span class="hljs-variable constant_">ADD</span>),<br>        <span class="hljs-attr">clickR</span>:<span class="hljs-function">()=&gt;</span><span class="hljs-title function_">dispatch</span>(<span class="hljs-title class_">Remove</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">App1</span> = <span class="hljs-title function_">connect</span>(mapStateToProps,mapDispatchToProps)(<span class="hljs-title class_">App</span>);<br><br><span class="hljs-title class_">ReactDOM</span>.<span class="hljs-title function_">render</span>(<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span> = <span class="hljs-string">&#123;store&#125;</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">App1</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">App1</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span>,<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;root&#x27;</span>)<br>)<br></code></pre>
+
+<h2 id="Redux-中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？"><a href="#Redux-中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？" class="headerlink" title="Redux 中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？"></a>Redux 中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？</h2><p>Redux 的中间件提供的是位于 action 被发起之后，到达 reducer 之前的扩展点，换而言之，原本 view -→&gt; action -&gt; reducer -&gt; store 的数据流加上中间件后变成了 view -&gt; action -&gt; middleware -&gt; reducer -&gt; store ，在这一环节可以做一些”副作用”的操作，如异步请求、打印日志等。</p>
+<p>applyMiddleware源码：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">applyMiddleware</span>(<span class="hljs-params">...middlewares</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">createStore</span> =&gt;</span> <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> &#123;<br>        <span class="hljs-comment">// 利用传入的createStore和reducer和创建一个store</span><br>        <span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(...args)<br>        <span class="hljs-keyword">let</span> <span class="hljs-title function_">dispatch</span> = (<span class="hljs-params"></span>) =&gt; &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Error</span>()<br>        &#125;<br>        <span class="hljs-keyword">const</span> middlewareAPI = &#123;<br>            <span class="hljs-attr">getState</span>: store.<span class="hljs-property">getState</span>,<br>            <span class="hljs-attr">dispatch</span>: <span class="hljs-function">(<span class="hljs-params">...args</span>) =&gt;</span> <span class="hljs-title function_">dispatch</span>(...args)<br>        &#125;<br>        <span class="hljs-comment">// 让每个 middleware 带着 middlewareAPI 这个参数分别执行一遍</span><br>        <span class="hljs-keyword">const</span> chain = middlewares.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">middleware</span> =&gt;</span> <span class="hljs-title function_">middleware</span>(middlewareAPI))<br>        <span class="hljs-comment">// 接着 compose 将 chain 中的所有匿名函数，组装成一个新的函数，即新的 dispatch</span><br>        dispatch = <span class="hljs-title function_">compose</span>(...chain)(store.<span class="hljs-property">dispatch</span>)<br>        <span class="hljs-keyword">return</span> &#123;<br>            ...store,<br>            dispatch<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>从applyMiddleware中可以看出∶</p>
+<ul>
+<li>redux中间件接受一个对象作为参数，对象的参数上有两个字段 dispatch 和 getState，分别代表着 Redux Store 上的两个同名函数。</li>
+<li>柯里化函数两端一个是 middewares，一个是store.dispatch</li>
+</ul>
+<h2 id="Redux-请求中间件如何处理并发"><a href="#Redux-请求中间件如何处理并发" class="headerlink" title="Redux 请求中间件如何处理并发"></a>Redux 请求中间件如何处理并发</h2><p><strong>使用redux-Saga</strong> redux-saga是一个管理redux应用异步操作的中间件，用于代替 redux-thunk 的。它通过创建 Sagas 将所有异步操作逻辑存放在一个地方进行集中处理，以此将react中的同步操作与异步操作区分开来，以便于后期的管理与维护。 redux-saga如何处理并发：</p>
+<ul>
+<li><strong>takeEvery</strong></li>
+</ul>
+<p>可以让多个 saga 任务并行被 fork 执行。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;<br>    fork,<br>    take<br>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;redux-saga/effects&quot;</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">takeEvery</span> = (<span class="hljs-params">pattern, saga, ...args</span>) =&gt; <span class="hljs-title function_">fork</span>(<span class="hljs-keyword">function</span>*() &#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">const</span> action = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">take</span>(pattern)<br>        <span class="hljs-keyword">yield</span> <span class="hljs-title function_">fork</span>(saga, ...args.<span class="hljs-title function_">concat</span>(action))<br>    &#125;<br>&#125;)<br></code></pre>
+
+<ul>
+<li><strong>takeLatest</strong></li>
+</ul>
+<p>takeLatest 不允许多个 saga 任务并行地执行。一旦接收到新的发起的 action，它就会取消前面所有 fork 过的任务（如果这些任务还在执行的话）。 在处理 AJAX 请求的时候，如果只希望获取最后那个请求的响应， takeLatest 就会非常有用。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> &#123;<br>    cancel,<br>    fork,<br>    take<br>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;redux-saga/effects&quot;</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">takeLatest</span> = (<span class="hljs-params">pattern, saga, ...args</span>) =&gt; <span class="hljs-title function_">fork</span>(<span class="hljs-keyword">function</span>*() &#123;<br>    <span class="hljs-keyword">let</span> lastTask<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-keyword">const</span> action = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">take</span>(pattern)<br>        <span class="hljs-keyword">if</span> (lastTask) &#123;<br>            <span class="hljs-keyword">yield</span> <span class="hljs-title function_">cancel</span>(lastTask) <span class="hljs-comment">// 如果任务已经结束，则 cancel 为空操作</span><br>        &#125;<br>        lastTask = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">fork</span>(saga, ...args.<span class="hljs-title function_">concat</span>(action))<br>    &#125;<br>&#125;)<br></code></pre>
+
+<h2 id="Redux-状态管理器和变量挂载到-window-中有什么区别"><a href="#Redux-状态管理器和变量挂载到-window-中有什么区别" class="headerlink" title="Redux 状态管理器和变量挂载到 window 中有什么区别"></a>Redux 状态管理器和变量挂载到 window 中有什么区别</h2><p>两者都是存储数据以供后期使用。但是Redux状态更改可回溯——Time travel，数据多了的时候可以很清晰的知道改动在哪里发生，完整的提供了一套状态管理模式。</p>
+<p>随着 JavaScript 单页应用开发日趋复杂，JavaScript 需要管理比任何时候都要多的 state （状态）。 这些 state 可能包括服务器响应、缓存数据、本地生成尚未持久化到服务器的数据，也包括 UI状态，如激活的路由，被选中的标签，是否显示加载动效或者分页器等等。</p>
+<p>管理不断变化的 state 非常困难。如果一个 model 的变化会引起另一个 model 变化，那么当 view 变化时，就可能引起对应 model 以及另一个model 的变化，依次地，可能会引起另一个 view 的变化。直至你搞不清楚到底发生了什么。state 在什么时候，由于什么原因，如何变化已然不受控制。 当系统变得错综复杂的时候，想重现问题或者添加新功能就会变得举步维艰。 如果这还不够糟糕，考虑一些来自前端开发领域的新需求，如更新调优、服务端渲染、路由跳转前请求数据等等。前端开发者正在经受前所未有的复杂性，难道就这么放弃了吗?当然不是。</p>
+<p>这里的复杂性很大程度上来自于：我们总是将两个难以理清的概念混淆在一起：变化和异步。 可以称它们为曼妥思和可乐。如果把二者分开，能做的很好，但混到一起，就变得一团糟。一些库如 React 视图在视图层禁止异步和直接操作 DOM来解决这个问题。美中不足的是，React 依旧把处理 state 中数据的问题留给了你。Redux就是为了帮你解决这个问题。</p>
+<h2 id="mobox-和-redux-有什么区别？"><a href="#mobox-和-redux-有什么区别？" class="headerlink" title="mobox 和 redux 有什么区别？"></a>mobox 和 redux 有什么区别？</h2><p><strong>（1）共同点</strong></p>
+<ul>
+<li>为了解决状态管理混乱，无法有效同步的问题统一维护管理应用状态;</li>
+<li>某一状态只有一个可信数据来源（通常命名为store，指状态容器）;</li>
+<li>操作更新状态方式统一，并且可控（通常以action方式提供更新状态的途径）;</li>
+<li>支持将store与React组件连接，如react-redux，mobx- react;</li>
+</ul>
+<p><strong>（2）区别</strong> Redux更多的是遵循Flux模式的一种实现，是一个 JavaScript库，它关注点主要是以下几方面∶</p>
+<ul>
+<li>Action∶ 一个JavaScript对象，描述动作相关信息，主要包含type属性和payload属性∶<ul>
+<li>type∶ action 类型; o payload∶ 负载数据;</li>
+</ul>
+</li>
+<li>Reducer∶ 定义应用状态如何响应不同动作（action），如何更新状态;</li>
+<li>Store∶ 管理action和reducer及其关系的对象，主要提供以下功能∶<ul>
+<li>维护应用状态并支持访问状态(getState());</li>
+<li>支持监听action的分发，更新状态(dispatch(action)); </li>
+<li>支持订阅store的变更(subscribe(listener));</li>
+</ul>
+</li>
+<li>异步流∶ 由于Redux所有对store状态的变更，都应该通过action触发，异步任务（通常都是业务或获取数据任务）也不例外，而为了不将业务或数据相关的任务混入React组件中，就需要使用其他框架配合管理异步任务流程，如redux-thunk，redux-saga等;</li>
+</ul>
+<p>Mobx是一个透明函数响应式编程的状态管理库，它使得状态管理简单可伸缩∶</p>
+<ul>
+<li>Action∶定义改变状态的动作函数，包括如何变更状态;</li>
+<li>Store∶ 集中管理模块状态（State）和动作(action)</li>
+<li>Derivation（衍生）∶ 从应用状态中派生而出，且没有任何其他影响的数据</li>
+</ul>
+<p><strong>对比总结：</strong></p>
+<ul>
+<li>redux将数据保存在单一的store中，mobx将数据保存在分散的多个store中</li>
+<li>redux使用plain object保存数据，需要手动处理变化后的操作;mobx适用observable保存数据，数据变化后自动处理响应的操作</li>
+<li>redux使用不可变状态，这意味着状态是只读的，不能直接去修改它，而是应该返回一个新的状态，同时使用纯函数;mobx中的状态是可变的，可以直接对其进行修改</li>
+<li>mobx相对来说比较简单，在其中有很多的抽象，mobx更多的使用面向对象的编程思维;redux会比较复杂，因为其中的函数式编程思想掌握起来不是那么容易，同时需要借助一系列的中间件来处理异步和副作用</li>
+<li>mobx中有更多的抽象和封装，调试会比较困难，同时结果也难以预测;而redux提供能够进行时间回溯的开发工具，同时其纯函数以及更少的抽象，让调试变得更加的容易</li>
+</ul>
+<h2 id="Redux-和-Vuex-有什么区别，它们的共同思想"><a href="#Redux-和-Vuex-有什么区别，它们的共同思想" class="headerlink" title="Redux 和 Vuex 有什么区别，它们的共同思想"></a>Redux 和 Vuex 有什么区别，它们的共同思想</h2><p><strong>（1）Redux 和 Vuex区别</strong></p>
+<ul>
+<li>Vuex改进了Redux中的Action和Reducer函数，以mutations变化函数取代Reducer，无需switch，只需在对应的mutation函数里改变state值即可</li>
+<li>Vuex由于Vue自动重新渲染的特性，无需订阅重新渲染函数，只要生成新的State即可</li>
+<li>Vuex数据流的顺序是∶View调用store.commit提交对应的请求到Store中对应的mutation函数-&gt;store改变（vue检测到数据变化自动渲染）</li>
+</ul>
+<p>通俗点理解就是，vuex 弱化 dispatch，通过commit进行 store状态的一次更变；取消了action概念，不必传入特定的 action形式进行指定变更；弱化reducer，基于commit参数直接对数据进行转变，使得框架更加简易;</p>
+<p><strong>（2）共同思想</strong></p>
+<ul>
+<li>单—的数据源</li>
+<li>变化可以预测</li>
+</ul>
+<p>本质上∶ redux与vuex都是对mvvm思想的服务，将数据从视图中抽离的一种方案。</p>
+<h2 id="Redux-中间件是怎么拿到store-和-action-然后怎么处理"><a href="#Redux-中间件是怎么拿到store-和-action-然后怎么处理" class="headerlink" title="Redux 中间件是怎么拿到store 和 action? 然后怎么处理?"></a>Redux 中间件是怎么拿到store 和 action? 然后怎么处理?</h2><p>redux中间件本质就是一个函数柯里化。redux applyMiddleware Api 源码中每个middleware 接受2个参数， Store 的getState 函数和dispatch 函数，分别获得store和action，最终返回一个函数。该函数会被传入 next 的下一个 middleware 的 dispatch 方法，并返回一个接收 action 的新函数，这个函数可以直接调用 next（action），或者在其他需要的时刻调用，甚至根本不去调用它。调用链中最后一个 middleware 会接受真实的 store的 dispatch 方法作为 next 参数，并借此结束调用链。所以，middleware 的函数签名是（{ getState，dispatch })&#x3D;&gt; next &#x3D;&gt; action。</p>
+<h2 id="Redux中的connect有什么作用"><a href="#Redux中的connect有什么作用" class="headerlink" title="Redux中的connect有什么作用"></a>Redux中的connect有什么作用</h2><p>connect负责连接React和Redux</p>
+<p><strong>（1）获取state</strong></p>
+<p>connect 通过 context获取 Provider 中的 store，通过<code> store.getState()</code> 获取整个store tree 上所有state</p>
+<p><strong>（2）包装原组件</strong></p>
+<p>将state和action通过props的方式传入到原组件内部 wrapWithConnect 返回—个 ReactComponent 对 象 Connect，Connect 重 新 render 外部传入的原组件 WrappedComponent ，并把 connect 中传入的 mapStateToProps，mapDispatchToProps与组件上原有的 props合并后，通过属性的方式传给WrappedComponent</p>
+<p><strong>（3）监听store tree变化</strong></p>
+<p>connect缓存了store tree中state的状态，通过当前state状态 和变更前 state 状态进行比较，从而确定是否调用 <code>this.setState()</code>方法触发Connect及其子组件的重新渲染</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2025/01/02/25010203/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">react组件通信与路由面试题 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2025/01/02/25010205/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">react Hooks面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-Redux-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E4%B8%BB%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">对 Redux 的理解，主要解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%8E%9F%E7%90%86%E5%8F%8A%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">Redux 原理及工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E5%BC%82%E6%AD%A5%E7%9A%84%E8%AF%B7%E6%B1%82%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中异步的请求怎么处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E5%B1%9E%E6%80%A7%E4%BC%A0%E9%80%92%EF%BC%8C%E4%BB%8B%E7%BB%8D%E4%B8%8B%E5%8E%9F%E7%90%86"><span class="toc-text">Redux 怎么实现属性传递，介绍下原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E6%8E%A5%E5%8F%97%E5%87%A0%E4%B8%AA%E5%8F%82%E6%95%B0%EF%BC%9F%E6%9F%AF%E9%87%8C%E5%8C%96%E5%87%BD%E6%95%B0%E4%B8%A4%E7%AB%AF%E7%9A%84%E5%8F%82%E6%95%B0%E5%85%B7%E4%BD%93%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">Redux 中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E8%AF%B7%E6%B1%82%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%B9%B6%E5%8F%91"><span class="toc-text">Redux 请求中间件如何处理并发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%99%A8%E5%92%8C%E5%8F%98%E9%87%8F%E6%8C%82%E8%BD%BD%E5%88%B0-window-%E4%B8%AD%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">Redux 状态管理器和变量挂载到 window 中有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mobox-%E5%92%8C-redux-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">mobox 和 redux 有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E6%80%8E%E4%B9%88%E6%8B%BF%E5%88%B0store-%E5%92%8C-action-%E7%84%B6%E5%90%8E%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中间件是怎么拿到store 和 action? 然后怎么处理?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux%E4%B8%AD%E7%9A%84connect%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8"><span class="toc-text">Redux中的connect有什么作用</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9-Redux-%E7%9A%84%E7%90%86%E8%A7%A3%EF%BC%8C%E4%B8%BB%E8%A6%81%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">对 Redux 的理解，主要解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%8E%9F%E7%90%86%E5%8F%8A%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-text">Redux 原理及工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E5%BC%82%E6%AD%A5%E7%9A%84%E8%AF%B7%E6%B1%82%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中异步的请求怎么处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E5%B1%9E%E6%80%A7%E4%BC%A0%E9%80%92%EF%BC%8C%E4%BB%8B%E7%BB%8D%E4%B8%8B%E5%8E%9F%E7%90%86"><span class="toc-text">Redux 怎么实现属性传递，介绍下原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E6%8E%A5%E5%8F%97%E5%87%A0%E4%B8%AA%E5%8F%82%E6%95%B0%EF%BC%9F%E6%9F%AF%E9%87%8C%E5%8C%96%E5%87%BD%E6%95%B0%E4%B8%A4%E7%AB%AF%E7%9A%84%E5%8F%82%E6%95%B0%E5%85%B7%E4%BD%93%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">Redux 中间件是什么？接受几个参数？柯里化函数两端的参数具体是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E8%AF%B7%E6%B1%82%E4%B8%AD%E9%97%B4%E4%BB%B6%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E5%B9%B6%E5%8F%91"><span class="toc-text">Redux 请求中间件如何处理并发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E5%99%A8%E5%92%8C%E5%8F%98%E9%87%8F%E6%8C%82%E8%BD%BD%E5%88%B0-window-%E4%B8%AD%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="toc-text">Redux 状态管理器和变量挂载到 window 中有什么区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mobox-%E5%92%8C-redux-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">mobox 和 redux 有什么区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E5%92%8C-Vuex-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%85%B1%E5%90%8C%E6%80%9D%E6%83%B3"><span class="toc-text">Redux 和 Vuex 有什么区别，它们的共同思想</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux-%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%98%AF%E6%80%8E%E4%B9%88%E6%8B%BF%E5%88%B0store-%E5%92%8C-action-%E7%84%B6%E5%90%8E%E6%80%8E%E4%B9%88%E5%A4%84%E7%90%86"><span class="toc-text">Redux 中间件是怎么拿到store 和 action? 然后怎么处理?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redux%E4%B8%AD%E7%9A%84connect%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8"><span class="toc-text">Redux中的connect有什么作用</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑧：Subscription 管道完整拆解</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑧：Subscription 管道完整拆解">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/13/2026-07-13-openclaw-source-code-analysis-8-subscription/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="从 LLM SSE 到 WebUI 屏幕上的每一个字——Subscription 管道如何通过事件链实现打字机效果、工具调用追踪、思考过程流式推送的完整拆解。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Subscription">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Event Pipeline">
+        
+          <meta 
+            property="og:article:tag" 
+            content="WebSocket">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Subscription-%E7%AE%A1%E9%81%93%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Subscription 管道：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-text">全局数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%EF%BC%9ApendingEventChain-%E2%80%94-%E4%BF%9D%E5%BA%8F%E6%89%A7%E8%A1%8C"><span class="toc-text">核心设计：pendingEventChain — 保序执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">事件类型详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#message-start-%E2%80%94-%E5%8A%A9%E6%89%8B%E5%BC%80%E5%A7%8B%E8%AF%B4%E8%AF%9D"><span class="toc-text">message_start — 助手开始说话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-update-%E2%80%94-%E9%80%90-token-%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%EF%BC%88%E6%9C%80%E6%A0%B8%E5%BF%83%EF%BC%81%EF%BC%89"><span class="toc-text">message_update — 逐 token 流式处理（最核心！）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-end-%E2%80%94-%E5%8A%A9%E6%89%8B%E8%AF%B4%E5%AE%8C%E4%BA%86"><span class="toc-text">message_end — 助手说完了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-start-%E2%80%94-LLM-%E8%A6%81%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">tool_execution_start — LLM 要调工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-update-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%AD%E9%97%B4%E7%8A%B6%E6%80%81"><span class="toc-text">tool_execution_update — 工具执行中间状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-end-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E5%AE%8C%E6%AF%95"><span class="toc-text">tool_execution_end — 工具执行完毕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compaction-start-x2F-compaction-end-%E2%80%94-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E7%BC%A9"><span class="toc-text">compaction_start &#x2F; compaction_end — 上下文压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-handler-%E5%88%B0-WebUI-%E7%9A%84%E5%AE%8C%E6%95%B4%E9%93%BE%E8%B7%AF"><span class="toc-text">从 handler 到 WebUI 的完整链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%9AEmbeddedPiSubscribeState"><span class="toc-text">状态管理：EmbeddedPiSubscribeState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E7%BB%99%E8%B0%83%E7%94%A8%E8%80%85%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">返回给调用者的接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%97%B6%E5%BA%8F%EF%BC%88%E4%B8%80%E6%AC%A1%E5%B8%A6-tool-call-%E7%9A%84%E5%AF%B9%E8%AF%9D%EF%BC%89"><span class="toc-text">完整的事件时序（一次带 tool call 的对话）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93"><span class="toc-text">关键设计总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑧：Subscription 管道完整拆解
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-13-openclaw-source-code-analysis-8-subscription.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-13T03:08:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Subscription/" 
+            class="post-meta-link">
+            Subscription
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Event-Pipeline/" 
+            class="post-meta-link">
+            Event Pipeline
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/WebSocket/" 
+            class="post-meta-link">
+            WebSocket
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="Subscription-管道：完整拆解"><a href="#Subscription-管道：完整拆解" class="headerlink" title="Subscription 管道：完整拆解"></a>Subscription 管道：完整拆解</h1><h2 id="全局数据流"><a href="#全局数据流" class="headerlink" title="全局数据流"></a>全局数据流</h2><pre class="highlight"><code class="hljs stylus">LLM API (DeepSeek/OpenAI/Anthropic)<br> │<br> │ SSE stream / WebSocket frames<br> ▼<br>@mariozechner/pi-ai library (transport层)<br> │<br> │ 解析 SSE → 生成标准化事件<br> ▼<br>pi-coding-agent library (session层)<br> │<br> │ 管理 messages 数组状态 → 发出 AgentEvent<br> ▼<br>session<span class="hljs-selector-class">.subscribe</span>(handler) ← 注册回调<br> │<br> │ AgentEvent &#123; type, message, ... &#125;<br> ▼<br><span class="hljs-function"><span class="hljs-title">createEmbeddedPiSessionEventHandler</span><span class="hljs-params">()</span></span> ← 事件调度器<br> │<br> ├── message_start → <span class="hljs-built_in">handleMessageStart</span>()<br> ├── message_update → <span class="hljs-built_in">handleMessageUpdate</span>() ← 每个 token<br> ├── message_end → <span class="hljs-built_in">handleMessageEnd</span>()<br> ├── tool_execution_start → <span class="hljs-built_in">handleToolExecutionStart</span>()<br> ├── tool_execution_update → <span class="hljs-built_in">handleToolExecutionUpdate</span>()<br> ├── tool_execution_end → <span class="hljs-built_in">handleToolExecutionEnd</span>()<br> ├── compaction_start → <span class="hljs-built_in">handleCompactionStart</span>()<br> ├── compaction_end → <span class="hljs-built_in">handleCompactionEnd</span>()<br> ├── agent_start → <span class="hljs-built_in">handleAgentStart</span>()<br> └── agent_end → <span class="hljs-built_in">handleAgentEnd</span>()<br> │<br> │ handler 内部调用:<br> │ <span class="hljs-built_in">emitAgentEvent</span>(&#123; runId, stream, data &#125;)<br> │ ctx<span class="hljs-selector-class">.params</span><span class="hljs-selector-class">.onPartialReply</span>(text)<br> │ ctx<span class="hljs-selector-class">.params</span><span class="hljs-selector-class">.onBlockReply</span>(payload)<br> │ ctx<span class="hljs-selector-class">.params</span><span class="hljs-selector-class">.onToolResult</span>(result)<br> ▼<br>infra/agent-events<span class="hljs-selector-class">.ts</span> → <span class="hljs-built_in">notifyListeners</span>()<br> │<br> │ 全局事件总线<br> ▼<br>gateway/server-runtime-subscriptions<span class="hljs-selector-class">.ts</span><br> │<br> │ onAgentEvent → <span class="hljs-built_in">createAgentEventHandler</span>()<br> ▼<br>gateway/server-broadcast<span class="hljs-selector-class">.ts</span> → <span class="hljs-built_in">broadcastInternal</span>()<br> │<br> │ <span class="hljs-keyword">for</span> (client of connectedClients)<br> │ JSON<span class="hljs-selector-class">.stringify</span>(frame) → client<span class="hljs-selector-class">.socket</span><span class="hljs-selector-class">.send</span>(frame)<br> ▼<br>WebUI / 其他 WebSocket 客户端<br></code></pre>
+
+<hr>
+<h2 id="核心设计：pendingEventChain-—-保序执行"><a href="#核心设计：pendingEventChain-—-保序执行" class="headerlink" title="核心设计：pendingEventChain — 保序执行"></a>核心设计：<code>pendingEventChain</code> — 保序执行</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// pi-embedded-subscribe.handlers.ts:23-73</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createEmbeddedPiSessionEventHandler</span>(<span class="hljs-params">ctx</span>) &#123;<br> <span class="hljs-keyword">let</span> <span class="hljs-attr">pendingEventChain</span>: <span class="hljs-title class_">Promise</span>&lt;<span class="hljs-built_in">void</span>&gt; | <span class="hljs-literal">null</span> = <span class="hljs-literal">null</span>;<br><br> <span class="hljs-keyword">const</span> <span class="hljs-title function_">scheduleEvent</span> = (<span class="hljs-params">evt, handler, options?</span>) =&gt; &#123;<br> <span class="hljs-keyword">const</span> <span class="hljs-title function_">run</span> = (<span class="hljs-params"></span>) =&gt; <span class="hljs-title function_">handler</span>();<br><br> <span class="hljs-comment">// 情况 1：当前没有排队的事件 → 直接执行</span><br> <span class="hljs-keyword">if</span> (!pendingEventChain) &#123;<br> <span class="hljs-keyword">const</span> result = <span class="hljs-title function_">run</span>();<br> <span class="hljs-keyword">if</span> (!<span class="hljs-title function_">isPromiseLike</span>(result)) &#123;<br> <span class="hljs-keyword">return</span>; <span class="hljs-comment">// 同步完成 → 结束</span><br> &#125;<br> <span class="hljs-comment">// 异步操作 → 变成链的起始点</span><br> pendingEventChain = result.<span class="hljs-title function_">finally</span>(<span class="hljs-function">() =&gt;</span> &#123; pendingEventChain = <span class="hljs-literal">null</span>; &#125;);<br> <span class="hljs-keyword">return</span>;<br> &#125;<br><br> <span class="hljs-comment">// 情况 2：有事件在排队 → 链到后面</span><br> pendingEventChain = pendingEventChain<br> .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">run</span>())<br> .<span class="hljs-title function_">finally</span>(<span class="hljs-function">() =&gt;</span> &#123; pendingEventChain = <span class="hljs-literal">null</span>; &#125;);<br> &#125;;<br>&#125;<br></code></pre>
+
+<p><strong>为什么需要保序？</strong></p>
+<pre class="highlight"><code class="hljs stylus">如果不保序：<br> LLM 先返回 text_delta <span class="hljs-string">&quot;你好&quot;</span><br> LLM 紧接着返回 tool_call <span class="hljs-built_in">exec</span>(<span class="hljs-string">&quot;ls&quot;</span>)<br> 如果两者并发处理 → 可能 exec 先跑完再显示 <span class="hljs-string">&quot;你好&quot;</span> → 输出乱序<br><br>保序后：<br> pendingEventChain:<br> → <span class="hljs-built_in">handleMessageUpdate</span>(<span class="hljs-string">&quot;你好&quot;</span>) <span class="hljs-comment">// 先完成</span><br> → <span class="hljs-built_in">handleToolExecutionStart</span>() <span class="hljs-comment">// 再执行</span><br> → <span class="hljs-built_in">handleToolExecutionEnd</span>() <span class="hljs-comment">// 等工具完成</span><br> → <span class="hljs-built_in">handleMessageUpdate</span>(<span class="hljs-string">&quot;结果...&quot;</span>) <span class="hljs-comment">// 最后继续</span><br></code></pre>
+
+<p><strong>但有一个例外</strong>：<code>tool_execution_end</code> 用了 <code>&#123; detach: true &#125;</code></p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">case</span> <span class="hljs-string">&quot;tool_execution_end&quot;</span>:<br> <span class="hljs-title function_">scheduleEvent</span>(evt, <span class="hljs-function">() =&gt;</span> <span class="hljs-title function_">handleToolExecutionEnd</span>(ctx, evt), &#123; <span class="hljs-attr">detach</span>: <span class="hljs-literal">true</span> &#125;);<br> <span class="hljs-comment">// ^^^^^^^^^^^^^</span><br> <span class="hljs-comment">// detach=true → 不阻塞后续事件</span><br> <span class="hljs-comment">// 因为 tool_execution_end 里可能有 hook 回调（如 after_tool_call），</span><br> <span class="hljs-comment">// 它们的结果不影响后续 LLM 响应的处理</span><br></code></pre>
+
+<hr>
+<h2 id="事件类型详解"><a href="#事件类型详解" class="headerlink" title="事件类型详解"></a>事件类型详解</h2><h3 id="message-start-—-助手开始说话"><a href="#message-start-—-助手开始说话" class="headerlink" title="message_start — 助手开始说话"></a>message_start — 助手开始说话</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleMessageStart</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-comment">// 重置累积状态</span><br> ctx.<span class="hljs-title function_">resetAssistantMessageState</span>(ctx.<span class="hljs-property">state</span>.<span class="hljs-property">assistantTexts</span>.<span class="hljs-property">length</span>);<br><br> <span class="hljs-comment">// 通知 &quot;typing...&quot; 状态</span><br> ctx.<span class="hljs-property">params</span>.<span class="hljs-property">onAssistantMessageStart</span>?.();<br>&#125;<br></code></pre>
+
+<p><strong>触发频率</strong>：每轮 LLM 回复开始时一次。</p>
+<hr>
+<h3 id="message-update-—-逐-token-流式处理（最核心！）"><a href="#message-update-—-逐-token-流式处理（最核心！）" class="headerlink" title="message_update — 逐 token 流式处理（最核心！）"></a>message_update — 逐 token 流式处理（最核心！）</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleMessageUpdate</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-keyword">const</span> msg = evt.<span class="hljs-property">message</span>;<br> <span class="hljs-comment">// 过滤非 assistant 消息</span><br> <span class="hljs-keyword">if</span> (msg.<span class="hljs-property">role</span> !== <span class="hljs-string">&quot;assistant&quot;</span>) <span class="hljs-keyword">return</span>;<br><br> <span class="hljs-comment">// ========================</span><br> <span class="hljs-comment">// 分支 1: 思考模式 (&lt;thinking&gt;)</span><br> <span class="hljs-comment">// ========================</span><br> <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isThinkingEvent</span>(evt)) &#123;<br> <span class="hljs-comment">// 累积 &lt;thinking&gt; 内容</span><br> <span class="hljs-comment">// 如果 reasoningMode=&quot;stream&quot; → 实时推送思考过程</span><br> ctx.<span class="hljs-title function_">emitReasoningStream</span>(thinkingContent);<br> <span class="hljs-keyword">return</span>;<br> &#125;<br><br> <span class="hljs-comment">// ========================</span><br> <span class="hljs-comment">// 分支 2: 正常文本 (text_delta)</span><br> <span class="hljs-comment">// ========================</span><br> <span class="hljs-keyword">const</span> delta = assistantRecord.<span class="hljs-property">delta</span>; <span class="hljs-comment">// &quot;你&quot;</span><br> <span class="hljs-keyword">const</span> content = assistantRecord.<span class="hljs-property">content</span>; <span class="hljs-comment">// &quot;你好，我是&quot; (累积)</span><br><br> <span class="hljs-comment">// 检测 &lt;think&gt;...&lt;/think&gt; 标签（某些模型的推理格式）</span><br> <span class="hljs-keyword">const</span> chunk = <span class="hljs-title function_">resolveAssistantChunk</span>(delta, content, ctx.<span class="hljs-property">state</span>);<br><br> <span class="hljs-keyword">if</span> (chunk.<span class="hljs-property">cleaned</span>) &#123;<br> <span class="hljs-comment">// 有清理后的新文本要显示</span><br><br> <span class="hljs-comment">// A) 检测指令 (如 &#123;directive&#125;)</span><br> <span class="hljs-keyword">const</span> directive = <span class="hljs-title function_">parseDirective</span>(chunk.<span class="hljs-property">cleaned</span>);<br> <span class="hljs-keyword">if</span> (directive) &#123;<br> ctx.<span class="hljs-title function_">handleDirective</span>(directive);<br> <span class="hljs-keyword">return</span>;<br> &#125;<br><br> <span class="hljs-comment">// B) 发送 &quot;partial reply&quot; 给调用者</span><br> <span class="hljs-comment">// (auto-reply 用这个做 streaming 到 Telegram)</span><br> ctx.<span class="hljs-property">params</span>.<span class="hljs-property">onPartialReply</span>?.(chunk.<span class="hljs-property">cleaned</span>, &#123;<br> runId, assistantIndex, fullText<br> &#125;);<br><br> <span class="hljs-comment">// C) 发 agent event → gateway → WebUI</span><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;text&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123; <span class="hljs-attr">delta</span>: chunk.<span class="hljs-property">cleaned</span>, <span class="hljs-attr">content</span>: fullText &#125;<br> &#125;);<br><br> <span class="hljs-comment">// D) 检查是否构成一个完整的 &quot;block&quot;</span><br> <span class="hljs-comment">// (一个段落结束 / 一个代码块结束)</span><br> <span class="hljs-keyword">if</span> (<span class="hljs-title function_">shouldFlushBlock</span>(ctx)) &#123;<br> ctx.<span class="hljs-property">params</span>.<span class="hljs-property">onBlockReply</span>?.(<span class="hljs-title function_">buildBlockPayload</span>());<br> &#125;<br> &#125;<br>&#125;<br></code></pre>
+
+<p><strong>触发频率</strong>：每个 token 一次。Claude 4 打字速度 ~100 tokens&#x2F;s &#x3D; 每秒 100 次。</p>
+<hr>
+<h3 id="message-end-—-助手说完了"><a href="#message-end-—-助手说完了" class="headerlink" title="message_end — 助手说完了"></a>message_end — 助手说完了</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleMessageEnd</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-keyword">const</span> msg = evt.<span class="hljs-property">message</span>;<br><br> <span class="hljs-comment">// 最终化文本</span><br> <span class="hljs-keyword">const</span> finalText = <span class="hljs-title function_">coerceChatContentText</span>(msg);<br><br> <span class="hljs-comment">// 处理 &quot;静默回复&quot;</span><br> <span class="hljs-keyword">if</span> (<span class="hljs-title function_">isSilentReplyText</span>(finalText)) &#123;<br> <span class="hljs-comment">// LLM 回了 &quot;HEARTBEAT_OK&quot; → 不需要向用户发任何东西</span><br> ctx.<span class="hljs-title function_">markSilent</span>();<br> <span class="hljs-keyword">return</span>;<br> &#125;<br><br> <span class="hljs-comment">// 解析最终指令</span><br> <span class="hljs-keyword">const</span> directives = <span class="hljs-title function_">parseReplyDirectives</span>(finalText);<br> <span class="hljs-comment">// 例如: &#123;model: &quot;gpt-4o&quot;&#125; 切换模型</span><br> <span class="hljs-comment">// &#123;tts: true&#125; 语音合成</span><br> <span class="hljs-comment">// &#123;reaction: &quot;👍&quot;&#125; 发表情</span><br><br> <span class="hljs-comment">// 记录最终文本</span><br> ctx.<span class="hljs-property">state</span>.<span class="hljs-property">assistantTexts</span>.<span class="hljs-title function_">push</span>(finalText);<br><br> <span class="hljs-comment">// 发送最终 block reply</span><br> ctx.<span class="hljs-property">params</span>.<span class="hljs-property">onBlockReply</span>?.(<span class="hljs-title function_">buildFinalBlockPayload</span>());<br><br> <span class="hljs-comment">// 发 agent event</span><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;text&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123; <span class="hljs-attr">done</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">content</span>: finalText &#125;<br> &#125;);<br>&#125;<br></code></pre>
+
+<hr>
+<h3 id="tool-execution-start-—-LLM-要调工具"><a href="#tool-execution-start-—-LLM-要调工具" class="headerlink" title="tool_execution_start — LLM 要调工具"></a>tool_execution_start — LLM 要调工具</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleToolExecutionStart</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-keyword">const</span> toolName = evt.<span class="hljs-property">toolName</span>; <span class="hljs-comment">// &quot;exec&quot;</span><br> <span class="hljs-keyword">const</span> toolCallId = evt.<span class="hljs-property">toolCallId</span>; <span class="hljs-comment">// &quot;call_abc123&quot;</span><br> <span class="hljs-keyword">const</span> args = evt.<span class="hljs-property">args</span>; <span class="hljs-comment">// &#123; command: &quot;npm test&quot; &#125;</span><br><br> <span class="hljs-comment">// 1. 记录开始时间（用于后续统计耗时）</span><br> toolStartData.<span class="hljs-title function_">set</span>(toolCallId, &#123; <span class="hljs-attr">startTime</span>: <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>(), args &#125;);<br><br> <span class="hljs-comment">// 2. 构建 meta 信息（给 WebUI 显示的摘要）</span><br> <span class="hljs-comment">// 例如: &quot;exec: npm test&quot;</span><br> <span class="hljs-comment">// &quot;read: src/index.ts&quot;</span><br> <span class="hljs-keyword">const</span> meta = <span class="hljs-title function_">buildToolCallMeta</span>(toolName, args);<br> ctx.<span class="hljs-property">state</span>.<span class="hljs-property">toolMetaById</span>.<span class="hljs-title function_">set</span>(toolCallId, &#123; meta &#125;);<br><br> <span class="hljs-comment">// 3. 发 agent event → WebUI 显示 &quot;正在执行 exec...&quot;</span><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;item&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123;<br> <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;tool_start&quot;</span>,<br> <span class="hljs-attr">name</span>: toolName,<br> <span class="hljs-attr">args</span>: <span class="hljs-title function_">summarizeToolArgs</span>(args),<br> meta,<br> &#125;<br> &#125;);<br><br> <span class="hljs-comment">// 注意：工具的实际执行不在这里！</span><br> <span class="hljs-comment">// 工具执行发生在 pi-coding-agent 库内部：</span><br> <span class="hljs-comment">// session.prompt() → LLM 返回 tool_call</span><br> <span class="hljs-comment">// → 库自动查找 tool.execute 函数 → 调用</span><br> <span class="hljs-comment">// → 产生 tool_execution_update 事件 (进度)</span><br> <span class="hljs-comment">// → 产生 tool_execution_end 事件 (结果)</span><br>&#125;<br></code></pre>
+
+<hr>
+<h3 id="tool-execution-update-—-工具执行中间状态"><a href="#tool-execution-update-—-工具执行中间状态" class="headerlink" title="tool_execution_update — 工具执行中间状态"></a>tool_execution_update — 工具执行中间状态</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleToolExecutionUpdate</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-comment">// 只有少数工具会发 update（如 exec 的实时 stdout 输出）</span><br><br> <span class="hljs-comment">// 发 agent event → WebUI 显示工具的中间输出</span><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;item&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123;<br> <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;tool_progress&quot;</span>,<br> <span class="hljs-attr">name</span>: evt.<span class="hljs-property">toolName</span>,<br> <span class="hljs-attr">partial</span>: evt.<span class="hljs-property">partial</span>, <span class="hljs-comment">// 部分 stdout</span><br> &#125;<br> &#125;);<br>&#125;<br></code></pre>
+
+<hr>
+<h3 id="tool-execution-end-—-工具执行完毕"><a href="#tool-execution-end-—-工具执行完毕" class="headerlink" title="tool_execution_end — 工具执行完毕"></a>tool_execution_end — 工具执行完毕</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">handleToolExecutionEnd</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> <span class="hljs-keyword">const</span> toolName = evt.<span class="hljs-property">toolName</span>;<br> <span class="hljs-keyword">const</span> result = evt.<span class="hljs-property">result</span>; <span class="hljs-comment">// tool 的返回值 (stdout/stderr/exitCode...)</span><br> <span class="hljs-keyword">const</span> isError = evt.<span class="hljs-property">isError</span>;<br> <span class="hljs-keyword">const</span> duration = <span class="hljs-title class_">Date</span>.<span class="hljs-title function_">now</span>() - startData.<span class="hljs-property">startTime</span>;<br><br> <span class="hljs-comment">// 1. 运行 after_tool_call hook</span><br> <span class="hljs-comment">// → 让插件有机会审计/记录工具调用</span><br> <span class="hljs-keyword">await</span> <span class="hljs-title function_">runAfterToolCallHook</span>(&#123; toolName, args, result, duration &#125;);<br><br> <span class="hljs-comment">// 2. 发送 tool result 回调</span><br> <span class="hljs-comment">// → auto-reply 用这个决定是否需要额外处理</span><br> ctx.<span class="hljs-property">params</span>.<span class="hljs-property">onToolResult</span>?.(&#123;<br> toolName, toolCallId, result, isError, duration<br> &#125;);<br><br> <span class="hljs-comment">// 3. 发 agent event → WebUI 显示工具结果</span><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;item&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123;<br> <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;tool_end&quot;</span>,<br> <span class="hljs-attr">name</span>: toolName,<br> <span class="hljs-attr">result</span>: <span class="hljs-title function_">summarizeResult</span>(result),<br> isError,<br> duration,<br> &#125;<br> &#125;);<br><br> <span class="hljs-comment">// 工具结果发回 LLM 是自动的：</span><br> <span class="hljs-comment">// pi-coding-agent 库在 tool.execute() 返回后，</span><br> <span class="hljs-comment">// 会自动把 tool_result 放入 messages，然后</span><br> <span class="hljs-comment">// 重新调用 LLM API → 产生新的 message_start/update/end</span><br>&#125;<br></code></pre>
+
+<hr>
+<h3 id="compaction-start-x2F-compaction-end-—-上下文压缩"><a href="#compaction-start-x2F-compaction-end-—-上下文压缩" class="headerlink" title="compaction_start &#x2F; compaction_end — 上下文压缩"></a>compaction_start &#x2F; compaction_end — 上下文压缩</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">handleCompactionStart</span>(<span class="hljs-params">ctx</span>) &#123;<br> ctx.<span class="hljs-property">state</span>.<span class="hljs-property">isCompacting</span> = <span class="hljs-literal">true</span>;<br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;lifecycle&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;compaction_start&quot;</span> &#125;<br> &#125;);<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">handleCompactionEnd</span>(<span class="hljs-params">ctx, evt</span>) &#123;<br> ctx.<span class="hljs-property">state</span>.<span class="hljs-property">isCompacting</span> = <span class="hljs-literal">false</span>;<br> ctx.<span class="hljs-title function_">incrementCompactionCount</span>();<br><br> <span class="hljs-comment">// 通知等待 compaction 完成的代码</span><br> ctx.<span class="hljs-title function_">resolveCompactionRetry</span>();<br><br> <span class="hljs-title function_">emitAgentEvent</span>(&#123;<br> <span class="hljs-attr">runId</span>: ctx.<span class="hljs-property">params</span>.<span class="hljs-property">runId</span>,<br> <span class="hljs-attr">stream</span>: <span class="hljs-string">&quot;lifecycle&quot;</span>,<br> <span class="hljs-attr">data</span>: &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;compaction_end&quot;</span>, <span class="hljs-attr">reason</span>: evt.<span class="hljs-property">reason</span> &#125;<br> &#125;);<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="从-handler-到-WebUI-的完整链路"><a href="#从-handler-到-WebUI-的完整链路" class="headerlink" title="从 handler 到 WebUI 的完整链路"></a>从 handler 到 WebUI 的完整链路</h2><p>以”用户在 WebUI 上看到 AI 打字”为例：</p>
+<pre class="highlight"><code class="hljs nim"><span class="hljs-type">DeepSeek</span> <span class="hljs-type">API</span> → <span class="hljs-type">SSE</span>: data: &#123;<span class="hljs-string">&quot;choices&quot;</span>:[&#123;<span class="hljs-string">&quot;delta&quot;</span>:&#123;<span class="hljs-string">&quot;content&quot;</span>:<span class="hljs-string">&quot;你&quot;</span>&#125;&#125;]&#125;<br> │<br> ▼<br>pi-ai openai-completions transport<br> → 解析 <span class="hljs-type">SSE</span> → 更新 output.content = <span class="hljs-string">&quot;你&quot;</span><br> → 推送事件到 eventStream<br> │<br> ▼<br>pi-coding-agent session<br> → 更新 messages[last].content = <span class="hljs-string">&quot;你&quot;</span><br> → 调用 subscribeCallback(&#123; <span class="hljs-keyword">type</span>: <span class="hljs-string">&quot;message_update&quot;</span>, message: <span class="hljs-meta">&#123;...&#125;</span> &#125;)<br> │<br> ▼<br>createEmbeddedPiSessionEventHandler<br> → scheduleEvent(<span class="hljs-string">&quot;message_update&quot;</span>, () =&gt; handleMessageUpdate(ctx, evt))<br> │<br> ▼<br>handleMessageUpdate()<br> → 解析 delta = <span class="hljs-string">&quot;你&quot;</span><br> → 清理 &lt;think&gt; 标签（如果有）<br> → 调 ctx.params.onPartialReply(<span class="hljs-string">&quot;你&quot;</span>, <span class="hljs-meta">&#123;...&#125;</span>)<br> → 调 emitAgentEvent(&#123; runId, stream: <span class="hljs-string">&quot;text&quot;</span>, data: &#123; delta: <span class="hljs-string">&quot;你&quot;</span> &#125; &#125;)<br> │<br> ▼<br>infra/agent-events.ts → notifyListeners()<br> → 遍历所有注册的 listener → callback(enrichedEvent)<br> │<br> ▼<br>gateway/server-runtime-subscriptions.ts<br> → onAgentEvent(createAgentEventHandler(<span class="hljs-meta">&#123;...&#125;</span>))<br> → agentEventHandler(event) → 识别 stream=<span class="hljs-string">&quot;text&quot;</span><br> → broadcast(<span class="hljs-string">&quot;agent&quot;</span>, event, &#123; dropIfSlow: <span class="hljs-literal">true</span> &#125;)<br> │<br> ▼<br>gateway/server-broadcast.ts → broadcastInternal(<span class="hljs-string">&quot;agent&quot;</span>, event)<br> → <span class="hljs-keyword">for</span> (client <span class="hljs-keyword">of</span> params.clients)<br> │ → 检查 scope (需要 <span class="hljs-type">READ_SCOPE</span>)<br> │ → 检查 bufferedAmount &lt; <span class="hljs-type">MAX_BUFFERED_BYTES</span><br> │ → <span class="hljs-type">JSON</span>.stringify(&#123; <span class="hljs-keyword">type</span>: <span class="hljs-string">&quot;event&quot;</span>, event: <span class="hljs-string">&quot;agent&quot;</span>, payload: <span class="hljs-meta">&#123;...&#125;</span> &#125;)<br> │ → client.socket.send(frame)<br> │<br> ▼<br><span class="hljs-type">WebSocket</span> → 网络 → 浏览器 → <span class="hljs-type">WebUI</span> <span class="hljs-type">React</span> 组件<br> → onMessage → dispatch(&#123; <span class="hljs-keyword">type</span>: <span class="hljs-string">&quot;AGENT_TEXT_DELTA&quot;</span>, delta: <span class="hljs-string">&quot;你&quot;</span> &#125;)<br> → <span class="hljs-type">UI</span> re-render → 用户看到 <span class="hljs-string">&quot;你&quot;</span> 出现在屏幕上<br></code></pre>
+
+<p><strong>整条链路延迟</strong>：</p>
+<ul>
+<li>LLM SSE 到事件循环处理：~0ms（已在内存中）</li>
+<li>handler + emitAgentEvent：~0.1ms</li>
+<li>broadcast JSON.stringify + send：~0.5ms（取决于连接数）</li>
+<li>网络 → 浏览器渲染：~5-50ms</li>
+<li><strong>总计：~5-50ms（这就是为什么你能感受到”实时打字”）</strong></li>
+</ul>
+<hr>
+<h2 id="状态管理：EmbeddedPiSubscribeState"><a href="#状态管理：EmbeddedPiSubscribeState" class="headerlink" title="状态管理：EmbeddedPiSubscribeState"></a>状态管理：<code>EmbeddedPiSubscribeState</code></h2><p>subscription 内部维护一组可变状态：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">const</span> <span class="hljs-attr">state</span>: <span class="hljs-title class_">EmbeddedPiSubscribeState</span> = &#123;<br> <span class="hljs-comment">// === 累积的回复文本 ===</span><br> <span class="hljs-attr">assistantTexts</span>: [], <span class="hljs-comment">// 最终完成的助手文本列表</span><br><br> <span class="hljs-comment">// === 工具追踪 ===</span><br> <span class="hljs-attr">toolMetas</span>: [], <span class="hljs-comment">// 所有执行过的工具 meta</span><br> <span class="hljs-attr">toolMetaById</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Map</span>(), <span class="hljs-comment">// 当前进行中的工具 (by callId)</span><br> <span class="hljs-attr">toolSummaryById</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>(), <span class="hljs-comment">// 已发送摘要的工具</span><br> <span class="hljs-attr">itemActiveIds</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Set</span>(), <span class="hljs-comment">// 当前活跃的 item</span><br> <span class="hljs-attr">itemStartedCount</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">// 启动的 item 数量</span><br> <span class="hljs-attr">itemCompletedCount</span>: <span class="hljs-number">0</span>, <span class="hljs-comment">// 完成的 item 数量</span><br> <span class="hljs-attr">lastToolError</span>: <span class="hljs-literal">undefined</span>, <span class="hljs-comment">// 最近一次工具错误</span><br><br> <span class="hljs-comment">// === 流式文本处理 ===</span><br> <span class="hljs-attr">deltaBuffer</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 未完成的 delta 缓冲</span><br> <span class="hljs-attr">blockBuffer</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// 未完成的 block 缓冲</span><br> <span class="hljs-attr">blockState</span>: &#123; <span class="hljs-comment">// &lt;think&gt;/&lt;final&gt; 标签解析状态</span><br> <span class="hljs-attr">thinking</span>: <span class="hljs-literal">false</span>,<br> <span class="hljs-attr">final</span>: <span class="hljs-literal">false</span>,<br> <span class="hljs-attr">inlineCode</span>: &#123;...&#125; <span class="hljs-comment">// 内联代码块追踪（防误解析标签）</span><br> &#125;,<br><br> <span class="hljs-comment">// === reasoning ===</span><br> <span class="hljs-attr">reasoningMode</span>: <span class="hljs-string">&quot;off&quot;</span>, <span class="hljs-comment">// off | on | stream</span><br> <span class="hljs-attr">streamReasoning</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// 是否实时推送思考过程</span><br> <span class="hljs-attr">reasoningStreamOpen</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// 是否打开了 reasoning 流</span><br><br> <span class="hljs-comment">// === compaction 状态 ===</span><br> <span class="hljs-attr">isCompacting</span>: <span class="hljs-literal">false</span>,<br> <span class="hljs-attr">compactionRetryPromise</span>: <span class="hljs-literal">null</span>,<br><br> <span class="hljs-comment">// === usage 统计 ===</span><br> <span class="hljs-attr">usageAccumulator</span>: &#123;<br> <span class="hljs-attr">input</span>: <span class="hljs-number">0</span>,<br> <span class="hljs-attr">output</span>: <span class="hljs-number">0</span>,<br> <span class="hljs-attr">cacheRead</span>: <span class="hljs-number">0</span>,<br> <span class="hljs-attr">cacheWrite</span>: <span class="hljs-number">0</span>,<br> <span class="hljs-attr">totalTokens</span>: <span class="hljs-number">0</span>,<br> <span class="hljs-attr">cost</span>: &#123; <span class="hljs-attr">input</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">output</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">total</span>: <span class="hljs-number">0</span> &#125;<br> &#125;,<br><br> <span class="hljs-comment">// === 生命周期 ===</span><br> <span class="hljs-attr">unsubscribed</span>: <span class="hljs-literal">false</span>,<br>&#125;;<br></code></pre>
+
+<hr>
+<h2 id="返回给调用者的接口"><a href="#返回给调用者的接口" class="headerlink" title="返回给调用者的接口"></a>返回给调用者的接口</h2><p><code>subscribeEmbeddedPiSession()</code> 返回一组控制句柄：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// attempt.ts:1753</span><br><span class="hljs-keyword">const</span> subscription = <span class="hljs-title function_">subscribeEmbeddedPiSession</span>(&#123;<br> <span class="hljs-attr">session</span>: activeSession,<br> onPartialReply, <span class="hljs-comment">// 每收到一个 token 调一次</span><br> onBlockReply, <span class="hljs-comment">// 每完成一个段落/块调一次</span><br> onToolResult, <span class="hljs-comment">// 每完成一次工具执行调一次</span><br> onReasoningStream, <span class="hljs-comment">// 思考过程实时回调</span><br> onAgentEvent, <span class="hljs-comment">// 所有 agent event 回调</span><br> ...<br>&#125;);<br><br><span class="hljs-comment">// 返回值：</span><br><span class="hljs-keyword">const</span> &#123;<br> assistantTexts, <span class="hljs-comment">// () =&gt; string[] — 已完成的回复列表</span><br> toolMetas, <span class="hljs-comment">// () =&gt; ToolMeta[] — 工具调用记录</span><br> unsubscribe, <span class="hljs-comment">// () =&gt; void — 停止订阅</span><br> waitForCompactionRetry, <span class="hljs-comment">// () =&gt; Promise — 等 compaction 完成</span><br> isCompactionInFlight, <span class="hljs-comment">// () =&gt; boolean — 是否正在 compaction</span><br> getUsageTotals, <span class="hljs-comment">// () =&gt; Usage — token 用量统计</span><br> getCompactionCount, <span class="hljs-comment">// () =&gt; number — compaction 次数</span><br>&#125; = subscription;<br></code></pre>
+
+<p>attempt 在 <code>session.prompt()</code> 完成后用这些句柄：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// prompt 完成后</span><br><span class="hljs-keyword">await</span> session.<span class="hljs-title function_">prompt</span>(userMessage);<br><br><span class="hljs-comment">// 取出结果</span><br><span class="hljs-keyword">const</span> texts = subscription.<span class="hljs-property">assistantTexts</span>; <span class="hljs-comment">// LLM 最终说了什么</span><br><span class="hljs-keyword">const</span> usage = subscription.<span class="hljs-title function_">getUsageTotals</span>(); <span class="hljs-comment">// 花了多少 token</span><br><span class="hljs-keyword">const</span> tools = subscription.<span class="hljs-property">toolMetas</span>; <span class="hljs-comment">// 调了哪些工具</span><br><br><span class="hljs-comment">// 清理</span><br>subscription.<span class="hljs-title function_">unsubscribe</span>();<br></code></pre>
+
+<hr>
+<h2 id="完整的事件时序（一次带-tool-call-的对话）"><a href="#完整的事件时序（一次带-tool-call-的对话）" class="headerlink" title="完整的事件时序（一次带 tool call 的对话）"></a>完整的事件时序（一次带 tool call 的对话）</h2><pre class="highlight"><code class="hljs routeros">时间轴：<br><br><span class="hljs-attribute">t</span>=0ms 用户发 <span class="hljs-string">&quot;帮我看看这个文件&quot;</span><br> └─ session.prompt(<span class="hljs-string">&quot;帮我看看这个文件&quot;</span>)<br> └─ HTTP POST → DeepSeek API<br><br><span class="hljs-attribute">t</span>=200ms DeepSeek 开始回复<br> ├─ agent_start<br> └─ message_start<br> └─ handleMessageStart() → onAssistantMessageStart → typing<span class="hljs-built_in">..</span>.<br><br><span class="hljs-attribute">t</span>=210ms 收到 delta <span class="hljs-string">&quot;好&quot;</span><br> └─ message_update &#123; delta: <span class="hljs-string">&quot;好&quot;</span> &#125;<br> └─ handleMessageUpdate() → emitAgentEvent → broadcast → WebUI 显示 <span class="hljs-string">&quot;好&quot;</span><br><br><span class="hljs-attribute">t</span>=220ms 收到 delta <span class="hljs-string">&quot;的，&quot;</span><br> └─ message_update &#123; delta: <span class="hljs-string">&quot;的，&quot;</span> &#125;<br> └─ <span class="hljs-built_in">..</span>. → WebUI 显示 <span class="hljs-string">&quot;好的，&quot;</span><br><br><span class="hljs-attribute">t</span>=250ms 收到 delta <span class="hljs-string">&quot;让我看看。&quot;</span><br> └─ message_update &#123; delta: <span class="hljs-string">&quot;让我看看。&quot;</span> &#125;<br> └─ <span class="hljs-built_in">..</span>. → WebUI 显示 <span class="hljs-string">&quot;好的，让我看看。&quot;</span><br><br><span class="hljs-attribute">t</span>=260ms LLM 决定调用 read 工具<br> └─ tool_execution_start &#123; toolName: <span class="hljs-string">&quot;read&quot;</span>, args: &#123; path: <span class="hljs-string">&quot;src/main.ts&quot;</span> &#125; &#125;<br> └─ handleToolExecutionStart()<br> → emitAgentEvent(<span class="hljs-string">&quot;item&quot;</span>, &#123; type: <span class="hljs-string">&quot;tool_start&quot;</span>, name: <span class="hljs-string">&quot;read&quot;</span> &#125;)<br> → WebUI 显示 <span class="hljs-string">&quot;📖 Reading src/main.ts...&quot;</span><br><br> pi-coding-agent 自动执行 read tool:<br> → readTool.execute(<span class="hljs-string">&quot;src/main.ts&quot;</span>)<br> → 读取文件内容<br><br><span class="hljs-attribute">t</span>=265ms read 工具完成<br> └─ tool_execution_end &#123; toolName: <span class="hljs-string">&quot;read&quot;</span>, result: <span class="hljs-string">&quot;import React from...&quot;</span> &#125;<br> └─ handleToolExecutionEnd()<br> → emitAgentEvent(<span class="hljs-string">&quot;item&quot;</span>, &#123; type: <span class="hljs-string">&quot;tool_end&quot;</span>, name: <span class="hljs-string">&quot;read&quot;</span> &#125;)<br> → WebUI 显示 <span class="hljs-string">&quot;✅ Read src/main.ts (1.2KB)&quot;</span><br> → onToolResult(&#123; toolName: <span class="hljs-string">&quot;read&quot;</span>, result: <span class="hljs-string">&quot;...&quot;</span> &#125;)<br><br> pi-coding-agent 自动把 tool_result 放入 messages<br> → 重新调 DeepSeek API<br><br><span class="hljs-attribute">t</span>=500ms DeepSeek 收到<span class="hljs-built_in"> tool </span>result → 开始新回复<br> └─ message_start<br> └─ handleMessageStart()<br><br><span class="hljs-attribute">t</span>=510ms 收到 delta <span class="hljs-string">&quot;这个文件是一个 React 组件...&quot;</span><br> └─ message_update → <span class="hljs-built_in">..</span>. → WebUI 流式显示<br><br><span class="hljs-attribute">t</span>=800ms LLM 回复完成<br> └─ message_end &#123; content: <span class="hljs-string">&quot;这个文件是一个 React 组件，它...&quot;</span> &#125;<br> └─ handleMessageEnd()<br> → ctx.state.assistantTexts.push(<span class="hljs-string">&quot;...&quot;</span>)<br> → emitAgentEvent(<span class="hljs-string">&quot;text&quot;</span>, &#123; done: <span class="hljs-literal">true</span> &#125;)<br> → onBlockReply(finalPayload)<br><br><span class="hljs-attribute">t</span>=800ms agent_end<br> └─ handleAgentEnd()<br><br><span class="hljs-attribute">t</span>=800ms session.prompt() 的 Promise resolve<br> └─ attempt 收集结果 → 返回给 run.ts 主循环<br></code></pre>
+
+<hr>
+<h2 id="关键设计总结"><a href="#关键设计总结" class="headerlink" title="关键设计总结"></a>关键设计总结</h2><table>
+<thead>
+<tr>
+<th>设计</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>pendingEventChain 保序</strong></td>
+<td>保证用户看到的输出顺序和 LLM 产生的一致</td>
+</tr>
+<tr>
+<td><strong>tool_execution_end 用 detach</strong></td>
+<td>hook 回调不阻塞后续 LLM 响应处理</td>
+</tr>
+<tr>
+<td><strong>emitAgentEvent 全局总线</strong></td>
+<td>解耦 Agent 执行和 WebUI 广播</td>
+</tr>
+<tr>
+<td><strong>state 对象可变</strong></td>
+<td>高频更新（100次&#x2F;秒），不能每次 immutable copy</td>
+</tr>
+<tr>
+<td><strong>dropIfSlow 背压</strong></td>
+<td>慢客户端不拖累快客户端</td>
+</tr>
+<tr>
+<td><strong>onPartialReply vs onBlockReply</strong></td>
+<td>partial：逐 token，block：段落级 → 不同渠道用不同粒度</td>
+</tr>
+</tbody></table>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-9-tool-awareness/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-7-compaction/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑦：Compaction 完整拆解 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Subscription-%E7%AE%A1%E9%81%93%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Subscription 管道：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-text">全局数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%EF%BC%9ApendingEventChain-%E2%80%94-%E4%BF%9D%E5%BA%8F%E6%89%A7%E8%A1%8C"><span class="toc-text">核心设计：pendingEventChain — 保序执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">事件类型详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#message-start-%E2%80%94-%E5%8A%A9%E6%89%8B%E5%BC%80%E5%A7%8B%E8%AF%B4%E8%AF%9D"><span class="toc-text">message_start — 助手开始说话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-update-%E2%80%94-%E9%80%90-token-%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%EF%BC%88%E6%9C%80%E6%A0%B8%E5%BF%83%EF%BC%81%EF%BC%89"><span class="toc-text">message_update — 逐 token 流式处理（最核心！）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-end-%E2%80%94-%E5%8A%A9%E6%89%8B%E8%AF%B4%E5%AE%8C%E4%BA%86"><span class="toc-text">message_end — 助手说完了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-start-%E2%80%94-LLM-%E8%A6%81%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">tool_execution_start — LLM 要调工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-update-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%AD%E9%97%B4%E7%8A%B6%E6%80%81"><span class="toc-text">tool_execution_update — 工具执行中间状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-end-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E5%AE%8C%E6%AF%95"><span class="toc-text">tool_execution_end — 工具执行完毕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compaction-start-x2F-compaction-end-%E2%80%94-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E7%BC%A9"><span class="toc-text">compaction_start &#x2F; compaction_end — 上下文压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-handler-%E5%88%B0-WebUI-%E7%9A%84%E5%AE%8C%E6%95%B4%E9%93%BE%E8%B7%AF"><span class="toc-text">从 handler 到 WebUI 的完整链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%9AEmbeddedPiSubscribeState"><span class="toc-text">状态管理：EmbeddedPiSubscribeState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E7%BB%99%E8%B0%83%E7%94%A8%E8%80%85%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">返回给调用者的接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%97%B6%E5%BA%8F%EF%BC%88%E4%B8%80%E6%AC%A1%E5%B8%A6-tool-call-%E7%9A%84%E5%AF%B9%E8%AF%9D%EF%BC%89"><span class="toc-text">完整的事件时序（一次带 tool call 的对话）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93"><span class="toc-text">关键设计总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Subscription-%E7%AE%A1%E9%81%93%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Subscription 管道：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-text">全局数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%EF%BC%9ApendingEventChain-%E2%80%94-%E4%BF%9D%E5%BA%8F%E6%89%A7%E8%A1%8C"><span class="toc-text">核心设计：pendingEventChain — 保序执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8B%E4%BB%B6%E7%B1%BB%E5%9E%8B%E8%AF%A6%E8%A7%A3"><span class="toc-text">事件类型详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#message-start-%E2%80%94-%E5%8A%A9%E6%89%8B%E5%BC%80%E5%A7%8B%E8%AF%B4%E8%AF%9D"><span class="toc-text">message_start — 助手开始说话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-update-%E2%80%94-%E9%80%90-token-%E6%B5%81%E5%BC%8F%E5%A4%84%E7%90%86%EF%BC%88%E6%9C%80%E6%A0%B8%E5%BF%83%EF%BC%81%EF%BC%89"><span class="toc-text">message_update — 逐 token 流式处理（最核心！）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#message-end-%E2%80%94-%E5%8A%A9%E6%89%8B%E8%AF%B4%E5%AE%8C%E4%BA%86"><span class="toc-text">message_end — 助手说完了</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-start-%E2%80%94-LLM-%E8%A6%81%E8%B0%83%E5%B7%A5%E5%85%B7"><span class="toc-text">tool_execution_start — LLM 要调工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-update-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%AD%E9%97%B4%E7%8A%B6%E6%80%81"><span class="toc-text">tool_execution_update — 工具执行中间状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tool-execution-end-%E2%80%94-%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E5%AE%8C%E6%AF%95"><span class="toc-text">tool_execution_end — 工具执行完毕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#compaction-start-x2F-compaction-end-%E2%80%94-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E7%BC%A9"><span class="toc-text">compaction_start &#x2F; compaction_end — 上下文压缩</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-handler-%E5%88%B0-WebUI-%E7%9A%84%E5%AE%8C%E6%95%B4%E9%93%BE%E8%B7%AF"><span class="toc-text">从 handler 到 WebUI 的完整链路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%EF%BC%9AEmbeddedPiSubscribeState"><span class="toc-text">状态管理：EmbeddedPiSubscribeState</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%94%E5%9B%9E%E7%BB%99%E8%B0%83%E7%94%A8%E8%80%85%E7%9A%84%E6%8E%A5%E5%8F%A3"><span class="toc-text">返回给调用者的接口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%97%B6%E5%BA%8F%EF%BC%88%E4%B8%80%E6%AC%A1%E5%B8%A6-tool-call-%E7%9A%84%E5%AF%B9%E8%AF%9D%EF%BC%89"><span class="toc-text">完整的事件时序（一次带 tool call 的对话）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93"><span class="toc-text">关键设计总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

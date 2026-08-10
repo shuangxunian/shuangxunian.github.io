@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/13/2026-07-13-openclaw-source-code-analysis-10-tool-calling-mechanism/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="LLM 调用工具真的是靠 prompt 格式约定吗？不是——Function Calling 是 API 协议层面的硬约束，从模型训练到推理阶段的全链路拆解。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Tool Calling">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Function Calling">
+        
+          <meta 
+            property="og:article:tag" 
+            content="API Protocol">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%EF%BC%9A%E4%B8%8D%E6%98%AF%E9%9D%A0-prompt%EF%BC%8C%E6%98%AF%E9%9D%A0%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83-API-%E5%8D%8F%E8%AE%AE"><span class="toc-text">工具调用：不是靠 prompt，是靠模型训练 + API 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%EF%BC%88%E5%8E%86%E5%8F%B2%E6%BC%94%E8%BF%9B%EF%BC%89"><span class="toc-text">三种实现方式（历史演进）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F-2-%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6%EF%BC%88DeepSeek-x2F-OpenAI-%E7%9C%9F%E6%AD%A3%E5%9C%A8%E5%81%9A%E7%9A%84%E4%BA%8B%EF%BC%89"><span class="toc-text">方式 2 的底层机制（DeepSeek&#x2F;OpenAI 真正在做的事）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%BC%9A%E4%BA%86%E3%80%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E8%B0%83%E5%B7%A5%E5%85%B7%E3%80%8D"><span class="toc-text">训练阶段：模型学会了「什么时候该调工具」</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E9%98%B6%E6%AE%B5%EF%BC%9AAPI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%81%9A%E7%9A%84%E4%BA%8B"><span class="toc-text">推理阶段：API 服务端做的事</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%9A%84-API-%E5%93%8D%E5%BA%94%E7%BB%93%E6%9E%84"><span class="toc-text">实际的 API 响应结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%8C%BA%E5%88%AB%EF%BC%9Aprompt-%E6%8E%A7%E5%88%B6-vs-%E5%8D%8F%E8%AE%AE%E6%8E%A7%E5%88%B6"><span class="toc-text">关键区别：prompt 控制 vs 协议控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7-OpenClaw-%E4%BB%A3%E7%A0%81%E9%87%8C%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">对照 OpenClaw 代码里的体现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%80%E4%BB%A5-OpenClaw-%E9%87%8C%E7%9A%84%E6%89%A7%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="toc-text">所以 OpenClaw 里的执行逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="toc-text">补充说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑩：工具调用的底层机制——不是靠 Prompt
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-13-openclaw-source-code-analysis-10-tool-calling-mechanism.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-13T03:28:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Tool-Calling/" 
+            class="post-meta-link">
+            Tool Calling
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Function-Calling/" 
+            class="post-meta-link">
+            Function Calling
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/API-Protocol/" 
+            class="post-meta-link">
+            API Protocol
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="工具调用：不是靠-prompt，是靠模型训练-API-协议"><a href="#工具调用：不是靠-prompt，是靠模型训练-API-协议" class="headerlink" title="工具调用：不是靠 prompt，是靠模型训练 + API 协议"></a>工具调用：不是靠 prompt，是靠模型训练 + API 协议</h1><h2 id="三种实现方式（历史演进）"><a href="#三种实现方式（历史演进）" class="headerlink" title="三种实现方式（历史演进）"></a>三种实现方式（历史演进）</h2><pre class="highlight"><code class="hljs bash">┌──────────────────────────────────────────────────────────────────────┐<br>│ 方式 1：纯 Prompt 模拟（2023年以前的做法，已过时）                    │<br>│                                                                        │<br>│ System Prompt 里写：                                                  │<br>│   <span class="hljs-string">&quot;当你需要调用工具时，用以下格式输出：                                │</span><br><span class="hljs-string">│    &lt;tool_call&gt;&#123;&quot;</span>name<span class="hljs-string">&quot;:&quot;</span><span class="hljs-built_in">exec</span><span class="hljs-string">&quot;,&quot;</span>arguments<span class="hljs-string">&quot;:&#123;&quot;</span><span class="hljs-built_in">command</span><span class="hljs-string">&quot;:&quot;</span><span class="hljs-built_in">ls</span><span class="hljs-string">&quot;&#125;&#125;&lt;/tool_call&gt; │</span><br><span class="hljs-string">│    然后等待结果...&quot;</span>                                                   │<br>│                                                                        │<br>│ 问题：                                                                │<br>│   - LLM 可能格式错误（漏引号、多余文本）                              │<br>│   - 不确定什么时候该停止生成                                          │<br>│   - 不可靠，需要大量解析+重试                                         │<br>│                                                                        │<br>│ OpenClaw 不用这种方式                                                 │<br>└──────────────────────────────────────────────────────────────────────┘<br><br>┌──────────────────────────────────────────────────────────────────────┐<br>│ 方式 2：API 原生 Function Calling（当前主流，OpenClaw 使用这种）      │<br>│                                                                        │<br>│ 在请求的 tools 字段里传入工具定义                                     │<br>│ 模型在训练阶段就学会了：                                              │<br>│   <span class="hljs-string">&quot;当我判断需要调用工具时，                                            │</span><br><span class="hljs-string">│    输出特殊的结构化 token 序列，                                      │</span><br><span class="hljs-string">│    由 API 服务端解析成 tool_calls 对象&quot;</span>                              │<br>│                                                                        │<br>│ DeepSeek/OpenAI/Anthropic 都支持                                     │<br>└──────────────────────────────────────────────────────────────────────┘<br><br>┌──────────────────────────────────────────────────────────────────────┐<br>│ 方式 3：模型内嵌格式（如 DeepSeek / Qwen 的某些开源版本）            │<br>│                                                                        │<br>│ 模型在 fine-tune 时被训练成：                                         │<br>│   看到 tools 定义 → 决定调用时 → 生成特定格式的文本                   │<br>│   然后 API 服务端把文本解析成 tool_calls                              │<br>│                                                                        │<br>│ 本质上和方式 2 一样，只是底层实现细节不同                            │<br>└──────────────────────────────────────────────────────────────────────┘<br></code></pre>
+
+<hr>
+<h2 id="方式-2-的底层机制（DeepSeek-x2F-OpenAI-真正在做的事）"><a href="#方式-2-的底层机制（DeepSeek-x2F-OpenAI-真正在做的事）" class="headerlink" title="方式 2 的底层机制（DeepSeek&#x2F;OpenAI 真正在做的事）"></a>方式 2 的底层机制（DeepSeek&#x2F;OpenAI 真正在做的事）</h2><h3 id="训练阶段：模型学会了「什么时候该调工具」"><a href="#训练阶段：模型学会了「什么时候该调工具」" class="headerlink" title="训练阶段：模型学会了「什么时候该调工具」"></a>训练阶段：模型学会了「什么时候该调工具」</h3><pre class="highlight"><code class="hljs pgsql">训练数据里有大量这样的样本：<br><br>样本 <span class="hljs-number">1</span>：<br> 输入: [<span class="hljs-keyword">system</span> prompt] + [tools: <span class="hljs-keyword">read</span>, exec] + [<span class="hljs-keyword">user</span>: &quot;看看这个文件&quot;]<br> 标注: → 输出 tool_call: <span class="hljs-keyword">read</span>(file_path=&quot;xxx&quot;)<br><br>样本 <span class="hljs-number">2</span>：<br> 输入: [<span class="hljs-keyword">system</span> prompt] + [tools: <span class="hljs-keyword">read</span>, exec] + [<span class="hljs-keyword">user</span>: &quot;今天天气怎么样&quot;]<br> 标注: → 输出纯文本 &quot;我没有天气查询工具...&quot;<br><br>样本 <span class="hljs-number">3</span>：<br> 输入: [<span class="hljs-keyword">system</span> prompt] + [tools: <span class="hljs-keyword">read</span>, exec] + [<span class="hljs-keyword">user</span>: &quot;运行测试&quot;]<br> 标注: → 输出 tool_call: exec(command=&quot;npm test&quot;)<br><br>经过百万级样本训练后，模型学会了：<br> ✓ 根据用户意图判断是否需要调用工具<br> ✓ 选择正确的工具<br> ✓ 按照 <span class="hljs-type">JSON</span> <span class="hljs-keyword">Schema</span> 构造正确的参数<br> ✓ 在需要时调用多个工具<br></code></pre>
+
+<h3 id="推理阶段：API-服务端做的事"><a href="#推理阶段：API-服务端做的事" class="headerlink" title="推理阶段：API 服务端做的事"></a>推理阶段：API 服务端做的事</h3><pre class="highlight"><code class="hljs stata">┌──────────────────────────────────────────────────────────────────┐<br>│ DeepSeek API 服务端                                                │<br>│                                                                     │<br>│ 1. 收到请求：                                                      │<br>│    &#123; messages: [...], tools: [...] &#125;                              │<br>│                                                                     │<br>│ 2. 把 tools 定义「编码」成模型能理解的 <span class="hljs-keyword">token</span> 序列                   │<br>│    （不是直接塞进 prompt，而是用特殊的编码方式）                     │<br>│    每个 provider 的内部编码不同，但效果类似                         │<br>│                                                                     │<br>│ 3. 模型开始 <span class="hljs-keyword">token</span>-<span class="hljs-keyword">by</span>-<span class="hljs-keyword">token</span> 生成：                                  │<br>│                                                                     │<br>│ 情况 A：模型决定调工具                                              │<br>│ ┌──────────────────────────────────────────────────────┐          │<br>│ │ 模型输出特殊 <span class="hljs-keyword">token</span> 序列（内部格式，对外不可见）：    │          │<br>│ │                                                      │          │<br>│ │   &lt;|tool_call_start|&gt;                                │          │<br>│ │   &#123;<span class="hljs-string">&quot;name&quot;</span>:<span class="hljs-string">&quot;exec&quot;</span>,<span class="hljs-string">&quot;arguments&quot;</span>:&#123;<span class="hljs-string">&quot;command&quot;</span>:<span class="hljs-string">&quot;npm test&quot;</span>&#125;&#125; │          │<br>│ │   &lt;|tool_call_end|&gt;                                  │          │<br>│ │                                                      │          │<br>│ │ ↓ API 服务端拦截这些特殊 <span class="hljs-keyword">token</span>                       │          │<br>│ │ ↓ 解析成结构化 JSON                                  │          │<br>│ │ ↓ 返回给客户端：                                     │          │<br>│ │                                                      │          │<br>│ │   finish_reason: <span class="hljs-string">&quot;tool_calls&quot;</span>                        │          │<br>│ │   message.tool_calls: [&#123;                             │          │<br>│ │     id: <span class="hljs-string">&quot;call_abc&quot;</span>,                                  │          │<br>│ │     function: &#123; name: <span class="hljs-string">&quot;exec&quot;</span>, arguments: <span class="hljs-string">&quot;...&quot;</span> &#125;     │          │<br>│ │   &#125;]                                                 │          │<br>│ └──────────────────────────────────────────────────────┘          │<br>│                                                                     │<br>│ 情况 B：模型决定直接回复文本                                        │<br>│ ┌──────────────────────────────────────────────────────┐          │<br>│ │ 模型正常输出文本 <span class="hljs-keyword">token</span>：                             │          │<br>│ │   <span class="hljs-string">&quot;这个文件是一个 React 组件...&quot;</span>                     │          │<br>│ │                                                      │          │<br>│ │ ↓ API 服务端正常返回文本                             │          │<br>│ │                                                      │          │<br>│ │   finish_reason: <span class="hljs-string">&quot;stop&quot;</span>                              │          │<br>│ │   message.content: <span class="hljs-string">&quot;这个文件是一个 React 组件...&quot;</span>    │          │<br>│ └──────────────────────────────────────────────────────┘          │<br>│                                                                     │<br>└──────────────────────────────────────────────────────────────────┘<br></code></pre>
+
+<hr>
+<h2 id="实际的-API-响应结构"><a href="#实际的-API-响应结构" class="headerlink" title="实际的 API 响应结构"></a>实际的 API 响应结构</h2><p>当 LLM <strong>决定调工具</strong>时，返回的 SSE stream 长这样：</p>
+<pre class="highlight"><code class="hljs json">data<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;choices&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;delta&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;tool_calls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;index&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;call_abc123&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;function&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;function&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;read&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;arguments&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&#123;\&quot;file_path\&quot;:\&quot;src/main.ts\&quot;&#125;&quot;</span><br> <span class="hljs-punctuation">&#125;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;finish_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tool_calls&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p>当 LLM <strong>决定说话</strong>时，返回的是：</p>
+<pre class="highlight"><code class="hljs json">data<span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;choices&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;delta&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br> <span class="hljs-attr">&quot;role&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;assistant&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;这个文件是一个React组件...&quot;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;tool_calls&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-literal"><span class="hljs-keyword">null</span></span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br> <span class="hljs-attr">&quot;finish_reason&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;stop&quot;</span><br> <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p><strong>这两种输出是在 API 协议层面分开的，不是靠 prompt 解析出来的。</strong></p>
+<hr>
+<h2 id="关键区别：prompt-控制-vs-协议控制"><a href="#关键区别：prompt-控制-vs-协议控制" class="headerlink" title="关键区别：prompt 控制 vs 协议控制"></a>关键区别：prompt 控制 vs 协议控制</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>Prompt 控制</th>
+<th>API 协议控制 (Function Calling)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>格式保证</strong></td>
+<td>LLM 可能输出错误格式</td>
+<td>API 层面保证结构正确</td>
+</tr>
+<tr>
+<td><strong>停止时机</strong></td>
+<td>LLM 可能继续生成垃圾</td>
+<td>遇到 tool_call token → 立即停止文本生成</td>
+</tr>
+<tr>
+<td><strong>参数验证</strong></td>
+<td>需要应用层校验</td>
+<td>部分 provider 支持 <code>strict: true</code>（保证参数符合 schema）</td>
+</tr>
+<tr>
+<td><strong>训练支持</strong></td>
+<td>通用能力，碰运气</td>
+<td>专门针对 function calling 做了 RLHF</td>
+</tr>
+<tr>
+<td><strong>性能</strong></td>
+<td>浪费 token 在格式化上</td>
+<td>特殊 token 编码，更高效</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="对照-OpenClaw-代码里的体现"><a href="#对照-OpenClaw-代码里的体现" class="headerlink" title="对照 OpenClaw 代码里的体现"></a>对照 OpenClaw 代码里的体现</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// openai-transport-stream.ts:1707-1714</span><br><span class="hljs-comment">// 发请求时把工具定义放在 tools 字段（协议层）</span><br><span class="hljs-keyword">if</span> (context.<span class="hljs-property">tools</span>) &#123;<br> params.<span class="hljs-property">tools</span> = <span class="hljs-title function_">convertTools</span>(context.<span class="hljs-property">tools</span>, compat, model);<br> <span class="hljs-comment">// → [&#123; type: &quot;function&quot;, function: &#123; name, description, parameters &#125; &#125;, ...]</span><br>&#125;<br><br><span class="hljs-comment">// openai-transport-stream.ts:1142-1200</span><br><span class="hljs-comment">// 收到 SSE 流时处理 tool_calls</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">processOpenAICompletionsStream</span>(<span class="hljs-params">responseStream, output, model, stream</span>) &#123;<br> <span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> chunk <span class="hljs-keyword">of</span> responseStream) &#123;<br> <span class="hljs-keyword">const</span> choice = chunk.<span class="hljs-property">choices</span>?.[<span class="hljs-number">0</span>];<br><br> <span class="hljs-keyword">if</span> (choice.<span class="hljs-property">delta</span>?.<span class="hljs-property">tool_calls</span>) &#123;<br> <span class="hljs-comment">// API 返回了结构化的 tool_calls → 不是文本！</span><br> <span class="hljs-comment">// 直接解析成 &#123; name, arguments &#125; 对象</span><br> <span class="hljs-title function_">handleToolCallChunk</span>(choice.<span class="hljs-property">delta</span>.<span class="hljs-property">tool_calls</span>);<br> &#125;<br><br> <span class="hljs-keyword">if</span> (choice.<span class="hljs-property">delta</span>?.<span class="hljs-property">content</span>) &#123;<br> <span class="hljs-comment">// 普通文本 token</span><br> <span class="hljs-title function_">handleTextDelta</span>(choice.<span class="hljs-property">delta</span>.<span class="hljs-property">content</span>);<br> &#125;<br><br> <span class="hljs-keyword">if</span> (choice.<span class="hljs-property">finish_reason</span> === <span class="hljs-string">&quot;tool_calls&quot;</span>) &#123;<br> <span class="hljs-comment">// 模型决定调用工具 → 停止生成</span><br> output.<span class="hljs-property">stopReason</span> = <span class="hljs-string">&quot;tool_use&quot;</span>;<br> &#125;<br> &#125;<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="所以-OpenClaw-里的执行逻辑"><a href="#所以-OpenClaw-里的执行逻辑" class="headerlink" title="所以 OpenClaw 里的执行逻辑"></a>所以 OpenClaw 里的执行逻辑</h2><pre class="highlight"><code class="hljs php">pi-coding-agent 库内部：<br><br><span class="hljs-number">1</span>. 调 LLM API<br><span class="hljs-number">2</span>. 解析响应：<br> <span class="hljs-keyword">if</span> (response.finish_reason === <span class="hljs-string">&quot;tool_calls&quot;</span>) &#123;<br>   <span class="hljs-comment">// 模型决定调工具 —— 这是 API 层面确定的，不需要猜</span><br>   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> <span class="hljs-variable constant_">toolCall</span> of response.tool_calls) &#123;<br>     <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">tool</span> = registeredTools.<span class="hljs-title function_ invoke__">find</span>(t =&gt; t.name === toolCall.function.name);<br>     <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">args</span> = JSON.<span class="hljs-title function_ invoke__">parse</span>(toolCall.function.arguments);<br>     <span class="hljs-keyword">const</span> <span class="hljs-variable constant_">result</span> = await tool.<span class="hljs-title function_ invoke__">execute</span>(toolCall.id, args);<br>     <span class="hljs-comment">// 把结果放回 messages</span><br>     messages.<span class="hljs-title function_ invoke__">push</span>(&#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&quot;tool&quot;</span>, <span class="hljs-attr">tool_call_id</span>: toolCall.id, <span class="hljs-attr">content</span>: result &#125;);<br>   &#125;<br>   <span class="hljs-comment">// 带上 tool_result 再调一次 LLM</span><br>   <span class="hljs-keyword">goto</span> step <span class="hljs-number">1</span>;<br> &#125; <span class="hljs-keyword">else</span> &#123;<br>   <span class="hljs-comment">// 模型决定说话 —— 直接返回文本</span><br>   <span class="hljs-keyword">return</span> response.content;<br> &#125;<br></code></pre>
+
+<p><strong>没有任何「解析文本里是否包含工具调用」的步骤。</strong> 工具调用和文本回复是 API 响应里完全分离的两个字段。</p>
+<hr>
+<h2 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h2><p>某些开源模型（如早期 Hermes、部分 Qwen 版本）确实用 prompt 模拟工具调用，靠特定文本格式让应用层解析——也就是前面说的方式 1。但 DeepSeek API &#x2F; OpenAI &#x2F; Anthropic 这些商业 API 都已经把 function calling 内置到了协议层，不需要也不应该用 prompt 来模拟。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><blockquote>
+<p>LLM 不是靠「请按以下格式输出」的 prompt 来调用工具的。它是在训练阶段就学会了「看到 tools 定义 → 判断需要时生成特殊 token → API 服务端解析成结构化输出」这个机制。</p>
+</blockquote>
+<p>System Prompt 里列工具只是给 LLM 额外的自然语言上下文（什么时候该用什么工具），但真正的「能不能调」是由 API 请求体里的 <code>tools</code> 字段决定的——这是协议层面的硬约束，不是 prompt 工程。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-11-failover/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑪：Failover 重试逻辑完整拆解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-9-tool-awareness/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑨：Agent 如何感知工具——System Prompt vs API tools </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%EF%BC%9A%E4%B8%8D%E6%98%AF%E9%9D%A0-prompt%EF%BC%8C%E6%98%AF%E9%9D%A0%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83-API-%E5%8D%8F%E8%AE%AE"><span class="toc-text">工具调用：不是靠 prompt，是靠模型训练 + API 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%EF%BC%88%E5%8E%86%E5%8F%B2%E6%BC%94%E8%BF%9B%EF%BC%89"><span class="toc-text">三种实现方式（历史演进）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F-2-%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6%EF%BC%88DeepSeek-x2F-OpenAI-%E7%9C%9F%E6%AD%A3%E5%9C%A8%E5%81%9A%E7%9A%84%E4%BA%8B%EF%BC%89"><span class="toc-text">方式 2 的底层机制（DeepSeek&#x2F;OpenAI 真正在做的事）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%BC%9A%E4%BA%86%E3%80%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E8%B0%83%E5%B7%A5%E5%85%B7%E3%80%8D"><span class="toc-text">训练阶段：模型学会了「什么时候该调工具」</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E9%98%B6%E6%AE%B5%EF%BC%9AAPI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%81%9A%E7%9A%84%E4%BA%8B"><span class="toc-text">推理阶段：API 服务端做的事</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%9A%84-API-%E5%93%8D%E5%BA%94%E7%BB%93%E6%9E%84"><span class="toc-text">实际的 API 响应结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%8C%BA%E5%88%AB%EF%BC%9Aprompt-%E6%8E%A7%E5%88%B6-vs-%E5%8D%8F%E8%AE%AE%E6%8E%A7%E5%88%B6"><span class="toc-text">关键区别：prompt 控制 vs 协议控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7-OpenClaw-%E4%BB%A3%E7%A0%81%E9%87%8C%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">对照 OpenClaw 代码里的体现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%80%E4%BB%A5-OpenClaw-%E9%87%8C%E7%9A%84%E6%89%A7%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="toc-text">所以 OpenClaw 里的执行逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="toc-text">补充说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%EF%BC%9A%E4%B8%8D%E6%98%AF%E9%9D%A0-prompt%EF%BC%8C%E6%98%AF%E9%9D%A0%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83-API-%E5%8D%8F%E8%AE%AE"><span class="toc-text">工具调用：不是靠 prompt，是靠模型训练 + API 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%EF%BC%88%E5%8E%86%E5%8F%B2%E6%BC%94%E8%BF%9B%EF%BC%89"><span class="toc-text">三种实现方式（历史演进）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E5%BC%8F-2-%E7%9A%84%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6%EF%BC%88DeepSeek-x2F-OpenAI-%E7%9C%9F%E6%AD%A3%E5%9C%A8%E5%81%9A%E7%9A%84%E4%BA%8B%EF%BC%89"><span class="toc-text">方式 2 的底层机制（DeepSeek&#x2F;OpenAI 真正在做的事）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%BC%9A%E4%BA%86%E3%80%8C%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E8%B0%83%E5%B7%A5%E5%85%B7%E3%80%8D"><span class="toc-text">训练阶段：模型学会了「什么时候该调工具」</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E9%98%B6%E6%AE%B5%EF%BC%9AAPI-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%81%9A%E7%9A%84%E4%BA%8B"><span class="toc-text">推理阶段：API 服务端做的事</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E7%9A%84-API-%E5%93%8D%E5%BA%94%E7%BB%93%E6%9E%84"><span class="toc-text">实际的 API 响应结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%8C%BA%E5%88%AB%EF%BC%9Aprompt-%E6%8E%A7%E5%88%B6-vs-%E5%8D%8F%E8%AE%AE%E6%8E%A7%E5%88%B6"><span class="toc-text">关键区别：prompt 控制 vs 协议控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%85%A7-OpenClaw-%E4%BB%A3%E7%A0%81%E9%87%8C%E7%9A%84%E4%BD%93%E7%8E%B0"><span class="toc-text">对照 OpenClaw 代码里的体现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%80%E4%BB%A5-OpenClaw-%E9%87%8C%E7%9A%84%E6%89%A7%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="toc-text">所以 OpenClaw 里的执行逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="toc-text">补充说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

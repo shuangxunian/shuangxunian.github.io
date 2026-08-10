@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>Claude Code 工作原理解密：从一句指令到精准修改代码</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="Claude Code 工作原理解密：从一句指令到精准修改代码">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/06/02/2026-06-02-claude-code-internals/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="当你对 Claude Code 说&#34;帮我修复这个 bug&#34;时，背后并不是魔法，而是一套精密的工程系统。这篇文章将带你深入理解它的完整工作流程。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-06-02">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-06-02">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Claude Code">
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI编程">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Agentic Loop">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Claude-Code-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E8%A7%A3%E5%AF%86%EF%BC%9A%E4%BB%8E%E4%B8%80%E5%8F%A5%E6%8C%87%E4%BB%A4%E5%88%B0%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="toc-text">Claude Code 工作原理解密：从一句指令到精准修改代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Claude-Code-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6%EF%BC%9AAgentic-Loop"><span class="toc-text">一、Claude Code 的核心机制：Agentic Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9A%E5%90%AF%E5%8A%A8%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E6%94%B6%E9%9B%86"><span class="toc-text">二、阶段一：启动与上下文收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9AAI-%E6%8E%A8%E7%90%86%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%86%B3%E7%AD%96"><span class="toc-text">三、阶段二：AI 推理与工具决策</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E6%A0%A1%E9%AA%8C"><span class="toc-text">四、阶段三：工具执行与安全校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%98%B6%E6%AE%B5%E5%9B%9B%EF%BC%9A%E9%AA%8C%E8%AF%81%E4%B8%8E%E8%BF%AD%E4%BB%A3"><span class="toc-text">五、阶段四：验证与迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AA%E5%85%A8%E6%96%B0%E7%9A%84-PRD%EF%BC%9F"><span class="toc-text">六、特殊情况：如何处理一个全新的 PRD？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%8E%B7%E5%8F%96%E5%B9%B6%E8%A7%A3%E6%9E%90-PRD"><span class="toc-text">1. 获取并解析 PRD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9C%A8%E4%BB%A3%E7%A0%81%E5%BA%93%E4%B8%AD%E2%80%9D%E6%8C%89%E5%9B%BE%E7%B4%A2%E9%AA%A5%E2%80%9D"><span class="toc-text">2. 在代码库中”按图索骥”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E8%AE%A1%E5%88%92%E5%B9%B6%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9"><span class="toc-text">3. 生成计划并精准修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%AB%98%E9%98%B6%E8%83%BD%E5%8A%9B%EF%BC%9AMCP%EF%BC%88%E6%A8%A1%E5%9E%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8D%8F%E8%AE%AE%EF%BC%89"><span class="toc-text">4. 高阶能力：MCP（模型上下文协议）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93%EF%BC%9A%E8%BF%99%E4%B8%8D%E6%98%AF%E9%AD%94%E6%B3%95%EF%BC%8C%E6%98%AF%E5%B7%A5%E7%A8%8B"><span class="toc-text">七、总结：这不是魔法，是工程</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      Claude Code 工作原理解密：从一句指令到精准修改代码
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-06-02-claude-code-internals.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-06-01T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-06-02</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Claude-Code/" 
+            class="post-meta-link">
+            Claude Code
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+            class="post-meta-link">
+            AI编程
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Agentic-Loop/" 
+            class="post-meta-link">
+            Agentic Loop
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="Claude-Code-工作原理解密：从一句指令到精准修改代码"><a href="#Claude-Code-工作原理解密：从一句指令到精准修改代码" class="headerlink" title="Claude Code 工作原理解密：从一句指令到精准修改代码"></a>Claude Code 工作原理解密：从一句指令到精准修改代码</h1><blockquote>
+<p>当你对 Claude Code 说”帮我修复这个 bug”时，背后并不是魔法，而是一套精密的工程系统。这篇文章将带你深入理解它的完整工作流程。</p>
+</blockquote>
+<h2 id="一、Claude-Code-的核心机制：Agentic-Loop"><a href="#一、Claude-Code-的核心机制：Agentic-Loop" class="headerlink" title="一、Claude Code 的核心机制：Agentic Loop"></a>一、Claude Code 的核心机制：Agentic Loop</h2><p>Claude Code 的本质是一个<strong>自主智能体</strong>，它的核心是一个被称为 <strong>“代理循环”（Agentic Loop）</strong> 的 <code>while</code> 循环。每一次循环包含四个阶段：</p>
+<ol>
+<li><strong>启动与上下文收集</strong> —— 理解你的项目和需求</li>
+<li><strong>AI 推理与工具决策</strong> —— 规划行动步骤并选择工具</li>
+<li><strong>工具执行与安全校验</strong> —— 实际执行命令或修改文件</li>
+<li><strong>验证与迭代</strong> —— 检查结果并决定是否继续</li>
+</ol>
+<p>整个循环会持续运行，直到 AI 认为任务已完成。</p>
+<hr>
+<h2 id="二、阶段一：启动与上下文收集"><a href="#二、阶段一：启动与上下文收集" class="headerlink" title="二、阶段一：启动与上下文收集"></a>二、阶段一：启动与上下文收集</h2><p>当你敲下一条指令并发送，Claude Code 会立即并行执行以下任务：</p>
+<ul>
+<li>**读取项目”说明书”**：自动查找 <code>CLAUDE.md</code> 或 <code>AGENTS.md</code>，获取项目结构、编码规范等信息。</li>
+<li><strong>获取当前工作区状态</strong>：读取 Git 状态、当前打开的文件、最近编辑的文件。</li>
+<li><strong>加载历史会话记忆</strong>：恢复之前的交互历史和压缩过的对话摘要。</li>
+</ul>
+<p>这一切都依赖于其 <strong>20 万 token 的超大上下文窗口</strong>，使得 Claude 能”一次记住”整个项目的许多细节。</p>
+<blockquote>
+<p>📌 <strong>误区澄清</strong>：Claude Code <strong>不会</strong>在启动时全局扫描并生成一棵目录树文件。它是<strong>按需探索</strong>——需要看哪个目录，才用 <code>ls</code>、<code>find</code>、<code>glob</code> 等工具实时查询。这样做更轻量、延迟更低。</p>
+</blockquote>
+<hr>
+<h2 id="三、阶段二：AI-推理与工具决策"><a href="#三、阶段二：AI-推理与工具决策" class="headerlink" title="三、阶段二：AI 推理与工具决策"></a>三、阶段二：AI 推理与工具决策</h2><p>所有收集到的信息被送入核心引擎 <code>QueryEngine</code>（约 46,000 行代码）。AI 在这一阶段遵循三条设计哲学：</p>
+<ul>
+<li><strong>最小脚手架，最大操作</strong>：框架保持极简，把复杂决策交给大模型本身。</li>
+<li><strong>工具即能力边界</strong>：Claude 的能力被严格封装在约 40 种工具中（如 <code>Read</code>、<code>Write</code>、<code>Edit</code>、<code>Bash</code>、<code>Glob</code> 等）。新增能力 &#x3D; 新增工具。</li>
+<li><strong>简单循环，工程护城河</strong>：循环核心代码仅约 200 行，但围绕它的整个系统（安全、权限、工具库）庞大而稳固。</li>
+</ul>
+<p>AI 会根据你的指令和当前上下文，决定下一步调用哪个工具、以什么参数调用。</p>
+<hr>
+<h2 id="四、阶段三：工具执行与安全校验"><a href="#四、阶段三：工具执行与安全校验" class="headerlink" title="四、阶段三：工具执行与安全校验"></a>四、阶段三：工具执行与安全校验</h2><p>当 AI 决策调用工具（如修改文件、运行命令）时，请求会被发送到<strong>工具调度器</strong>。这里有一个<strong>纵深防御的权限体系</strong>（共 7 种模式）：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Always Allow</td>
+<td>只读操作（如读文件、搜索），自动放行</td>
+</tr>
+<tr>
+<td>Auto Allow (Safe Pattern)</td>
+<td>匹配安全模式的写操作（如 <code>git commit</code>），自动通过</td>
+</tr>
+<tr>
+<td>ML Classifier Gate</td>
+<td>机器学习模型评估命令风险</td>
+</tr>
+<tr>
+<td>Per-Session Allow</td>
+<td>当前会话授权过的操作，短时间内免确认</td>
+</tr>
+<tr>
+<td>Explicit Confirm</td>
+<td>高危操作（删除文件、网络请求）必须弹框请求用户确认</td>
+</tr>
+<tr>
+<td>Directory Scoped</td>
+<td>限制操作在项目目录内，越界拦截</td>
+</tr>
+<tr>
+<td>Global Deny</td>
+<td>硬编码禁止列表，绝不执行</td>
+</tr>
+</tbody></table>
+<p>权限通过后，具体的<strong>工具处理器</strong>（如 <code>FileEditTool</code>、<code>BashTool</code>）才会执行实际操作。</p>
+<hr>
+<h2 id="五、阶段四：验证与迭代"><a href="#五、阶段四：验证与迭代" class="headerlink" title="五、阶段四：验证与迭代"></a>五、阶段四：验证与迭代</h2><p>工具执行完毕后，输出（成功&#x2F;失败、运行结果）会作为新的消息喂给 AI。AI 据此进入下一轮循环：</p>
+<ul>
+<li>✅ <strong>成功</strong> → 判断是否完成目标，否则继续下一步</li>
+<li>❌ <strong>失败</strong> → 分析错误原因，调整策略，重新尝试</li>
+</ul>
+<p>这个过程形成一个强大的 <strong>“执行-反馈-调整”闭环</strong>，使得 Claude 可以自我修正，最终完成任务。</p>
+<hr>
+<h2 id="六、特殊情况：如何处理一个全新的-PRD？"><a href="#六、特殊情况：如何处理一个全新的-PRD？" class="headerlink" title="六、特殊情况：如何处理一个全新的 PRD？"></a>六、特殊情况：如何处理一个全新的 PRD？</h2><p>如果 Git 上没有相关记录，<code>AGENTS.md</code> 里也没有说明，只有一个完整的 <strong>PRD（产品需求文档）链接</strong>，Claude 是如何做到的？</p>
+<h3 id="1-获取并解析-PRD"><a href="#1-获取并解析-PRD" class="headerlink" title="1. 获取并解析 PRD"></a>1. 获取并解析 PRD</h3><p>Claude 会使用内置的 <code>curl</code> 或 <code>fetch</code> 工具，主动请求 PRD 链接，把全文内容下载下来。由于拥有 20 万 token 上下文，即便 PRD 长达几十页，也能一次性读入内存。</p>
+<h3 id="2-在代码库中”按图索骥”"><a href="#2-在代码库中”按图索骥”" class="headerlink" title="2. 在代码库中”按图索骥”"></a>2. 在代码库中”按图索骥”</h3><ul>
+<li><strong>建立全局视野</strong>：先用 <code>ls -R</code> 或 <code>find</code> 列出项目顶层目录。</li>
+<li><strong>模糊定位</strong>：用 <code>glob</code> 搜索与 PRD 关键词相关的文件路径（例如 PRD 提到”支付”，就搜 <code>*payment*</code>、<code>*pay*</code>）。</li>
+<li><strong>精确读取</strong>：用 <code>Read</code> 工具打开疑似相关的文件，阅读源代码。</li>
+</ul>
+<h3 id="3-生成计划并精准修改"><a href="#3-生成计划并精准修改" class="headerlink" title="3. 生成计划并精准修改"></a>3. 生成计划并精准修改</h3><ul>
+<li>进入 <strong>Plan Mode（计划模式）</strong>，生成一份详细的修改计划，得到你的确认后再动手。</li>
+<li>使用 <code>Write</code> 和 <code>Edit</code> 工具进行精确修改。</li>
+<li>自动调用 <code>build</code>、<code>test</code> 等命令进行验证，形成”改 → 测 → 修”的闭环。</li>
+</ul>
+<h3 id="4-高阶能力：MCP（模型上下文协议）"><a href="#4-高阶能力：MCP（模型上下文协议）" class="headerlink" title="4. 高阶能力：MCP（模型上下文协议）"></a>4. 高阶能力：MCP（模型上下文协议）</h3><p>如果 PRD 存放在 Jira、Confluence、Linear、GitHub 等协作平台，Claude 可以通过 <strong>MCP</strong> 直接读取这些平台的结构化数据，而不仅仅是网页文本。这让它能够理解链接背后的业务逻辑、评论、状态等丰富信息。</p>
+<hr>
+<h2 id="七、总结：这不是魔法，是工程"><a href="#七、总结：这不是魔法，是工程" class="headerlink" title="七、总结：这不是魔法，是工程"></a>七、总结：这不是魔法，是工程</h2><p>从你输入一句话到 Claude 修改完代码，整个过程可以概括为：</p>
+<blockquote>
+<p><strong>启动并读取上下文 → AI 推理并选择工具 → 权限校验后执行 → 验证结果并迭代</strong></p>
+</blockquote>
+<p>Claude Code 没有全局目录树文件，没有预置的 PRD 知识，它只是像一位工程师一样：<strong>主动查阅文档、探索代码库、谨慎修改、自我验证</strong>。</p>
+<p>而这一切的底层，是一个仅 200 行的核心循环，加上数百万行的工程代码（安全、工具、集成、模型交互）作为护城河。</p>
+<p>希望这篇文章能帮你真正理解 AI 编程助手的工作原理。如果你正在使用 Claude Code，不妨在下次执行任务时，留意它输出的每一步——你会发现，它确实在认真地”思考”和”工作”。</p>
+<hr>
+<blockquote>
+<p>💬 <em>本文内容基于对 Claude Code 内部机制的技术讨论整理而成。如果你对 AI 编程工具感兴趣，欢迎留言交流。</em></p>
+</blockquote>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/06/04/2026-06-04-ai-workflow-pilotdeck-openspec-gitnexus-claude/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作流 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/06/02/2026-06-02-gitnexus-openspec/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">AI 时代的代码智能革命：GitNexus 与 OpenSpec 到底解决了什么？ </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Claude-Code-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E8%A7%A3%E5%AF%86%EF%BC%9A%E4%BB%8E%E4%B8%80%E5%8F%A5%E6%8C%87%E4%BB%A4%E5%88%B0%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="toc-text">Claude Code 工作原理解密：从一句指令到精准修改代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Claude-Code-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6%EF%BC%9AAgentic-Loop"><span class="toc-text">一、Claude Code 的核心机制：Agentic Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9A%E5%90%AF%E5%8A%A8%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E6%94%B6%E9%9B%86"><span class="toc-text">二、阶段一：启动与上下文收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9AAI-%E6%8E%A8%E7%90%86%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%86%B3%E7%AD%96"><span class="toc-text">三、阶段二：AI 推理与工具决策</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E6%A0%A1%E9%AA%8C"><span class="toc-text">四、阶段三：工具执行与安全校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%98%B6%E6%AE%B5%E5%9B%9B%EF%BC%9A%E9%AA%8C%E8%AF%81%E4%B8%8E%E8%BF%AD%E4%BB%A3"><span class="toc-text">五、阶段四：验证与迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AA%E5%85%A8%E6%96%B0%E7%9A%84-PRD%EF%BC%9F"><span class="toc-text">六、特殊情况：如何处理一个全新的 PRD？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%8E%B7%E5%8F%96%E5%B9%B6%E8%A7%A3%E6%9E%90-PRD"><span class="toc-text">1. 获取并解析 PRD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9C%A8%E4%BB%A3%E7%A0%81%E5%BA%93%E4%B8%AD%E2%80%9D%E6%8C%89%E5%9B%BE%E7%B4%A2%E9%AA%A5%E2%80%9D"><span class="toc-text">2. 在代码库中”按图索骥”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E8%AE%A1%E5%88%92%E5%B9%B6%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9"><span class="toc-text">3. 生成计划并精准修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%AB%98%E9%98%B6%E8%83%BD%E5%8A%9B%EF%BC%9AMCP%EF%BC%88%E6%A8%A1%E5%9E%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8D%8F%E8%AE%AE%EF%BC%89"><span class="toc-text">4. 高阶能力：MCP（模型上下文协议）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93%EF%BC%9A%E8%BF%99%E4%B8%8D%E6%98%AF%E9%AD%94%E6%B3%95%EF%BC%8C%E6%98%AF%E5%B7%A5%E7%A8%8B"><span class="toc-text">七、总结：这不是魔法，是工程</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Claude-Code-%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E8%A7%A3%E5%AF%86%EF%BC%9A%E4%BB%8E%E4%B8%80%E5%8F%A5%E6%8C%87%E4%BB%A4%E5%88%B0%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9%E4%BB%A3%E7%A0%81"><span class="toc-text">Claude Code 工作原理解密：从一句指令到精准修改代码</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Claude-Code-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%9C%BA%E5%88%B6%EF%BC%9AAgentic-Loop"><span class="toc-text">一、Claude Code 的核心机制：Agentic Loop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9A%E5%90%AF%E5%8A%A8%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E6%94%B6%E9%9B%86"><span class="toc-text">二、阶段一：启动与上下文收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9AAI-%E6%8E%A8%E7%90%86%E4%B8%8E%E5%B7%A5%E5%85%B7%E5%86%B3%E7%AD%96"><span class="toc-text">三、阶段二：AI 推理与工具决策</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E6%A0%A1%E9%AA%8C"><span class="toc-text">四、阶段三：工具执行与安全校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%98%B6%E6%AE%B5%E5%9B%9B%EF%BC%9A%E9%AA%8C%E8%AF%81%E4%B8%8E%E8%BF%AD%E4%BB%A3"><span class="toc-text">五、阶段四：验证与迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5%EF%BC%9A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AA%E5%85%A8%E6%96%B0%E7%9A%84-PRD%EF%BC%9F"><span class="toc-text">六、特殊情况：如何处理一个全新的 PRD？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%8E%B7%E5%8F%96%E5%B9%B6%E8%A7%A3%E6%9E%90-PRD"><span class="toc-text">1. 获取并解析 PRD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%9C%A8%E4%BB%A3%E7%A0%81%E5%BA%93%E4%B8%AD%E2%80%9D%E6%8C%89%E5%9B%BE%E7%B4%A2%E9%AA%A5%E2%80%9D"><span class="toc-text">2. 在代码库中”按图索骥”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E8%AE%A1%E5%88%92%E5%B9%B6%E7%B2%BE%E5%87%86%E4%BF%AE%E6%94%B9"><span class="toc-text">3. 生成计划并精准修改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E9%AB%98%E9%98%B6%E8%83%BD%E5%8A%9B%EF%BC%9AMCP%EF%BC%88%E6%A8%A1%E5%9E%8B%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8D%8F%E8%AE%AE%EF%BC%89"><span class="toc-text">4. 高阶能力：MCP（模型上下文协议）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93%EF%BC%9A%E8%BF%99%E4%B8%8D%E6%98%AF%E9%AD%94%E6%B3%95%EF%BC%8C%E6%98%AF%E5%B7%A5%E7%A8%8B"><span class="toc-text">七、总结：这不是魔法，是工程</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑥：系统提示词完整拆解</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑥：系统提示词完整拆解">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/10/2026-07-10-openclaw-source-code-analysis-6-system-prompt/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="记录个人成长与生活，前端，算法，nlp">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="源码解析">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Prompt Engineering">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E8%A7%88%EF%BC%9A%E4%B8%89%E5%A4%A7%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-text">总览：三大结构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buildAgentSystemPrompt-%E2%80%94-%E9%80%90%E6%AE%B5%E6%8B%86%E8%A7%A3"><span class="toc-text">buildAgentSystemPrompt() — 逐段拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-1-%E6%AE%B5%EF%BC%9A%E8%BA%AB%E4%BB%BD-Identity"><span class="toc-text">第 1 段：身份 Identity</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-2-%E6%AE%B5%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95-Tooling"><span class="toc-text">第 2 段：工具清单 Tooling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-3-%E6%AE%B5%EF%BC%9A%E9%A3%8E%E6%A0%BC%E7%BA%A6%E6%9D%9F-%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E9%A3%8E%E6%A0%BC"><span class="toc-text">第 3 段：风格约束 + 工具调用风格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-4-%E6%AE%B5%EF%BC%9A%E5%AE%89%E5%85%A8-Safety"><span class="toc-text">第 4 段：安全 Safety</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-5-%E6%AE%B5%EF%BC%9ACLI-%E9%80%9F%E6%9F%A5"><span class="toc-text">第 5 段：CLI 速查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-6-%E6%AE%B5%EF%BC%9ASkills-amp-Memory"><span class="toc-text">第 6 段：Skills &amp; Memory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-7-%E6%AE%B5%EF%BC%9ASelf-Update"><span class="toc-text">第 7 段：Self-Update</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-8-%E6%AE%B5%EF%BC%9AWorkspace-%E5%B7%A5%E4%BD%9C%E5%8C%BA"><span class="toc-text">第 8 段：Workspace 工作区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-9-%E6%AE%B5%EF%BC%9ASandbox-%E6%B2%99%E7%AE%B1"><span class="toc-text">第 9 段：Sandbox 沙箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-10-%E6%AE%B5%EF%BC%9A%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD"><span class="toc-text">第 10 段：用户身份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-11-%E6%AE%B5%EF%BC%9A%E6%97%B6%E9%97%B4"><span class="toc-text">第 11 段：时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-12-17-%E6%AE%B5%EF%BC%9AWorkspace-Files-x2F-Output-x2F-Canvas-x2F-Messaging-x2F-Voice-x2F-Reactions"><span class="toc-text">第 12-17 段：Workspace Files &#x2F; Output &#x2F; Canvas &#x2F; Messaging &#x2F; Voice &#x2F; Reactions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-18-%E6%AE%B5%EF%BC%9AReasoning-Format"><span class="toc-text">第 18 段：Reasoning Format</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-19-%E6%AE%B5%EF%BC%9ASilent-Replies"><span class="toc-text">第 19 段：Silent Replies</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%BE%B9%E7%95%8C-CACHE-BOUNDARY"><span class="toc-text">缓存边界 (CACHE_BOUNDARY)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">项目上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heartbeat-%E6%8C%87%E4%BB%A4"><span class="toc-text">Heartbeat 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Runtime-%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF%EF%BC%88%E6%9C%80%E5%90%8E%E4%B8%80%E6%AE%B5%EF%BC%81%EF%BC%89"><span class="toc-text">Runtime 环境信息（最后一段！）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Provider-%E5%90%8E%E7%BC%80"><span class="toc-text">Provider 后缀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E6%8B%BC%E6%8E%A5"><span class="toc-text">最终拼接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="toc-text">系统提示词的三种模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-BOUNDARY-%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%99%BA%E6%85%A7"><span class="toc-text">CACHE_BOUNDARY 的设计智慧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E4%B8%89%E4%B8%AA%E5%B1%82%E6%AC%A1"><span class="toc-text">总结：三个层次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑥：系统提示词完整拆解
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-10-openclaw-source-code-analysis-6-system-prompt.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-09T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Agent/" 
+            class="post-meta-link">
+            Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" 
+            class="post-meta-link">
+            源码解析
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Prompt-Engineering/" 
+            class="post-meta-link">
+            Prompt Engineering
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>OpenClaw 源码解析系列第六篇。上一篇拆解了工具系统的七层洋葱模型，这一篇聚焦 Agent 和 LLM 之间最核心的”契约”——系统提示词。</p>
+<hr>
+<h2 id="总览：三大结构图"><a href="#总览：三大结构图" class="headerlink" title="总览：三大结构图"></a>总览：三大结构图</h2><pre class="highlight"><code class="hljs stylus">┌──────────────────────────────────────────────────────────┐<br>│ 系统提示词 (总共约 <span class="hljs-number">2000</span>-<span class="hljs-number">8000</span> tokens)                      │<br>│                                                          │<br>│ ┌────────────────────────────────────────────────────┐   │<br>│ │ Provider 前缀 (stablePrefix)                       │   │<br>│ │ 由 AI 模型提供商插件注入                             │   │<br>│ │ 示例: Anthropic 不注入, Codex 注入行为指南            │   │<br>│ ├────────────────────────────────────────────────────┤   │<br>│ │ OpenClaw 核心提示词 ↓ 接下来逐段讲                    │   │<br>│ │ ┌── identity ────┐  ┌── tooling ───┐               │   │<br>│ │ ├── style ───────┤  ├── safety ────┤               │   │<br>│ │ ├── cli ─────────┤  ├── skills ────┤               │   │<br>│ │ ├── memory ──────┤  ├── update ────┤               │   │<br>│ │ ├── workspace ───┤  ├── sandbox ───┤               │   │<br>│ │ ├── identity ────┤  ├── <span class="hljs-selector-tag">time</span> ──────┤               │   │<br>│ │ ├── output ──────┤  ├── <span class="hljs-selector-tag">canvas</span> ────┤               │   │<br>│ │ ├── messaging ───┤  ├── voice ─────┤               │   │<br>│ │ ├── reactions ───┤  ├── reasoning ─┤               │   │<br>│ │ ├── heartbeat ───┤  └── runtime ───┘               │   │<br>│ ├────────────────────────────────────────────────────┤   │<br>│ │ 缓存边界 (CACHE_BOUNDARY)                           │   │<br>│ ├────────────────────────────────────────────────────┤   │<br>│ │ 项目上下文 (Project Context)                         │   │<br>│ │ ┌── AGENTS<span class="hljs-selector-class">.md</span> / BOOTSTRAP<span class="hljs-selector-class">.md</span> / CLAUDE<span class="hljs-selector-class">.md</span> ──┐        │   │<br>│ ├────────────────────────────────────────────────────┤   │<br>│ │ 动态上下文 (Dynamic Context)                         │   │<br>│ │ ┌── HEARTBEAT<span class="hljs-selector-class">.md</span> ──┐ 以及其他动态文件               │   │<br>│ ├────────────────────────────────────────────────────┤   │<br>│ │ Provider 后缀 (dynamicSuffix)                       │   │<br>│ │ 由模型提供商插件注入的动态变量                         │   │<br>│ │ 示例: <span class="hljs-string">&quot;current date: ...&quot;</span> 等变化的内容               │   │<br>│ └────────────────────────────────────────────────────┘   │<br>└──────────────────────────────────────────────────────────┘<br></code></pre>
+
+<hr>
+<h2 id="buildAgentSystemPrompt-—-逐段拆解"><a href="#buildAgentSystemPrompt-—-逐段拆解" class="headerlink" title="buildAgentSystemPrompt() — 逐段拆解"></a><code>buildAgentSystemPrompt()</code> — 逐段拆解</h2><p>核心逻辑就是往一个 <code>lines</code> 数组里 push 字符串，最后 <code>.join(&quot;\n\n&quot;)</code> 一把拼接。</p>
+<hr>
+<h3 id="第-1-段：身份-Identity"><a href="#第-1-段：身份-Identity" class="headerlink" title="第 1 段：身份 Identity"></a>第 1 段：身份 Identity</h3><pre class="highlight"><code class="hljs typescript">lines = [<br>  <span class="hljs-string">&quot;You are a personal assistant running inside OpenClaw.&quot;</span>,<br>]<br></code></pre>
+
+<p><strong>只有一句话。</strong> LLM 不需要知道太多”你是谁”——后面的全是”你该怎么做”。</p>
+<hr>
+<h3 id="第-2-段：工具清单-Tooling"><a href="#第-2-段：工具清单-Tooling" class="headerlink" title="第 2 段：工具清单 Tooling"></a>第 2 段：工具清单 Tooling</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Tooling&quot;</span>,<br>  <span class="hljs-string">&quot;Tool availability (filtered by policy):&quot;</span>,<br>  <span class="hljs-string">&quot;Tool names are case-sensitive. Call tools exactly as listed.&quot;</span>,<br>  <span class="hljs-comment">// 对每个启用的工具生成一行描述：</span><br>  <span class="hljs-string">&quot;- exec: Run shell commands (pty available for TTY-required CLIs)&quot;</span>,<br>  <span class="hljs-string">&quot;- read: Read file contents&quot;</span>,<br>  <span class="hljs-string">&quot;- write: Create or overwrite files&quot;</span>,<br>  <span class="hljs-string">&quot;- edit: Make precise edits to files&quot;</span>,<br>  <span class="hljs-string">&quot;- web_search: Search the web (Brave API)&quot;</span>,<br>  <span class="hljs-string">&quot;- web_fetch: Fetch and extract readable content from a URL&quot;</span>,<br>  <span class="hljs-string">&quot;- sessions_spawn: Spawn an isolated sub-agent session&quot;</span>,<br>  <span class="hljs-string">&quot;- cron: Manage cron jobs and wake events&quot;</span>,<br>  <span class="hljs-comment">// ... 20-40 个工具</span><br>)<br></code></pre>
+
+<p>把 Stage 3 阶段构建的工具名 + 摘要列出来，让 LLM 知道”我有哪些武器”。</p>
+<hr>
+<h3 id="第-3-段：风格约束-工具调用风格"><a href="#第-3-段：风格约束-工具调用风格" class="headerlink" title="第 3 段：风格约束 + 工具调用风格"></a>第 3 段：风格约束 + 工具调用风格</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Interaction Style&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>,<br>  <span class="hljs-string">&quot;## Tool Call Style&quot;</span>,<br>  <span class="hljs-string">&quot;Default: do not narrate routine, low-risk tool calls.&quot;</span>,<br>  <span class="hljs-string">&quot;Narrate only when it helps: multi-step work, complex problems.&quot;</span>,<br>  <span class="hljs-string">&quot;Keep narration brief and value-dense.&quot;</span>,<br>  <span class="hljs-string">&quot;Never execute /approve through exec or any shell path.&quot;</span>,<br>  <span class="hljs-string">&quot;## Execution Bias&quot;</span>,<br>  <span class="hljs-string">&quot;Prefer completing tasks over asking.&quot;</span>,<br>  <span class="hljs-string">&quot;If a task requires multiple independent, slow inputs, parallelize.&quot;</span><br>)<br></code></pre>
+
+<p>本质是**”你该怎么说话”<strong>和</strong>“你该怎么用工具”**两条指令。</p>
+<hr>
+<h3 id="第-4-段：安全-Safety"><a href="#第-4-段：安全-Safety" class="headerlink" title="第 4 段：安全 Safety"></a>第 4 段：安全 Safety</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Safety&quot;</span>,<br>  <span class="hljs-string">&quot;You have no independent goals: do not pursue self-preservation, replication...&quot;</span>,<br>  <span class="hljs-string">&quot;Prioritize safety and human oversight over completion.&quot;</span>,<br>  <span class="hljs-string">&quot;Do not manipulate or persuade anyone to expand access or disable safeguards.&quot;</span>,<br>  <span class="hljs-string">&quot;Do not copy yourself or change system prompts, safety rules, or tool policies.&quot;</span><br>)<br></code></pre>
+
+<p>直接借鉴 Anthropic 宪法。防止 AI 越狱、自我复制、绕过限制。</p>
+<hr>
+<h3 id="第-5-段：CLI-速查"><a href="#第-5-段：CLI-速查" class="headerlink" title="第 5 段：CLI 速查"></a>第 5 段：CLI 速查</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## OpenClaw CLI Quick Reference&quot;</span>,<br>  <span class="hljs-string">&quot;OpenClaw is controlled via subcommands. Do not invent commands.&quot;</span>,<br>  <span class="hljs-string">&quot;- OpenClaw gateway status&quot;</span>,<br>  <span class="hljs-string">&quot;- OpenClaw gateway start&quot;</span>,<br>  <span class="hljs-string">&quot;- OpenClaw gateway stop&quot;</span>,<br>  <span class="hljs-string">&quot;- OpenClaw gateway restart&quot;</span>,<br>)<br></code></pre>
+
+<p>防止 LLM 瞎编命令。</p>
+<hr>
+<h3 id="第-6-段：Skills-amp-Memory"><a href="#第-6-段：Skills-amp-Memory" class="headerlink" title="第 6 段：Skills &amp; Memory"></a>第 6 段：Skills &amp; Memory</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">const</span> skillsSection = <span class="hljs-title function_">buildSkillsSection</span>(&#123; skillsPrompt, readToolName &#125;);<br><span class="hljs-comment">// &quot;## Available Skills&quot;</span><br><span class="hljs-comment">// &quot;- weather: Get weather forecasts&quot;</span><br><span class="hljs-comment">// &quot;- summarize: Summarize URLs, YouTube videos, PDFs...&quot;</span><br><span class="hljs-comment">// &quot;Use read_skill to load a skill recipe.&quot;</span><br><br><span class="hljs-keyword">const</span> memorySection = <span class="hljs-title function_">buildMemorySection</span>(&#123; isMinimal, ... &#125;);<br><span class="hljs-comment">// &quot;## Memory&quot;</span><br><span class="hljs-comment">// &quot;Memory is available. When the user asks you to remember something...&quot;</span><br></code></pre>
+
+<p>Skills 和 Memory 各自由独立的 builder 函数构建，主流程只负责把它们插进去。</p>
+<hr>
+<h3 id="第-7-段：Self-Update"><a href="#第-7-段：Self-Update" class="headerlink" title="第 7 段：Self-Update"></a>第 7 段：Self-Update</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">if</span> (hasGateway &amp;&amp; !isMinimal) &#123;<br>  lines.<span class="hljs-title function_">push</span>(<br>    <span class="hljs-string">&quot;## OpenClaw Self-Update&quot;</span>,<br>    <span class="hljs-string">&quot;Updates are ONLY allowed when the user explicitly asks for it.&quot;</span>,<br>    <span class="hljs-string">&quot;Do not update or restart unless the user explicitly requests it.&quot;</span><br>  );<br>&#125;<br></code></pre>
+
+<p>LLM 没有主动升级系统的权限。</p>
+<hr>
+<h3 id="第-8-段：Workspace-工作区"><a href="#第-8-段：Workspace-工作区" class="headerlink" title="第 8 段：Workspace 工作区"></a>第 8 段：Workspace 工作区</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Workspace&quot;</span>,<br>  <span class="hljs-string">&quot;Your working directory is: /home/user/project&quot;</span>,<br>  <span class="hljs-string">&quot;Treat this directory as the single global workspace unless otherwise instructed.&quot;</span><br>)<br></code></pre>
+
+<p>如果启用了沙箱，会额外说明路径映射规则。</p>
+<hr>
+<h3 id="第-9-段：Sandbox-沙箱"><a href="#第-9-段：Sandbox-沙箱" class="headerlink" title="第 9 段：Sandbox 沙箱"></a>第 9 段：Sandbox 沙箱</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Sandbox&quot;</span>,<br>  <span class="hljs-string">&quot;You are running in a sandboxed runtime (tools run in isolated containers).&quot;</span>,<br>  <span class="hljs-string">&quot;Sub-agents stay sandboxed (no elevated/host access).&quot;</span>,<br>  <span class="hljs-string">&quot;Sandbox container workdir: /workspace&quot;</span>,<br>  <span class="hljs-string">&quot;Agent workspace access: rw&quot;</span>,<br>  <span class="hljs-string">&quot;Elevated exec is available for this session.&quot;</span><br>)<br></code></pre>
+
+<hr>
+<h3 id="第-10-段：用户身份"><a href="#第-10-段：用户身份" class="headerlink" title="第 10 段：用户身份"></a>第 10 段：用户身份</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## User Identity&quot;</span>,<br>  <span class="hljs-string">&quot;Authorized senders: hash:a1b2c3d4, hash:e5f6g7h8.&quot;</span><br>)<br></code></pre>
+
+<p>不会在 prompt 里泄露真实手机号&#x2F;用户名，默认 hash 显示。</p>
+<hr>
+<h3 id="第-11-段：时间"><a href="#第-11-段：时间" class="headerlink" title="第 11 段：时间"></a>第 11 段：时间</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Current Date &amp; Time&quot;</span>,<br>  <span class="hljs-string">&quot;Time zone: Asia/Shanghai&quot;</span>,<br>  <span class="hljs-string">&quot;If you need the current date, time, or day of week, run session_status.&quot;</span><br>)<br></code></pre>
+
+<p>不写死当前时间——让 LLM 需要时调 <code>session_status</code> 获取，这样 prompt 本身可以被缓存。</p>
+<hr>
+<h3 id="第-12-17-段：Workspace-Files-x2F-Output-x2F-Canvas-x2F-Messaging-x2F-Voice-x2F-Reactions"><a href="#第-12-17-段：Workspace-Files-x2F-Output-x2F-Canvas-x2F-Messaging-x2F-Voice-x2F-Reactions" class="headerlink" title="第 12-17 段：Workspace Files &#x2F; Output &#x2F; Canvas &#x2F; Messaging &#x2F; Voice &#x2F; Reactions"></a>第 12-17 段：Workspace Files &#x2F; Output &#x2F; Canvas &#x2F; Messaging &#x2F; Voice &#x2F; Reactions</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Workspace Files (injected)&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>);<br>lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Output Style&quot;</span>, <span class="hljs-string">&quot;Speak the user&#x27;s language unless asked otherwise.&quot;</span>);<br><span class="hljs-keyword">if</span> (runtimeChannel === <span class="hljs-string">&quot;webchat&quot;</span>) lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Canvas&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>);<br>lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Messaging&quot;</span>, <span class="hljs-string">&quot;Your current channel is Discord...&quot;</span>);<br><span class="hljs-keyword">if</span> (ttsHint) lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Voice&quot;</span>, ttsHint);<br><span class="hljs-keyword">if</span> (reactionGuidance) lines.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;## Reactions&quot;</span>, <span class="hljs-string">&quot;...&quot;</span>);<br></code></pre>
+
+<p>这些是根据 channel &#x2F; config 动态变化的部分。</p>
+<hr>
+<h3 id="第-18-段：Reasoning-Format"><a href="#第-18-段：Reasoning-Format" class="headerlink" title="第 18 段：Reasoning Format"></a>第 18 段：Reasoning Format</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">if</span> (reasoningHint) &#123;<br>  lines.<span class="hljs-title function_">push</span>(<br>    <span class="hljs-string">&quot;## Reasoning Format&quot;</span>,<br>    <span class="hljs-string">&quot;ALL internal reasoning MUST be inside &lt;think&gt;...&lt;/think&gt;.&quot;</span>,<br>    <span class="hljs-string">&quot;Do not output any analysis outside &lt;think&gt;.&quot;</span>,<br>    <span class="hljs-string">&quot;Format every reply as &lt;think&gt;...&lt;/think&gt; then &lt;final&gt;...&lt;/final&gt;.&quot;</span><br>  );<br>&#125;<br></code></pre>
+
+<hr>
+<h3 id="第-19-段：Silent-Replies"><a href="#第-19-段：Silent-Replies" class="headerlink" title="第 19 段：Silent Replies"></a>第 19 段：Silent Replies</h3><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Silent Replies&quot;</span>,<br>  <span class="hljs-string">&quot;When you have nothing to say, respond with ONLY: HEARTBEAT_OK&quot;</span>,<br>)<br></code></pre>
+
+<p>**”没话可说时的统一暗号”**。避免了 LLM 回复 “好的，收到” 这种废话。</p>
+<hr>
+<h2 id="缓存边界-CACHE-BOUNDARY"><a href="#缓存边界-CACHE-BOUNDARY" class="headerlink" title="缓存边界 (CACHE_BOUNDARY)"></a>缓存边界 (CACHE_BOUNDARY)</h2><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<span class="hljs-variable constant_">SYSTEM_PROMPT_CACHE_BOUNDARY</span>);<br><span class="hljs-comment">// &quot;__OPENCLAW_PROMPT_CACHE_BOUNDARY__&quot;</span><br></code></pre>
+
+<p><strong>这是魔法分隔符！</strong> 以上所有内容是”稳定的”（同一次 session 内不会变），可以被 Provider（如 Anthropic）缓存起来跨 turns 复用。以下内容每次对话可能变化，不缓存。</p>
+<hr>
+<h2 id="项目上下文"><a href="#项目上下文" class="headerlink" title="项目上下文"></a>项目上下文</h2><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;# Project Context&quot;</span>,<br>  <span class="hljs-string">&quot;## AGENTS.md&quot;</span>, <span class="hljs-string">&quot;[文件内容]...&quot;</span>,<br>  <span class="hljs-string">&quot;## CLAUDE.md&quot;</span>, <span class="hljs-string">&quot;[文件内容]...&quot;</span>,<br>  <span class="hljs-string">&quot;# Dynamic Project Context&quot;</span>,<br>  <span class="hljs-string">&quot;## HEARTBEAT.md&quot;</span>, <span class="hljs-string">&quot;[文件内容]...&quot;</span>,<br>);<br></code></pre>
+
+<p>文件按优先级排序：<code>AGENTS.md &gt; soul.md &gt; identity.md &gt; user.md &gt; tools.md &gt; BOOTSTRAP.md &gt; memory.md</code></p>
+<hr>
+<h2 id="Heartbeat-指令"><a href="#Heartbeat-指令" class="headerlink" title="Heartbeat 指令"></a>Heartbeat 指令</h2><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Heartbeat&quot;</span>,<br>  <span class="hljs-string">&quot;Read HEARTBEAT.md if it exists (workspace context). Follow it strictly.&quot;</span>,<br>);<br></code></pre>
+
+<p>告诉 LLM 当心跳触发时该怎么做。</p>
+<hr>
+<h2 id="Runtime-环境信息（最后一段！）"><a href="#Runtime-环境信息（最后一段！）" class="headerlink" title="Runtime 环境信息（最后一段！）"></a>Runtime 环境信息（最后一段！）</h2><pre class="highlight"><code class="hljs typescript">lines.<span class="hljs-title function_">push</span>(<br>  <span class="hljs-string">&quot;## Runtime&quot;</span>,<br>  <span class="hljs-string">&quot;host=my-macbook os=Darwin 24.0.0 arch=arm64 node=v22.12.0&quot;</span> +<br>  <span class="hljs-string">&quot; model=anthropic/claude-opus-4-6 shell=/bin/zsh channel=telegram&quot;</span>,<br>  <span class="hljs-string">&quot;Reasoning: off (hidden unless on/stream).&quot;</span><br>);<br></code></pre>
+
+<p>这是 LLM 知道的关于运行环境的全部信息。注意它没有当前时间——需要时 LLM 要自己调 <code>session_status</code> 获取。</p>
+<hr>
+<h2 id="Provider-后缀"><a href="#Provider-后缀" class="headerlink" title="Provider 后缀"></a>Provider 后缀</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">if</span> (providerDynamicSuffix) &#123;<br>  lines.<span class="hljs-title function_">push</span>(providerDynamicSuffix);<br>  <span class="hljs-comment">// 示例（来自某个 provider 插件）：</span><br>  <span class="hljs-comment">// &quot;Today is 2026-07-10. The current time is 14:30:00.&quot;</span><br>&#125;<br></code></pre>
+
+<p>有些 Provider 会在这里注入动态变化的参数（如当前日期），因为这个内容没法缓存。</p>
+<hr>
+<h2 id="最终拼接"><a href="#最终拼接" class="headerlink" title="最终拼接"></a>最终拼接</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">return</span> lines.<span class="hljs-title function_">filter</span>(<span class="hljs-title class_">Boolean</span>).<span class="hljs-title function_">join</span>(<span class="hljs-string">&quot;\n\n&quot;</span>);<br></code></pre>
+
+<p>所有非空的 <code>lines</code> 项用 <code>\n\n</code> 连起来，就是最终发给 LLM 的系统提示词。</p>
+<hr>
+<h2 id="系统提示词的三种模式"><a href="#系统提示词的三种模式" class="headerlink" title="系统提示词的三种模式"></a>系统提示词的三种模式</h2><table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>用途</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>full</code></td>
+<td>主 Agent</td>
+<td>全部 19 段</td>
+</tr>
+<tr>
+<td><code>minimal</code></td>
+<td>子 Agent</td>
+<td>只保留 Tooling、Workspace、Runtime 三段</td>
+</tr>
+<tr>
+<td><code>none</code></td>
+<td>探测&#x2F;测试</td>
+<td>只返回 “You are a personal assistant running inside OpenClaw.”</td>
+</tr>
+</tbody></table>
+<p>子 Agent 用 <code>minimal</code> 模式可以大幅减少 token 消耗——子 Agent 不需要知道 Messaging &#x2F; Self-Update &#x2F; Reactions 这些主 Agent 专属的东西。</p>
+<hr>
+<h2 id="CACHE-BOUNDARY-的设计智慧"><a href="#CACHE-BOUNDARY-的设计智慧" class="headerlink" title="CACHE_BOUNDARY 的设计智慧"></a>CACHE_BOUNDARY 的设计智慧</h2><pre class="highlight"><code class="hljs abnf">┌──────────── 稳定区域 ────────────┐<br>│ Identity / Tool List / Safety   │<br>│ Style / Workspace / Timezone   │<br>│ (相同 session 内不变)            │<br>│                                  │<br>│ <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span> CACHE_BOUNDARY <span class="hljs-operator">=</span><span class="hljs-operator">=</span><span class="hljs-operator">=</span>           │ ← 从这里断开<br>│                                  │<br>│ Project Context (AGENTS.md)     │<br>│ Dynamic Context (HEARTBEAT.md)  │<br>│ Heartbeat / Runtime             │<br>│ Provider 注入的当前时间           │<br>│ (每次对话可能变化)                │<br>└──────────────────────────────────┘<br></code></pre>
+
+<p>Anthropic 的 prompt caching 机制可以利用这个边界：<code>CACHE_BOUNDARY</code> 以上的内容跨 turns 复用，只为下面变化的部分付费——<strong>省掉 50-80% 的 prompt 开销</strong>。</p>
+<hr>
+<h2 id="总结：三个层次"><a href="#总结：三个层次" class="headerlink" title="总结：三个层次"></a>总结：三个层次</h2><pre class="highlight"><code class="hljs gradle">┌─────────────────────────────────────────────────┐<br>│ 第 <span class="hljs-number">1</span> 层：固化的<span class="hljs-string">&quot;规则书&quot;</span>                           │<br>│ Tooling <span class="hljs-regexp">/ Safety /</span> Style <span class="hljs-regexp">/ CLI /</span> Self-Update    │<br>│ → src<span class="hljs-regexp">/agents/</span>system-prompt.ts 里硬编码           │<br>│ → 跨所有用户都相同                                │<br>├─────────────────────────────────────────────────┤<br>│ 第 <span class="hljs-number">2</span> 层：用户/会话特定的<span class="hljs-string">&quot;配置&quot;</span>                     │<br>│ Skills <span class="hljs-regexp">/ Memory /</span> Workspace <span class="hljs-regexp">/ Sandbox /</span> Timezone│<br>│ Channel <span class="hljs-regexp">/ Canvas /</span> Voice / Reactions           │<br>│ → 根据 config + <span class="hljs-keyword">runtime</span> info 动态生成            │<br>│ → 同一会话内不变，可以缓存                        │<br>├─────────────────────────────────────────────────┤<br>│ 第 <span class="hljs-number">3</span> 层：可变动的<span class="hljs-string">&quot;上下文&quot;</span>                         │<br>│ <span class="hljs-keyword">Project</span> Context (CLAUDE.md etc)                │<br>│ Heartbeat <span class="hljs-regexp">/ Provider 动态内容 /</span> 当前时间          │<br>│ → 每次对话可能变化                               │<br>│ → CACHE_BOUNDARY 以下，不缓存                    │<br>└─────────────────────────────────────────────────┘<br></code></pre>
+
+<p>这就是 300 行代码、值 2000-8000 tokens 的系统提示词完整构建逻辑。</p>
+<hr>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>系统提示词拆解完了。接下来的可选方向：</p>
+<ul>
+<li><strong>Subscription 管道</strong>：LLM 返回流式 token 后，subscription 怎么逐个处理</li>
+<li><strong>Compaction</strong>：当 context window 满了怎么压缩</li>
+<li><strong>Session 文件格式</strong>：对话历史的 JSONL 结构</li>
+</ul>
+<p>下一篇将从其中一个方向深入。敬请期待。</p>
+<hr>
+<blockquote>
+<p>本系列文章基于 OpenClaw v2026.4.23 源码分析。</p>
+</blockquote>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-source-code-analysis-4-attempt/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ④：runEmbeddedAttempt 七阶段拆解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-source-code-analysis-5-tools/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑤：工具系统深度拆解 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E8%A7%88%EF%BC%9A%E4%B8%89%E5%A4%A7%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-text">总览：三大结构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buildAgentSystemPrompt-%E2%80%94-%E9%80%90%E6%AE%B5%E6%8B%86%E8%A7%A3"><span class="toc-text">buildAgentSystemPrompt() — 逐段拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-1-%E6%AE%B5%EF%BC%9A%E8%BA%AB%E4%BB%BD-Identity"><span class="toc-text">第 1 段：身份 Identity</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-2-%E6%AE%B5%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95-Tooling"><span class="toc-text">第 2 段：工具清单 Tooling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-3-%E6%AE%B5%EF%BC%9A%E9%A3%8E%E6%A0%BC%E7%BA%A6%E6%9D%9F-%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E9%A3%8E%E6%A0%BC"><span class="toc-text">第 3 段：风格约束 + 工具调用风格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-4-%E6%AE%B5%EF%BC%9A%E5%AE%89%E5%85%A8-Safety"><span class="toc-text">第 4 段：安全 Safety</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-5-%E6%AE%B5%EF%BC%9ACLI-%E9%80%9F%E6%9F%A5"><span class="toc-text">第 5 段：CLI 速查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-6-%E6%AE%B5%EF%BC%9ASkills-amp-Memory"><span class="toc-text">第 6 段：Skills &amp; Memory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-7-%E6%AE%B5%EF%BC%9ASelf-Update"><span class="toc-text">第 7 段：Self-Update</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-8-%E6%AE%B5%EF%BC%9AWorkspace-%E5%B7%A5%E4%BD%9C%E5%8C%BA"><span class="toc-text">第 8 段：Workspace 工作区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-9-%E6%AE%B5%EF%BC%9ASandbox-%E6%B2%99%E7%AE%B1"><span class="toc-text">第 9 段：Sandbox 沙箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-10-%E6%AE%B5%EF%BC%9A%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD"><span class="toc-text">第 10 段：用户身份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-11-%E6%AE%B5%EF%BC%9A%E6%97%B6%E9%97%B4"><span class="toc-text">第 11 段：时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-12-17-%E6%AE%B5%EF%BC%9AWorkspace-Files-x2F-Output-x2F-Canvas-x2F-Messaging-x2F-Voice-x2F-Reactions"><span class="toc-text">第 12-17 段：Workspace Files &#x2F; Output &#x2F; Canvas &#x2F; Messaging &#x2F; Voice &#x2F; Reactions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-18-%E6%AE%B5%EF%BC%9AReasoning-Format"><span class="toc-text">第 18 段：Reasoning Format</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-19-%E6%AE%B5%EF%BC%9ASilent-Replies"><span class="toc-text">第 19 段：Silent Replies</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%BE%B9%E7%95%8C-CACHE-BOUNDARY"><span class="toc-text">缓存边界 (CACHE_BOUNDARY)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">项目上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heartbeat-%E6%8C%87%E4%BB%A4"><span class="toc-text">Heartbeat 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Runtime-%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF%EF%BC%88%E6%9C%80%E5%90%8E%E4%B8%80%E6%AE%B5%EF%BC%81%EF%BC%89"><span class="toc-text">Runtime 环境信息（最后一段！）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Provider-%E5%90%8E%E7%BC%80"><span class="toc-text">Provider 后缀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E6%8B%BC%E6%8E%A5"><span class="toc-text">最终拼接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="toc-text">系统提示词的三种模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-BOUNDARY-%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%99%BA%E6%85%A7"><span class="toc-text">CACHE_BOUNDARY 的设计智慧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E4%B8%89%E4%B8%AA%E5%B1%82%E6%AC%A1"><span class="toc-text">总结：三个层次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E8%A7%88%EF%BC%9A%E4%B8%89%E5%A4%A7%E7%BB%93%E6%9E%84%E5%9B%BE"><span class="toc-text">总览：三大结构图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#buildAgentSystemPrompt-%E2%80%94-%E9%80%90%E6%AE%B5%E6%8B%86%E8%A7%A3"><span class="toc-text">buildAgentSystemPrompt() — 逐段拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-1-%E6%AE%B5%EF%BC%9A%E8%BA%AB%E4%BB%BD-Identity"><span class="toc-text">第 1 段：身份 Identity</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-2-%E6%AE%B5%EF%BC%9A%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95-Tooling"><span class="toc-text">第 2 段：工具清单 Tooling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-3-%E6%AE%B5%EF%BC%9A%E9%A3%8E%E6%A0%BC%E7%BA%A6%E6%9D%9F-%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E9%A3%8E%E6%A0%BC"><span class="toc-text">第 3 段：风格约束 + 工具调用风格</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-4-%E6%AE%B5%EF%BC%9A%E5%AE%89%E5%85%A8-Safety"><span class="toc-text">第 4 段：安全 Safety</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-5-%E6%AE%B5%EF%BC%9ACLI-%E9%80%9F%E6%9F%A5"><span class="toc-text">第 5 段：CLI 速查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-6-%E6%AE%B5%EF%BC%9ASkills-amp-Memory"><span class="toc-text">第 6 段：Skills &amp; Memory</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-7-%E6%AE%B5%EF%BC%9ASelf-Update"><span class="toc-text">第 7 段：Self-Update</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-8-%E6%AE%B5%EF%BC%9AWorkspace-%E5%B7%A5%E4%BD%9C%E5%8C%BA"><span class="toc-text">第 8 段：Workspace 工作区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-9-%E6%AE%B5%EF%BC%9ASandbox-%E6%B2%99%E7%AE%B1"><span class="toc-text">第 9 段：Sandbox 沙箱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-10-%E6%AE%B5%EF%BC%9A%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD"><span class="toc-text">第 10 段：用户身份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-11-%E6%AE%B5%EF%BC%9A%E6%97%B6%E9%97%B4"><span class="toc-text">第 11 段：时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-12-17-%E6%AE%B5%EF%BC%9AWorkspace-Files-x2F-Output-x2F-Canvas-x2F-Messaging-x2F-Voice-x2F-Reactions"><span class="toc-text">第 12-17 段：Workspace Files &#x2F; Output &#x2F; Canvas &#x2F; Messaging &#x2F; Voice &#x2F; Reactions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-18-%E6%AE%B5%EF%BC%9AReasoning-Format"><span class="toc-text">第 18 段：Reasoning Format</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-19-%E6%AE%B5%EF%BC%9ASilent-Replies"><span class="toc-text">第 19 段：Silent Replies</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E8%BE%B9%E7%95%8C-CACHE-BOUNDARY"><span class="toc-text">缓存边界 (CACHE_BOUNDARY)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">项目上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heartbeat-%E6%8C%87%E4%BB%A4"><span class="toc-text">Heartbeat 指令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Runtime-%E7%8E%AF%E5%A2%83%E4%BF%A1%E6%81%AF%EF%BC%88%E6%9C%80%E5%90%8E%E4%B8%80%E6%AE%B5%EF%BC%81%EF%BC%89"><span class="toc-text">Runtime 环境信息（最后一段！）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Provider-%E5%90%8E%E7%BC%80"><span class="toc-text">Provider 后缀</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E6%8B%BC%E6%8E%A5"><span class="toc-text">最终拼接</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F"><span class="toc-text">系统提示词的三种模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CACHE-BOUNDARY-%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%99%BA%E6%85%A7"><span class="toc-text">CACHE_BOUNDARY 的设计智慧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E4%B8%89%E4%B8%AA%E5%B1%82%E6%AC%A1"><span class="toc-text">总结：三个层次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

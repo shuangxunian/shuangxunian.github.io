@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>PilotDeck：让 Stream Deck 成为你的飞行仪表盘</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="PilotDeck：让 Stream Deck 成为你的飞行仪表盘">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/05/29/pilotdeck-stream-deck-flight-simulator/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="PilotsDeck 是一款免费开源的 Elgato Stream Deck 插件，可将你的 Stream Deck 变成功能强大的飞行模拟器控制面板，支持 MSFS、X-Plane 和 Prepar3D。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-05-29">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-05-29">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="工具">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Stream Deck">
+        
+          <meta 
+            property="og:article:tag" 
+            content="飞行模拟">
+        
+          <meta 
+            property="og:article:tag" 
+            content="PilotDeck">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-PilotsDeck"><span class="toc-text">什么是 PilotsDeck</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-text">核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%A0%B7%E5%8C%96%E7%9A%84%E6%98%BE%E7%A4%BA%E7%B1%BB%E5%9E%8B"><span class="toc-text">多样化的显示类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%81%B5%E6%B4%BB%E7%9A%84%E8%BE%93%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="toc-text">灵活的输入操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%88%87%E6%8D%A2"><span class="toc-text">智能配置文件切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Composite-Action%EF%BC%88%E7%BB%84%E5%90%88%E5%8A%A8%E4%BD%9C%EF%BC%89"><span class="toc-text">Composite Action（组合动作）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="toc-text">安装配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-text">系统要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="toc-text">安装步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-text">基本配置流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9AA320-%E9%A3%9E%E8%A1%8C%E6%8E%A7%E5%88%B6%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景一：A320 飞行控制面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景二：系统监控面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%89%EF%BC%9A%E5%A4%9A%E6%A8%A1%E6%8B%9F%E5%99%A8%E7%8E%A9%E5%AE%B6%E7%9A%84%E7%BB%9F%E4%B8%80%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景三：多模拟器玩家的统一面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%9B%9B%EF%BC%9A%E9%85%8D%E5%90%88-GSX-Pro-%E7%9A%84%E5%9C%B0%E9%9D%A2%E6%9C%8D%E5%8A%A1%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景四：配合 GSX Pro 的地面服务面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">与替代方案的对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      PilotDeck：让 Stream Deck 成为你的飞行仪表盘
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/pilotdeck-stream-deck-flight-simulator.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-05-28T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-05-29</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%85%B6%E5%AE%83/" 
+          class="post-meta-link">
+          其它
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E5%B7%A5%E5%85%B7/" 
+            class="post-meta-link">
+            工具
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Stream-Deck/" 
+            class="post-meta-link">
+            Stream Deck
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E9%A3%9E%E8%A1%8C%E6%A8%A1%E6%8B%9F/" 
+            class="post-meta-link">
+            飞行模拟
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/PilotDeck/" 
+            class="post-meta-link">
+            PilotDeck
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>如果你是一名飞行模拟爱好者，你大概率拥有（或者正在考虑入手）一块 Elgato Stream Deck。这块小巧的可编程按键面板，最初是为直播者设计的，但它的可自定义 LCD 按键天然适合模拟飞行——想象一下，你的桌面上摆着一块面板，每个按键都能实时显示航向、高度、油量，按下就能操纵襟翼、起落架、灯光。这正是 <strong>PilotsDeck</strong> 要做的事情。</p>
+<p>PilotsDeck 是由开发者 Fragtality 打造的一款完全免费、开源的 Stream Deck 插件。它能让你的 Stream Deck 同时充当飞行模拟器的输入设备和状态显示器，支持市面上三大主流飞行模拟平台：Microsoft Flight Simulator（MSFS 2020&#x2F;2024）、X-Plane 12 和 Prepar3D v5。</p>
+<h2 id="什么是-PilotsDeck"><a href="#什么是-PilotsDeck" class="headerlink" title="什么是 PilotsDeck"></a>什么是 PilotsDeck</h2><p>PilotsDeck 的定位非常清晰：<strong>它是连接 Stream Deck 硬件与飞行模拟器软件之间的桥梁。</strong> 安装这个插件后，你可以在 Stream Deck 的每一个按键上配置两类功能：</p>
+<ol>
+<li><strong>触发控制（Input）</strong>：按下按键来执行模拟器中的操作，例如切换自动驾驶、调整航向、收放起落架、开关灯光等。</li>
+<li><strong>状态显示（Display）</strong>：在按键的 LCD 屏幕上实时显示模拟器中的数据，包括文字、图片、进度条（Bar）和弧形仪表（Arc）。</li>
+</ol>
+<p>与市面上一些提供预设配置的商业方案不同，PilotsDeck 的设计哲学是<strong>面向进阶用户</strong>。它不会给你一个下拉菜单让你挑选”打开起落架”——你需要自己知道对应的变量名（SimVar）或命令（Command），然后手动配置到按键上。这看起来门槛不低，但带来的好处是极致的灵活性：<strong>只要模拟器能暴露的变量和命令，PilotsDeck 都能读取和触发。</strong></p>
+<p>从连接方式来说，PilotsDeck 根据不同模拟器使用不同的通信协议：</p>
+<ul>
+<li><strong>MSFS</strong>：通过 SimConnect 直连，或可选通过 FSUIPC 连接。需要安装 MobiFlight 的 WASM 模块来访问更多变量。</li>
+<li><strong>X-Plane</strong>：通过 UDP Socket 连接，支持远程连接（模拟器和 Stream Deck 可以不在同一台电脑上）。</li>
+<li><strong>Prepar3D &#x2F; FSX</strong>：必须通过 FSUIPC 连接（免费版即可）。</li>
+</ul>
+<p>无论使用哪种模拟器，插件都会在模拟器启动后自动检测并连接，无需手动操作。更棒的是，你可以在不同模拟器之间无缝切换，无需重新配置。</p>
+<h2 id="核心功能"><a href="#核心功能" class="headerlink" title="核心功能"></a>核心功能</h2><h3 id="多样化的显示类型"><a href="#多样化的显示类型" class="headerlink" title="多样化的显示类型"></a>多样化的显示类型</h3><p>PilotsDeck 的显示能力是它最大的亮点之一。每个按键可以配置为以下几种显示模式：</p>
+<ul>
+<li><strong>文字显示</strong>：直接在按键上显示数值，比如当前航向 HDG 270°、高度 FL350、油量百分比等。支持自定义字体大小、颜色和格式化。</li>
+<li><strong>图片切换</strong>：根据变量状态切换不同的图片。例如起落架收起时显示绿色图标，放下时显示红色图标。</li>
+<li><strong>进度条（Bar）</strong>：以水平或垂直的进度条形式展示数值。可以自定义方向（左到右、下到上等）和颜色，支持阈值变色——比如油量低于 20% 时自动变红。</li>
+<li><strong>弧形仪表（Arc）</strong>：模拟传统圆形仪表的显示方式。你可以设定起始角度、扫过角度、半径和厚度，打造出类似真实仪表盘的视觉效果。</li>
+</ul>
+<p>Bar 和 Arc 都支持自定义偏移量来精确调整位置，还能叠加文字显示，实现”仪表 + 数值”的组合效果。</p>
+<h3 id="灵活的输入操作"><a href="#灵活的输入操作" class="headerlink" title="灵活的输入操作"></a>灵活的输入操作</h3><p>在输入方面，PilotsDeck 支持多种命令类型：</p>
+<ul>
+<li><strong>SimConnect 命令</strong>：直接调用 MSFS 的 SimConnect 事件。</li>
+<li><strong>Calculator&#x2F;RPN 代码</strong>：执行模拟器内部的 RPN（逆波兰）计算器代码，这是 MSFS 中最强大的控制方式，几乎可以操纵一切。</li>
+<li><strong>L-Var 操作</strong>：直接读写本地变量，用于控制第三方插件飞机的特定功能。</li>
+<li><strong>X-Plane DataRef&#x2F;Command</strong>：原生支持 X-Plane 的数据引用和命令系统。</li>
+<li><strong>Lua 脚本</strong>：插件内置了独立的 Lua 引擎，你可以编写脚本来实现更复杂的逻辑，比如条件判断、多步骤操作序列等。</li>
+<li><strong>vJoy 支持</strong>：通过虚拟摇杆接口，将按键映射为摇杆按钮或轴。</li>
+</ul>
+<p>对于 Stream Deck+ 用户，旋钮和触摸条（Encoder&#x2F;Dial）也有完整支持，可以用来实现旋转调频、调高度等操作。</p>
+<h3 id="智能配置文件切换"><a href="#智能配置文件切换" class="headerlink" title="智能配置文件切换"></a>智能配置文件切换</h3><p>这是 PilotsDeck 的杀手级功能之一。通过内置的 <strong>Profile Manager</strong>（配置管理器），你可以：</p>
+<ul>
+<li>为不同的飞机创建专属配置。例如，给 A320 配置一套按键布局，给 Boeing 737 配置另一套。</li>
+<li>设置<strong>自动切换</strong>：当你在模拟器中加载不同的飞机时，Stream Deck 上的配置会自动跟着切换。刚刚还在 A320 的 FCU 面板，换了架 737 后按键瞬间变成 MCP 布局。</li>
+<li>配置默认配置文件：当没有匹配到特定飞机时，回退到默认布局。</li>
+<li>模拟器关闭后自动切回指定的”待机”配置。</li>
+</ul>
+<p>配置匹配基于模拟器返回的飞机路径字符串，支持模糊匹配，大小写不敏感。你可以在 Developer UI 的 Monitor 中查看当前飞机的匹配字符串，方便调试。</p>
+<h3 id="Composite-Action（组合动作）"><a href="#Composite-Action（组合动作）" class="headerlink" title="Composite Action（组合动作）"></a>Composite Action（组合动作）</h3><p>较新版本引入了 Composite Action，允许你在单个按键上组合多种显示元素和操作。通过独立的 Action Designer UI 进行可视化配置，比传统的 Property Inspector 更加直观和强大。</p>
+<h2 id="安装配置"><a href="#安装配置" class="headerlink" title="安装配置"></a>安装配置</h2><h3 id="系统要求"><a href="#系统要求" class="headerlink" title="系统要求"></a>系统要求</h3><ul>
+<li><strong>操作系统</strong>：仅支持 Windows（无 macOS&#x2F;Linux 计划）</li>
+<li><strong>Stream Deck 软件</strong>：v7.4 或更高版本</li>
+<li><strong>.NET 运行时</strong>：.NET 10 x64 Desktop Runtime（安装程序会自动安装）</li>
+<li><strong>MSFS 用户</strong>：需要安装 MobiFlight WASM Module 的最新版</li>
+<li><strong>P3D 用户</strong>：需要 FSUIPC（免费版即可）</li>
+<li><strong>X-Plane 用户</strong>：无额外依赖</li>
+</ul>
+<h3 id="安装步骤"><a href="#安装步骤" class="headerlink" title="安装步骤"></a>安装步骤</h3><ol>
+<li>从 <a target="_blank" rel="noopener" href="https://github.com/Fragtality/PilotsDeck">GitHub Releases</a> 或 <a target="_blank" rel="noopener" href="https://flightsim.to/addon/35298/pilot-s-deck-a-streamdeck-plugin">Flightsim.to</a> 下载最新安装包。</li>
+<li>运行安装程序。它会自动检测并安装所需的 .NET 运行时和 Stream Deck 软件更新。</li>
+<li><strong>重要提示</strong>：不要以管理员身份运行安装程序、插件或 Stream Deck 软件。</li>
+<li>如果你使用 BitDefender 或其他杀毒软件，需要将安装程序和插件添加到白名单。这是社区中报告的头号问题来源。</li>
+<li>更新时直接运行新版安装程序即可，无需卸载旧版本。但注意：使用安装程序的”Remove”功能会同时删除所有自定义图片和脚本。</li>
+<li>安装完成后，在 Stream Deck 软件中就能看到 PilotsDeck 的 Action 列表，拖放到按键上即可开始配置。</li>
+</ol>
+<h3 id="基本配置流程"><a href="#基本配置流程" class="headerlink" title="基本配置流程"></a>基本配置流程</h3><ol>
+<li>打开 Stream Deck 软件，在右侧面板找到 PilotsDeck 的 Action。</li>
+<li>将 Action 拖到目标按键上。</li>
+<li>在 Property Inspector 中填写变量地址（如 <code>A:AUTOPILOT HEADING LOCK DIR, degrees</code>）和命令。</li>
+<li>配置显示样式：选择文字、图片还是仪表类型，设定颜色、字号等。</li>
+<li>启动模拟器，插件自动连接，按键开始工作。</li>
+</ol>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><h3 id="场景一：A320-飞行控制面板"><a href="#场景一：A320-飞行控制面板" class="headerlink" title="场景一：A320 飞行控制面板"></a>场景一：A320 飞行控制面板</h3><p>这是 PilotsDeck 最经典的用法。使用一块 Stream Deck XL（32 键），你可以完整复刻 A320 的 FCU（飞行控制单元）面板：</p>
+<ul>
+<li>第一行按键显示 SPD、HDG、ALT、VS 的当前值（文字+弧形仪表）</li>
+<li>第二行按键对应推拉旋钮操作（managed&#x2F;selected 模式切换）</li>
+<li>底部按键控制 AP1&#x2F;AP2、ATHR、LOC、APPR 等自动驾驶功能</li>
+</ul>
+<p>社区已经提供了 FlyByWire A32NX 和 Fenix A320 的完整预制配置包，下载后通过 Profile Manager 一键导入即可使用。</p>
+<h3 id="场景二：系统监控面板"><a href="#场景二：系统监控面板" class="headerlink" title="场景二：系统监控面板"></a>场景二：系统监控面板</h3><p>利用 Bar 和 Arc 显示功能，将一块 Stream Deck 变成系统监控面板：</p>
+<ul>
+<li>双发动机的 N1&#x2F;N2&#x2F;EGT&#x2F;FF 参数实时显示</li>
+<li>液压系统压力、电气系统电压</li>
+<li>油量百分比带阈值警告</li>
+<li>襟翼位置指示器</li>
+</ul>
+<h3 id="场景三：多模拟器玩家的统一面板"><a href="#场景三：多模拟器玩家的统一面板" class="headerlink" title="场景三：多模拟器玩家的统一面板"></a>场景三：多模拟器玩家的统一面板</h3><p>如果你同时玩 MSFS 和 X-Plane，PilotsDeck 的跨模拟器支持非常实用：</p>
+<ul>
+<li>配置一套通用布局，底层命令根据当前模拟器自动适配</li>
+<li>模拟器之间切换时自动连接，无需手动操作</li>
+<li>为每个模拟器设置不同的默认配置</li>
+</ul>
+<h3 id="场景四：配合-GSX-Pro-的地面服务面板"><a href="#场景四：配合-GSX-Pro-的地面服务面板" class="headerlink" title="场景四：配合 GSX Pro 的地面服务面板"></a>场景四：配合 GSX Pro 的地面服务面板</h3><p>社区甚至制作了 GSX Pro（地面服务插件）的专用配置，让你可以在 Stream Deck 上一键呼叫廊桥、加油车、餐车，大大提升地面操作的沉浸感。</p>
+<h2 id="与替代方案的对比"><a href="#与替代方案的对比" class="headerlink" title="与替代方案的对比"></a>与替代方案的对比</h2><p>市面上还有一些类似的工具，简单对比：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>PilotsDeck</th>
+<th>FlightDeck</th>
+<th>Flight Tracker</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>价格</td>
+<td>免费开源</td>
+<td>付费</td>
+<td>免费开源</td>
+</tr>
+<tr>
+<td>模拟器支持</td>
+<td>MSFS + X-Plane + P3D</td>
+<td>MSFS + X-Plane</td>
+<td>仅 MSFS</td>
+</tr>
+<tr>
+<td>显示类型</td>
+<td>文字&#x2F;图片&#x2F;Bar&#x2F;Arc</td>
+<td>预制界面</td>
+<td>文字&#x2F;图片</td>
+</tr>
+<tr>
+<td>自定义程度</td>
+<td>极高（需手动配置）</td>
+<td>中等（预设为主）</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>配置文件切换</td>
+<td>自动按飞机切换</td>
+<td>支持</td>
+<td>有限</td>
+</tr>
+<tr>
+<td>上手难度</td>
+<td>较高</td>
+<td>较低</td>
+<td>中等</td>
+</tr>
+</tbody></table>
+<p>PilotsDeck 的优势在于<strong>极致的灵活性和零成本</strong>，但代价是需要投入更多时间学习和配置。如果你喜欢折腾、追求完美定制，PilotsDeck 是不二之选；如果你更希望开箱即用，FlightDeck 可能更适合。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>PilotsDeck 是飞行模拟社区中一款不可多得的工具。它将一块普通的 Elgato Stream Deck 变成了功能强大的飞行仪表盘和控制面板，而且完全免费。虽然它的学习曲线不算平缓，需要你了解 SimVar、DataRef 等模拟器底层概念，但一旦配置完成，它带来的沉浸感和操控效率提升是巨大的。</p>
+<p>对于那些已经拥有 Stream Deck 的模拟飞行玩家来说，PilotsDeck 几乎是必装插件。对于正在考虑购入 Stream Deck 的飞友，PilotsDeck 的存在本身就是一个有力的购买理由。</p>
+<p><strong>项目地址：</strong> <a target="_blank" rel="noopener" href="https://github.com/Fragtality/PilotsDeck">GitHub - Fragtality&#x2F;PilotsDeck</a><br><strong>下载地址：</strong> <a target="_blank" rel="noopener" href="https://flightsim.to/addon/35298/pilot-s-deck-a-streamdeck-plugin">Flightsim.to</a> | <a target="_blank" rel="noopener" href="https://x-plane.to/file/179/pilot-s-deck-a-streamdeck-plugin">X-Plane.to</a><br><strong>社区讨论：</strong> <a target="_blank" rel="noopener" href="https://forums.flightsimulator.com/t/introducing-pilots-deck-a-streamdeck-plugin/525266">MSFS 论坛</a> | <a target="_blank" rel="noopener" href="https://www.avsim.com/forums/topic/620696-introducing-pilots-deck-a-streamdeck-plugin-for-msfs/">AVSIM 论坛</a> | <a target="_blank" rel="noopener" href="https://forums.x-plane.org/files/file/83196-pilotsdeck-another-streamdeck-plugin/">X-Plane.Org 论坛</a></p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/06/02/2026-06-02-gitnexus-openspec/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">AI 时代的代码智能革命：GitNexus 与 OpenSpec 到底解决了什么？ </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/05/29/pilotsdeck-openbmb-ai-agent/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">PilotDeck：OpenBMB 推出的 AI Agent 任务调度框架 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-PilotsDeck"><span class="toc-text">什么是 PilotsDeck</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-text">核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%A0%B7%E5%8C%96%E7%9A%84%E6%98%BE%E7%A4%BA%E7%B1%BB%E5%9E%8B"><span class="toc-text">多样化的显示类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%81%B5%E6%B4%BB%E7%9A%84%E8%BE%93%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="toc-text">灵活的输入操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%88%87%E6%8D%A2"><span class="toc-text">智能配置文件切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Composite-Action%EF%BC%88%E7%BB%84%E5%90%88%E5%8A%A8%E4%BD%9C%EF%BC%89"><span class="toc-text">Composite Action（组合动作）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="toc-text">安装配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-text">系统要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="toc-text">安装步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-text">基本配置流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9AA320-%E9%A3%9E%E8%A1%8C%E6%8E%A7%E5%88%B6%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景一：A320 飞行控制面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景二：系统监控面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%89%EF%BC%9A%E5%A4%9A%E6%A8%A1%E6%8B%9F%E5%99%A8%E7%8E%A9%E5%AE%B6%E7%9A%84%E7%BB%9F%E4%B8%80%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景三：多模拟器玩家的统一面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%9B%9B%EF%BC%9A%E9%85%8D%E5%90%88-GSX-Pro-%E7%9A%84%E5%9C%B0%E9%9D%A2%E6%9C%8D%E5%8A%A1%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景四：配合 GSX Pro 的地面服务面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">与替代方案的对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-PilotsDeck"><span class="toc-text">什么是 PilotsDeck</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-text">核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%A0%B7%E5%8C%96%E7%9A%84%E6%98%BE%E7%A4%BA%E7%B1%BB%E5%9E%8B"><span class="toc-text">多样化的显示类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%81%B5%E6%B4%BB%E7%9A%84%E8%BE%93%E5%85%A5%E6%93%8D%E4%BD%9C"><span class="toc-text">灵活的输入操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E5%88%87%E6%8D%A2"><span class="toc-text">智能配置文件切换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Composite-Action%EF%BC%88%E7%BB%84%E5%90%88%E5%8A%A8%E4%BD%9C%EF%BC%89"><span class="toc-text">Composite Action（组合动作）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="toc-text">安装配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E8%A6%81%E6%B1%82"><span class="toc-text">系统要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="toc-text">安装步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-text">基本配置流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9AA320-%E9%A3%9E%E8%A1%8C%E6%8E%A7%E5%88%B6%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景一：A320 飞行控制面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景二：系统监控面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%89%EF%BC%9A%E5%A4%9A%E6%A8%A1%E6%8B%9F%E5%99%A8%E7%8E%A9%E5%AE%B6%E7%9A%84%E7%BB%9F%E4%B8%80%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景三：多模拟器玩家的统一面板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E5%9B%9B%EF%BC%9A%E9%85%8D%E5%90%88-GSX-Pro-%E7%9A%84%E5%9C%B0%E9%9D%A2%E6%9C%8D%E5%8A%A1%E9%9D%A2%E6%9D%BF"><span class="toc-text">场景四：配合 GSX Pro 的地面服务面板</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8E%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-text">与替代方案的对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

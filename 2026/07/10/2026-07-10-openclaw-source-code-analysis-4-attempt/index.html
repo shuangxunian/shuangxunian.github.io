@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ④：runEmbeddedAttempt 七阶段拆解</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ④：runEmbeddedAttempt 七阶段拆解">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/10/2026-07-10-openclaw-source-code-analysis-4-attempt/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="记录个人成长与生活，前端，算法，nlp">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="源码解析">
+        
+          <meta 
+            property="og:article:tag" 
+            content="TypeScript">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#runEmbeddedAttemptWithBackend-%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">runEmbeddedAttemptWithBackend 完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-text">调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#runEmbeddedAttempt-%E2%80%94%E2%80%94-%E4%B8%83%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="toc-text">runEmbeddedAttempt —— 七个阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-1-%E5%87%86%E5%A4%87%E6%B2%99%E7%AE%B1-%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-text">Stage 1: 准备沙箱 + 工作目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-2-%E5%8A%A0%E8%BD%BD%E6%8A%80%E8%83%BD-Skills"><span class="toc-text">Stage 2: 加载技能 Skills</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-3-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95%EF%BC%88%E6%9C%80%E5%A4%8D%E6%9D%82%EF%BC%8C-230-%E8%A1%8C%EF%BC%89"><span class="toc-text">Stage 3: 构建工具清单（最复杂，~230 行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-4-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-text">Stage 4: 构建系统提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-5-%E5%88%9B%E5%BB%BA-Agent-%E4%BC%9A%E8%AF%9D-%E5%8A%A0%E8%BD%BD%E5%8E%86%E5%8F%B2"><span class="toc-text">Stage 5: 创建 Agent 会话 + 加载历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-6-%E6%B3%A8%E5%86%8C-Subscription%EF%BC%88%E4%BA%8B%E4%BB%B6%E7%AE%A1%E9%81%93%EF%BC%89"><span class="toc-text">Stage 6: 注册 Subscription（事件管道）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-7-%E6%8F%90%E4%BA%A4-Prompt-%E2%86%92-%E5%8F%91%E7%BB%99-LLM"><span class="toc-text">Stage 7: 提交 Prompt → 发给 LLM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%E7%AE%80%E5%9B%BE"><span class="toc-text">完整流程简图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E2%80%9D%E5%8E%9A%E5%BA%A6%E2%80%9D%E5%9C%A8%E5%93%AA"><span class="toc-text">关键”厚度”在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ④：runEmbeddedAttempt 七阶段拆解
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-10-openclaw-source-code-analysis-4-attempt.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-09T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.9k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Agent/" 
+            class="post-meta-link">
+            Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" 
+            class="post-meta-link">
+            源码解析
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/TypeScript/" 
+            class="post-meta-link">
+            TypeScript
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="runEmbeddedAttemptWithBackend-完整拆解"><a href="#runEmbeddedAttemptWithBackend-完整拆解" class="headerlink" title="runEmbeddedAttemptWithBackend 完整拆解"></a>runEmbeddedAttemptWithBackend 完整拆解</h1><p>这是 OpenClaw 源码解析系列第四篇。上一篇逐行走读了 <code>runEmbeddedPiAgent</code> 的主循环，这一篇深入它内部最核心的函数——<code>runEmbeddedAttemptWithBackend</code>，以及它最终调用的 <code>runEmbeddedAttempt</code>（2600 行）。</p>
+<hr>
+<h2 id="调用链"><a href="#调用链" class="headerlink" title="调用链"></a>调用链</h2><pre class="highlight"><code class="hljs scss"><span class="hljs-built_in">runEmbeddedPiAgent</span>()<br> └─ <span class="hljs-built_in">runEmbeddedAttemptWithBackend</span>()   ← 选一个&quot;执行后端&quot;<br>     └─ <span class="hljs-built_in">runAgentHarnessAttemptWithFallback</span>()<br>         └─ <span class="hljs-built_in">selectAgentHarnessDecision</span>()  ← 选 &quot;pi&quot; 还是插件<br>             └─ harness<span class="hljs-selector-class">.runAttempt</span>()<br>                 └─ <span class="hljs-built_in">runEmbeddedAttempt</span>()  ← 真正干活的（<span class="hljs-number">2600</span> 行）<br></code></pre>
+
+<p><strong>为什么要有 Harness 这层间接？</strong></p>
+<p>OpenClaw 设计了一个 Agent Harness 抽象层，方便将来把 Agent 执行后端换成别的东西（比如插件提供的后端）。但目前 99% 的情况选的都是内置的 <code>&quot;pi&quot;</code> harness：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// harness/builtin-pi.ts</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">createPiAgentHarness</span>(<span class="hljs-params"></span>): <span class="hljs-title class_">AgentHarness</span> &#123;<br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-attr">id</span>: <span class="hljs-string">&quot;pi&quot;</span>,<br>    <span class="hljs-attr">label</span>: <span class="hljs-string">&quot;PI embedded agent&quot;</span>,<br>    <span class="hljs-attr">supports</span>: <span class="hljs-function">() =&gt;</span> (&#123; <span class="hljs-attr">supported</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">priority</span>: <span class="hljs-number">0</span> &#125;),<br>    <span class="hljs-attr">runAttempt</span>: runEmbeddedAttempt,  <span class="hljs-comment">// ← 直接指向 attempt.ts</span><br>  &#125;;<br>&#125;<br></code></pre>
+
+<p>所以 <code>runEmbeddedAttemptWithBackend</code> → 选 harness → 最终就是调 <code>runEmbeddedAttempt()</code>。</p>
+<hr>
+<h2 id="runEmbeddedAttempt-——-七个阶段"><a href="#runEmbeddedAttempt-——-七个阶段" class="headerlink" title="runEmbeddedAttempt —— 七个阶段"></a><code>runEmbeddedAttempt</code> —— 七个阶段</h2><p>2600 行的核心函数，按执行顺序分为七个阶段：</p>
+<pre class="highlight"><code class="hljs yaml"><span class="hljs-string">┌────────────────────────────────────────────────────────────────────┐</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 1:</span> <span class="hljs-string">准备沙箱</span> <span class="hljs-string">+</span> <span class="hljs-string">工作目录</span>          <span class="hljs-string">(行</span> <span class="hljs-number">436</span><span class="hljs-number">-470</span><span class="hljs-string">)</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 2:</span> <span class="hljs-string">加载技能</span> <span class="hljs-string">Skills</span> <span class="hljs-string">+</span> <span class="hljs-string">环境变量</span>    <span class="hljs-string">(行</span> <span class="hljs-number">470</span><span class="hljs-number">-492</span><span class="hljs-string">)</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 3:</span> <span class="hljs-string">构建工具清单</span> <span class="hljs-string">tools</span>            <span class="hljs-string">(行</span> <span class="hljs-number">507</span><span class="hljs-number">-735</span><span class="hljs-string">)</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 4:</span> <span class="hljs-string">构建系统提示词</span> <span class="hljs-string">system</span> <span class="hljs-string">prompt</span>   <span class="hljs-string">(行</span> <span class="hljs-number">747</span><span class="hljs-number">-969</span><span class="hljs-string">)</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 5:</span> <span class="hljs-string">创建</span> <span class="hljs-string">Agent</span> <span class="hljs-string">会话</span> <span class="hljs-string">+</span> <span class="hljs-string">加载历史</span>    <span class="hljs-string">(行</span> <span class="hljs-number">972</span><span class="hljs-number">-1177</span><span class="hljs-string">)</span>                <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 6:</span> <span class="hljs-string">注册</span> <span class="hljs-string">Subscription</span> <span class="hljs-string">事件管道</span>    <span class="hljs-string">(行</span> <span class="hljs-number">1753</span><span class="hljs-number">-1807</span><span class="hljs-string">)</span>               <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Stage 7:</span> <span class="hljs-string">提交</span> <span class="hljs-string">Prompt</span> <span class="hljs-string">→</span> <span class="hljs-string">发给</span> <span class="hljs-string">LLM</span>        <span class="hljs-string">(行</span> <span class="hljs-number">2282</span><span class="hljs-number">-2338</span><span class="hljs-string">)</span>               <span class="hljs-string">│</span><br><span class="hljs-string">└────────────────────────────────────────────────────────────────────┘</span><br></code></pre>
+
+<hr>
+<h3 id="Stage-1-准备沙箱-工作目录"><a href="#Stage-1-准备沙箱-工作目录" class="headerlink" title="Stage 1: 准备沙箱 + 工作目录"></a>Stage 1: 准备沙箱 + 工作目录</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 447-461</span><br><span class="hljs-keyword">await</span> fs.<span class="hljs-title function_">mkdir</span>(resolvedWorkspace, &#123; <span class="hljs-attr">recursive</span>: <span class="hljs-literal">true</span> &#125;);<br><br><span class="hljs-comment">// 解析沙箱配置</span><br><span class="hljs-keyword">const</span> sandbox = <span class="hljs-keyword">await</span> <span class="hljs-title function_">resolveSandboxContext</span>(&#123;<br>  config, sessionKey, workspaceDir<br>&#125;);<br><br><span class="hljs-comment">// 如果启用了沙箱：用沙箱的目录；否则用原始工作目录</span><br><span class="hljs-keyword">const</span> effectiveWorkspace = sandbox?.<span class="hljs-property">enabled</span><br>  ? sandbox.<span class="hljs-property">workspaceDir</span><br>  : resolvedWorkspace;<br></code></pre>
+
+<p>如果配置了 Docker 沙箱，后续的 bash&#x2F;read&#x2F;write 工具操作都会在沙箱容器里执行。</p>
+<hr>
+<h3 id="Stage-2-加载技能-Skills"><a href="#Stage-2-加载技能-Skills" class="headerlink" title="Stage 2: 加载技能 Skills"></a>Stage 2: 加载技能 Skills</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 470-492</span><br><span class="hljs-keyword">const</span> &#123; skillEntries &#125; = <span class="hljs-title function_">resolveEmbeddedRunSkillEntries</span>(&#123;<br>  workspaceDir, config, agentId<br>&#125;);<br><br><span class="hljs-comment">// 把 skill 的环境变量应用到当前进程</span><br>restoreSkillEnv = <span class="hljs-title function_">applySkillEnvOverrides</span>(&#123; skills, config &#125;);<br><br><span class="hljs-comment">// 把 skill 的描述拼成给 LLM 看的格式</span><br><span class="hljs-keyword">const</span> skillsPrompt = <span class="hljs-title function_">resolveSkillsPromptForRun</span>(&#123;<br>  <span class="hljs-attr">entries</span>: skillEntries, workspaceDir<br>&#125;);<br><span class="hljs-comment">// 示例输出：</span><br><span class="hljs-comment">// &quot;Available skills: weather, summarize, diagram-maker...&quot;</span><br><span class="hljs-comment">// &quot;Use read_skill tool to load a skill recipe.&quot;</span><br></code></pre>
+
+<hr>
+<h3 id="Stage-3-构建工具清单（最复杂，-230-行）"><a href="#Stage-3-构建工具清单（最复杂，-230-行）" class="headerlink" title="Stage 3: 构建工具清单（最复杂，~230 行）"></a>Stage 3: 构建工具清单（最复杂，~230 行）</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 507-735（简化版）</span><br><br><span class="hljs-comment">// 第1步：创建所有内置工具</span><br><span class="hljs-keyword">const</span> allTools = <span class="hljs-title function_">createOpenClawCodingTools</span>(&#123;<br>  agentId, sandbox, messageProvider, config,<br>  abortSignal, workspaceDir, ...<br>&#125;);<br><span class="hljs-comment">// 返回: [exec, read, write, edit, glob, grep, ...]</span><br><br><span class="hljs-comment">// 第2步：应用工具策略过滤</span><br><span class="hljs-keyword">const</span> tools = <span class="hljs-title function_">applyEmbeddedAttemptToolsAllow</span>(allTools, params.<span class="hljs-property">toolsAllow</span>);<br><span class="hljs-comment">// 如果 toolsAllow = [&quot;read&quot;, &quot;exec&quot;] → 只保留这两个</span><br><br><span class="hljs-comment">// 第3步：规范化工具 schema（不同 provider 格式不同）</span><br><span class="hljs-keyword">const</span> normalizedTools = <span class="hljs-title function_">normalizeProviderToolSchemas</span>(&#123;<br>  tools, provider, modelId, config<br>&#125;);<br><span class="hljs-comment">// OpenAI 格式 vs Anthropic 格式 vs Google 格式</span><br><br><span class="hljs-comment">// 第4步：加载 MCP 工具</span><br><span class="hljs-keyword">const</span> bundleMcpRuntime = <span class="hljs-keyword">await</span> <span class="hljs-title function_">materializeBundleMcpToolsForRun</span>(&#123;<br>  <span class="hljs-attr">runtime</span>: mcpSessionRuntime,<br>  <span class="hljs-attr">reservedToolNames</span>: tools.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">t</span> =&gt;</span> t.<span class="hljs-property">name</span>)<br>&#125;);<br><br><span class="hljs-comment">// 第5步：加载 LSP 工具（代码智能）</span><br><span class="hljs-keyword">const</span> bundleLspRuntime = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createBundleLspToolRuntime</span>(&#123;<br>  workspaceDir, config<br>&#125;);<br><br><span class="hljs-comment">// 第6步：合并所有工具</span><br><span class="hljs-keyword">const</span> effectiveTools = [...tools, ...mcpTools, ...lspTools];<br><span class="hljs-comment">// 最终可能有 30-50 个工具发给 LLM</span><br></code></pre>
+
+<p><strong>类比</strong>：这一步就像给 AI 装工具箱——确定它这次对话能用哪些工具、不能用哪些。工具有五个来源：内置工具、MCP 服务器、LSP 服务、客户端注册、插件注册。</p>
+<hr>
+<h3 id="Stage-4-构建系统提示词"><a href="#Stage-4-构建系统提示词" class="headerlink" title="Stage 4: 构建系统提示词"></a>Stage 4: 构建系统提示词</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 826-968（简化版）</span><br><br><span class="hljs-comment">// 1. 收集运行时信息</span><br><span class="hljs-keyword">const</span> &#123; runtimeInfo, userTimezone, userTime &#125; = <span class="hljs-title function_">buildSystemPromptParams</span>(&#123;<br>  config,<br>  <span class="hljs-attr">runtime</span>: &#123;<br>    <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;my-macbook&quot;</span>,<br>    <span class="hljs-attr">os</span>: <span class="hljs-string">&quot;Darwin 24.0.0&quot;</span>,<br>    <span class="hljs-attr">arch</span>: <span class="hljs-string">&quot;arm64&quot;</span>,<br>    <span class="hljs-attr">node</span>: <span class="hljs-string">&quot;v22.12.0&quot;</span>,<br>    <span class="hljs-attr">model</span>: <span class="hljs-string">&quot;anthropic/claude-opus-4-6&quot;</span>,<br>    <span class="hljs-attr">shell</span>: <span class="hljs-string">&quot;/bin/zsh&quot;</span>,<br>    <span class="hljs-attr">channel</span>: <span class="hljs-string">&quot;telegram&quot;</span>,<br>    <span class="hljs-attr">capabilities</span>: [<span class="hljs-string">&quot;reactions&quot;</span>, <span class="hljs-string">&quot;threads&quot;</span>],<br>  &#125;<br>&#125;);<br><br><span class="hljs-comment">// 2. 组装系统提示词（一个巨大的字符串）</span><br><span class="hljs-keyword">const</span> builtAppendPrompt = <span class="hljs-title function_">buildEmbeddedSystemPrompt</span>(&#123;<br>  workspaceDir, reasoningTagHint, heartbeatPrompt,<br>  skillsPrompt, docsPath, ttsHint, sandboxInfo,<br>  <span class="hljs-attr">tools</span>: effectiveTools,   <span class="hljs-comment">// 告诉 LLM 有哪些工具</span><br>  runtimeInfo,              <span class="hljs-comment">// 系统环境信息</span><br>  contextFiles,             <span class="hljs-comment">// CLAUDE.md / BOOTSTRAP.md</span><br>  userTimezone, userTime,<br>  ...<br>&#125;);<br><br><span class="hljs-comment">// 3. 让 Provider 插件有机会修改</span><br><span class="hljs-keyword">const</span> appendPrompt = <span class="hljs-title function_">transformProviderSystemPrompt</span>(&#123;<br>  provider, config, <span class="hljs-attr">systemPrompt</span>: builtAppendPrompt<br>&#125;);<br></code></pre>
+
+<p>最终系统提示词大概 5000-20000 字符，包含环境信息、可用工具清单、技能列表、安全规则和 workspace 上下文文件。</p>
+<hr>
+<h3 id="Stage-5-创建-Agent-会话-加载历史"><a href="#Stage-5-创建-Agent-会话-加载历史" class="headerlink" title="Stage 5: 创建 Agent 会话 + 加载历史"></a>Stage 5: 创建 Agent 会话 + 加载历史</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 972-1177（简化版）</span><br><br><span class="hljs-comment">// 1. 修复可能损坏的 session 文件</span><br><span class="hljs-keyword">await</span> <span class="hljs-title function_">repairSessionFileIfNeeded</span>(&#123; sessionFile &#125;);<br><br><span class="hljs-comment">// 2. 打开 Session Manager（管理 JSONL transcript 文件）</span><br>sessionManager = <span class="hljs-title function_">guardSessionManager</span>(<br>  <span class="hljs-title class_">SessionManager</span>.<span class="hljs-title function_">open</span>(params.<span class="hljs-property">sessionFile</span>),<br>  &#123; contextWindowTokens, allowedToolNames &#125;<br>);<br><br><span class="hljs-comment">// 3. 配置 compaction 设置</span><br><span class="hljs-keyword">const</span> settingsManager = <span class="hljs-title function_">createPreparedEmbeddedPiSettingsManager</span>(&#123;<br>  contextTokenBudget  <span class="hljs-comment">// 例如：128000 tokens</span><br>&#125;);<br><span class="hljs-title function_">applyPiAutoCompactionGuard</span>(settingsManager);<br><br><span class="hljs-comment">// 4. 创建 Agent 会话对象</span><br><span class="hljs-keyword">const</span> createdSession = <span class="hljs-keyword">await</span> <span class="hljs-title function_">createAgentSession</span>(&#123;<br>  <span class="hljs-attr">cwd</span>: resolvedWorkspace,<br>  agentDir,<br>  <span class="hljs-attr">model</span>: params.<span class="hljs-property">model</span>,<br>  <span class="hljs-attr">thinkingLevel</span>: <span class="hljs-string">&quot;off&quot;</span>,<br>  <span class="hljs-attr">tools</span>: toolAllowlist,<br>  <span class="hljs-attr">customTools</span>: allCustomTools,<br>  sessionManager,<br>&#125;);<br>session = createdSession.<span class="hljs-property">session</span>;<br><br><span class="hljs-comment">// 5. 注入系统提示词</span><br><span class="hljs-title function_">applySystemPromptOverrideToSession</span>(session, systemPromptText);<br></code></pre>
+
+<p><code>createAgentSession</code> 来自 <code>@mariozechner/pi-coding-agent</code> 库——底层 Agent 框架。它做了：从 transcript JSONL 文件加载之前的对话 → 构建 messages 数组（system + history + user prompt）→ 注册所有工具 schema → 准备好模型 API client。</p>
+<hr>
+<h3 id="Stage-6-注册-Subscription（事件管道）"><a href="#Stage-6-注册-Subscription（事件管道）" class="headerlink" title="Stage 6: 注册 Subscription（事件管道）"></a>Stage 6: 注册 Subscription（事件管道）</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 1753-1807</span><br><br><span class="hljs-keyword">const</span> subscription = <span class="hljs-title function_">subscribeEmbeddedPiSession</span>(&#123;<br>  <span class="hljs-attr">session</span>: activeSession,<br>  runId,<br>  <span class="hljs-attr">onBlockReply</span>: params.<span class="hljs-property">onBlockReply</span>,<br>  <span class="hljs-attr">onPartialReply</span>: params.<span class="hljs-property">onPartialReply</span>,<br>  <span class="hljs-attr">onToolResult</span>: params.<span class="hljs-property">onToolResult</span>,<br>  <span class="hljs-attr">onReasoningStream</span>: params.<span class="hljs-property">onReasoningStream</span>,<br>  <span class="hljs-attr">onAgentEvent</span>: params.<span class="hljs-property">onAgentEvent</span>,<br>  ...<br>&#125;);<br><br><span class="hljs-keyword">const</span> &#123;<br>  assistantTexts,           <span class="hljs-comment">// 累积的助手回复文本</span><br>  toolMetas,                <span class="hljs-comment">// 执行过的工具元信息</span><br>  unsubscribe,              <span class="hljs-comment">// 取消订阅</span><br>  waitForCompactionRetry,   <span class="hljs-comment">// 等待 compaction</span><br>  isCompactionInFlight,     <span class="hljs-comment">// 是否正在 compaction</span><br>  getUsageTotals,           <span class="hljs-comment">// token 用量统计</span><br>  getCompactionCount,       <span class="hljs-comment">// compaction 次数</span><br>&#125; = subscription;<br></code></pre>
+
+<p>在发出 prompt 之前先把接收管道搭好。LLM 流式响应开始后，每个 token&#x2F;tool call&#x2F;compaction 事件都会通过这个管道处理。</p>
+<hr>
+<h3 id="Stage-7-提交-Prompt-→-发给-LLM"><a href="#Stage-7-提交-Prompt-→-发给-LLM" class="headerlink" title="Stage 7: 提交 Prompt → 发给 LLM"></a>Stage 7: 提交 Prompt → 发给 LLM</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 行 2282-2338（最关键的一步！）</span><br><br><span class="hljs-keyword">if</span> (imageResult.<span class="hljs-property">images</span>.<span class="hljs-property">length</span> &gt; <span class="hljs-number">0</span>) &#123;<br>  <span class="hljs-keyword">await</span> <span class="hljs-title function_">abortable</span>(<br>    activeSession.<span class="hljs-title function_">prompt</span>(effectivePrompt, &#123; <span class="hljs-attr">images</span>: imageResult.<span class="hljs-property">images</span> &#125;)<br>  );<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>  <span class="hljs-keyword">await</span> <span class="hljs-title function_">abortable</span>(<br>    activeSession.<span class="hljs-title function_">prompt</span>(effectivePrompt)<br>  );<br>&#125;<br></code></pre>
+
+<p><strong>就这两行！</strong> 整个 2600 行函数的核心动作：</p>
+<pre class="highlight"><code class="hljs maxima">activeSession.<span class="hljs-built_in">prompt</span>(<span class="hljs-string">&quot;帮我总结这篇文章&quot;</span>)<br></code></pre>
+
+<p>这行代码：</p>
+<ol>
+<li>把 <code>effectivePrompt</code>（用户消息）加到 messages 数组末尾</li>
+<li>调用 LLM API（通过 provider 插件 → HTTP&#x2F;WS 请求）</li>
+<li><strong>等待整个流式响应完成</strong>（中间的每个 token 由 Stage 6 的 subscription 处理）</li>
+<li>如果 LLM 返回 tool calls → 框架自动执行工具 → 结果再发回 LLM → 循环直到 LLM 给出文本</li>
+</ol>
+<p><code>abortable()</code> 是一个包装器，让整个 promise 可以被 <code>abortSignal</code> 取消。</p>
+<hr>
+<h2 id="完整流程简图"><a href="#完整流程简图" class="headerlink" title="完整流程简图"></a>完整流程简图</h2><pre class="highlight"><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">runEmbeddedAttempt</span><span class="hljs-params">()</span></span> &#123;<br><br>  <span class="hljs-comment">// === 准备阶段（同步，快）===</span><br>  Stage <span class="hljs-number">1</span>: mkdir workspace<br>  Stage <span class="hljs-number">2</span>: 加载 skills<br>  Stage <span class="hljs-number">3</span>: 构建 <span class="hljs-number">30</span>-<span class="hljs-number">50</span> 个工具定义<br>  Stage <span class="hljs-number">4</span>: 拼接系统提示词（~<span class="hljs-number">5000</span>-<span class="hljs-number">20000</span> 字符）<br>  Stage <span class="hljs-number">5</span>: 加载 session transcript → messages 数组<br>  Stage <span class="hljs-number">6</span>: 搭好事件接收管道<br><br>  <span class="hljs-comment">// === 执行阶段（异步，几十秒到几分钟）===</span><br>  Stage <span class="hljs-number">7</span>: await session<span class="hljs-selector-class">.prompt</span>(userMessage)<br>  │<br>  ├── HTTP POST 到 LLM API<br>  ├── 流式接收 token → <span class="hljs-built_in">onPartialReply</span>()<br>  ├── 如果收到 tool_call:<br>  │   ├── 找到对应工具实现<br>  │   ├── 执行工具（e<span class="hljs-selector-class">.g</span>. <span class="hljs-built_in">exec</span>(<span class="hljs-string">&quot;ls -la&quot;</span>)）<br>  │   ├── 把 tool_result 发回 LLM<br>  │   └── 继续等待下一批 tokens...<br>  └── 流式结束 → 返回<br><br>  <span class="hljs-comment">// === 收尾 ===</span><br>  等 compaction 完成（如果有）<br>  收集 usage 统计<br>  返回 result<br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="关键”厚度”在哪"><a href="#关键”厚度”在哪" class="headerlink" title="关键”厚度”在哪"></a>关键”厚度”在哪</h2><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>行数</th>
+<th>为什么这么”厚”</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stage 3: 工具构建</td>
+<td>~230 行</td>
+<td>5 种来源（内置&#x2F;MCP&#x2F;LSP&#x2F;客户端&#x2F;插件）+ policy 过滤 + provider schema 规范化</td>
+</tr>
+<tr>
+<td>Stage 4: 系统提示词</td>
+<td>~200 行</td>
+<td>20+ 信息源综合：环境、channel、skills、config、hooks、context files</td>
+</tr>
+<tr>
+<td>Stage 5: 会话加载</td>
+<td>~200 行</td>
+<td>transcript 修复、compaction guard、context engine 初始化</td>
+</tr>
+<tr>
+<td>Stage 7 后续</td>
+<td>~300 行</td>
+<td>compaction wait、yield abort、timeout、各种边界处理</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>runEmbeddedAttempt</code> 的核心逻辑其实很简单——**”准备一个充分的上下文 → 把一切塞给 LLM → 处理结果”**。只不过”准备上下文”这一步要考虑的因素实在太多了，所以撑出了 2600 行。</p>
+<p>而最核心的那个动作，只有一行：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">await</span> activeSession.<span class="hljs-title function_">prompt</span>(<span class="hljs-string">&quot;帮我总结这篇文章&quot;</span>)<br></code></pre>
+
+<hr>
+<h2 id="下一步"><a href="#下一步" class="headerlink" title="下一步"></a>下一步</h2><p>这一篇拆解了 <code>runEmbeddedAttempt</code> 的七个阶段。接下来的可选方向：</p>
+<ul>
+<li><strong>Stage 6 深入</strong>：subscription 管道怎么处理流式 token 和 tool call</li>
+<li><strong>Stage 3 深入</strong>：<code>createOpenClawCodingTools</code> 具体创建了哪些工具，每个工具长什么样</li>
+<li><strong>Stage 4 深入</strong>：系统提示词的完整内容是什么样的</li>
+</ul>
+<p>下一篇将从其中一个方向深入。敬请期待。</p>
+<hr>
+<blockquote>
+<p>本系列文章基于 OpenClaw v2026.4.23 源码分析，代码引用以实际文件行号为准。</p>
+</blockquote>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-source-code-analysis-2-agents/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ②：Agent 执行引擎 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-source-code-analysis-6-system-prompt/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑥：系统提示词完整拆解 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#runEmbeddedAttemptWithBackend-%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">runEmbeddedAttemptWithBackend 完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-text">调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#runEmbeddedAttempt-%E2%80%94%E2%80%94-%E4%B8%83%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="toc-text">runEmbeddedAttempt —— 七个阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-1-%E5%87%86%E5%A4%87%E6%B2%99%E7%AE%B1-%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-text">Stage 1: 准备沙箱 + 工作目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-2-%E5%8A%A0%E8%BD%BD%E6%8A%80%E8%83%BD-Skills"><span class="toc-text">Stage 2: 加载技能 Skills</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-3-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95%EF%BC%88%E6%9C%80%E5%A4%8D%E6%9D%82%EF%BC%8C-230-%E8%A1%8C%EF%BC%89"><span class="toc-text">Stage 3: 构建工具清单（最复杂，~230 行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-4-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-text">Stage 4: 构建系统提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-5-%E5%88%9B%E5%BB%BA-Agent-%E4%BC%9A%E8%AF%9D-%E5%8A%A0%E8%BD%BD%E5%8E%86%E5%8F%B2"><span class="toc-text">Stage 5: 创建 Agent 会话 + 加载历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-6-%E6%B3%A8%E5%86%8C-Subscription%EF%BC%88%E4%BA%8B%E4%BB%B6%E7%AE%A1%E9%81%93%EF%BC%89"><span class="toc-text">Stage 6: 注册 Subscription（事件管道）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-7-%E6%8F%90%E4%BA%A4-Prompt-%E2%86%92-%E5%8F%91%E7%BB%99-LLM"><span class="toc-text">Stage 7: 提交 Prompt → 发给 LLM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%E7%AE%80%E5%9B%BE"><span class="toc-text">完整流程简图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E2%80%9D%E5%8E%9A%E5%BA%A6%E2%80%9D%E5%9C%A8%E5%93%AA"><span class="toc-text">关键”厚度”在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#runEmbeddedAttemptWithBackend-%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">runEmbeddedAttemptWithBackend 完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E7%94%A8%E9%93%BE"><span class="toc-text">调用链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#runEmbeddedAttempt-%E2%80%94%E2%80%94-%E4%B8%83%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="toc-text">runEmbeddedAttempt —— 七个阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-1-%E5%87%86%E5%A4%87%E6%B2%99%E7%AE%B1-%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95"><span class="toc-text">Stage 1: 准备沙箱 + 工作目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-2-%E5%8A%A0%E8%BD%BD%E6%8A%80%E8%83%BD-Skills"><span class="toc-text">Stage 2: 加载技能 Skills</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-3-%E6%9E%84%E5%BB%BA%E5%B7%A5%E5%85%B7%E6%B8%85%E5%8D%95%EF%BC%88%E6%9C%80%E5%A4%8D%E6%9D%82%EF%BC%8C-230-%E8%A1%8C%EF%BC%89"><span class="toc-text">Stage 3: 构建工具清单（最复杂，~230 行）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-4-%E6%9E%84%E5%BB%BA%E7%B3%BB%E7%BB%9F%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="toc-text">Stage 4: 构建系统提示词</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-5-%E5%88%9B%E5%BB%BA-Agent-%E4%BC%9A%E8%AF%9D-%E5%8A%A0%E8%BD%BD%E5%8E%86%E5%8F%B2"><span class="toc-text">Stage 5: 创建 Agent 会话 + 加载历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-6-%E6%B3%A8%E5%86%8C-Subscription%EF%BC%88%E4%BA%8B%E4%BB%B6%E7%AE%A1%E9%81%93%EF%BC%89"><span class="toc-text">Stage 6: 注册 Subscription（事件管道）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Stage-7-%E6%8F%90%E4%BA%A4-Prompt-%E2%86%92-%E5%8F%91%E7%BB%99-LLM"><span class="toc-text">Stage 7: 提交 Prompt → 发给 LLM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B%E7%AE%80%E5%9B%BE"><span class="toc-text">完整流程简图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E2%80%9D%E5%8E%9A%E5%BA%A6%E2%80%9D%E5%9C%A8%E5%93%AA"><span class="toc-text">关键”厚度”在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E4%B8%80%E6%AD%A5"><span class="toc-text">下一步</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

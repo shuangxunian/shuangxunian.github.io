@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》第二部分第三章：对象</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》第二部分第三章：对象">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-objects-part-2-chapter-3/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="系统梳理 JavaScript 对象的创建、属性键、描述符、复制、完整性、遍历，以及原型链上的读取与赋值行为。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="ES6">
+        
+          <meta 
+            property="og:article:tag" 
+            content="对象">
+        
+          <meta 
+            property="og:article:tag" 
+            content="原型">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%AD%97%E9%9D%A2%E9%87%8F%E6%98%AF%E9%BB%98%E8%AE%A4%E9%80%89%E6%8B%A9"><span class="toc-text">创建对象：字面量是默认选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%80%BC%E7%B1%BB%E5%9E%8B%E3%80%81%E5%8C%85%E8%A3%85%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%B1%9E%E6%80%A7%E9%94%AE"><span class="toc-text">值类型、包装对象与属性键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E5%80%BC%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">原始值不是对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E9%94%AE%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%88%96-Symbol"><span class="toc-text">属性键是字符串或 Symbol</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%B1%9E%E6%80%A7%EF%BC%9A-%E3%80%81-%E4%B8%8E%E5%87%BD%E6%95%B0%E5%B1%9E%E6%80%A7"><span class="toc-text">访问属性：.、[] 与函数属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%98%AF%E7%89%B9%E6%AE%8A%E5%AF%B9%E8%B1%A1%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%99%AE%E9%80%9A%E5%AD%97%E5%85%B8"><span class="toc-text">数组是特殊对象，不是普通字典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%85%88%E6%98%8E%E7%A1%AE%E9%9C%80%E8%A6%81%E4%BB%80%E4%B9%88%E8%AF%AD%E4%B9%89"><span class="toc-text">复制对象：先明确需要什么语义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-assign-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E5%B1%95%E5%BC%80%EF%BC%9A%E6%B5%85%E5%A4%8D%E5%88%B6"><span class="toc-text">Object.assign 与对象展开：浅复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#structuredClone%EF%BC%9A%E9%80%82%E5%90%88%E8%AE%B8%E5%A4%9A%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%B7%B1%E5%A4%8D%E5%88%B6"><span class="toc-text">structuredClone：适合许多数据对象的深复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSON-%E5%BA%8F%E5%88%97%E5%8C%96%E5%8F%AA%E9%80%82%E5%90%88-JSON-%E6%95%B0%E6%8D%AE"><span class="toc-text">JSON 序列化只适合 JSON 数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">属性描述符：数据属性与访问器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#writable%E3%80%81configurable-%E4%B8%8E-enumerable"><span class="toc-text">writable、configurable 与 enumerable</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%AE%8C%E6%95%B4%E6%80%A7%EF%BC%9A%E9%98%B2%E6%89%A9%E5%B1%95%E3%80%81%E5%AF%86%E5%B0%81%E4%B8%8E%E5%86%BB%E7%BB%93"><span class="toc-text">对象完整性：防扩展、密封与冻结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%AD%98%E5%9C%A8%E6%80%A7%E4%B8%8E%E9%81%8D%E5%8E%86%E8%8C%83%E5%9B%B4"><span class="toc-text">属性存在性与遍历范围</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%81%8D%E5%8E%86-API"><span class="toc-text">常用遍历 API</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E8%AF%BB%E5%8F%96%E4%B8%8E%E8%B5%8B%E5%80%BC%EF%BC%9A%E5%8E%9F%E5%9E%8B%E9%93%BE%E4%B8%8A%E7%9A%84-Get-x2F-Set"><span class="toc-text">属性读取与赋值：原型链上的 [[Get]] &#x2F; [[Set]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%A4%8D%E5%88%B6%E4%B8%8E%E5%86%BB%E7%BB%93%E8%83%BD%E4%BF%9D%E8%AF%81%E4%BB%80%E4%B9%88"><span class="toc-text">练习：复制与冻结能保证什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》第二部分第三章：对象
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-objects-part-2-chapter-3.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/ES6/" 
+            class="post-meta-link">
+            ES6
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%AF%B9%E8%B1%A1/" 
+            class="post-meta-link">
+            对象
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%8E%9F%E5%9E%8B/" 
+            class="post-meta-link">
+            原型
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本文承接<a href="/2026/08/07/you-dont-know-js-this-binding-rules-part-2-chapter-2/">第二部分第二章：this 全面解析</a>。对象既是属性的容器，也是 JavaScript 原型委托与 <code>this</code> 方法调用的基础。下一章会继续讨论“类”式设计，本章先建立对象本身的模型。</p>
+</blockquote>
+<h2 id="创建对象：字面量是默认选择"><a href="#创建对象：字面量是默认选择" class="headerlink" title="创建对象：字面量是默认选择"></a>创建对象：字面量是默认选择</h2><p>创建普通对象最直接的方式是对象字面量：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> article = &#123;<br>  <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Objects&quot;</span>,<br>  <span class="hljs-attr">published</span>: <span class="hljs-literal">true</span>,<br>&#125;;<br></code></pre>
+
+<p>也可以使用构造形式：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> article = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br>article.<span class="hljs-property">title</span> = <span class="hljs-string">&quot;Objects&quot;</span>;<br>article.<span class="hljs-property">published</span> = <span class="hljs-literal">true</span>;<br></code></pre>
+
+<p>对不带参数的普通对象而言，两者通常得到相同原型的普通对象；但字面量更紧凑，可在创建时清楚展示结构，因此是日常首选。<code>Object</code> 构造器还具有把某些传入值包装或直接返回对象的特殊行为，不能把它简单理解为“只能逐个加属性”。</p>
+<p>需要没有原型链的字典对象时，可显式创建：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> dictionary = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-literal">null</span>);<br>dictionary.<span class="hljs-property">word</span> = <span class="hljs-string">&quot;scope&quot;</span>;<br></code></pre>
+
+<p>这种对象没有 <code>Object.prototype</code>，因此没有 <code>toString</code> 或 <code>hasOwnProperty</code> 等继承方法；存在性检查应使用 <code>Object.hasOwn(dictionary, key)</code>。</p>
+<h2 id="值类型、包装对象与属性键"><a href="#值类型、包装对象与属性键" class="headerlink" title="值类型、包装对象与属性键"></a>值类型、包装对象与属性键</h2><h3 id="原始值不是对象"><a href="#原始值不是对象" class="headerlink" title="原始值不是对象"></a>原始值不是对象</h3><p>现代 JavaScript 有 7 种原始值类型：<code>string</code>、<code>number</code>、<code>bigint</code>、<code>boolean</code>、<code>symbol</code>、<code>undefined</code>、<code>null</code>；除此之外，所有非原始值都是对象。函数是可调用对象，<code>typeof</code> 会为它返回特殊结果 <code>&quot;function&quot;</code>。</p>
+<p>字符串、数字和布尔值等原始值在进行属性访问时会临时包装，因此可以调用原型方法：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> text = <span class="hljs-string">&quot;abc&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(text.<span class="hljs-title function_">toUpperCase</span>()); <span class="hljs-comment">// &quot;ABC&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(text.<span class="hljs-property">length</span>); <span class="hljs-comment">// 3</span><br></code></pre>
+
+<p>这不表示 <code>text</code> 变成了可长期存放自有属性的对象。<code>null</code> 和 <code>undefined</code> 没有可供包装的对象，访问属性会抛出 <code>TypeError</code>。<code>typeof null === &quot;object&quot;</code> 是历史遗留行为，不能用来判断 <code>null</code> 是否为对象。</p>
+<p>通常应避免显式包装对象：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> primitive = <span class="hljs-string">&quot;abc&quot;</span>;<br><span class="hljs-keyword">const</span> wrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>(<span class="hljs-string">&quot;abc&quot;</span>);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> primitive); <span class="hljs-comment">// &quot;string&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> wrapper); <span class="hljs-comment">// &quot;object&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(primitive === wrapper); <span class="hljs-comment">// false</span><br></code></pre>
+
+<p>显式包装会带来比较、序列化和类型判断上的额外复杂度，字面量通常更合适。</p>
+<h3 id="属性键是字符串或-Symbol"><a href="#属性键是字符串或-Symbol" class="headerlink" title="属性键是字符串或 Symbol"></a>属性键是字符串或 Symbol</h3><p>普通对象的属性键只有两类：字符串键和 <code>Symbol</code> 键。数字下标会转换为字符串：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> record = &#123;&#125;;<br>record[<span class="hljs-number">3</span>] = <span class="hljs-string">&quot;three&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(record[<span class="hljs-string">&quot;3&quot;</span>]); <span class="hljs-comment">// &quot;three&quot;</span><br></code></pre>
+
+<p><code>Symbol</code> 用于避免命名冲突或定义协议行为：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> internalId = <span class="hljs-title class_">Symbol</span>(<span class="hljs-string">&quot;id&quot;</span>);<br><span class="hljs-keyword">const</span> user = &#123; [internalId]: <span class="hljs-number">42</span> &#125;;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(user[internalId]); <span class="hljs-comment">// 42</span><br></code></pre>
+
+<p>类的 <code>#private</code> 字段不属于普通对象属性键体系，不能通过 <code>obj[&quot;#field&quot;]</code> 访问。</p>
+<h2 id="访问属性：-、-与函数属性"><a href="#访问属性：-、-与函数属性" class="headerlink" title="访问属性：.、[] 与函数属性"></a>访问属性：<code>.</code>、<code>[]</code> 与函数属性</h2><p>点操作符适用于静态、合法标识符形式的属性名；方括号适用于任意字符串键、<code>Symbol</code> 键和运行时计算出的键：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> key = <span class="hljs-string">&quot;display name&quot;</span>;<br><span class="hljs-keyword">const</span> profile = &#123;<br>  [key]: <span class="hljs-string">&quot;Ada&quot;</span>,<br>  <span class="hljs-attr">age</span>: <span class="hljs-number">36</span>,<br>&#125;;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(profile.<span class="hljs-property">age</span>); <span class="hljs-comment">// 36</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(profile[key]); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p>JavaScript 没有独立于属性的“方法”类型。函数只是属性值；只有以 <code>obj.fn()</code> 形式调用时，普通函数才会获得 <code>obj</code> 作为 <code>this</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> counter = &#123;<br>  <span class="hljs-attr">value</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-title function_">increment</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">value</span> += <span class="hljs-number">1</span>;<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> increment = counter.<span class="hljs-property">increment</span>;<br>increment.<span class="hljs-title function_">call</span>(counter);<br></code></pre>
+
+<h2 id="数组是特殊对象，不是普通字典"><a href="#数组是特殊对象，不是普通字典" class="headerlink" title="数组是特殊对象，不是普通字典"></a>数组是特殊对象，不是普通字典</h2><p>数组也是对象，数组下标最终也是属性键。但符合数组索引条件的非负整数键会参与 <code>length</code> 计算：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> items = [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>];<br>items[<span class="hljs-number">5</span>] = <span class="hljs-string">&quot;f&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(items.<span class="hljs-property">length</span>); <span class="hljs-comment">// 6</span><br></code></pre>
+
+<p>非索引自定义属性不会改变 <code>length</code>：</p>
+<pre class="highlight"><code class="hljs js">items.<span class="hljs-property">label</span> = <span class="hljs-string">&quot;letters&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(items.<span class="hljs-property">length</span>); <span class="hljs-comment">// 6</span><br></code></pre>
+
+<p>稀疏数组、混合值类型和把数组当成键值字典都可能损害可读性与运行时优化。顺序集合用数组；动态键值集合用对象或 <code>Map</code>。</p>
+<h2 id="复制对象：先明确需要什么语义"><a href="#复制对象：先明确需要什么语义" class="headerlink" title="复制对象：先明确需要什么语义"></a>复制对象：先明确需要什么语义</h2><p>“深拷贝”不是单一的标准行为。选择前应先问：要复制哪些类型、是否允许循环引用、是否需要保留原型&#x2F;描述符、是否希望触发 getter&#x2F;setter？</p>
+<h3 id="Object-assign-与对象展开：浅复制"><a href="#Object-assign-与对象展开：浅复制" class="headerlink" title="Object.assign 与对象展开：浅复制"></a><code>Object.assign</code> 与对象展开：浅复制</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> source = &#123;<br>  <span class="hljs-attr">title</span>: <span class="hljs-string">&quot;Objects&quot;</span>,<br>  <span class="hljs-attr">options</span>: &#123; <span class="hljs-attr">theme</span>: <span class="hljs-string">&quot;dark&quot;</span> &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> assigned = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, source);<br><span class="hljs-keyword">const</span> spread = &#123; ...source &#125;;<br><br>assigned.<span class="hljs-property">options</span>.<span class="hljs-property">theme</span> = <span class="hljs-string">&quot;light&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(source.<span class="hljs-property">options</span>.<span class="hljs-property">theme</span>); <span class="hljs-comment">// &quot;light&quot;</span><br></code></pre>
+
+<p>两种写法都只复制一层的自有可枚举字符串键和 <code>Symbol</code> 键；嵌套对象仍共享引用。它们读取源对象的 getter，复制得到的是值而不是原描述符。<code>Object.assign</code> 还会对目标对象执行普通赋值，因此可能触发目标的 setter。</p>
+<h3 id="structuredClone：适合许多数据对象的深复制"><a href="#structuredClone：适合许多数据对象的深复制" class="headerlink" title="structuredClone：适合许多数据对象的深复制"></a><code>structuredClone</code>：适合许多数据对象的深复制</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> original = &#123;<br>  <span class="hljs-attr">tags</span>: [<span class="hljs-string">&quot;js&quot;</span>],<br>  <span class="hljs-attr">createdAt</span>: <span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>(),<br>&#125;;<br><br><span class="hljs-keyword">const</span> cloned = <span class="hljs-title function_">structuredClone</span>(original);<br>cloned.<span class="hljs-property">tags</span>.<span class="hljs-title function_">push</span>(<span class="hljs-string">&quot;objects&quot;</span>);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(original.<span class="hljs-property">tags</span>); <span class="hljs-comment">// [&quot;js&quot;]</span><br></code></pre>
+
+<p><code>structuredClone</code> 支持循环引用以及许多内建数据类型，例如 <code>Date</code>、<code>Map</code>、<code>Set</code>、<code>ArrayBuffer</code>。但函数、DOM 节点、<code>WeakMap</code>、<code>WeakSet</code> 等不可按结构化克隆算法复制；自定义类实例的原型和属性描述符也不会按“原样深拷贝”保留。使用前应验证目标运行时支持和所需类型。</p>
+<h3 id="JSON-序列化只适合-JSON-数据"><a href="#JSON-序列化只适合-JSON-数据" class="headerlink" title="JSON 序列化只适合 JSON 数据"></a>JSON 序列化只适合 JSON 数据</h3><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> copy = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(<span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span> &#125;));<br></code></pre>
+
+<p>它只能处理 JSON 可表达的数据：函数、<code>undefined</code>、<code>Symbol</code> 会被忽略或转换，循环引用会抛错，<code>Date</code> 会变为字符串，<code>NaN</code> 和 <code>Infinity</code> 也不能保留原值。不要把它当成通用深拷贝方案。</p>
+<h2 id="属性描述符：数据属性与访问器属性"><a href="#属性描述符：数据属性与访问器属性" class="headerlink" title="属性描述符：数据属性与访问器属性"></a>属性描述符：数据属性与访问器属性</h2><p>每个自有属性都有描述符。可通过 <code>Object.getOwnPropertyDescriptor()</code> 查看：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> user = &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span> &#125;;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getOwnPropertyDescriptor</span>(user, <span class="hljs-string">&quot;name&quot;</span>));<br><span class="hljs-comment">// &#123; value: &quot;Ada&quot;, writable: true, enumerable: true, configurable: true &#125;</span><br></code></pre>
+
+<p>数据属性包含 <code>value</code>、<code>writable</code>、<code>enumerable</code>、<code>configurable</code>。通过对象字面量或普通赋值创建的属性，后三项默认都为 <code>true</code>；通过 <code>Object.defineProperty()</code> 新建属性时，未指定的布尔描述符默认是 <code>false</code>。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(user, <span class="hljs-string">&quot;id&quot;</span>, &#123;<br>  <span class="hljs-attr">value</span>: <span class="hljs-number">1</span>,<br>  <span class="hljs-attr">enumerable</span>: <span class="hljs-literal">true</span>,<br>&#125;);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(user.<span class="hljs-property">id</span>); <span class="hljs-comment">// 1</span><br></code></pre>
+
+<p>上例的 <code>id</code> 不可写、不可配置。描述符可用来表达受控状态，但过度使用会增加维护成本。</p>
+<h3 id="writable、configurable-与-enumerable"><a href="#writable、configurable-与-enumerable" class="headerlink" title="writable、configurable 与 enumerable"></a><code>writable</code>、<code>configurable</code> 与 <code>enumerable</code></h3><ul>
+<li><code>writable: false</code>：数据属性不能通过赋值修改；严格模式赋值会抛出 <code>TypeError</code>，非严格模式通常静默失败。</li>
+<li><code>configurable: false</code>：不能删除该属性，也不能将其改为可配置或切换为访问器属性。若它仍可写，可修改值，并可将 <code>writable</code> 单向改为 <code>false</code>。</li>
+<li><code>enumerable: false</code>：不会出现在 <code>for...in</code> 和 <code>Object.keys()</code> 中，但仍可直接访问，也可通过存在性检查发现。</li>
+</ul>
+<p>访问器属性以 <code>get</code> &#x2F; <code>set</code> 取代 <code>value</code> &#x2F; <code>writable</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> temperature = &#123;<br>  <span class="hljs-attr">_celsius</span>: <span class="hljs-number">0</span>,<br>  <span class="hljs-keyword">get</span> <span class="hljs-title function_">fahrenheit</span>() &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-variable language_">this</span>.<span class="hljs-property">_celsius</span> * <span class="hljs-number">1.8</span> + <span class="hljs-number">32</span>;<br>  &#125;,<br>  <span class="hljs-keyword">set</span> <span class="hljs-title function_">fahrenheit</span>(<span class="hljs-params">value</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">_celsius</span> = (value - <span class="hljs-number">32</span>) / <span class="hljs-number">1.8</span>;<br>  &#125;,<br>&#125;;<br><br>temperature.<span class="hljs-property">fahrenheit</span> = <span class="hljs-number">68</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(temperature.<span class="hljs-property">_celsius</span>); <span class="hljs-comment">// 20</span><br></code></pre>
+
+<p>读取 getter、写入 setter 都是函数调用，可能有副作用或抛出异常；不应把它们当作普通字段读取。</p>
+<h2 id="对象完整性：防扩展、密封与冻结"><a href="#对象完整性：防扩展、密封与冻结" class="headerlink" title="对象完整性：防扩展、密封与冻结"></a>对象完整性：防扩展、密封与冻结</h2><p>这三个 API 约束的是对象<strong>自身属性的结构</strong>，都不是深冻结，也不是并发或安全机制。</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>新增属性</th>
+<th>删除&#x2F;重配属性</th>
+<th>写入现有数据属性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Object.preventExtensions(obj)</code></td>
+<td>禁止</td>
+<td>允许</td>
+<td>允许</td>
+</tr>
+<tr>
+<td><code>Object.seal(obj)</code></td>
+<td>禁止</td>
+<td>禁止</td>
+<td>允许（若原属性可写）</td>
+</tr>
+<tr>
+<td><code>Object.freeze(obj)</code></td>
+<td>禁止</td>
+<td>禁止</td>
+<td>禁止（数据属性）</td>
+</tr>
+</tbody></table>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> settings = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">freeze</span>(&#123;<br>  <span class="hljs-attr">theme</span>: &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;dark&quot;</span> &#125;,<br>&#125;);<br><br>settings.<span class="hljs-property">theme</span>.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;light&quot;</span>; <span class="hljs-comment">// 仍可修改嵌套对象</span><br></code></pre>
+
+<p><code>Object.freeze</code> 会使自有数据属性不可写、所有自有属性不可配置；访问器的 setter 仍可能改变它所引用的外部状态。需要深层不可变时，必须针对数据结构设计递归策略，并处理循环引用、特殊对象和性能成本。</p>
+<h2 id="属性存在性与遍历范围"><a href="#属性存在性与遍历范围" class="headerlink" title="属性存在性与遍历范围"></a>属性存在性与遍历范围</h2><p>属性读取结果为 <code>undefined</code> 不等于属性不存在：属性可能存在且值恰好是 <code>undefined</code>。需要判断存在性时，先决定是否包含原型链。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> parent = &#123; <span class="hljs-attr">inherited</span>: <span class="hljs-literal">true</span> &#125;;<br><span class="hljs-keyword">const</span> child = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(parent);<br>child.<span class="hljs-property">own</span> = <span class="hljs-literal">undefined</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;inherited&quot;</span> <span class="hljs-keyword">in</span> child); <span class="hljs-comment">// true，包含原型链</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(child, <span class="hljs-string">&quot;inherited&quot;</span>)); <span class="hljs-comment">// false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(child, <span class="hljs-string">&quot;own&quot;</span>)); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><code>Object.hasOwn()</code> 是现代首选。为了兼容旧环境或无原型对象，可使用：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">hasOwnProperty</span>.<span class="hljs-title function_">call</span>(child, <span class="hljs-string">&quot;own&quot;</span>);<br></code></pre>
+
+<h3 id="常用遍历-API"><a href="#常用遍历-API" class="headerlink" title="常用遍历 API"></a>常用遍历 API</h3><table>
+<thead>
+<tr>
+<th>API</th>
+<th>自有属性</th>
+<th>可枚举</th>
+<th>返回内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>for...in</code></td>
+<td>否，含可枚举继承属性</td>
+<td>是</td>
+<td>字符串键</td>
+</tr>
+<tr>
+<td><code>Object.keys(obj)</code></td>
+<td>是</td>
+<td>是</td>
+<td>字符串键数组</td>
+</tr>
+<tr>
+<td><code>Object.values(obj)</code></td>
+<td>是</td>
+<td>是</td>
+<td>值数组</td>
+</tr>
+<tr>
+<td><code>Object.entries(obj)</code></td>
+<td>是</td>
+<td>是</td>
+<td><code>[key, value]</code> 数组</td>
+</tr>
+<tr>
+<td><code>Object.getOwnPropertyNames(obj)</code></td>
+<td>是</td>
+<td>否，全部字符串键</td>
+<td>字符串键数组</td>
+</tr>
+<tr>
+<td><code>Object.getOwnPropertySymbols(obj)</code></td>
+<td>是</td>
+<td>否，全部 Symbol 键</td>
+<td>Symbol 键数组</td>
+</tr>
+<tr>
+<td><code>Reflect.ownKeys(obj)</code></td>
+<td>是</td>
+<td>否，全部键</td>
+<td>字符串与 Symbol 键数组</td>
+</tr>
+</tbody></table>
+<p>现代规范为自有属性键定义了稳定顺序：整数索引键升序、其余字符串按创建顺序、Symbol 键按创建顺序。<code>for...in</code> 还涉及原型链，不适合依赖枚举顺序；遍历对象数据通常优先使用 <code>Object.entries()</code>。</p>
+<p><code>for...of</code> 消费的是可迭代对象，不是“所有对象”的遍历语法。数组、字符串、<code>Map</code>、<code>Set</code> 等原生可迭代；普通对象默认没有 <code>Symbol.iterator</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, value] <span class="hljs-keyword">of</span> <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">entries</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span> &#125;)) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(key, value);<br>&#125;<br></code></pre>
+
+<h2 id="属性读取与赋值：原型链上的-Get-x2F-Set"><a href="#属性读取与赋值：原型链上的-Get-x2F-Set" class="headerlink" title="属性读取与赋值：原型链上的 [[Get]] &#x2F; [[Set]]"></a>属性读取与赋值：原型链上的 <code>[[Get]]</code> &#x2F; <code>[[Set]]</code></h2><p>规范使用内部操作描述属性访问。读取 <code>obj.key</code> 时，可以将 <code>[[Get]]</code> 简化为：先检查自身属性，未找到则沿 <code>[[Prototype]]</code> 向上；整条链都没有时得到 <code>undefined</code>。若找到 getter，会以接收者对象执行 getter。</p>
+<p>写入 <code>obj.key = value</code> 对应更复杂的 <code>[[Set]]</code>。以下情形最值得掌握：</p>
+<table>
+<thead>
+<tr>
+<th>原型链与自身状态</th>
+<th>赋值结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>自身存在可写数据属性</td>
+<td>修改自身属性值</td>
+</tr>
+<tr>
+<td>自身不存在，原型也没有该属性</td>
+<td>在自身创建属性</td>
+</tr>
+<tr>
+<td>原型有可写数据属性</td>
+<td>通常在自身创建同名属性，遮蔽原型属性</td>
+</tr>
+<tr>
+<td>原型有不可写数据属性</td>
+<td>赋值失败；严格模式抛出 <code>TypeError</code></td>
+</tr>
+<tr>
+<td>原型有 setter</td>
+<td>调用 setter，通常不会自动创建自身属性</td>
+</tr>
+<tr>
+<td>原型只有 getter</td>
+<td>赋值失败；严格模式抛出 <code>TypeError</code></td>
+</tr>
+</tbody></table>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> prototype = &#123; <span class="hljs-attr">role</span>: <span class="hljs-string">&quot;reader&quot;</span> &#125;;<br><span class="hljs-keyword">const</span> account = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(prototype);<br><br>account.<span class="hljs-property">role</span> = <span class="hljs-string">&quot;author&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(account.<span class="hljs-property">role</span>); <span class="hljs-comment">// &quot;author&quot;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(prototype.<span class="hljs-property">role</span>); <span class="hljs-comment">// &quot;reader&quot;</span><br></code></pre>
+
+<p>这不是复制原型属性，而是在 <code>account</code> 上创建同名自身属性，称为<strong>遮蔽</strong>（shadowing）。后续原型章节会进一步讨论委托、遮蔽与构造函数的误区。</p>
+<h2 id="练习：复制与冻结能保证什么"><a href="#练习：复制与冻结能保证什么" class="headerlink" title="练习：复制与冻结能保证什么"></a>练习：复制与冻结能保证什么</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> source = &#123;<br>  <span class="hljs-attr">options</span>: &#123; <span class="hljs-attr">theme</span>: <span class="hljs-string">&quot;dark&quot;</span> &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> copy = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, source);<br><span class="hljs-keyword">const</span> frozen = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">freeze</span>(source);<br><br>copy.<span class="hljs-property">options</span>.<span class="hljs-property">theme</span> = <span class="hljs-string">&quot;light&quot;</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(frozen.<span class="hljs-property">options</span>.<span class="hljs-property">theme</span>);<br></code></pre>
+
+<details>
+<summary>查看解析</summary>
+
+<p>输出 <code>&quot;light&quot;</code>。<code>Object.assign</code> 是浅复制，<code>copy.options</code> 与 <code>source.options</code> 指向同一个嵌套对象。<code>Object.freeze(source)</code> 只冻结了外层 <code>source</code>，没有冻结它引用的 <code>options</code> 对象，因此嵌套属性仍可被修改。</p>
+</details>
+
+<h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><ol>
+<li>对象字面量是创建普通对象的默认选择；无原型字典可用 <code>Object.create(null)</code>。</li>
+<li>原始值有 7 种；属性键是字符串或 <code>Symbol</code>，数字键会转换为字符串。</li>
+<li>函数是对象属性值，是否获得对象 <code>this</code> 取决于调用形式。</li>
+<li><code>Object.assign</code>、对象展开都是浅复制；<code>structuredClone</code> 适合许多数据类型，JSON 只适合 JSON 数据。</li>
+<li>数据属性与访问器属性使用不同描述符；<code>Object.defineProperty</code> 的默认描述符通常为 <code>false</code>。</li>
+<li>防扩展、密封、冻结都只约束自身属性，且默认是浅层约束。</li>
+<li><code>Object.hasOwn</code> 只检查自身属性，<code>in</code> 还会查原型链；遍历前应先选择属性范围与键类型。</li>
+<li>属性读取沿原型链委托，属性写入会受自身描述符、原型数据属性和 setter 共同影响。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Working_with_objects">MDN：对象</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object">MDN：Object</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/Window/structuredClone">MDN：structuredClone()</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">MDN：属性描述符</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-this-binding-rules-part-2-chapter-2/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第二章：this 全面解析 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-mixins-and-classes-part-2-chapter-4/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第四章：混合对象“类” </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%AD%97%E9%9D%A2%E9%87%8F%E6%98%AF%E9%BB%98%E8%AE%A4%E9%80%89%E6%8B%A9"><span class="toc-text">创建对象：字面量是默认选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%80%BC%E7%B1%BB%E5%9E%8B%E3%80%81%E5%8C%85%E8%A3%85%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%B1%9E%E6%80%A7%E9%94%AE"><span class="toc-text">值类型、包装对象与属性键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E5%80%BC%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">原始值不是对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E9%94%AE%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%88%96-Symbol"><span class="toc-text">属性键是字符串或 Symbol</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%B1%9E%E6%80%A7%EF%BC%9A-%E3%80%81-%E4%B8%8E%E5%87%BD%E6%95%B0%E5%B1%9E%E6%80%A7"><span class="toc-text">访问属性：.、[] 与函数属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%98%AF%E7%89%B9%E6%AE%8A%E5%AF%B9%E8%B1%A1%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%99%AE%E9%80%9A%E5%AD%97%E5%85%B8"><span class="toc-text">数组是特殊对象，不是普通字典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%85%88%E6%98%8E%E7%A1%AE%E9%9C%80%E8%A6%81%E4%BB%80%E4%B9%88%E8%AF%AD%E4%B9%89"><span class="toc-text">复制对象：先明确需要什么语义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-assign-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E5%B1%95%E5%BC%80%EF%BC%9A%E6%B5%85%E5%A4%8D%E5%88%B6"><span class="toc-text">Object.assign 与对象展开：浅复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#structuredClone%EF%BC%9A%E9%80%82%E5%90%88%E8%AE%B8%E5%A4%9A%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%B7%B1%E5%A4%8D%E5%88%B6"><span class="toc-text">structuredClone：适合许多数据对象的深复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSON-%E5%BA%8F%E5%88%97%E5%8C%96%E5%8F%AA%E9%80%82%E5%90%88-JSON-%E6%95%B0%E6%8D%AE"><span class="toc-text">JSON 序列化只适合 JSON 数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">属性描述符：数据属性与访问器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#writable%E3%80%81configurable-%E4%B8%8E-enumerable"><span class="toc-text">writable、configurable 与 enumerable</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%AE%8C%E6%95%B4%E6%80%A7%EF%BC%9A%E9%98%B2%E6%89%A9%E5%B1%95%E3%80%81%E5%AF%86%E5%B0%81%E4%B8%8E%E5%86%BB%E7%BB%93"><span class="toc-text">对象完整性：防扩展、密封与冻结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%AD%98%E5%9C%A8%E6%80%A7%E4%B8%8E%E9%81%8D%E5%8E%86%E8%8C%83%E5%9B%B4"><span class="toc-text">属性存在性与遍历范围</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%81%8D%E5%8E%86-API"><span class="toc-text">常用遍历 API</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E8%AF%BB%E5%8F%96%E4%B8%8E%E8%B5%8B%E5%80%BC%EF%BC%9A%E5%8E%9F%E5%9E%8B%E9%93%BE%E4%B8%8A%E7%9A%84-Get-x2F-Set"><span class="toc-text">属性读取与赋值：原型链上的 [[Get]] &#x2F; [[Set]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%A4%8D%E5%88%B6%E4%B8%8E%E5%86%BB%E7%BB%93%E8%83%BD%E4%BF%9D%E8%AF%81%E4%BB%80%E4%B9%88"><span class="toc-text">练习：复制与冻结能保证什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%AD%97%E9%9D%A2%E9%87%8F%E6%98%AF%E9%BB%98%E8%AE%A4%E9%80%89%E6%8B%A9"><span class="toc-text">创建对象：字面量是默认选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%80%BC%E7%B1%BB%E5%9E%8B%E3%80%81%E5%8C%85%E8%A3%85%E5%AF%B9%E8%B1%A1%E4%B8%8E%E5%B1%9E%E6%80%A7%E9%94%AE"><span class="toc-text">值类型、包装对象与属性键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E5%A7%8B%E5%80%BC%E4%B8%8D%E6%98%AF%E5%AF%B9%E8%B1%A1"><span class="toc-text">原始值不是对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E9%94%AE%E6%98%AF%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%88%96-Symbol"><span class="toc-text">属性键是字符串或 Symbol</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E5%B1%9E%E6%80%A7%EF%BC%9A-%E3%80%81-%E4%B8%8E%E5%87%BD%E6%95%B0%E5%B1%9E%E6%80%A7"><span class="toc-text">访问属性：.、[] 与函数属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%98%AF%E7%89%B9%E6%AE%8A%E5%AF%B9%E8%B1%A1%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%99%AE%E9%80%9A%E5%AD%97%E5%85%B8"><span class="toc-text">数组是特殊对象，不是普通字典</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E5%AF%B9%E8%B1%A1%EF%BC%9A%E5%85%88%E6%98%8E%E7%A1%AE%E9%9C%80%E8%A6%81%E4%BB%80%E4%B9%88%E8%AF%AD%E4%B9%89"><span class="toc-text">复制对象：先明确需要什么语义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-assign-%E4%B8%8E%E5%AF%B9%E8%B1%A1%E5%B1%95%E5%BC%80%EF%BC%9A%E6%B5%85%E5%A4%8D%E5%88%B6"><span class="toc-text">Object.assign 与对象展开：浅复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#structuredClone%EF%BC%9A%E9%80%82%E5%90%88%E8%AE%B8%E5%A4%9A%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%B7%B1%E5%A4%8D%E5%88%B6"><span class="toc-text">structuredClone：适合许多数据对象的深复制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JSON-%E5%BA%8F%E5%88%97%E5%8C%96%E5%8F%AA%E9%80%82%E5%90%88-JSON-%E6%95%B0%E6%8D%AE"><span class="toc-text">JSON 序列化只适合 JSON 数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E6%8F%8F%E8%BF%B0%E7%AC%A6%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%B1%9E%E6%80%A7%E4%B8%8E%E8%AE%BF%E9%97%AE%E5%99%A8%E5%B1%9E%E6%80%A7"><span class="toc-text">属性描述符：数据属性与访问器属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#writable%E3%80%81configurable-%E4%B8%8E-enumerable"><span class="toc-text">writable、configurable 与 enumerable</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E8%B1%A1%E5%AE%8C%E6%95%B4%E6%80%A7%EF%BC%9A%E9%98%B2%E6%89%A9%E5%B1%95%E3%80%81%E5%AF%86%E5%B0%81%E4%B8%8E%E5%86%BB%E7%BB%93"><span class="toc-text">对象完整性：防扩展、密封与冻结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E5%AD%98%E5%9C%A8%E6%80%A7%E4%B8%8E%E9%81%8D%E5%8E%86%E8%8C%83%E5%9B%B4"><span class="toc-text">属性存在性与遍历范围</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E9%81%8D%E5%8E%86-API"><span class="toc-text">常用遍历 API</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%9E%E6%80%A7%E8%AF%BB%E5%8F%96%E4%B8%8E%E8%B5%8B%E5%80%BC%EF%BC%9A%E5%8E%9F%E5%9E%8B%E9%93%BE%E4%B8%8A%E7%9A%84-Get-x2F-Set"><span class="toc-text">属性读取与赋值：原型链上的 [[Get]] &#x2F; [[Set]]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E5%A4%8D%E5%88%B6%E4%B8%8E%E5%86%BB%E7%BB%93%E8%83%BD%E4%BF%9D%E8%AF%81%E4%BB%80%E4%B9%88"><span class="toc-text">练习：复制与冻结能保证什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

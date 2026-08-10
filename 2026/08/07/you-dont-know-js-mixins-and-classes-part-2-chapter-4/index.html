@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>《你不知道的 JavaScript（上卷）》第二部分第四章：混合对象“类”</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="《你不知道的 JavaScript（上卷）》第二部分第四章：混合对象“类”">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/07/you-dont-know-js-mixins-and-classes-part-2-chapter-4/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="区分传统类模型、构造函数与原型委托、显式混入和方法借用，理解为什么属性复制并不等同于继承，以及何时应优先组合。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-07">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="JavaScript">
+        
+          <meta 
+            property="og:article:tag" 
+            content="前端基础">
+        
+          <meta 
+            property="og:article:tag" 
+            content="对象">
+        
+          <meta 
+            property="og:article:tag" 
+            content="原型">
+        
+          <meta 
+            property="og:article:tag" 
+            content="mixin">
+        
+          <meta 
+            property="og:article:tag" 
+            content="class">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%8C%BA%E5%88%86%E4%B8%89%E7%A7%8D%E2%80%9C%E5%A4%8D%E7%94%A8%E2%80%9D"><span class="toc-text">先区分三种“复用”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E7%B1%BB%E6%A8%A1%E5%9E%8B%E4%B8%8E-JavaScript-%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-text">传统类模型与 JavaScript 的对象模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8E%9F%E5%9E%8B%EF%BC%9A%E5%AE%9E%E4%BE%8B%E7%8A%B6%E6%80%81%E5%92%8C%E5%85%B1%E4%BA%AB%E8%A1%8C%E4%B8%BA"><span class="toc-text">构造函数与原型：实例状态和共享行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E5%BC%8F%E2%80%9C%E7%BB%A7%E6%89%BF%E2%80%9D%EF%BC%9A%E9%81%BF%E5%85%8D%E7%94%A8%E7%88%B6%E5%AE%9E%E4%BE%8B%E5%BD%93%E5%AD%90%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型式“继承”：避免用父实例当子原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%BE%E5%BC%8F%E6%B7%B7%E5%85%A5%EF%BC%9A%E5%A4%8D%E5%88%B6%E5%B1%9E%E6%80%A7%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%BB%BA%E7%AB%8B%E5%A7%94%E6%89%98"><span class="toc-text">显式混入：复制属性，而不是建立委托</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E4%BB%8D%E5%8F%AF%E8%83%BD%E5%85%B1%E4%BA%AB%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8"><span class="toc-text">复制仍可能共享可变引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%80%9C%E4%BC%AA%E5%A4%9A%E6%80%81%E2%80%9D%E7%9A%84%E8%80%A6%E5%90%88"><span class="toc-text">“伪多态”的耦合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%80%9F%E7%94%A8%EF%BC%9A%E4%B9%A6%E4%B8%AD%E7%9A%84%E2%80%9C%E9%9A%90%E5%BC%8F%E6%B7%B7%E5%85%A5%E2%80%9D"><span class="toc-text">方法借用：书中的“隐式混入”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%84%E7%94%9F%E5%BC%8F%E5%B7%A5%E5%8E%82%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%90%8E%E5%86%8D%E5%A2%9E%E5%BC%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">寄生式工厂：创建后再增强对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B7%B7%E5%85%A5%E5%B8%B8%E5%B8%B8%E4%B8%8D%E5%A6%82%E7%BB%84%E5%90%88"><span class="toc-text">为什么混入常常不如组合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#class-extends%EF%BC%9A%E6%9B%B4%E6%B8%85%E6%99%B0%E7%9A%84%E7%B1%BB%E5%BC%8F%E8%AF%AD%E6%B3%95%EF%BC%8C%E4%B8%8D%E6%94%B9%E5%8F%98%E5%8E%9F%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">class extends：更清晰的类式语法，不改变原型基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%BF%99%E6%98%AF%E5%A4%8D%E5%88%B6%E8%BF%98%E6%98%AF%E5%A7%94%E6%89%98"><span class="toc-text">练习：这是复制还是委托</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      《你不知道的 JavaScript（上卷）》第二部分第四章：混合对象“类”
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/you-dont-know-js-mixins-and-classes-part-2-chapter-4.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-06T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-07</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/JavaScript/" 
+            class="post-meta-link">
+            JavaScript
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+            class="post-meta-link">
+            前端基础
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%AF%B9%E8%B1%A1/" 
+            class="post-meta-link">
+            对象
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%8E%9F%E5%9E%8B/" 
+            class="post-meta-link">
+            原型
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/mixin/" 
+            class="post-meta-link">
+            mixin
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/class/" 
+            class="post-meta-link">
+            class
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <blockquote>
+<p>本章延续<a href="/2026/08/07/you-dont-know-js-objects-part-2-chapter-3/">对象</a>的原型与属性模型。书中批评的是把 Java&#x2F;C++ 风格的“类复制”心智模型机械搬到 JavaScript；现代 JavaScript 已有 <code>class</code> 语法和额外语义，但对象行为查找仍建立在原型委托之上。</p>
+</blockquote>
+<h2 id="先区分三种“复用”"><a href="#先区分三种“复用”" class="headerlink" title="先区分三种“复用”"></a>先区分三种“复用”</h2><p>讨论“类”“继承”和混入前，先分清它们实际在做什么：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>核心动作</th>
+<th>典型结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原型委托</td>
+<td>建立对象之间的原型关联</td>
+<td>查找行为时向原型对象委托</td>
+</tr>
+<tr>
+<td>显式混入</td>
+<td>将属性描述符复制到目标</td>
+<td>目标获得自己的同名属性</td>
+</tr>
+<tr>
+<td>方法借用</td>
+<td>用 <code>call</code>&#x2F;<code>apply</code> 以另一对象为 <code>this</code> 调用函数</td>
+<td>不复制属性，只复用一次行为</td>
+</tr>
+</tbody></table>
+<p>这些方式都能实现某种复用，但它们对状态、覆盖、重构和调试的影响完全不同。混淆它们，正是许多“JavaScript 类继承”代码难以维护的起点。</p>
+<h2 id="传统类模型与-JavaScript-的对象模型"><a href="#传统类模型与-JavaScript-的对象模型" class="headerlink" title="传统类模型与 JavaScript 的对象模型"></a>传统类模型与 JavaScript 的对象模型</h2><p>在经典面向类语言中，类通常描述实例的字段和行为，子类可继承并重写父类行为，多态调用依据实例的运行时类型选择实现。具体语言的对象内存布局和继承实现并不一定真的“复制整份父类”，但“实例属于某个类”的心智模型很强。</p>
+<p>JavaScript 更直接地从对象出发。对象可以通过 <code>[[Prototype]]</code> 链在属性缺失时向另一个对象查找；没有必要先定义一个类再创建对象。<code>new</code> 也不是复制一个模板，而是创建新对象、建立原型关联并以新对象作为构造调用的 <code>this</code>。</p>
+<p>ES2015 的 <code>class</code> 不是完全无意义的“纯文本糖”：它引入了必须用 <code>new</code> 调用、类体严格模式、方法不可枚举、<code>super</code>、私有字段等语义。但实例方法的共享和查找依然通过原型链完成，因此理解原型委托仍然必要。</p>
+<h2 id="构造函数与原型：实例状态和共享行为"><a href="#构造函数与原型：实例状态和共享行为" class="headerlink" title="构造函数与原型：实例状态和共享行为"></a>构造函数与原型：实例状态和共享行为</h2><p>任何普通可构造函数都能配合 <code>new</code> 使用；“构造函数”只是这种调用角色，不是独立的函数类型。约定上使用 PascalCase 命名以提醒调用方使用 <code>new</code>。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Car</span>(<span class="hljs-params">wheelCount</span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">wheelCount</span> = wheelCount; <span class="hljs-comment">// 每个实例各自拥有的状态</span><br>&#125;<br><br><span class="hljs-title class_">Car</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">drive</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">drive</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.wheelCount&#125;</span> wheels moving`</span>);<br>&#125;;<br><br><span class="hljs-keyword">const</span> first = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Car</span>(<span class="hljs-number">4</span>);<br><span class="hljs-keyword">const</span> second = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Car</span>(<span class="hljs-number">4</span>);<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(first.<span class="hljs-property">drive</span> === second.<span class="hljs-property">drive</span>); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><code>drive</code> 是 <code>Car.prototype</code> 上的一个函数值，两个实例都通过原型链查找到同一个函数，不会为每个实例复制函数。执行 <code>first.drive()</code> 时，<code>this</code> 仍由调用表达式绑定为 <code>first</code>。</p>
+<h2 id="原型式“继承”：避免用父实例当子原型"><a href="#原型式“继承”：避免用父实例当子原型" class="headerlink" title="原型式“继承”：避免用父实例当子原型"></a>原型式“继承”：避免用父实例当子原型</h2><p>下面是容易出现问题的旧写法：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-title class_">Child</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Parent</span>();<br></code></pre>
+
+<p>它会执行 <code>Parent</code> 构造函数，并把父构造函数创建的实例状态放到 <code>Child.prototype</code> 上。若该状态是数组或对象，所有子实例可能意外共享它；构造函数还有副作用或需要参数时，问题更明显。</p>
+<p>更明确的原型关联方式是 <code>Object.create()</code>：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Vehicle</span>(<span class="hljs-params">engine</span>) &#123;<br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">engine</span> = engine;<br>&#125;<br><br><span class="hljs-title class_">Vehicle</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">ignite</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">ignite</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.engine&#125;</span> engine started`</span>;<br>&#125;;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Car</span>(<span class="hljs-params">engine, wheelCount</span>) &#123;<br>  <span class="hljs-title class_">Vehicle</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>, engine); <span class="hljs-comment">// 初始化这个实例自己的状态</span><br>  <span class="hljs-variable language_">this</span>.<span class="hljs-property">wheelCount</span> = wheelCount;<br>&#125;<br><br><span class="hljs-title class_">Car</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(<span class="hljs-title class_">Vehicle</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>);<br><span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(<span class="hljs-title class_">Car</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>, <span class="hljs-string">&quot;constructor&quot;</span>, &#123;<br>  <span class="hljs-attr">value</span>: <span class="hljs-title class_">Car</span>,<br>  <span class="hljs-attr">writable</span>: <span class="hljs-literal">true</span>,<br>  <span class="hljs-attr">configurable</span>: <span class="hljs-literal">true</span>,<br>&#125;);<br><br><span class="hljs-title class_">Car</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">drive</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">drive</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.ignite()&#125;</span> with <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.wheelCount&#125;</span> wheels`</span>;<br>&#125;;<br><br><span class="hljs-keyword">const</span> car = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Car</span>(<span class="hljs-string">&quot;electric&quot;</span>, <span class="hljs-number">4</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(car.<span class="hljs-title function_">drive</span>());<br></code></pre>
+
+<p>这里 <code>Vehicle.call(this, engine)</code> 初始化的是 <code>car</code> 的自有状态；<code>Car.prototype</code> 只委托给 <code>Vehicle.prototype</code>，不会携带某个父实例的可变数据。修复 <code>constructor</code> 属性有助于反射和调试，但它不是 <code>new</code> 的工作依据，也不是运行时类型检查的可靠工具。</p>
+<p>这种模式仍有成本：子构造函数必须显式调用父构造函数，重写方法时调用“父方法”往往要硬编码 <code>Vehicle.prototype.ignite.call(this)</code>。这正是书中质疑类式模拟的原因之一。</p>
+<h2 id="显式混入：复制属性，而不是建立委托"><a href="#显式混入：复制属性，而不是建立委托" class="headerlink" title="显式混入：复制属性，而不是建立委托"></a>显式混入：复制属性，而不是建立委托</h2><p>显式混入（mixin）将一个来源对象的属性复制到目标对象，以组合多个来源的能力。最简单的写法通常是：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> canLog = &#123;<br>  <span class="hljs-title function_">log</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>);<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> user = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span> &#125;, canLog);<br>user.<span class="hljs-title function_">log</span>(); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p>这不是原型继承：<code>user</code> 得到了自己的 <code>log</code> 属性。<code>Object.assign</code> 只复制自有可枚举属性，会读取来源 getter、执行目标 setter，且不保留描述符。若确实需要复制所有自有键与描述符，应显式处理冲突：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">copyMixin</span>(<span class="hljs-params">target, source</span>) &#123;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> key <span class="hljs-keyword">of</span> <span class="hljs-title class_">Reflect</span>.<span class="hljs-title function_">ownKeys</span>(source)) &#123;<br>    <span class="hljs-keyword">if</span> (key === <span class="hljs-string">&quot;constructor&quot;</span> || <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(target, key)) &#123;<br>      <span class="hljs-keyword">continue</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">const</span> descriptor = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getOwnPropertyDescriptor</span>(source, key);<br>    <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">defineProperty</span>(target, key, descriptor);<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> target;<br>&#125;<br></code></pre>
+
+<p>这段工具刻意跳过既有属性，避免无声覆盖；实际项目还应根据领域决定冲突是拒绝、覆盖还是组合。不要使用 <code>for...in</code> 作为通用混入实现，因为它会遍历来源的可枚举继承属性。</p>
+<h3 id="复制仍可能共享可变引用"><a href="#复制仍可能共享可变引用" class="headerlink" title="复制仍可能共享可变引用"></a>复制仍可能共享可变引用</h3><p>混入复制的是属性值或描述符，而不是任意对象图的深拷贝：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> defaults = &#123;<br>  <span class="hljs-attr">options</span>: &#123; <span class="hljs-attr">retry</span>: <span class="hljs-number">3</span> &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> serviceA = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, defaults);<br><span class="hljs-keyword">const</span> serviceB = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, defaults);<br><br>serviceA.<span class="hljs-property">options</span>.<span class="hljs-property">retry</span> = <span class="hljs-number">1</span>;<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(serviceB.<span class="hljs-property">options</span>.<span class="hljs-property">retry</span>); <span class="hljs-comment">// 1</span><br></code></pre>
+
+<p>两个目标对象的 <code>options</code> 指向同一个对象。若需要独立状态，应在创建实例时创建新对象、使用工厂函数，或针对数据结构采用合适的复制策略。</p>
+<h3 id="“伪多态”的耦合"><a href="#“伪多态”的耦合" class="headerlink" title="“伪多态”的耦合"></a>“伪多态”的耦合</h3><p>当混入后的方法需要调用来源对象的同名实现时，常见写法是：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-title class_">Vehicle</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">ignite</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>);<br></code></pre>
+
+<p>它把来源对象名硬编码进实现。重命名、替换来源或增加多层组合时，依赖关系变得隐蔽；这不是 <code>super</code> 的通用替代品。优先让共享能力保持小而独立，通过明确函数调用、组合对象或更清晰的接口协作。</p>
+<h2 id="方法借用：书中的“隐式混入”"><a href="#方法借用：书中的“隐式混入”" class="headerlink" title="方法借用：书中的“隐式混入”"></a>方法借用：书中的“隐式混入”</h2><p>书中将下面一类模式称为隐式混入：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> logger = &#123;<br>  <span class="hljs-title function_">log</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">name</span>);<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> user = &#123;<br>  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;Ada&quot;</span>,<br>  <span class="hljs-title function_">print</span>(<span class="hljs-params"></span>) &#123;<br>    logger.<span class="hljs-property">log</span>.<span class="hljs-title function_">call</span>(<span class="hljs-variable language_">this</span>);<br>  &#125;,<br>&#125;;<br><br>user.<span class="hljs-title function_">print</span>(); <span class="hljs-comment">// &quot;Ada&quot;</span><br></code></pre>
+
+<p>这里没有复制 <code>logger.log</code>，而是以 <code>user</code> 为 <code>this</code> 临时调用它。更准确的工程术语通常是<strong>方法借用</strong>。它不仅能操作状态，也会隐式要求接收者满足 <code>logger.log</code> 所需的字段和不变量；这种隐藏约定会使重构变难。</p>
+<p>若只是复用纯计算逻辑，直接写成显式参数函数更清晰：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">formatName</span>(<span class="hljs-params">name</span>) &#123;<br>  <span class="hljs-keyword">return</span> name.<span class="hljs-title function_">toUpperCase</span>();<br>&#125;<br></code></pre>
+
+<h2 id="寄生式工厂：创建后再增强对象"><a href="#寄生式工厂：创建后再增强对象" class="headerlink" title="寄生式工厂：创建后再增强对象"></a>寄生式工厂：创建后再增强对象</h2><p>寄生继承（parasitic inheritance）通常指一种工厂式写法：先创建一个对象，再为它添加或包装行为后返回。它可以避开 <code>Child.prototype = new Parent()</code> 的共享实例状态问题，但会引入包装函数和显式“父方法”调用的复杂度。</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> vehicleProto = &#123;<br>  <span class="hljs-title function_">drive</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.engine&#125;</span> moving`</span>;<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">createCar</span>(<span class="hljs-params">engine</span>) &#123;<br>  <span class="hljs-keyword">const</span> car = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(vehicleProto);<br>  car.<span class="hljs-property">engine</span> = engine;<br>  car.<span class="hljs-property">wheelCount</span> = <span class="hljs-number">4</span>;<br><br>  <span class="hljs-keyword">const</span> inheritedDrive = car.<span class="hljs-property">drive</span>;<br>  car.<span class="hljs-property">drive</span> = <span class="hljs-keyword">function</span> <span class="hljs-title function_">drive</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;inheritedDrive.call(<span class="hljs-variable language_">this</span>)&#125;</span> on <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.wheelCount&#125;</span> wheels`</span>;<br>  &#125;;<br><br>  <span class="hljs-keyword">return</span> car;<br>&#125;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">createCar</span>(<span class="hljs-string">&quot;electric&quot;</span>).<span class="hljs-title function_">drive</span>());<br></code></pre>
+
+<p>这种方式本质上更接近工厂和对象组合。它没有自动解决命名冲突、深拷贝或封装问题，应在确实能让领域模型更清晰时使用。</p>
+<h2 id="为什么混入常常不如组合"><a href="#为什么混入常常不如组合" class="headerlink" title="为什么混入常常不如组合"></a>为什么混入常常不如组合</h2><p>混入仍可用于小型、无状态、约定清晰的横切能力，例如为测试对象添加一个受控的序列化函数。但它有明显限制：</p>
+<ul>
+<li>复制属性会制造来源与目标之间的重复定义，后续修改不会自动同步；</li>
+<li>可变引用可能被多个目标共享；</li>
+<li>同名冲突、初始化顺序和“父方法”调用难以标准化；</li>
+<li>复制出的公开属性并不自动私有，但函数仍可以通过闭包保存私有状态。</li>
+</ul>
+<p>与其构造复杂的“多重继承”层级，通常更推荐<strong>组合</strong>：把所需能力作为独立对象、函数或服务显式注入，再由对象协调调用。JavaScript 本身不提供 <code>class</code> 的多重继承，<code>class</code> 语法也不会消除混入固有的冲突处理问题。</p>
+<h2 id="class-extends：更清晰的类式语法，不改变原型基础"><a href="#class-extends：更清晰的类式语法，不改变原型基础" class="headerlink" title="class extends：更清晰的类式语法，不改变原型基础"></a><code>class extends</code>：更清晰的类式语法，不改变原型基础</h2><p>现代 <code>class</code> 可以更直接地表达单继承与 <code>super</code> 调用：</p>
+<pre class="highlight"><code class="hljs js"><span class="hljs-keyword">class</span> <span class="hljs-title class_">VehicleClass</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">engine</span>) &#123;<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">engine</span> = engine;<br>  &#125;<br><br>  <span class="hljs-title function_">ignite</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.engine&#125;</span> engine started`</span>;<br>  &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CarClass</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">VehicleClass</span> &#123;<br>  <span class="hljs-title function_">constructor</span>(<span class="hljs-params">engine, wheelCount</span>) &#123;<br>    <span class="hljs-variable language_">super</span>(engine);<br>    <span class="hljs-variable language_">this</span>.<span class="hljs-property">wheelCount</span> = wheelCount;<br>  &#125;<br><br>  <span class="hljs-title function_">drive</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-variable language_">super</span>.ignite()&#125;</span> with <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.wheelCount&#125;</span> wheels`</span>;<br>  &#125;<br>&#125;<br></code></pre>
+
+<p><code>extends</code> 建立原型关系，实例方法仍放在原型上共享；<code>super</code> 让方法覆写更清晰。它也带来前文提到的类特有语义，因此不应简单说它与手写构造函数“完全相同”。选择 <code>class</code>、工厂、组合或后续介绍的 OLOO，应以团队约定和领域复杂度为准，而不是假设其中某一种天然最优。</p>
+<h2 id="练习：这是复制还是委托"><a href="#练习：这是复制还是委托" class="headerlink" title="练习：这是复制还是委托"></a>练习：这是复制还是委托</h2><pre class="highlight"><code class="hljs js"><span class="hljs-keyword">const</span> prototype = &#123;<br>  <span class="hljs-title function_">greet</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">`Hello, <span class="hljs-subst">$&#123;<span class="hljs-variable language_">this</span>.name&#125;</span>`</span>;<br>  &#125;,<br>&#125;;<br><br><span class="hljs-keyword">const</span> user = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">create</span>(prototype);<br>user.<span class="hljs-property">name</span> = <span class="hljs-string">&quot;Ada&quot;</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title class_">Object</span>.<span class="hljs-title function_">hasOwn</span>(user, <span class="hljs-string">&quot;greet&quot;</span>));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(user.<span class="hljs-title function_">greet</span>());<br></code></pre>
+
+<details>
+<summary>查看解析</summary>
+
+<p>依次输出 <code>false</code> 和 <code>&quot;Hello, Ada&quot;</code>。<code>user</code> 没有自己的 <code>greet</code> 属性，读取时会沿原型链在 <code>prototype</code> 上找到函数。调用表达式仍是 <code>user.greet()</code>，因此函数中的 <code>this</code> 是 <code>user</code>。</p>
+</details>
+
+<h2 id="本章要点"><a href="#本章要点" class="headerlink" title="本章要点"></a>本章要点</h2><ol>
+<li>原型委托、属性复制和方法借用都是复用手段，但不是同一种机制。</li>
+<li><code>new</code> 创建新对象并建立原型关联，不会复制一个“类模板”。</li>
+<li>构造函数的实例状态应放在实例自身，共享行为放在原型；建立原型关系优先使用 <code>Object.create(Parent.prototype)</code>。</li>
+<li>显式混入复制属性，不会自动处理描述符、冲突、可变引用或来源更新。</li>
+<li>书中的“隐式混入”本质是方法借用，会引入对接收者状态的隐式要求。</li>
+<li>组合通常比模拟多重继承更容易维护；OLOO 是下一章将介绍的另一种对象关联设计。</li>
+<li><code>class extends</code> 提供更清晰的单继承与 <code>super</code> 语法，但实例行为查找仍基于原型链。</li>
+</ol>
+<h2 id="延伸阅读"><a href="#延伸阅读" class="headerlink" title="延伸阅读"></a>延伸阅读</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain">MDN：继承与原型链</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/create">MDN：Object.create()</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes">MDN：类</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">MDN：Object.assign()</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/07/you-dont-know-js-objects-part-2-chapter-3/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第三章：对象 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-prototypes-part-2-chapter-5/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第五章：原型 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%8C%BA%E5%88%86%E4%B8%89%E7%A7%8D%E2%80%9C%E5%A4%8D%E7%94%A8%E2%80%9D"><span class="toc-text">先区分三种“复用”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E7%B1%BB%E6%A8%A1%E5%9E%8B%E4%B8%8E-JavaScript-%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-text">传统类模型与 JavaScript 的对象模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8E%9F%E5%9E%8B%EF%BC%9A%E5%AE%9E%E4%BE%8B%E7%8A%B6%E6%80%81%E5%92%8C%E5%85%B1%E4%BA%AB%E8%A1%8C%E4%B8%BA"><span class="toc-text">构造函数与原型：实例状态和共享行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E5%BC%8F%E2%80%9C%E7%BB%A7%E6%89%BF%E2%80%9D%EF%BC%9A%E9%81%BF%E5%85%8D%E7%94%A8%E7%88%B6%E5%AE%9E%E4%BE%8B%E5%BD%93%E5%AD%90%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型式“继承”：避免用父实例当子原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%BE%E5%BC%8F%E6%B7%B7%E5%85%A5%EF%BC%9A%E5%A4%8D%E5%88%B6%E5%B1%9E%E6%80%A7%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%BB%BA%E7%AB%8B%E5%A7%94%E6%89%98"><span class="toc-text">显式混入：复制属性，而不是建立委托</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E4%BB%8D%E5%8F%AF%E8%83%BD%E5%85%B1%E4%BA%AB%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8"><span class="toc-text">复制仍可能共享可变引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%80%9C%E4%BC%AA%E5%A4%9A%E6%80%81%E2%80%9D%E7%9A%84%E8%80%A6%E5%90%88"><span class="toc-text">“伪多态”的耦合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%80%9F%E7%94%A8%EF%BC%9A%E4%B9%A6%E4%B8%AD%E7%9A%84%E2%80%9C%E9%9A%90%E5%BC%8F%E6%B7%B7%E5%85%A5%E2%80%9D"><span class="toc-text">方法借用：书中的“隐式混入”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%84%E7%94%9F%E5%BC%8F%E5%B7%A5%E5%8E%82%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%90%8E%E5%86%8D%E5%A2%9E%E5%BC%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">寄生式工厂：创建后再增强对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B7%B7%E5%85%A5%E5%B8%B8%E5%B8%B8%E4%B8%8D%E5%A6%82%E7%BB%84%E5%90%88"><span class="toc-text">为什么混入常常不如组合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#class-extends%EF%BC%9A%E6%9B%B4%E6%B8%85%E6%99%B0%E7%9A%84%E7%B1%BB%E5%BC%8F%E8%AF%AD%E6%B3%95%EF%BC%8C%E4%B8%8D%E6%94%B9%E5%8F%98%E5%8E%9F%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">class extends：更清晰的类式语法，不改变原型基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%BF%99%E6%98%AF%E5%A4%8D%E5%88%B6%E8%BF%98%E6%98%AF%E5%A7%94%E6%89%98"><span class="toc-text">练习：这是复制还是委托</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%8C%BA%E5%88%86%E4%B8%89%E7%A7%8D%E2%80%9C%E5%A4%8D%E7%94%A8%E2%80%9D"><span class="toc-text">先区分三种“复用”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E7%B1%BB%E6%A8%A1%E5%9E%8B%E4%B8%8E-JavaScript-%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="toc-text">传统类模型与 JavaScript 的对象模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E5%8E%9F%E5%9E%8B%EF%BC%9A%E5%AE%9E%E4%BE%8B%E7%8A%B6%E6%80%81%E5%92%8C%E5%85%B1%E4%BA%AB%E8%A1%8C%E4%B8%BA"><span class="toc-text">构造函数与原型：实例状态和共享行为</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E5%BC%8F%E2%80%9C%E7%BB%A7%E6%89%BF%E2%80%9D%EF%BC%9A%E9%81%BF%E5%85%8D%E7%94%A8%E7%88%B6%E5%AE%9E%E4%BE%8B%E5%BD%93%E5%AD%90%E5%8E%9F%E5%9E%8B"><span class="toc-text">原型式“继承”：避免用父实例当子原型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%98%BE%E5%BC%8F%E6%B7%B7%E5%85%A5%EF%BC%9A%E5%A4%8D%E5%88%B6%E5%B1%9E%E6%80%A7%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E5%BB%BA%E7%AB%8B%E5%A7%94%E6%89%98"><span class="toc-text">显式混入：复制属性，而不是建立委托</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6%E4%BB%8D%E5%8F%AF%E8%83%BD%E5%85%B1%E4%BA%AB%E5%8F%AF%E5%8F%98%E5%BC%95%E7%94%A8"><span class="toc-text">复制仍可能共享可变引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%80%9C%E4%BC%AA%E5%A4%9A%E6%80%81%E2%80%9D%E7%9A%84%E8%80%A6%E5%90%88"><span class="toc-text">“伪多态”的耦合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%80%9F%E7%94%A8%EF%BC%9A%E4%B9%A6%E4%B8%AD%E7%9A%84%E2%80%9C%E9%9A%90%E5%BC%8F%E6%B7%B7%E5%85%A5%E2%80%9D"><span class="toc-text">方法借用：书中的“隐式混入”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%84%E7%94%9F%E5%BC%8F%E5%B7%A5%E5%8E%82%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%90%8E%E5%86%8D%E5%A2%9E%E5%BC%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">寄生式工厂：创建后再增强对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B7%B7%E5%85%A5%E5%B8%B8%E5%B8%B8%E4%B8%8D%E5%A6%82%E7%BB%84%E5%90%88"><span class="toc-text">为什么混入常常不如组合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#class-extends%EF%BC%9A%E6%9B%B4%E6%B8%85%E6%99%B0%E7%9A%84%E7%B1%BB%E5%BC%8F%E8%AF%AD%E6%B3%95%EF%BC%8C%E4%B8%8D%E6%94%B9%E5%8F%98%E5%8E%9F%E5%9E%8B%E5%9F%BA%E7%A1%80"><span class="toc-text">class extends：更清晰的类式语法，不改变原型基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0%EF%BC%9A%E8%BF%99%E6%98%AF%E5%A4%8D%E5%88%B6%E8%BF%98%E6%98%AF%E5%A7%94%E6%89%98"><span class="toc-text">练习：这是复制还是委托</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%AC%E7%AB%A0%E8%A6%81%E7%82%B9"><span class="toc-text">本章要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB"><span class="toc-text">延伸阅读</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

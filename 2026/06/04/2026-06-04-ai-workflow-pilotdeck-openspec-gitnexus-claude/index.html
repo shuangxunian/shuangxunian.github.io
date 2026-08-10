@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作流</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作流">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/06/04/2026-06-04-ai-workflow-pilotdeck-openspec-gitnexus-claude/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="从「对话玩具」到真正干活的生产力工具——记录我用四个工具搭建的 AI 编程工作流。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-06-04">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-06-04">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Claude">
+        
+          <meta 
+            property="og:article:tag" 
+            content="多智能体">
+        
+          <meta 
+            property="og:article:tag" 
+            content="开发工具">
+        
+          <meta 
+            property="og:article:tag" 
+            content="工作流">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E7%94%A8-Claude-%E4%B8%8D%E5%A4%9F"><span class="toc-text">背景：为什么单用 Claude 不够</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%80%EF%BC%9APilotDeck-%E2%80%94-%E5%A4%9A-Agent-%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0"><span class="toc-text">工具一：PilotDeck — 多 Agent 调度平台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BA%8C%EF%BC%9AOpenSpec-%E2%80%94-%E8%A7%84%E8%8C%83%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-text">工具二：OpenSpec — 规范驱动开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="toc-text">为什么需要它？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%89%EF%BC%9AGitNexus-%E2%80%94-%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1"><span class="toc-text">工具三：GitNexus — 代码库知识图谱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E8%B5%B7%E6%9D%A5%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">组合起来：完整工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%84%9F%E5%8F%97"><span class="toc-text">使用感受</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      PilotDeck + OpenSpec + GitNexus + Claude：我的 AI 辅助开发工作流
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-06-04-ai-workflow-pilotdeck-openspec-gitnexus-claude.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-06-03T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-06-04</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.5k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI/" 
+            class="post-meta-link">
+            AI
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Claude/" 
+            class="post-meta-link">
+            Claude
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/" 
+            class="post-meta-link">
+            多智能体
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/" 
+            class="post-meta-link">
+            开发工具
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" 
+            class="post-meta-link">
+            工作流
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>最近把 AI 辅助开发这件事想明白了一些，用上了四个工具的组合，记录一下。</p>
+<h2 id="背景：为什么单用-Claude-不够"><a href="#背景：为什么单用-Claude-不够" class="headerlink" title="背景：为什么单用 Claude 不够"></a>背景：为什么单用 Claude 不够</h2><p>直接用 Claude 写代码，最大的问题不是能力，是<strong>上下文管理</strong>。</p>
+<ul>
+<li>代码库大了，Claude 不知道调用链在哪</li>
+<li>需求模糊，AI 猜着写，常常遗漏要求或加了多余的东西</li>
+<li>多个项目并行，上下文混在一起</li>
+<li>每次对话都要重新喂背景，效率极低</li>
+</ul>
+<p>要解决这些问题，需要在 Claude 外面搭一层基础设施。</p>
+<hr>
+<h2 id="工具一：PilotDeck-—-多-Agent-调度平台"><a href="#工具一：PilotDeck-—-多-Agent-调度平台" class="headerlink" title="工具一：PilotDeck — 多 Agent 调度平台"></a>工具一：PilotDeck — 多 Agent 调度平台</h2><p><a target="_blank" rel="noopener" href="https://github.com/OpenBMB/PilotDeck">PilotDeck</a> 是清华 OpenBMB 团队开源的 Agent 平台，核心理念是 <strong>WorkSpace 工作舱</strong>：</p>
+<ul>
+<li>每个项目一个独立的舱</li>
+<li>舱内有专属文件、专属记忆、专属技能</li>
+<li>多项目并行互不干扰</li>
+</ul>
+<p>除了工作舱，它还有几个关键能力：</p>
+<p><strong>Smart Router（省钱路由）</strong>：TokenSaver 智能降档 + 多 Provider Fallback。复杂任务用强模型，简单任务自动降档，账单直接少一截。</p>
+<p><strong>双层记忆</strong>：Project Memory + Feedback Memory。AI 犯过的错、你纠正过的决策，都会沉淀下来，下次不再踩坑。白盒可追溯，不是黑盒魔法。</p>
+<p><strong>Always-on 后台常驻</strong>：部署完你去干别的，它自己推进任务。Cron 定时任务 + Discovery 主动发现，不用你盯着对话框。</p>
+<p>PilotDeck 解决的是<strong>多项目、多任务的调度和记忆问题</strong>，是整套工作流的骨架。</p>
+<hr>
+<h2 id="工具二：OpenSpec-—-规范驱动开发"><a href="#工具二：OpenSpec-—-规范驱动开发" class="headerlink" title="工具二：OpenSpec — 规范驱动开发"></a>工具二：OpenSpec — 规范驱动开发</h2><p><a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec">OpenSpec</a> 是一个为 AI 编码助手设计的规范驱动开发工具。一句话：<strong>在写代码之前，先让人和 AI 对需求达成明确共识</strong>。</p>
+<h3 id="为什么需要它？"><a href="#为什么需要它？" class="headerlink" title="为什么需要它？"></a>为什么需要它？</h3><p>AI 编码助手的典型问题：</p>
+<ul>
+<li>根据模糊提示生成不符合需求的代码</li>
+<li>遗漏重要功能要求，或添加不必要的功能</li>
+<li>代码行为不可预测</li>
+</ul>
+<p>OpenSpec 的思路是<strong>规范先行</strong>：把需求写成结构化的 spec 文件，AI 根据 spec 写代码，而不是根据你一句话描述猜。</p>
+<h3 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h3><p>OpenSpec 的核心是四步循环：</p>
+<pre class="highlight"><code class="hljs markdown"><span class="hljs-bullet">1.</span> 起草提案（proposal）<br>   → openspec init / /openspec:proposal &lt;功能描述&gt;<br>   → AI 生成 proposal.md + tasks.md + 规范差异文件<br><br><span class="hljs-bullet">2.</span> 审查对齐<br>   → 与 AI 讨论，补充验收标准，直到双方达成一致<br><br><span class="hljs-bullet">3.</span> 实施<br>   → /openspec:apply <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">change-name</span>&gt;</span></span><br>   → AI 按 tasks.md 逐步实施，打勾标记<br><br><span class="hljs-bullet">4.</span> 归档<br>   → openspec archive <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">change-name</span>&gt;</span></span><br>   → 变更合并回主规范，留存完整历史<br></code></pre>
+
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><pre class="highlight"><code class="hljs cmake">openspec/<br>├── specs/          <span class="hljs-comment"># 当前规范（真理源）</span><br>├── changes/        <span class="hljs-comment"># 进行中的变更提案</span><br>│   └── feature-x/<br>│       ├── proposal.md<br>│       ├── tasks.md<br>│       └── specs/  <span class="hljs-comment"># 规范差异（delta）</span><br>└── <span class="hljs-keyword">project</span>.md      <span class="hljs-comment"># 项目级约定（技术栈、命名规范等）</span><br></code></pre>
+
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre class="highlight"><code class="hljs bash">npm install -g @fission-ai/openspec@latest<br><span class="hljs-built_in">cd</span> your-project<br>openspec init<br></code></pre>
+
+<p>支持 Claude Code、Cursor、Copilot 等主流工具，以及所有兼容 AGENTS.md 的工具。</p>
+<hr>
+<h2 id="工具三：GitNexus-—-代码库知识图谱"><a href="#工具三：GitNexus-—-代码库知识图谱" class="headerlink" title="工具三：GitNexus — 代码库知识图谱"></a>工具三：GitNexus — 代码库知识图谱</h2><p><a target="_blank" rel="noopener" href="https://github.com/abhigyanpatwari/GitNexus">GitNexus</a> 自称「Zero-Server Code Intelligence Engine」，一句话概括：<strong>把你的代码库索引成知识图谱，然后通过 MCP 喂给 AI Agent</strong>。</p>
+<p>它做的事情：</p>
+<ol>
+<li>用 Tree-sitter 解析代码，建立依赖关系、调用链、模块聚类</li>
+<li>把这张图存进本地的 LadybugDB（零服务器，完全本地）</li>
+<li>通过 MCP（Model Context Protocol）暴露给 Claude Code、Cursor、Codex 等工具</li>
+</ol>
+<p>类比：DeepWiki 帮你<strong>理解</strong>代码，GitNexus 帮 AI <strong>分析</strong>代码——因为知识图谱追踪的是每一条调用关系，不只是文字描述。</p>
+<p>实际效果：AI Agent 不再「盲改」。它知道你改这个函数会影响哪些调用方，不会改完一处漏掉三处依赖。</p>
+<pre class="highlight"><code class="hljs bash">npm install -g gitnexus<br>gitnexus index .    <span class="hljs-comment"># 索引当前项目</span><br>gitnexus serve      <span class="hljs-comment"># 启动 MCP Server</span><br></code></pre>
+
+<p>然后在 Claude Code &#x2F; Cursor 里接入这个 MCP，Agent 就有了完整的代码图谱视角。</p>
+<hr>
+<h2 id="组合起来：完整工作流"><a href="#组合起来：完整工作流" class="headerlink" title="组合起来：完整工作流"></a>组合起来：完整工作流</h2><pre class="highlight"><code class="hljs">用户需求<br>    ↓<br>PilotDeck（WorkSpace 路由 + 跨会话记忆）<br>    ↓<br>OpenSpec（起草规范 → 对齐需求 → 生成任务清单）<br>    ↓<br>GitNexus MCP（注入代码图谱，理解调用链）<br>    ↓<br>Claude（在完整上下文下实施变更）<br>    ↓<br>OpenSpec 归档（规范更新，变更留存历史）<br>    ↓<br>PilotDeck 记忆更新（下次不再踩同样的坑）<br></code></pre>
+
+<p>每一层解决一个具体问题：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PilotDeck</td>
+<td>多项目调度、跨会话记忆、后台常驻</td>
+</tr>
+<tr>
+<td>OpenSpec</td>
+<td>需求对齐，避免「能跑但不对」</td>
+</tr>
+<tr>
+<td>GitNexus</td>
+<td>代码库结构感知，避免盲改漏改</td>
+</tr>
+<tr>
+<td>Claude</td>
+<td>核心推理和代码生成能力</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="使用感受"><a href="#使用感受" class="headerlink" title="使用感受"></a>使用感受</h2><p>最大的变化是：<strong>我开始信任 AI 的输出了</strong>。</p>
+<p>以前用 Claude 写代码，每次都要仔细 review，因为它对项目一无所知，对需求的理解也可能和我偏差很大。现在三层上下文全部到位——它知道调用链、知道规范、知道需求细节、知道上次犯过什么错，输出质量稳定多了。</p>
+<p>第二个变化是：<strong>任务可以真的交出去</strong>。OpenSpec 的任务清单 + PilotDeck 的 Always-on，让我可以把一个任务完整描述清楚、扔出去，去做别的事，过一会儿回来看结果。不用守着对话框一步步引导。</p>
+<p>当然也有不成熟的地方——GitNexus 在超大型 monorepo 上索引速度还需要优化，OpenSpec 的规范维护本身也是工作量（不过这个工作量在后期会通过减少返工来赚回来）。整体来说这套组合已经在日常开发中省了我不少时间。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>AI 辅助开发真正变得可靠，需要在「模型能力」之外补三层：</p>
+<ol>
+<li><strong>调度层</strong>（PilotDeck）：管任务、管记忆、管多项目</li>
+<li><strong>规范层</strong>（OpenSpec）：管「人和 AI 对需求的共识」</li>
+<li><strong>代码理解层</strong>（GitNexus）：管「代码库里有什么、怎么连着的」</li>
+</ol>
+<p>光有 Claude 不够，光有上下文注入也不够。这三层加在一起，才让 AI 真正进入你的开发流程，而不只是偶尔问一下的搜索引擎。</p>
+<p>感兴趣的可以去看看：</p>
+<ul>
+<li>PilotDeck: <a target="_blank" rel="noopener" href="https://github.com/OpenBMB/PilotDeck">https://github.com/OpenBMB/PilotDeck</a></li>
+<li>OpenSpec: <a target="_blank" rel="noopener" href="https://github.com/Fission-AI/OpenSpec">https://github.com/Fission-AI/OpenSpec</a></li>
+<li>GitNexus: <a target="_blank" rel="noopener" href="https://github.com/abhigyanpatwari/GitNexus">https://github.com/abhigyanpatwari/GitNexus</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/06/11/openclaw-agents-md-ambiguous-words/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 踩坑：AGENTS.md 中不要有模棱两可的词语 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/06/02/2026-06-02-claude-code-internals/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Claude Code 工作原理解密：从一句指令到精准修改代码 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E7%94%A8-Claude-%E4%B8%8D%E5%A4%9F"><span class="toc-text">背景：为什么单用 Claude 不够</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%80%EF%BC%9APilotDeck-%E2%80%94-%E5%A4%9A-Agent-%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0"><span class="toc-text">工具一：PilotDeck — 多 Agent 调度平台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BA%8C%EF%BC%9AOpenSpec-%E2%80%94-%E8%A7%84%E8%8C%83%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-text">工具二：OpenSpec — 规范驱动开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="toc-text">为什么需要它？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%89%EF%BC%9AGitNexus-%E2%80%94-%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1"><span class="toc-text">工具三：GitNexus — 代码库知识图谱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E8%B5%B7%E6%9D%A5%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">组合起来：完整工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%84%9F%E5%8F%97"><span class="toc-text">使用感受</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E7%94%A8-Claude-%E4%B8%8D%E5%A4%9F"><span class="toc-text">背景：为什么单用 Claude 不够</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%80%EF%BC%9APilotDeck-%E2%80%94-%E5%A4%9A-Agent-%E8%B0%83%E5%BA%A6%E5%B9%B3%E5%8F%B0"><span class="toc-text">工具一：PilotDeck — 多 Agent 调度平台</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%BA%8C%EF%BC%9AOpenSpec-%E2%80%94-%E8%A7%84%E8%8C%83%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-text">工具二：OpenSpec — 规范驱动开发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AE%83%EF%BC%9F"><span class="toc-text">为什么需要它？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">工作流</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-text">目录结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-text">安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E4%B8%89%EF%BC%9AGitNexus-%E2%80%94-%E4%BB%A3%E7%A0%81%E5%BA%93%E7%9F%A5%E8%AF%86%E5%9B%BE%E8%B0%B1"><span class="toc-text">工具三：GitNexus — 代码库知识图谱</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E8%B5%B7%E6%9D%A5%EF%BC%9A%E5%AE%8C%E6%95%B4%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-text">组合起来：完整工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%84%9F%E5%8F%97"><span class="toc-text">使用感受</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

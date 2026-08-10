@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>AI驱动研发全流程平台</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="AI驱动研发全流程平台">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/03/15/26031500/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="本文档为AI驱动研发全流程平台的正式交付说明，明确平台核心定位、完整研发主流程、小龙虾自动化回测工具的功能及联动逻辑，覆盖产品、研发、测试全角色，确保流程标准化、自动化、可追溯，可直接用于团队落地执行、新人培训及流程管控。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-03-15">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-03-15">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B9%B3%E5%8F%B0%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D"><span class="toc-text">一、平台核心定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%8A%80%E6%9C%AF%E6%A0%88%E8%AF%B4%E6%98%8E"><span class="toc-text">1.1 技术栈说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%A0%B8%E5%BF%83%E4%BB%B7%E5%80%BC"><span class="toc-text">1.2 核心价值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E7%A0%94%E5%8F%91%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%88%E5%85%A8%E9%93%BE%E8%B7%AF%E8%90%BD%E5%9C%B0%E6%AD%A5%E9%AA%A4%EF%BC%89"><span class="toc-text">二、核心研发主流程（全链路落地步骤）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E4%BA%A7%E5%93%81-%E9%9C%80%E6%B1%82%E5%BD%95%E5%85%A5%E4%B8%8EPRD%E7%94%9F%E6%88%90"><span class="toc-text">步骤1：产品 - 需求录入与PRD生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E4%BA%A7%E5%93%81-PRD%E8%AF%84%E5%AE%A1%E4%B8%8EJira%E7%BB%91%E5%AE%9A"><span class="toc-text">步骤2：产品 - PRD评审与Jira绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E5%BC%80%E5%8F%91%E5%88%86%E6%94%AF%E5%88%9B%E5%BB%BA"><span class="toc-text">步骤3：平台自动 - 开发分支创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-AI%E7%94%9F%E6%88%90%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="toc-text">步骤4：平台自动 - AI生成前后端代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A45%EF%BC%9A%E7%A0%94%E5%8F%91-%E4%BB%A3%E7%A0%81%E6%9F%A5%E7%9C%8B%E3%80%81%E7%BC%96%E8%BE%91%E4%B8%8EReview"><span class="toc-text">步骤5：研发 - 代码查看、编辑与Review</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A46%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%88%86%E6%94%AF%E5%90%88%E5%B9%B6"><span class="toc-text">步骤6：平台自动 - 代码提交与分支合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A47%EF%BC%9A%E6%B5%8B%E8%AF%95-test%E5%88%86%E6%94%AF%E4%BA%BA%E5%B7%A5%E9%AA%8C%E8%AF%81"><span class="toc-text">步骤7：测试 - test分支人工验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B0%8F%E9%BE%99%E8%99%BE%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E6%B5%8B%E5%B7%A5%E5%85%B7%EF%BC%88%E7%8B%AC%E7%AB%8B%E6%A8%A1%E5%9D%97%EF%BC%89"><span class="toc-text">三、小龙虾自动化回测工具（独立模块）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%BD%8D"><span class="toc-text">3.1 工具定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%EF%BC%88%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%87%AA%E5%8A%A8%E4%B8%8A%E6%8A%A5%EF%BC%89"><span class="toc-text">3.2 核心功能（异常检测与自动上报）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%BC%82%E5%B8%B8%E4%BF%A1%E6%81%AF%E8%87%AA%E5%8A%A8%E6%8A%93%E5%8F%96%EF%BC%88%E6%A0%B8%E5%BF%83%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">1. 异常信息自动抓取（核心重点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Jira-Bug%E5%8D%95%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4"><span class="toc-text">2. Jira Bug单自动提交</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%87%AA%E5%8A%A8%E5%85%B3%E8%81%94%E4%B8%8E%E9%80%9A%E7%9F%A5"><span class="toc-text">3. 自动关联与通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%BF%90%E8%A1%8C%E4%B8%8E%E7%BB%B4%E6%8A%A4"><span class="toc-text">3.3 运行与维护</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Bug%E4%BF%AE%E5%A4%8D%E4%B8%8E%E6%B5%81%E7%A8%8B%E9%97%AD%E7%8E%AF"><span class="toc-text">四、Bug修复与流程闭环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%A0%B8%E5%BF%83%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6%EF%BC%88%E5%85%A8%E6%B5%81%E7%A8%8B%E4%BF%9D%E9%9A%9C%EF%BC%89"><span class="toc-text">五、核心管控机制（全流程保障）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%B5%81%E7%A8%8B%E7%8A%B6%E6%80%81%E7%AE%A1%E6%8E%A7"><span class="toc-text">5.1 流程状态管控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%BC%82%E5%B8%B8%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6"><span class="toc-text">5.2 异常回滚机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6"><span class="toc-text">5.3 权限管控机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-Jira%E5%85%A8%E9%93%BE%E8%B7%AF%E8%81%94%E5%8A%A8"><span class="toc-text">5.4 Jira全链路联动</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E6%91%98%E8%A6%81%EF%BC%88%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9%EF%BC%89"><span class="toc-text">六、技术实现摘要（核心要点）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="toc-text">6.1 数据库设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%A0%B8%E5%BF%83%E8%87%AA%E5%8A%A8%E5%8C%96%E9%80%BB%E8%BE%91%EF%BC%88%E5%90%8E%E7%AB%AFNode-js%EF%BC%89"><span class="toc-text">6.2 核心自动化逻辑（后端Node.js）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%89%8D%E7%AB%AF%E5%AE%9E%E7%8E%B0%EF%BC%88Vue3-NativeUI%EF%BC%89"><span class="toc-text">6.3 前端实现（Vue3+NativeUI）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%BA%A4%E4%BB%98%E8%AF%B4%E6%98%8E%E4%B8%8E%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">七、交付说明与使用要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%BA%A4%E4%BB%98%E7%89%A9%E6%B8%85%E5%8D%95"><span class="toc-text">7.1 交付物清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">7.2 使用要求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">八、总结</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      AI驱动研发全流程平台
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/26031500.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-03-14T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-03-15</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>3.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI/" 
+            class="post-meta-link">
+            AI
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>核心目标：实现研发全流程AI提效，通过自动化工具降低重复工作，依托小龙虾回测工具实现异常自动上报，保障研发质量。</p>
+<h2 id="一、平台核心定位"><a href="#一、平台核心定位" class="headerlink" title="一、平台核心定位"></a>一、平台核心定位</h2><p>本平台是AI驱动的研发全流程自动化系统，核心是将AI能力嵌入研发全链路，替代产品、研发的重复性工作，实现从业务需求到代码合并提测的标准化、自动化管控，同时搭配小龙虾自动化回测工具，形成“研发+质量校验”的完整闭环。</p>
+<h3 id="1-1-技术栈说明"><a href="#1-1-技术栈说明" class="headerlink" title="1.1 技术栈说明"></a>1.1 技术栈说明</h3><ul>
+<li>前端：Vue3 + NativeUI（可视化流程管控、在线编辑）</li>
+<li>后端：Node.js（核心自动化逻辑、API封装、多系统联动）</li>
+<li>联动系统：Jira（需求、Bug管理）、GitHub（代码存储、分支管控）、Cursor（AI代码生成）、Pencil（原型联动）</li>
+<li>辅助工具：小龙虾自动化回测工具（独立部署，负责异常巡检与自动上报）</li>
+</ul>
+<h3 id="1-2-核心价值"><a href="#1-2-核心价值" class="headerlink" title="1.2 核心价值"></a>1.2 核心价值</h3><ul>
+<li>提效：自动化替代PRD撰写、分支创建、基础代码编写等重复工作，聚焦核心逻辑优化</li>
+<li>规范：统一PRD格式、代码规范、流程节点，降低跨角色沟通成本</li>
+<li>可控：全流程状态可视化、异常可回滚、权限可管控，确保流程可追溯</li>
+<li>保障：通过小龙虾自动化回测，实现7×24小时质量巡检，异常自动上报，减少人工测试负担</li>
+</ul>
+<h2 id="二、核心研发主流程（全链路落地步骤）"><a href="#二、核心研发主流程（全链路落地步骤）" class="headerlink" title="二、核心研发主流程（全链路落地步骤）"></a>二、核心研发主流程（全链路落地步骤）</h2><p>本流程覆盖从产品需求录入到代码合并提测的完整研发链路，各角色各司其职，流程有序推进，不跳过任何关键节点，确保研发过程标准化。</p>
+<h3 id="步骤1：产品-需求录入与PRD生成"><a href="#步骤1：产品-需求录入与PRD生成" class="headerlink" title="步骤1：产品 - 需求录入与PRD生成"></a>步骤1：产品 - 需求录入与PRD生成</h3><ul>
+<li>操作角色：产品经理</li>
+<li>核心动作：在AI平台输入清晰的业务需求描述（含业务场景、核心目标、约束条件），点击“生成PRD”</li>
+<li>平台动作：调用产品特定Prompt的GPT能力，自动生成标准化PRD（Markdown格式），AI自动校验PRD的核心需求完整性、格式规范性，提示产品补充缺失信息</li>
+<li>后续衔接：产品在线编辑、优化PRD，确认无误后提交评审</li>
+</ul>
+<h3 id="步骤2：产品-PRD评审与Jira绑定"><a href="#步骤2：产品-PRD评审与Jira绑定" class="headerlink" title="步骤2：产品 - PRD评审与Jira绑定"></a>步骤2：产品 - PRD评审与Jira绑定</h3><ul>
+<li>操作角色：产品经理（协同研发、UI、测试评审）</li>
+<li>核心动作：组织线下&#x2F;线上PRD评审会议，确认PRD无异议后，在AI平台录入对应Jira需求链接，点击“PRD确认”</li>
+<li>平台动作：自动提取Jira需求单号（如PROJ-123），同步PRD内容到Jira需求单，更新Jira需求状态为“评审通过”</li>
+<li>权限管控：仅产品经理拥有“PRD确认”操作权限，防止误操作</li>
+</ul>
+<h3 id="步骤3：平台自动-开发分支创建"><a href="#步骤3：平台自动-开发分支创建" class="headerlink" title="步骤3：平台自动 - 开发分支创建"></a>步骤3：平台自动 - 开发分支创建</h3><ul>
+<li>操作角色：无（平台自动化执行）</li>
+<li>核心动作：接收“PRD确认”指令后，自动调用GitHub API，从main分支新建功能开发分支</li>
+<li>分支规范：命名格式为「feature&#x2F;jira-xxx-时间戳」（xxx为Jira需求单号），确保分支与需求强关联</li>
+<li>异常处理：若分支创建失败，自动重置流程状态为“分支创建失败”，记录失败日志，提示产品&#x2F;研发排查问题，支持一键重试</li>
+</ul>
+<h3 id="步骤4：平台自动-AI生成前后端代码"><a href="#步骤4：平台自动-AI生成前后端代码" class="headerlink" title="步骤4：平台自动 - AI生成前后端代码"></a>步骤4：平台自动 - AI生成前后端代码</h3><ul>
+<li>操作角色：无（平台自动化执行）</li>
+<li>核心动作：调用Cursor API + Jira&#x2F;Pencil MCP方案，基于PRD内容、Jira需求信息，自动生成符合技术栈要求的前后端代码（前端Vue3+NativeUI，后端Node.js）</li>
+<li>平台动作：同步更新流程状态为“代码生成中”，生成完成后，自动将代码存储到AI平台，关联对应开发分支</li>
+<li>联动Jira：自动更新Jira需求状态为“开发中”，添加分支链接备注，便于各角色查看进度</li>
+<li>异常处理：若代码生成失败（如Cursor API异常、MCP联动失败），自动回滚已创建的开发分支，更新流程状态为“代码生成失败”，记录失败原因</li>
+</ul>
+<h3 id="步骤5：研发-代码查看、编辑与Review"><a href="#步骤5：研发-代码查看、编辑与Review" class="headerlink" title="步骤5：研发 - 代码查看、编辑与Review"></a>步骤5：研发 - 代码查看、编辑与Review</h3><ul>
+<li>操作角色：前端研发、后端研发</li>
+<li>核心动作：在AI平台查看自动生成的代码，可在线编辑优化（无需下载到本地），编辑完成后执行人工Code Review</li>
+<li>平台增强：AI自动执行二次Review，检查代码规范、是否符合PRD需求、有无语法错误，标注待优化点，降低人工Review成本</li>
+<li>权限管控：仅前后端研发拥有“代码编辑”“代码Review”权限，确保代码修改的规范性</li>
+<li>后续衔接：研发确认代码无误后，点击“代码确认”，提交至平台</li>
+</ul>
+<h3 id="步骤6：平台自动-代码提交与分支合并"><a href="#步骤6：平台自动-代码提交与分支合并" class="headerlink" title="步骤6：平台自动 - 代码提交与分支合并"></a>步骤6：平台自动 - 代码提交与分支合并</h3><ul>
+<li>操作角色：无（平台自动化执行）</li>
+<li>核心动作：接收“代码确认”指令后，自动执行以下操作：<ol>
+<li>将编辑后的代码提交到对应开发分支</li>
+<li>推送分支到GitHub仓库</li>
+<li>发起PR（合并请求），将开发分支合并到test分支</li>
+</ol>
+</li>
+<li>联动Jira：合并成功后，自动更新Jira需求状态为“待提测”，添加PR链接备注，通知测试人员准备提测</li>
+<li>异常处理：若代码提交失败或合并冲突，自动更新流程状态为“提交失败”或“合并失败”，展示冲突详情，通知研发手动处理，处理完成后支持重新提交合并</li>
+<li>权限管控：平台机器人账号仅拥有“创建分支、提交代码、合并到test分支”的权限，无法直接操作main分支，保障主分支稳定性</li>
+</ul>
+<h3 id="步骤7：测试-test分支人工验证"><a href="#步骤7：测试-test分支人工验证" class="headerlink" title="步骤7：测试 - test分支人工验证"></a>步骤7：测试 - test分支人工验证</h3><ul>
+<li>操作角色：测试人员</li>
+<li>核心动作：从GitHub拉取test分支最新代码，基于PRD需求，执行功能测试、业务流程测试、兼容性测试，验证代码是否符合需求预期</li>
+<li>平台联动：AI平台自动同步分支信息、代码详情、PRD内容到Jira，便于测试人员对照测试</li>
+<li>后续衔接：人工测试同时，小龙虾自动化回测工具同步启动，开展全量巡检</li>
+</ul>
+<h2 id="三、小龙虾自动化回测工具（独立模块）"><a href="#三、小龙虾自动化回测工具（独立模块）" class="headerlink" title="三、小龙虾自动化回测工具（独立模块）"></a>三、小龙虾自动化回测工具（独立模块）</h2><p>小龙虾是独立部署的自动化巡检&#x2F;回归测试工具，不参与研发主流程，仅在代码合并到test分支后启动，负责7×24小时持续巡检项目，发现异常后自动上报Jira Bug，全程无需人工干预，作为研发质量的自动化保障。</p>
+<h3 id="3-1-工具定位"><a href="#3-1-工具定位" class="headerlink" title="3.1 工具定位"></a>3.1 工具定位</h3><ul>
+<li>核心职能：自动化巡检、自动回归测试、异常捕获、Bug自动上报</li>
+<li>运行时机：代码合并到test分支后，实时启动，持续运行（7×24小时）</li>
+<li>核心价值：替代人工重复性回归测试，提升异常发现效率，确保问题及时上报、快速修复</li>
+<li>与主流程关系：不干预研发主流程，仅作为后置质量校验环节，补充人工测试的不足</li>
+</ul>
+<h3 id="3-2-核心功能（异常检测与自动上报）"><a href="#3-2-核心功能（异常检测与自动上报）" class="headerlink" title="3.2 核心功能（异常检测与自动上报）"></a>3.2 核心功能（异常检测与自动上报）</h3><p>小龙虾工具实时运行项目，自动检测各类异常（代码报错、接口失败、页面异常、流程卡顿等），发现异常后，全自动完成以下操作，无需人工介入：</p>
+<h4 id="1-异常信息自动抓取（核心重点）"><a href="#1-异常信息自动抓取（核心重点）" class="headerlink" title="1. 异常信息自动抓取（核心重点）"></a>1. 异常信息自动抓取（核心重点）</h4><p>自动抓取完整的异常现场信息，确保研发可快速定位问题，具体包含：</p>
+<ul>
+<li>异常类型：代码报错、接口超时、页面渲染失败等</li>
+<li>代码关联信息：报错文件完整路径（精确到文件夹+文件名）、报错代码行号、报错堆栈信息</li>
+<li>项目信息：当前运行分支（test分支）、代码版本、触发异常的业务场景</li>
+<li>辅助信息：异常截图、系统日志、接口请求参数（便于复现问题）</li>
+</ul>
+<h4 id="2-Jira-Bug单自动提交"><a href="#2-Jira-Bug单自动提交" class="headerlink" title="2. Jira Bug单自动提交"></a>2. Jira Bug单自动提交</h4><p>基于抓取的异常信息，自动调用Jira API，生成标准化Bug单，无需测试人员手动创建：</p>
+<ul>
+<li>Bug标题：自动生成，格式为「[小龙虾自动上报] 【test分支】xxx异常」（xxx为异常核心描述）</li>
+<li>Bug描述：自动填充所有抓取的异常信息，重点标注「文件路径」「代码行号」「报错日志」，格式规范、信息完整</li>
+<li>Bug属性：自动设置优先级（根据异常严重程度）、严重等级，关联对应Jira需求单号、test分支信息</li>
+</ul>
+<h4 id="3-自动关联与通知"><a href="#3-自动关联与通知" class="headerlink" title="3. 自动关联与通知"></a>3. 自动关联与通知</h4><ul>
+<li>关联逻辑：自动关联对应Jira需求单、GitHub test分支、异常代码文件，确保Bug与研发需求强绑定</li>
+<li>自动通知：Bug单创建后，自动指派给对应研发人员（根据代码归属），同时通过Jira消息推送通知，确保研发及时知晓并处理</li>
+</ul>
+<h3 id="3-3-运行与维护"><a href="#3-3-运行与维护" class="headerlink" title="3.3 运行与维护"></a>3.3 运行与维护</h3><ul>
+<li>部署方式：独立部署在测试服务器，与AI研发平台、Jira、GitHub实现API联动</li>
+<li>维护职责：由测试团队负责日常维护，定期检查工具运行状态，处理工具本身异常</li>
+<li>异常处理：若小龙虾工具本身出现故障，自动发送告警通知维护人员，不影响研发主流程及人工测试</li>
+</ul>
+<h2 id="四、Bug修复与流程闭环"><a href="#四、Bug修复与流程闭环" class="headerlink" title="四、Bug修复与流程闭环"></a>四、Bug修复与流程闭环</h2><p>无论是测试人员人工发现的Bug，还是小龙虾自动上报的Bug，均遵循以下流程闭环，确保问题彻底解决：</p>
+<ol>
+<li>研发人员接收Jira Bug通知，查看Bug详情（含小龙虾自动抓取的文件路径、代码行号等信息），定位问题根源</li>
+<li>研发在对应开发分支修改代码，修复Bug，完成后提交代码，推送至GitHub，发起PR合并到test分支</li>
+<li>平台自动合并代码，同步更新Jira Bug状态为“已修复”，通知测试人员复测</li>
+<li>测试人员（人工）+ 小龙虾（自动）共同复测，确认Bug已修复</li>
+<li>测试人员在Jira关闭Bug，流程闭环；若复测未通过，重新指派给研发，重复上述步骤</li>
+</ol>
+<h2 id="五、核心管控机制（全流程保障）"><a href="#五、核心管控机制（全流程保障）" class="headerlink" title="五、核心管控机制（全流程保障）"></a>五、核心管控机制（全流程保障）</h2><h3 id="5-1-流程状态管控"><a href="#5-1-流程状态管控" class="headerlink" title="5.1 流程状态管控"></a>5.1 流程状态管控</h3><p>平台通过数据库维护每个需求的全流程状态，确保流程可追溯、可管控，所有状态实时同步到前端步骤条，各角色可随时查看进度，具体状态如下：</p>
+<p>PRD生成中 → PRD评审中 → PRD已确认 → 分支创建中 → 代码生成中 → 代码Review中 → 代码已提交 → 分支合并中 → 待提测 → 测试中 → 已完成（或Bug修复中）</p>
+<h3 id="5-2-异常回滚机制"><a href="#5-2-异常回滚机制" class="headerlink" title="5.2 异常回滚机制"></a>5.2 异常回滚机制</h3><p>全流程支持异常回滚，避免流程卡死，降低异常处理成本：</p>
+<ul>
+<li>分支创建失败：自动删除无效分支，更新状态，记录日志，支持一键重试</li>
+<li>代码生成失败：回滚已创建分支，更新状态，提示排查API或MCP联动问题</li>
+<li>代码提交&#x2F;合并失败：保留代码及分支，展示失败原因，支持研发处理后重新提交</li>
+</ul>
+<h3 id="5-3-权限管控机制"><a href="#5-3-权限管控机制" class="headerlink" title="5.3 权限管控机制"></a>5.3 权限管控机制</h3><p>明确各角色操作权限，防止越权操作，确保流程规范：</p>
+<ul>
+<li>产品经理：需求录入、PRD生成与确认、Jira需求绑定</li>
+<li>前端&#x2F;后端研发：代码编辑、Code Review、代码确认、Bug修复</li>
+<li>测试人员：人工测试、Bug复测、小龙虾工具维护</li>
+<li>管理员：流程重置、权限配置、平台参数调整、异常排查</li>
+</ul>
+<h3 id="5-4-Jira全链路联动"><a href="#5-4-Jira全链路联动" class="headerlink" title="5.4 Jira全链路联动"></a>5.4 Jira全链路联动</h3><p>平台与Jira实现全流程自动联动，无需人工同步信息，确保各角色信息一致：</p>
+<ul>
+<li>PRD确认后：更新Jira状态为“评审通过”，同步PRD内容</li>
+<li>代码生成后：更新Jira状态为“开发中”，添加分支链接</li>
+<li>分支合并后：更新Jira状态为“待提测”，添加PR链接</li>
+<li>Bug上报后：自动创建Jira Bug单，关联需求，指派研发</li>
+<li>Bug修复后：同步更新Jira Bug状态，通知测试复测</li>
+</ul>
+<h2 id="六、技术实现摘要（核心要点）"><a href="#六、技术实现摘要（核心要点）" class="headerlink" title="六、技术实现摘要（核心要点）"></a>六、技术实现摘要（核心要点）</h2><h3 id="6-1-数据库设计"><a href="#6-1-数据库设计" class="headerlink" title="6.1 数据库设计"></a>6.1 数据库设计</h3><p>核心数据表用于维护流程状态、权限、异常信息，关键表如下：</p>
+<ul>
+<li>ai_rd_flow：存储需求全流程状态、PRD内容、代码信息、分支信息、异常日志等</li>
+<li>ai_rd_permission：管控各角色操作权限，实现细粒度权限控制</li>
+<li>crayfish_exception：存储小龙虾工具抓取的异常信息，便于追溯</li>
+</ul>
+<h3 id="6-2-核心自动化逻辑（后端Node-js）"><a href="#6-2-核心自动化逻辑（后端Node-js）" class="headerlink" title="6.2 核心自动化逻辑（后端Node.js）"></a>6.2 核心自动化逻辑（后端Node.js）</h3><ul>
+<li>PRD生成逻辑：封装GPT API，调用产品特定Prompt，返回结构化PRD</li>
+<li>GitHub联动逻辑：基于Octokit SDK，实现分支创建、代码提交、PR合并自动化</li>
+<li>Jira联动逻辑：封装Jira REST API，实现状态更新、Bug创建、信息同步</li>
+<li>小龙虾联动逻辑：封装小龙虾工具API，接收异常信息，触发Jira Bug自动提交</li>
+</ul>
+<h3 id="6-3-前端实现（Vue3-NativeUI）"><a href="#6-3-前端实现（Vue3-NativeUI）" class="headerlink" title="6.3 前端实现（Vue3+NativeUI）"></a>6.3 前端实现（Vue3+NativeUI）</h3><p>前端核心实现可视化流程管控，支持：</p>
+<ul>
+<li>流程步骤条实时展示，状态清晰可见</li>
+<li>代码在线编辑、Review结果展示</li>
+<li>异常信息提示、流程重试操作</li>
+<li>角色权限控制，不同角色显示对应操作按钮</li>
+</ul>
+<h2 id="七、交付说明与使用要求"><a href="#七、交付说明与使用要求" class="headerlink" title="七、交付说明与使用要求"></a>七、交付说明与使用要求</h2><h3 id="7-1-交付物清单"><a href="#7-1-交付物清单" class="headerlink" title="7.1 交付物清单"></a>7.1 交付物清单</h3><ul>
+<li>AI研发平台（前端+后端）部署包</li>
+<li>小龙虾自动化回测工具部署包</li>
+<li>数据库脚本（含表结构、初始化数据）</li>
+<li>API联动配置文档（Jira、GitHub、Cursor密钥配置）</li>
+<li>本说明文档</li>
+</ul>
+<h3 id="7-2-使用要求"><a href="#7-2-使用要求" class="headerlink" title="7.2 使用要求"></a>7.2 使用要求</h3><ul>
+<li>所有角色必须使用公司统一账号登录平台、Jira、GitHub，禁止使用私人账号</li>
+<li>严格遵循研发主流程，禁止跳过关键节点、越权操作</li>
+<li>研发人员修复Bug时，需参考小龙虾自动上报的文件路径、代码行号，提高修复效率</li>
+<li>测试人员需配合小龙虾工具，完成人工复测，确保Bug彻底修复</li>
+<li>管理员定期检查平台及小龙虾工具运行状态，及时处理异常</li>
+</ul>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>本AI驱动研发全流程平台，实现了从产品需求到代码合并提测的全链路自动化、标准化管控，搭配小龙虾自动化回测工具，形成“研发+质量校验”的完整闭环。平台不偏重于任何单一角色或环节，确保产品、研发、测试全流程协同高效，同时通过自动化工具降低重复工作，提升研发质量与效率，可直接落地执行，为团队研发提效提供有力支撑。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/03/23/26032300/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Chrome+MCP+CodeX+GPT5.4+testId 自动化测试：核心思路与可运行Demo </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/03/08/26030800/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">近期工作汇总 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B9%B3%E5%8F%B0%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D"><span class="toc-text">一、平台核心定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%8A%80%E6%9C%AF%E6%A0%88%E8%AF%B4%E6%98%8E"><span class="toc-text">1.1 技术栈说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%A0%B8%E5%BF%83%E4%BB%B7%E5%80%BC"><span class="toc-text">1.2 核心价值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E7%A0%94%E5%8F%91%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%88%E5%85%A8%E9%93%BE%E8%B7%AF%E8%90%BD%E5%9C%B0%E6%AD%A5%E9%AA%A4%EF%BC%89"><span class="toc-text">二、核心研发主流程（全链路落地步骤）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E4%BA%A7%E5%93%81-%E9%9C%80%E6%B1%82%E5%BD%95%E5%85%A5%E4%B8%8EPRD%E7%94%9F%E6%88%90"><span class="toc-text">步骤1：产品 - 需求录入与PRD生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E4%BA%A7%E5%93%81-PRD%E8%AF%84%E5%AE%A1%E4%B8%8EJira%E7%BB%91%E5%AE%9A"><span class="toc-text">步骤2：产品 - PRD评审与Jira绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E5%BC%80%E5%8F%91%E5%88%86%E6%94%AF%E5%88%9B%E5%BB%BA"><span class="toc-text">步骤3：平台自动 - 开发分支创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-AI%E7%94%9F%E6%88%90%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="toc-text">步骤4：平台自动 - AI生成前后端代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A45%EF%BC%9A%E7%A0%94%E5%8F%91-%E4%BB%A3%E7%A0%81%E6%9F%A5%E7%9C%8B%E3%80%81%E7%BC%96%E8%BE%91%E4%B8%8EReview"><span class="toc-text">步骤5：研发 - 代码查看、编辑与Review</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A46%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%88%86%E6%94%AF%E5%90%88%E5%B9%B6"><span class="toc-text">步骤6：平台自动 - 代码提交与分支合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A47%EF%BC%9A%E6%B5%8B%E8%AF%95-test%E5%88%86%E6%94%AF%E4%BA%BA%E5%B7%A5%E9%AA%8C%E8%AF%81"><span class="toc-text">步骤7：测试 - test分支人工验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B0%8F%E9%BE%99%E8%99%BE%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E6%B5%8B%E5%B7%A5%E5%85%B7%EF%BC%88%E7%8B%AC%E7%AB%8B%E6%A8%A1%E5%9D%97%EF%BC%89"><span class="toc-text">三、小龙虾自动化回测工具（独立模块）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%BD%8D"><span class="toc-text">3.1 工具定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%EF%BC%88%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%87%AA%E5%8A%A8%E4%B8%8A%E6%8A%A5%EF%BC%89"><span class="toc-text">3.2 核心功能（异常检测与自动上报）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%BC%82%E5%B8%B8%E4%BF%A1%E6%81%AF%E8%87%AA%E5%8A%A8%E6%8A%93%E5%8F%96%EF%BC%88%E6%A0%B8%E5%BF%83%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">1. 异常信息自动抓取（核心重点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Jira-Bug%E5%8D%95%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4"><span class="toc-text">2. Jira Bug单自动提交</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%87%AA%E5%8A%A8%E5%85%B3%E8%81%94%E4%B8%8E%E9%80%9A%E7%9F%A5"><span class="toc-text">3. 自动关联与通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%BF%90%E8%A1%8C%E4%B8%8E%E7%BB%B4%E6%8A%A4"><span class="toc-text">3.3 运行与维护</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Bug%E4%BF%AE%E5%A4%8D%E4%B8%8E%E6%B5%81%E7%A8%8B%E9%97%AD%E7%8E%AF"><span class="toc-text">四、Bug修复与流程闭环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%A0%B8%E5%BF%83%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6%EF%BC%88%E5%85%A8%E6%B5%81%E7%A8%8B%E4%BF%9D%E9%9A%9C%EF%BC%89"><span class="toc-text">五、核心管控机制（全流程保障）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%B5%81%E7%A8%8B%E7%8A%B6%E6%80%81%E7%AE%A1%E6%8E%A7"><span class="toc-text">5.1 流程状态管控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%BC%82%E5%B8%B8%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6"><span class="toc-text">5.2 异常回滚机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6"><span class="toc-text">5.3 权限管控机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-Jira%E5%85%A8%E9%93%BE%E8%B7%AF%E8%81%94%E5%8A%A8"><span class="toc-text">5.4 Jira全链路联动</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E6%91%98%E8%A6%81%EF%BC%88%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9%EF%BC%89"><span class="toc-text">六、技术实现摘要（核心要点）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="toc-text">6.1 数据库设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%A0%B8%E5%BF%83%E8%87%AA%E5%8A%A8%E5%8C%96%E9%80%BB%E8%BE%91%EF%BC%88%E5%90%8E%E7%AB%AFNode-js%EF%BC%89"><span class="toc-text">6.2 核心自动化逻辑（后端Node.js）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%89%8D%E7%AB%AF%E5%AE%9E%E7%8E%B0%EF%BC%88Vue3-NativeUI%EF%BC%89"><span class="toc-text">6.3 前端实现（Vue3+NativeUI）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%BA%A4%E4%BB%98%E8%AF%B4%E6%98%8E%E4%B8%8E%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">七、交付说明与使用要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%BA%A4%E4%BB%98%E7%89%A9%E6%B8%85%E5%8D%95"><span class="toc-text">7.1 交付物清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">7.2 使用要求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">八、总结</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%B9%B3%E5%8F%B0%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D"><span class="toc-text">一、平台核心定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E6%8A%80%E6%9C%AF%E6%A0%88%E8%AF%B4%E6%98%8E"><span class="toc-text">1.1 技术栈说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E6%A0%B8%E5%BF%83%E4%BB%B7%E5%80%BC"><span class="toc-text">1.2 核心价值</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E7%A0%94%E5%8F%91%E4%B8%BB%E6%B5%81%E7%A8%8B%EF%BC%88%E5%85%A8%E9%93%BE%E8%B7%AF%E8%90%BD%E5%9C%B0%E6%AD%A5%E9%AA%A4%EF%BC%89"><span class="toc-text">二、核心研发主流程（全链路落地步骤）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E4%BA%A7%E5%93%81-%E9%9C%80%E6%B1%82%E5%BD%95%E5%85%A5%E4%B8%8EPRD%E7%94%9F%E6%88%90"><span class="toc-text">步骤1：产品 - 需求录入与PRD生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E4%BA%A7%E5%93%81-PRD%E8%AF%84%E5%AE%A1%E4%B8%8EJira%E7%BB%91%E5%AE%9A"><span class="toc-text">步骤2：产品 - PRD评审与Jira绑定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E5%BC%80%E5%8F%91%E5%88%86%E6%94%AF%E5%88%9B%E5%BB%BA"><span class="toc-text">步骤3：平台自动 - 开发分支创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-AI%E7%94%9F%E6%88%90%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BB%A3%E7%A0%81"><span class="toc-text">步骤4：平台自动 - AI生成前后端代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A45%EF%BC%9A%E7%A0%94%E5%8F%91-%E4%BB%A3%E7%A0%81%E6%9F%A5%E7%9C%8B%E3%80%81%E7%BC%96%E8%BE%91%E4%B8%8EReview"><span class="toc-text">步骤5：研发 - 代码查看、编辑与Review</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A46%EF%BC%9A%E5%B9%B3%E5%8F%B0%E8%87%AA%E5%8A%A8-%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E4%B8%8E%E5%88%86%E6%94%AF%E5%90%88%E5%B9%B6"><span class="toc-text">步骤6：平台自动 - 代码提交与分支合并</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A47%EF%BC%9A%E6%B5%8B%E8%AF%95-test%E5%88%86%E6%94%AF%E4%BA%BA%E5%B7%A5%E9%AA%8C%E8%AF%81"><span class="toc-text">步骤7：测试 - test分支人工验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%B0%8F%E9%BE%99%E8%99%BE%E8%87%AA%E5%8A%A8%E5%8C%96%E5%9B%9E%E6%B5%8B%E5%B7%A5%E5%85%B7%EF%BC%88%E7%8B%AC%E7%AB%8B%E6%A8%A1%E5%9D%97%EF%BC%89"><span class="toc-text">三、小龙虾自动化回测工具（独立模块）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%BD%8D"><span class="toc-text">3.1 工具定位</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%EF%BC%88%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%87%AA%E5%8A%A8%E4%B8%8A%E6%8A%A5%EF%BC%89"><span class="toc-text">3.2 核心功能（异常检测与自动上报）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%BC%82%E5%B8%B8%E4%BF%A1%E6%81%AF%E8%87%AA%E5%8A%A8%E6%8A%93%E5%8F%96%EF%BC%88%E6%A0%B8%E5%BF%83%E9%87%8D%E7%82%B9%EF%BC%89"><span class="toc-text">1. 异常信息自动抓取（核心重点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Jira-Bug%E5%8D%95%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4"><span class="toc-text">2. Jira Bug单自动提交</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%87%AA%E5%8A%A8%E5%85%B3%E8%81%94%E4%B8%8E%E9%80%9A%E7%9F%A5"><span class="toc-text">3. 自动关联与通知</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%BF%90%E8%A1%8C%E4%B8%8E%E7%BB%B4%E6%8A%A4"><span class="toc-text">3.3 运行与维护</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81Bug%E4%BF%AE%E5%A4%8D%E4%B8%8E%E6%B5%81%E7%A8%8B%E9%97%AD%E7%8E%AF"><span class="toc-text">四、Bug修复与流程闭环</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%A0%B8%E5%BF%83%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6%EF%BC%88%E5%85%A8%E6%B5%81%E7%A8%8B%E4%BF%9D%E9%9A%9C%EF%BC%89"><span class="toc-text">五、核心管控机制（全流程保障）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%B5%81%E7%A8%8B%E7%8A%B6%E6%80%81%E7%AE%A1%E6%8E%A7"><span class="toc-text">5.1 流程状态管控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%BC%82%E5%B8%B8%E5%9B%9E%E6%BB%9A%E6%9C%BA%E5%88%B6"><span class="toc-text">5.2 异常回滚机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7%E6%9C%BA%E5%88%B6"><span class="toc-text">5.3 权限管控机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-Jira%E5%85%A8%E9%93%BE%E8%B7%AF%E8%81%94%E5%8A%A8"><span class="toc-text">5.4 Jira全链路联动</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0%E6%91%98%E8%A6%81%EF%BC%88%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9%EF%BC%89"><span class="toc-text">六、技术实现摘要（核心要点）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="toc-text">6.1 数据库设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E6%A0%B8%E5%BF%83%E8%87%AA%E5%8A%A8%E5%8C%96%E9%80%BB%E8%BE%91%EF%BC%88%E5%90%8E%E7%AB%AFNode-js%EF%BC%89"><span class="toc-text">6.2 核心自动化逻辑（后端Node.js）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%89%8D%E7%AB%AF%E5%AE%9E%E7%8E%B0%EF%BC%88Vue3-NativeUI%EF%BC%89"><span class="toc-text">6.3 前端实现（Vue3+NativeUI）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E4%BA%A4%E4%BB%98%E8%AF%B4%E6%98%8E%E4%B8%8E%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">七、交付说明与使用要求</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%BA%A4%E4%BB%98%E7%89%A9%E6%B8%85%E5%8D%95"><span class="toc-text">7.1 交付物清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BD%BF%E7%94%A8%E8%A6%81%E6%B1%82"><span class="toc-text">7.2 使用要求</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">八、总结</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

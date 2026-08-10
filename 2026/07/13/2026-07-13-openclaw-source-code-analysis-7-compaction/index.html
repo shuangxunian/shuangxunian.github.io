@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>OpenClaw 源码解析 ⑦：Compaction 完整拆解</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="OpenClaw 源码解析 ⑦：Compaction 完整拆解">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/07/13/2026-07-13-openclaw-source-code-analysis-7-compaction/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="当对话上下文超出 LLM context window 时，Compaction 如何通过生成摘要来压缩历史、腾出空间——从触发条件到完整流程的深入拆解。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-07-13">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="OpenClaw">
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="LLM">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Compaction">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Context Window">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Compaction%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Compaction：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%A7%A3%E9%87%8A"><span class="toc-text">一句话解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Compaction%EF%BC%9F"><span class="toc-text">为什么需要 Compaction？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E7%9A%84%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="toc-text">Compaction 的触发时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D-Compact-%E5%85%A5%E5%8F%A3"><span class="toc-text">两种 Compact 入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compactEmbeddedPiSessionDirect-%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-text">compactEmbeddedPiSessionDirect 完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4"><span class="toc-text">安全防护</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%98%B2%E6%AD%A2%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%EF%BC%9A%E6%9C%80%E5%A4%A7%E9%87%8D%E8%AF%95%E6%AC%A1%E6%95%B0"><span class="toc-text">1. 防止无限循环：最大重试次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%98%B2%E6%AD%A2-compaction-%E5%B9%B2%E8%B7%91%EF%BC%9A%E8%B7%B3%E8%BF%87%E6%97%A0%E5%86%85%E5%AE%B9%E4%BC%9A%E8%AF%9D"><span class="toc-text">2. 防止 compaction 干跑：跳过无内容会话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%B6%85%E6%97%B6%E4%BF%9D%E6%8A%A4"><span class="toc-text">3. 超时保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E9%94%81"><span class="toc-text">4. 文件锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%A3%80%E6%9F%A5%E7%82%B9%E6%9C%BA%E5%88%B6"><span class="toc-text">5. 检查点机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E5%A4%B1%E8%B4%A5%E5%88%86%E7%B1%BB"><span class="toc-text">Compaction 失败分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#context-engine-compaction-vs-direct-compaction"><span class="toc-text">context engine compaction vs direct compaction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E6%80%BB%E7%BB%93"><span class="toc-text">完整时序总结</span></a></li></ol></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      OpenClaw 源码解析 ⑦：Compaction 完整拆解
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-07-13-openclaw-source-code-analysis-7-compaction.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-07-13T01:31:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-07-13</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.7k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/OpenClaw/" 
+            class="post-meta-link">
+            OpenClaw
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/AI-Agent/" 
+            class="post-meta-link">
+            AI Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/LLM/" 
+            class="post-meta-link">
+            LLM
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Compaction/" 
+            class="post-meta-link">
+            Compaction
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Context-Window/" 
+            class="post-meta-link">
+            Context Window
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h1 id="Compaction：完整拆解"><a href="#Compaction：完整拆解" class="headerlink" title="Compaction：完整拆解"></a>Compaction：完整拆解</h1><h2 id="一句话解释"><a href="#一句话解释" class="headerlink" title="一句话解释"></a>一句话解释</h2><p><strong>Compaction &#x3D; 当上下文超出 LLM 的 context window 时，用一个独立的 LLM 调用生成「对话摘要」，替换掉大部分历史消息，腾出空间继续对话。</strong></p>
+<hr>
+<h2 id="为什么需要-Compaction？"><a href="#为什么需要-Compaction？" class="headerlink" title="为什么需要 Compaction？"></a>为什么需要 Compaction？</h2><pre class="highlight"><code class="hljs mipsasm">正常的 Agent 执行：<br> 问 → <span class="hljs-keyword">LLM </span>理解 → 调用工具 → <span class="hljs-keyword">LLM </span>获得结果 → 回复<br><br> 每一轮对话 = 多则几十个 messages (tool_use + tool_result + assistant)<br> <span class="hljs-number">20</span> 轮下来 = <span class="hljs-number">500</span><span class="hljs-number">-1000</span> 条 messages<br> 如果每条 tool_result 有几千字符的 stdout → 上下文轻松超过 <span class="hljs-number">100</span>K tokens<br><br><span class="hljs-keyword">LLM </span>的 <span class="hljs-built_in">context</span> window 是有限的：<br> GPT<span class="hljs-number">-4</span>o = <span class="hljs-number">128</span>K tokens<br> Claude <span class="hljs-number">4</span> = <span class="hljs-number">200</span>K tokens<br> 本地小模型 = <span class="hljs-number">8</span>K<span class="hljs-number">-32</span>K tokens<br><br>当 messages 总 token 逼近甚至超过 <span class="hljs-built_in">context</span> window 时：<br> → <span class="hljs-keyword">LLM </span>API 返回 <span class="hljs-string">&quot;context_length_exceeded&quot;</span> 错误<br> → 或者最前面的消息被截断，<span class="hljs-keyword">LLM </span>丢失关键上下文<br></code></pre>
+
+<p>Compaction 就是<strong>在超出之前主动压缩历史，防止爆窗口</strong>。</p>
+<hr>
+<h2 id="Compaction-的触发时机"><a href="#Compaction-的触发时机" class="headerlink" title="Compaction 的触发时机"></a>Compaction 的触发时机</h2><pre class="highlight"><code class="hljs stata">┌─────────────────────────────────────────────────────────────────┐<br>│ 触发条件                                                         │<br>│                                                                   │<br>│ 1. Overflow Compaction（溢出触发）                                │<br>│    触发位置：<span class="hljs-keyword">run</span>.ts 主循环，每次 LLM 返回之后                     │<br>│    条件：LLM 返回 <span class="hljs-string">&quot;context_length_exceeded&quot;</span> 错误                  │<br>│    代码：<span class="hljs-keyword">run</span>.ts:1029-1140                                         │<br>│                                                                   │<br>│ 2. Timeout-triggered Compaction（超时触发）                       │<br>│    触发位置：<span class="hljs-keyword">run</span>.ts 主循环，LLM 超时之后                          │<br>│    条件：LLM 超时 + prompt <span class="hljs-keyword">token</span> 用量 &gt; 70% context <span class="hljs-keyword">window</span>       │<br>│    代码：<span class="hljs-keyword">run</span>.ts:890-977                                           │<br>│                                                                   │<br>│ 3. Auto Compaction（SDK 自动触发）                                │<br>│    触发位置：pi-coding-agent 库内部                               │<br>│    条件：SessionManager 检测到 <span class="hljs-keyword">token</span> 接近上限                     │<br>│    在 session.prompt() 内部自动完成，对 OpenClaw 透明             │<br>│                                                                   │<br>│ 4. Manual Compaction（手动触发）                                  │<br>│    触发位置：用户通过 <span class="hljs-keyword">CLI</span>/Gateway 命令手动发起                    │<br>│    条件：用户主动调用 /compact                                    │<br>│    trigger = <span class="hljs-string">&quot;manual&quot;</span>                                             │<br>└─────────────────────────────────────────────────────────────────┘<br></code></pre>
+
+<hr>
+<h2 id="两种-Compact-入口"><a href="#两种-Compact-入口" class="headerlink" title="两种 Compact 入口"></a>两种 Compact 入口</h2><pre class="highlight"><code class="hljs scss"><span class="hljs-built_in">compactEmbeddedPiSession</span>()        <span class="hljs-built_in">compactEmbeddedPiSessionDirect</span>()<br>(compact.queued.ts)               (compact.ts)<br><br> 有 Lane 排队                       没有 Lane 排队<br> 从外部调用                         从 Agent 内部调用<br>     ↓                                    ↓<br> 检查 harness 是否接管              直接执行<br>     ↓                                    ↓<br> 排 sessionLane + globalLane    ... 一样的逻辑 ...<br>     ↓<br> → <span class="hljs-built_in">compactEmbeddedPiSessionDirect</span>()<br></code></pre>
+
+<hr>
+<h2 id="compactEmbeddedPiSessionDirect-完整流程"><a href="#compactEmbeddedPiSessionDirect-完整流程" class="headerlink" title="compactEmbeddedPiSessionDirect 完整流程"></a><code>compactEmbeddedPiSessionDirect</code> 完整流程</h2><pre class="highlight"><code class="hljs yaml"><span class="hljs-string">┌─────────────────────────────────────────────────────────────────────┐</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 1:</span> <span class="hljs-string">选择</span> <span class="hljs-string">Compaction</span> <span class="hljs-string">模型</span>                                         <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-string">compaction</span> <span class="hljs-string">不一定用主</span> <span class="hljs-string">Agent</span> <span class="hljs-string">的模型！</span>                                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-string">resolveEmbeddedCompactionTarget()</span> <span class="hljs-string">→</span>                                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">可以配置一个专门的小模型做摘要（省</span> <span class="hljs-string">token）</span>                         <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">默认：和主</span> <span class="hljs-string">Agent</span> <span class="hljs-string">用同一个模型</span>                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 2:</span> <span class="hljs-string">解析模型</span> <span class="hljs-string">+</span> <span class="hljs-string">获取</span> <span class="hljs-string">API</span> <span class="hljs-string">key</span>                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">和主</span> <span class="hljs-string">Agent</span> <span class="hljs-string">一样的流程：resolveModelAsync()</span> <span class="hljs-string">→</span> <span class="hljs-string">getApiKeyForModel()</span>  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 3:</span> <span class="hljs-string">准备沙箱</span> <span class="hljs-string">+</span> <span class="hljs-string">workspace</span> <span class="hljs-string">+</span> <span class="hljs-string">skills</span>                                <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">和</span> <span class="hljs-string">runEmbeddedAttempt</span> <span class="hljs-string">的前几步完全一样</span>                             <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 4:</span> <span class="hljs-string">构建「compaction</span> <span class="hljs-string">专用的系统提示词」</span>                          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">和主</span> <span class="hljs-string">Agent</span> <span class="hljs-string">用同一套</span> <span class="hljs-string">buildEmbeddedSystemPrompt()</span>                    <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">只是</span> <span class="hljs-string">promptMode</span> <span class="hljs-string">=</span> <span class="hljs-string">&quot;minimal&quot;</span><span class="hljs-string">（更精简）</span>                              <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 5:</span> <span class="hljs-string">打开</span> <span class="hljs-string">SessionManager</span> <span class="hljs-string">+</span> <span class="hljs-string">修复</span> <span class="hljs-string">session</span> <span class="hljs-string">文件</span>                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">SessionManager.open(sessionFile)</span>                                   <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">读入</span> <span class="hljs-string">JSONL</span> <span class="hljs-string">transcript</span>                                            <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 6:</span> <span class="hljs-string">对历史做清理（不清理就让</span> <span class="hljs-string">LLM</span> <span class="hljs-string">做摘要）</span>                        <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">sanitizeSessionHistory()</span> <span class="hljs-string">→</span> <span class="hljs-string">清理损坏的</span> <span class="hljs-string">tool_result</span>                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">validateReplayTurns()</span> <span class="hljs-string">→</span> <span class="hljs-string">验证每轮对话的完整性</span>                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">limitHistoryTurns()</span> <span class="hljs-string">→</span> <span class="hljs-string">限制</span> <span class="hljs-string">DM</span> <span class="hljs-string">channel</span> <span class="hljs-string">的历史轮次</span>                   <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 7:</span> <span class="hljs-string">运行</span> <span class="hljs-string">before_compaction</span> <span class="hljs-string">hooks</span>                                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">让</span> <span class="hljs-string">memory</span> <span class="hljs-string">插件在</span> <span class="hljs-string">compaction</span> <span class="hljs-string">前做长期记忆持久化</span>                   <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">这是关键的一步！不持久化的话</span> <span class="hljs-string">compaction</span> <span class="hljs-string">可能丢失重要记忆</span>           <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 8:</span> <span class="hljs-string">创建新的</span> <span class="hljs-string">Agent</span> <span class="hljs-string">会话</span> <span class="hljs-string">+</span> <span class="hljs-string">调用</span> <span class="hljs-string">compact()</span>                         <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">const</span> <span class="hljs-string">createdSession</span> <span class="hljs-string">=</span> <span class="hljs-string">await</span> <span class="hljs-string">createAgentSession(&#123;</span> <span class="hljs-string">...</span> <span class="hljs-string">&#125;);</span>           <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">注入</span> <span class="hljs-string">compact</span> <span class="hljs-string">专用的系统提示词</span>                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">activeSession.messages</span> <span class="hljs-string">现在有：</span>                                    <span class="hljs-string">│</span><br><span class="hljs-string">│</span>     [<span class="hljs-string">系统提示词</span>, <span class="hljs-string">完整的对话历史</span> <span class="hljs-string">(可能很多条)</span>]                        <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">await</span> <span class="hljs-string">compactWithSafetyTimeout(</span>                                    <span class="hljs-string">│</span><br><span class="hljs-string">│</span>     <span class="hljs-string">()</span> <span class="hljs-string">=&gt;</span> <span class="hljs-string">activeSession.compact(customInstructions),</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span>     <span class="hljs-string">900_000</span> <span class="hljs-string">//</span> <span class="hljs-string">默认</span> <span class="hljs-number">15</span> <span class="hljs-string">分钟超时</span>                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">);</span>                                                                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">↑</span> <span class="hljs-string">这就是核心！一个独立的</span> <span class="hljs-string">LLM</span> <span class="hljs-string">调用，目的是：</span>                        <span class="hljs-string">│</span><br><span class="hljs-string">│</span>     <span class="hljs-string">「阅读全部对话历史，生成一个摘要，告诉我保留哪些关键消息」</span>       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 9:</span> <span class="hljs-string">activeSession.compact()</span> <span class="hljs-string">内部做了什么？</span>                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">┌──────────────────────────────────────────────────────┐</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">compact()</span> <span class="hljs-string">调用</span> <span class="hljs-string">LLM，输入是：</span>                         <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-attr">System:</span> <span class="hljs-string">&quot;You are a summarizer. Read the            │          │</span><br><span class="hljs-string">│   │            conversation and produce:                 │          │</span><br><span class="hljs-string">│   │            1. A structured summary of key decisions  │          │</span><br><span class="hljs-string">│   │               and outcomes                           │          │</span><br><span class="hljs-string">│   │            2. A list of message IDs to KEEP          │          │</span><br><span class="hljs-string">│   │               (messages critical for future turns)   │          │</span><br><span class="hljs-string">│   │            ...&quot;</span>                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-attr">Messages:</span> [<span class="hljs-string">全部对话历史</span>]                           <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">LLM</span> <span class="hljs-string">输出:</span>                                          <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">┌─</span> <span class="hljs-string">summary_text</span> <span class="hljs-string">──────────────────────────┐</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">用户要求开发一个</span> <span class="hljs-string">React</span> <span class="hljs-string">组件，Agent</span> <span class="hljs-string">创建</span>   <span class="hljs-string">│</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">了...</span> <span class="hljs-string">遇到了</span> <span class="hljs-string">ESLint</span> <span class="hljs-string">报错，通过修改配置</span>    <span class="hljs-string">│</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">解决...</span> <span class="hljs-string">最终完成了功能</span> <span class="hljs-string">A</span> <span class="hljs-string">和</span> <span class="hljs-string">B，C</span> <span class="hljs-string">尚未</span>     <span class="hljs-string">│</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">完成...</span>                                   <span class="hljs-string">│</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">└──────────────────────────────────────────┘</span>      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">┌─</span> <span class="hljs-string">kept</span> <span class="hljs-string">ids</span> <span class="hljs-string">─────────────────────────────┐</span>       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> [<span class="hljs-string">msg_045</span>, <span class="hljs-string">msg_078</span>, <span class="hljs-string">msg_120</span>]             <span class="hljs-string">│</span>       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span> <span class="hljs-string">(最近几轮完整的</span> <span class="hljs-string">tool_call</span> <span class="hljs-string">+</span>             <span class="hljs-string">│</span>       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">│</span>  <span class="hljs-string">tool_result</span> <span class="hljs-string">+</span> <span class="hljs-string">assistant</span> <span class="hljs-string">回复)</span>          <span class="hljs-string">│</span>       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">└─────────────────────────────────────────┘</span>       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">compact()</span> <span class="hljs-string">然后替换</span> <span class="hljs-attr">messages:</span>                       <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-attr">Before:</span> [<span class="hljs-string">sys</span>, <span class="hljs-string">msg1</span>, <span class="hljs-string">msg2</span>, <span class="hljs-string">...</span>, <span class="hljs-string">msg500</span>]             <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>            <span class="hljs-string">100K</span> <span class="hljs-string">tokens</span>                               <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-attr">After:</span>  [<span class="hljs-string">sys</span>, <span class="hljs-string">summary_msg</span>, <span class="hljs-string">msg_045</span>, <span class="hljs-string">...</span>, <span class="hljs-string">msg_120</span>]  <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>            <span class="hljs-string">15K</span> <span class="hljs-string">tokens</span>                                <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>                                                      <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">注意：summary_msg</span> <span class="hljs-string">是一条特殊的</span> <span class="hljs-string">assistant</span> <span class="hljs-string">message，</span>  <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">│</span>   <span class="hljs-string">内容就是</span> <span class="hljs-string">LLM</span> <span class="hljs-string">生成的摘要文本</span>                        <span class="hljs-string">│</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">└──────────────────────────────────────────────────────┘</span>          <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 10:</span> <span class="hljs-string">持久化</span> <span class="hljs-string">+</span> <span class="hljs-string">验证</span>                                                <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">hardenManualCompactionBoundary()</span> <span class="hljs-string">→</span> <span class="hljs-string">写入</span> <span class="hljs-string">JSONL</span> <span class="hljs-string">文件</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">estimateTokensAfterCompaction()</span> <span class="hljs-string">→</span> <span class="hljs-string">检查是否仍然超标</span>                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">persistSessionCompactionCheckpoint()</span> <span class="hljs-string">→</span> <span class="hljs-string">保存检查点（可回溯）</span>        <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 11:</span> <span class="hljs-string">运行</span> <span class="hljs-string">after_compaction</span> <span class="hljs-string">hooks</span>                                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">memory</span> <span class="hljs-string">插件读取压缩后的状态</span>                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span> <span class="hljs-attr">Step 12:</span> <span class="hljs-string">返回结果给</span> <span class="hljs-string">run.ts</span> <span class="hljs-string">主循环</span>                                     <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   &#123; <span class="hljs-attr">ok:</span> <span class="hljs-literal">true</span>, <span class="hljs-attr">compacted:</span> <span class="hljs-literal">true</span>, <span class="hljs-attr">tokensBefore:</span> <span class="hljs-number">100000</span>,                 <span class="hljs-string">│</span><br><span class="hljs-string">│</span>     <span class="hljs-attr">tokensAfter:</span> <span class="hljs-number">15000</span> &#125;                                             <span class="hljs-string">│</span><br><span class="hljs-string">│</span>                                                                       <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">主循环收到后：</span>                                                      <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">更新</span> <span class="hljs-string">activeSession.messages</span> <span class="hljs-string">=</span> <span class="hljs-string">压缩后的</span> <span class="hljs-string">messages</span>                  <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">更新系统提示词（因为</span> <span class="hljs-string">tokensBefore/tokensAfter</span> <span class="hljs-string">变了）</span>            <span class="hljs-string">│</span><br><span class="hljs-string">│</span>   <span class="hljs-string">→</span> <span class="hljs-string">continue;</span> <span class="hljs-string">→</span> <span class="hljs-string">重新发</span> <span class="hljs-string">prompt</span> <span class="hljs-string">给</span> <span class="hljs-string">LLM</span>                                <span class="hljs-string">│</span><br><span class="hljs-string">└─────────────────────────────────────────────────────────────────────┘</span><br></code></pre>
+
+<hr>
+<h2 id="安全防护"><a href="#安全防护" class="headerlink" title="安全防护"></a>安全防护</h2><h3 id="1-防止无限循环：最大重试次数"><a href="#1-防止无限循环：最大重试次数" class="headerlink" title="1. 防止无限循环：最大重试次数"></a>1. 防止无限循环：最大重试次数</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// run.ts:470</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MAX_OVERFLOW_COMPACTION_ATTEMPTS</span> = <span class="hljs-number">3</span>;<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">MAX_TIMEOUT_COMPACTION_ATTEMPTS</span> = <span class="hljs-number">2</span>;<br><br><span class="hljs-comment">// 如果 compact 了 3 次还 overflow → 放弃 compact，走 failover（换模型）</span><br></code></pre>
+
+<h3 id="2-防止-compaction-干跑：跳过无内容会话"><a href="#2-防止-compaction-干跑：跳过无内容会话" class="headerlink" title="2. 防止 compaction 干跑：跳过无内容会话"></a>2. 防止 compaction 干跑：跳过无内容会话</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// compact.ts:1003-1011</span><br><span class="hljs-keyword">if</span> (!<span class="hljs-title function_">containsRealConversationMessages</span>(session.<span class="hljs-property">messages</span>)) &#123;<br> <span class="hljs-comment">// 如果对话历史里没有真正的人机对话（比如全是系统消息）</span><br> → <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">compacted</span>: <span class="hljs-literal">false</span>, <span class="hljs-attr">reason</span>: <span class="hljs-string">&quot;no real conversation messages&quot;</span> &#125;;<br>&#125;<br></code></pre>
+
+<h3 id="3-超时保护"><a href="#3-超时保护" class="headerlink" title="3. 超时保护"></a>3. 超时保护</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// compaction-safety-timeout.ts</span><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">EMBEDDED_COMPACTION_TIMEOUT_MS</span> = <span class="hljs-number">900_000</span>; <span class="hljs-comment">// 默认 15 分钟超时</span><br><span class="hljs-comment">// 可配置: agents.defaults.compaction.timeoutSeconds</span><br><br><span class="hljs-title function_">compactWithSafetyTimeout</span>(compactFn, timeoutMs, &#123;<br> abortSignal, <span class="hljs-comment">// 用户取消</span><br> <span class="hljs-attr">onCancel</span>: <span class="hljs-function">() =&gt;</span> activeSession.<span class="hljs-title function_">abortCompaction</span>() <span class="hljs-comment">// 超时/取消时停掉 LLM 调用</span><br>&#125;)<br></code></pre>
+
+<h3 id="4-文件锁"><a href="#4-文件锁" class="headerlink" title="4. 文件锁"></a>4. 文件锁</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// compact.ts:782-787</span><br><span class="hljs-keyword">const</span> sessionLock = <span class="hljs-keyword">await</span> <span class="hljs-title function_">acquireSessionWriteLock</span>(&#123;<br> sessionFile,<br> <span class="hljs-attr">maxHoldMs</span>: <span class="hljs-title function_">resolveSessionLockMaxHoldFromTimeout</span>(&#123; timeoutMs &#125;)<br>&#125;);<br><span class="hljs-comment">// 防止多个 Agent 同时 compact 同一个 session 文件，造成数据损坏</span><br></code></pre>
+
+<h3 id="5-检查点机制"><a href="#5-检查点机制" class="headerlink" title="5. 检查点机制"></a>5. 检查点机制</h3><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 在 compact 前拍快照，compact 后保存检查点</span><br>checkpointSnapshot = <span class="hljs-title function_">captureCompactionCheckpointSnapshot</span>(&#123;<br> sessionManager, sessionFile<br>&#125;);<br><br><span class="hljs-comment">// 如果 compact 失败 → 可以通过检查点恢复到 compact 前的状态</span><br><span class="hljs-comment">// 如果 compact 成功 → 检查点记录完整的前后对比（供审计/调试）</span><br></code></pre>
+
+<hr>
+<h2 id="Compaction-失败分类"><a href="#Compaction-失败分类" class="headerlink" title="Compaction 失败分类"></a>Compaction 失败分类</h2><pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// compact-reasons.ts</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">classifyCompactionReason</span>(<span class="hljs-params">reason</span>) &#123;<br> <span class="hljs-string">&quot;no real conversation messages&quot;</span> → <span class="hljs-string">&quot;no_compactable_entries&quot;</span><br> <span class="hljs-string">&quot;token count is below compact threshold&quot;</span> → <span class="hljs-string">&quot;below_threshold&quot;</span><br> <span class="hljs-string">&quot;already compacted recently&quot;</span> → <span class="hljs-string">&quot;already_compacted_recently&quot;</span><br> <span class="hljs-string">&quot;context still exceeds target&quot;</span> → <span class="hljs-string">&quot;live_context_still_exceeds_target&quot;</span><br> <span class="hljs-string">&quot;guard blocked compaction&quot;</span> → <span class="hljs-string">&quot;guard_blocked&quot;</span><br> <span class="hljs-string">&quot;summary generation failed&quot;</span> → <span class="hljs-string">&quot;summary_failed&quot;</span><br> <span class="hljs-string">&quot;compaction timed out&quot;</span> → <span class="hljs-string">&quot;timeout&quot;</span><br> <span class="hljs-string">&quot;HTTP 400/401/403/429&quot;</span> → <span class="hljs-string">&quot;provider_error_4xx&quot;</span><br> <span class="hljs-string">&quot;HTTP 500/502/503/504&quot;</span> → <span class="hljs-string">&quot;provider_error_5xx&quot;</span><br>&#125;<br></code></pre>
+
+<hr>
+<h2 id="context-engine-compaction-vs-direct-compaction"><a href="#context-engine-compaction-vs-direct-compaction" class="headerlink" title="context engine compaction vs direct compaction"></a>context engine compaction vs direct compaction</h2><p>项目里有两套 compaction 机制：</p>
+<pre class="highlight"><code class="hljs scss">SDK Auto Compaction                  OpenClaw Direct Compaction<br>(pi-coding-agent 库内置)            (compact.ts)<br>│                                      │<br>│ 在 session<span class="hljs-selector-class">.prompt</span>() 内部            │ 在 <span class="hljs-built_in">prompt</span>() 返回后才触发<br>│ 自动检测 token 接近上限             │ 处理 &quot;context <span class="hljs-attribute">overflow</span>&quot; 错误<br>│ 透明地做压缩，OpenClaw 无感         │ 或者用户手动触发<br>│                                      │<br>│ context engine 可以接管传统          │ run<span class="hljs-selector-class">.ts</span> 根据 attempt<span class="hljs-selector-class">.result</span><br>│ compaction 流程 →                   │ 判断是否需要 compact<br>│ <span class="hljs-built_in">runOwnsContextEngine</span>() →            │<br>│ contextEngine<span class="hljs-selector-class">.compact</span>()             │<br></code></pre>
+
+<hr>
+<h2 id="完整时序总结"><a href="#完整时序总结" class="headerlink" title="完整时序总结"></a>完整时序总结</h2><pre class="highlight"><code class="hljs maxima">runEmbeddedPiAgent() <span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) 循环<br> │<br> ├── runEmbeddedAttemptWithBackend()<br> │   └── session.<span class="hljs-built_in">prompt</span>()<br> │       │<br> │       ├── (SDK 内部: 检测到 token 接近上限)<br> │       │   → 自动 compact → 继续 <span class="hljs-built_in">prompt</span><br> │       │<br> │       └── 返回结果<br> │<br> ├── 检查结果<br> │   ├── <span class="hljs-built_in">status</span> = <span class="hljs-string">&quot;context_overflow&quot;</span><br> │   │   ├── 已经自动 compact 过了? → 再 compact 一次<br> │   │   ├── overflowCompactionAttempts &lt; <span class="hljs-number">3</span>? → compact + retry <span class="hljs-built_in">prompt</span><br> │   │   └── overflowCompactionAttempts &gt;= <span class="hljs-number">3</span>? → failover (换模型)<br> │   │<br> │   └── <span class="hljs-built_in">status</span> = <span class="hljs-string">&quot;timeout&quot;</span> + high token usage<br> │       ├── timeoutCompactionAttempts &lt; <span class="hljs-number">2</span>? → compact + retry <span class="hljs-built_in">prompt</span><br> │       └── timeoutCompactionAttempts &gt;= <span class="hljs-number">2</span>? → failover<br> │<br> └── compact 成功 → update session → continue 回到循环顶部<br></code></pre>
+
+<p><strong>核心智慧</strong>：compaction 就是把「一段很长的对话」变成「一段摘要 + 最近几轮关键消息」，用一个小型 LLM 调用省下未来所有调用的 token 开销。但它本身也有风险——调用 LLM 本身要花钱、花时间，所以有重试上限防护。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/07/13/2026-07-13-openclaw-source-code-analysis-8-subscription/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">OpenClaw 源码解析 ⑧：Subscription 管道完整拆解 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/07/10/2026-07-10-openclaw-4-23-intro/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">OpenClaw 4.23 发布：当图像生成成为一等公民 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Compaction%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Compaction：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%A7%A3%E9%87%8A"><span class="toc-text">一句话解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Compaction%EF%BC%9F"><span class="toc-text">为什么需要 Compaction？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E7%9A%84%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="toc-text">Compaction 的触发时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D-Compact-%E5%85%A5%E5%8F%A3"><span class="toc-text">两种 Compact 入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compactEmbeddedPiSessionDirect-%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-text">compactEmbeddedPiSessionDirect 完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4"><span class="toc-text">安全防护</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%98%B2%E6%AD%A2%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%EF%BC%9A%E6%9C%80%E5%A4%A7%E9%87%8D%E8%AF%95%E6%AC%A1%E6%95%B0"><span class="toc-text">1. 防止无限循环：最大重试次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%98%B2%E6%AD%A2-compaction-%E5%B9%B2%E8%B7%91%EF%BC%9A%E8%B7%B3%E8%BF%87%E6%97%A0%E5%86%85%E5%AE%B9%E4%BC%9A%E8%AF%9D"><span class="toc-text">2. 防止 compaction 干跑：跳过无内容会话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%B6%85%E6%97%B6%E4%BF%9D%E6%8A%A4"><span class="toc-text">3. 超时保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E9%94%81"><span class="toc-text">4. 文件锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%A3%80%E6%9F%A5%E7%82%B9%E6%9C%BA%E5%88%B6"><span class="toc-text">5. 检查点机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E5%A4%B1%E8%B4%A5%E5%88%86%E7%B1%BB"><span class="toc-text">Compaction 失败分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#context-engine-compaction-vs-direct-compaction"><span class="toc-text">context engine compaction vs direct compaction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E6%80%BB%E7%BB%93"><span class="toc-text">完整时序总结</span></a></li></ol></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Compaction%EF%BC%9A%E5%AE%8C%E6%95%B4%E6%8B%86%E8%A7%A3"><span class="toc-text">Compaction：完整拆解</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E5%8F%A5%E8%AF%9D%E8%A7%A3%E9%87%8A"><span class="toc-text">一句话解释</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Compaction%EF%BC%9F"><span class="toc-text">为什么需要 Compaction？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E7%9A%84%E8%A7%A6%E5%8F%91%E6%97%B6%E6%9C%BA"><span class="toc-text">Compaction 的触发时机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D-Compact-%E5%85%A5%E5%8F%A3"><span class="toc-text">两种 Compact 入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compactEmbeddedPiSessionDirect-%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-text">compactEmbeddedPiSessionDirect 完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E5%85%A8%E9%98%B2%E6%8A%A4"><span class="toc-text">安全防护</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E9%98%B2%E6%AD%A2%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%EF%BC%9A%E6%9C%80%E5%A4%A7%E9%87%8D%E8%AF%95%E6%AC%A1%E6%95%B0"><span class="toc-text">1. 防止无限循环：最大重试次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%98%B2%E6%AD%A2-compaction-%E5%B9%B2%E8%B7%91%EF%BC%9A%E8%B7%B3%E8%BF%87%E6%97%A0%E5%86%85%E5%AE%B9%E4%BC%9A%E8%AF%9D"><span class="toc-text">2. 防止 compaction 干跑：跳过无内容会话</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%B6%85%E6%97%B6%E4%BF%9D%E6%8A%A4"><span class="toc-text">3. 超时保护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%96%87%E4%BB%B6%E9%94%81"><span class="toc-text">4. 文件锁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E6%A3%80%E6%9F%A5%E7%82%B9%E6%9C%BA%E5%88%B6"><span class="toc-text">5. 检查点机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Compaction-%E5%A4%B1%E8%B4%A5%E5%88%86%E7%B1%BB"><span class="toc-text">Compaction 失败分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#context-engine-compaction-vs-direct-compaction"><span class="toc-text">context engine compaction vs direct compaction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E6%80%BB%E7%BB%93"><span class="toc-text">完整时序总结</span></a></li></ol></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

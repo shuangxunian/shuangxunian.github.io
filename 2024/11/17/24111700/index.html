@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>js 数据类型面试题</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="js 数据类型面试题">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2024/11/17/24111700/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="如题目">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2024-11-17">
+      <meta 
+        property="og:article:modified_time" 
+        content="2024-11-17">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="面试">
+        
+          <meta 
+            property="og:article:tag" 
+            content="js面试题">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>441</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>6</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>180</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript%E6%9C%89%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">JavaScript有哪些数据类型，它们的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%B5%8B%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">数据类型检测的方式有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#typeof"><span class="toc-text">typeof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#instanceof"><span class="toc-text">instanceof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#constructor-NaN"><span class="toc-text">constructor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-prototype-toString-call"><span class="toc-text">Object.prototype.toString.call()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">判断数组的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null%E5%92%8Cundefined%E5%8C%BA%E5%88%AB"><span class="toc-text">null和undefined区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-null-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof null 的结果是什么，为什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intanceof-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0"><span class="toc-text">intanceof 操作符的实现原理及实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%880-1-0-2-x3D-x3D-0-3%EF%BC%8C%E5%A6%82%E4%BD%95%E8%AE%A9%E5%85%B6%E7%9B%B8%E7%AD%89"><span class="toc-text">为什么0.1+0.2 ! &#x3D;&#x3D; 0.3，如何让其相等</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%AE%89%E5%85%A8%E7%9A%84-undefined-%E5%80%BC%EF%BC%9F"><span class="toc-text">如何获取安全的 undefined 值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-NaN-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof NaN 的结果是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#isNaN-%E5%92%8C-Number-isNaN-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">isNaN 和 Number.isNaN 函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">&#x3D;&#x3D; 操作符的强制类型转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到字符串的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E6%95%B0%E5%AD%97%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到数字值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到布尔类型的值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C-amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%9F"><span class="toc-text">|| 和 &amp;&amp; 操作符的返回值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-is-%E4%B8%8E%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6-%E3%80%81-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Object.is() 与比较操作符 &#x3D;&#x3D;&#x3D;、&#x3D;&#x3D; 的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JavaScript-%E4%B8%AD%E7%9A%84%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">什么是 JavaScript 中的包装类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%EF%BC%9F"><span class="toc-text">JavaScript 中如何进行隐式类型转换？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAnumber%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为number时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAstring%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为string时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">+操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%81-%E3%80%81-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">-、*、\操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">对于&#x3D;&#x3D;操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-lt-%E5%92%8C-gt-%E6%AF%94%E8%BE%83%E7%AC%A6"><span class="toc-text">对于**&lt;和&gt;比较符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%94%A8%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%8B%BC%E6%8E%A5%EF%BC%9F"><span class="toc-text">+ 操作符什么时候用于字符串的拼接？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89BigInt%E7%9A%84%E6%8F%90%E6%A1%88%EF%BC%9F"><span class="toc-text">为什么会有BigInt的提案？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#object-assign%E5%92%8C%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E6%B3%95%E6%98%AF%E6%B7%B1%E6%8B%B7%E8%B4%9D%E8%BF%98%E6%98%AF%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%8C%E4%B8%A4%E8%80%85%E5%8C%BA%E5%88%AB"><span class="toc-text">object.assign和扩展运算法是深拷贝还是浅拷贝，两者区别</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">34</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B8%B8%E6%88%8F%E5%88%86%E6%9E%90/" 
+        title="游戏分析">
+        <div class="tags-list-item">游戏分析</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%BF%83%E7%90%86/" 
+        title="心理">
+        <div class="tags-list-item">心理</div>
+      </a>
+    
+      <a 
+        href="/tags/%E4%B8%89%E8%A7%92%E6%B4%B2%E8%A1%8C%E5%8A%A8/" 
+        title="三角洲行动">
+        <div class="tags-list-item">三角洲行动</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%BA%BB%E5%B0%86/" 
+        title="麻将">
+        <div class="tags-list-item">麻将</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AB%9E%E4%BB%B7%E4%B9%8B%E7%8E%8B/" 
+        title="竞价之王">
+        <div class="tags-list-item">竞价之王</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%AF%A1%E5%BC%82%E5%B9%BF%E5%91%8A%E8%B0%83%E6%9F%A5%E4%BA%8B%E4%BB%B6/" 
+        title="诡异广告调查事件">
+        <div class="tags-list-item">诡异广告调查事件</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/AI-Agent/" 
+        title="AI Agent">
+        <div class="tags-list-item">AI Agent</div>
+      </a>
+    
+      <a 
+        href="/tags/%E8%BF%90%E7%BB%B4/" 
+        title="运维">
+        <div class="tags-list-item">运维</div>
+      </a>
+    
+      <a 
+        href="/tags/AI/" 
+        title="AI">
+        <div class="tags-list-item">AI</div>
+      </a>
+    
+      <a 
+        href="/tags/Skill/" 
+        title="Skill">
+        <div class="tags-list-item">Skill</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/" 
+        title="工具推荐">
+        <div class="tags-list-item">工具推荐</div>
+      </a>
+    
+      <a 
+        href="/tags/Claude-Code/" 
+        title="Claude Code">
+        <div class="tags-list-item">Claude Code</div>
+      </a>
+    
+      <a 
+        href="/tags/AI%E7%BC%96%E7%A8%8B/" 
+        title="AI编程">
+        <div class="tags-list-item">AI编程</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      js 数据类型面试题
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/24111700.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2024-11-16T16:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2024-11-17</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          开发技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>6k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/%E9%9D%A2%E8%AF%95/" 
+            class="post-meta-link">
+            面试
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/js%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+            class="post-meta-link">
+            js面试题
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <h2 id="JavaScript有哪些数据类型，它们的区别？"><a href="#JavaScript有哪些数据类型，它们的区别？" class="headerlink" title="JavaScript有哪些数据类型，它们的区别？"></a>JavaScript有哪些数据类型，它们的区别？</h2><p>JavaScript共有八种数据类型，分别是 Undefined、Null、Boolean、Number、String、Object、Symbol、BigInt。</p>
+<p>其中 Symbol 和 BigInt 是ES6 中新增的数据类型：</p>
+<ul>
+<li>Symbol 代表创建后独一无二且不可变的数据类型，它主要是为了解决可能出现的全局变量冲突的问题。</li>
+<li>BigInt 是一种数字类型的数据，它可以表示任意精度格式的整数，使用 BigInt 可以安全地存储和操作大整数，即使这个数已经超出了 Number 能够表示的安全整数范围。</li>
+</ul>
+<p>这些数据可以分为原始数据类型和引用数据类型：</p>
+<ul>
+<li>栈：原始数据类型（Undefined、Null、Boolean、Number、String）</li>
+<li>堆：引用数据类型（对象、数组和函数）</li>
+</ul>
+<p>两种类型的区别在于<strong>存储位置的不同：</strong></p>
+<ul>
+<li>原始数据类型直接存储在栈（stack）中的简单数据段，占据空间小、大小固定，属于被频繁使用数据，所以放入栈中存储；</li>
+<li>引用数据类型存储在堆（heap）中的对象，占据空间大、大小不固定。如果存储在栈中，将会影响程序运行的性能；引用数据类型在栈中存储了指针，该指针指向堆中该实体的起始地址。当解释器寻找引用值时，会首先检索其在栈中的地址，取得地址后从堆中获得实体。</li>
+</ul>
+<p>堆和栈的概念存在于数据结构和操作系统内存中，在数据结构中：</p>
+<ul>
+<li>在数据结构中，栈中数据的存取方式为先进后出。</li>
+<li>堆是一个优先队列，是按优先级来进行排序的，优先级可以按照大小来规定。</li>
+</ul>
+<p>在操作系统中，内存被分为栈区和堆区：</p>
+<ul>
+<li>栈区内存由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。</li>
+<li>堆区内存一般由开发着分配释放，若开发者不释放，程序结束时可能由垃圾回收机制回收。</li>
+</ul>
+<h2 id="数据类型检测的方式有哪些"><a href="#数据类型检测的方式有哪些" class="headerlink" title="数据类型检测的方式有哪些"></a>数据类型检测的方式有哪些</h2><h3 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-number">2</span>);               <span class="hljs-comment">// number</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">true</span>);            <span class="hljs-comment">// boolean</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-string">&#x27;str&#x27;</span>);           <span class="hljs-comment">// string</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> []);              <span class="hljs-comment">// object    </span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;);    <span class="hljs-comment">// function</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> &#123;&#125;);              <span class="hljs-comment">// object</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">undefined</span>);       <span class="hljs-comment">// undefined</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">typeof</span> <span class="hljs-literal">null</span>);            <span class="hljs-comment">// object</span><br></code></pre>
+
+<p>其中数组、对象、null都会被判断为object，其他判断都正确。</p>
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><p><code>instanceof</code>可以正确判断对象的类型，<strong>其内部运行机制是判断在其原型链中能否找到该类型的原型</strong>。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-number">2</span> <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Number</span>);                    <span class="hljs-comment">// false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-literal">true</span> <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Boolean</span>);                <span class="hljs-comment">// false </span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;str&#x27;</span> <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">String</span>);                <span class="hljs-comment">// false </span><br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>([] <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Array</span>);                    <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125; <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Function</span>);       <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(&#123;&#125; <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Object</span>);                   <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>可以看到，<code>instanceof</code><strong>只能正确判断引用数据类型</strong>，而不能判断基本数据类型。<code>instanceof</code> 运算符可以用来测试一个对象在其原型链中是否存在一个构造函数的 <code>prototype</code> 属性。</p>
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><pre class="highlight"><code class="hljs javascript"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>((<span class="hljs-number">2</span>).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Number</span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>((<span class="hljs-literal">true</span>).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Boolean</span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>((<span class="hljs-string">&#x27;str&#x27;</span>).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">String</span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(([]).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Array</span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>((<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;&#125;).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Function</span>); <span class="hljs-comment">// true</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>((&#123;&#125;).<span class="hljs-property">constructor</span> === <span class="hljs-title class_">Object</span>); <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><code>constructor</code>有两个作用，一是判断数据的类型，二是对象实例通过 <code>constrcutor</code> 对象访问它的构造函数。需要注意，如果创建一个对象来改变它的原型，<code>constructor</code>就不能用来判断数据类型了：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">Fn</span>(<span class="hljs-params"></span>)&#123;&#125;;<br><br><span class="hljs-title class_">Fn</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Array</span>();<br><br><span class="hljs-keyword">var</span> f = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Fn</span>();<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(f.<span class="hljs-property">constructor</span>===<span class="hljs-title class_">Fn</span>);    <span class="hljs-comment">// false</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(f.<span class="hljs-property">constructor</span>===<span class="hljs-title class_">Array</span>); <span class="hljs-comment">// true</span><br></code></pre>
+
+<h3 id="Object-prototype-toString-call"><a href="#Object-prototype-toString-call" class="headerlink" title="Object.prototype.toString.call()"></a>Object.prototype.toString.call()</h3><p><code>Object.prototype.toString.call()</code> 使用 Object 对象的原型方法 toString 来判断数据类型：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>;<br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-number">2</span>));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-literal">true</span>));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-string">&#x27;str&#x27;</span>));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>([]));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)&#123;&#125;));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(&#123;&#125;));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-literal">undefined</span>));<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(a.<span class="hljs-title function_">call</span>(<span class="hljs-literal">null</span>));<br></code></pre>
+
+<p>同样是检测对象obj调用toString方法，obj.toString()的结果和Object.prototype.toString.call(obj)的结果不一样，这是为什么？</p>
+<p>这是因为toString是Object的原型方法，而Array、function等<strong>类型作为Object的实例，都重写了toString方法</strong>。不同的对象类型调用toString方法时，根据原型链的知识，调用的是对应的重写之后的toString方法（function类型返回内容为函数体的字符串，Array类型返回元素组成的字符串…），而不会去调用Object上原型toString方法（返回对象的具体类型），所以采用obj.toString()不能得到其对象类型，只能将obj转换为字符串类型；因此，在想要得到对象的具体类型时，应该调用Object原型上的toString方法。</p>
+<h2 id="判断数组的方式有哪些"><a href="#判断数组的方式有哪些" class="headerlink" title="判断数组的方式有哪些"></a>判断数组的方式有哪些</h2><ul>
+<li>通过Object.prototype.toString.call()做判断</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Object</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-property">toString</span>.<span class="hljs-title function_">call</span>(obj).<span class="hljs-title function_">slice</span>(<span class="hljs-number">8</span>,-<span class="hljs-number">1</span>) === <span class="hljs-string">&#x27;Array&#x27;</span>;<br></code></pre>
+
+<ul>
+<li>通过原型链做判断</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">obj.<span class="hljs-property">__proto__</span> === <span class="hljs-title class_">Array</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>;<br></code></pre>
+
+<ul>
+<li>通过ES6的Array.isArray()做判断</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Array</span>.<span class="hljs-title function_">isArrray</span>(obj);<br></code></pre>
+
+<ul>
+<li>通过instanceof做判断</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript">obj <span class="hljs-keyword">instanceof</span> <span class="hljs-title class_">Array</span><br></code></pre>
+
+<ul>
+<li>通过Array.prototype.isPrototypeOf</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-title class_">Array</span>.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>.<span class="hljs-title function_">isPrototypeOf</span>(obj)<br></code></pre>
+
+<h2 id="null和undefined区别"><a href="#null和undefined区别" class="headerlink" title="null和undefined区别"></a>null和undefined区别</h2><p>首先 Undefined 和 Null 都是基本数据类型，这两个基本数据类型分别都只有一个值，就是 undefined 和 null。</p>
+<p>undefined 代表的含义是<strong>未定义</strong>，null 代表的含义是<strong>空对象</strong>。一般变量声明了但还没有定义的时候会返回 undefined，null主要用于赋值给一些可能会返回对象的变量，作为初始化。</p>
+<p>undefined 在 JavaScript 中不是一个保留字，这意味着可以使用 undefined 来作为一个变量名，但是这样的做法是非常危险的，它会影响对 undefined 值的判断。我们可以通过一些方法获得安全的 undefined 值，比如说 void 0。</p>
+<p>当对这两种类型使用 typeof 进行判断时，Null 类型化会返回 “object”，这是一个历史遗留的问题。当使用双等号对两种类型的值进行比较时会返回 true，使用三个等号时会返回 false。</p>
+<h2 id="typeof-null-的结果是什么，为什么？"><a href="#typeof-null-的结果是什么，为什么？" class="headerlink" title="typeof null 的结果是什么，为什么？"></a>typeof null 的结果是什么，为什么？</h2><p>typeof null 的结果是Object。</p>
+<p>在 JavaScript 第一个版本中，所有值都存储在 32 位的单元中，每个单元包含一个小的 <strong>类型标签(1-3 bits)</strong> 以及当前要存储值的真实数据。类型标签存储在每个单元的低位中，共有五种数据类型：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">000</span>: object   - 当前存储的数据指向一个对象。<br>  <span class="hljs-number">1</span>: int      - 当前存储的数据是一个 <span class="hljs-number">31</span> 位的有符号整数。<br><span class="hljs-number">010</span>: double   - 当前存储的数据指向一个双精度的浮点数。<br><span class="hljs-number">100</span>: string   - 当前存储的数据指向一个字符串。<br><span class="hljs-number">110</span>: boolean  - 当前存储的数据是布尔值。<br></code></pre>
+
+<p>如果最低位是 1，则类型标签标志位的长度只有一位；如果最低位是 0，则类型标签标志位的长度占三位，为存储其他四种数据类型提供了额外两个 bit 的长度。</p>
+<p>有两种特殊数据类型：</p>
+<ul>
+<li>undefined的值是 (-2)30(一个超出整数范围的数字)；</li>
+<li>null 的值是机器码 NULL 指针(null 指针的值全是 0)</li>
+</ul>
+<p>那也就是说null的类型标签也是000，和Object的类型标签一样，所以会被判定为Object。</p>
+<h2 id="intanceof-操作符的实现原理及实现"><a href="#intanceof-操作符的实现原理及实现" class="headerlink" title="intanceof 操作符的实现原理及实现"></a>intanceof 操作符的实现原理及实现</h2><p>instanceof 运算符用于判断构造函数的 prototype 属性是否出现在对象的原型链中的任何位置。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">myInstanceof</span>(<span class="hljs-params">left, right</span>) &#123;<br>  <span class="hljs-comment">// 获取对象的原型</span><br>  <span class="hljs-keyword">let</span> proto = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(left)<br>  <span class="hljs-comment">// 获取构造函数的 prototype 对象</span><br>  <span class="hljs-keyword">let</span> prototype = right.<span class="hljs-property"><span class="hljs-keyword">prototype</span></span>; <br><br>  <span class="hljs-comment">// 判断构造函数的 prototype 对象是否在对象的原型链上</span><br>  <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>    <span class="hljs-keyword">if</span> (!proto) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-keyword">if</span> (proto === prototype) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    <span class="hljs-comment">// 如果没有找到，就继续从其原型上找，Object.getPrototypeOf方法用来获取指定对象的原型</span><br>    proto = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">getPrototypeOf</span>(proto);<br>  &#125;<br>&#125;<br></code></pre>
+
+<h2 id="为什么0-1-0-2-x3D-x3D-0-3，如何让其相等"><a href="#为什么0-1-0-2-x3D-x3D-0-3，如何让其相等" class="headerlink" title="为什么0.1+0.2 ! &#x3D;&#x3D; 0.3，如何让其相等"></a>为什么0.1+0.2 ! &#x3D;&#x3D; 0.3，如何让其相等</h2><p>在开发过程中遇到类似这样的问题：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> n1 = <span class="hljs-number">0.1</span>, n2 = <span class="hljs-number">0.2</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(n1 + n2)  <span class="hljs-comment">// 0.30000000000000004</span><br></code></pre>
+
+<p>这里得到的不是想要的结果，要想等于0.3，就要把它进行转化：</p>
+<pre class="highlight"><code class="hljs javascript">(n1 + n2).<span class="hljs-title function_">toFixed</span>(<span class="hljs-number">2</span>) <span class="hljs-comment">// 注意，toFixed为四舍五入</span><br></code></pre>
+
+<p><code>toFixed(num)</code> 方法可把 Number 四舍五入为指定小数位数的数字。那为什么会出现这样的结果呢？</p>
+<p>计算机是通过二进制的方式存储数据的，所以计算机计算0.1+0.2的时候，实际上是计算的两个数的二进制的和。0.1的二进制是<code>0.0001100110011001100...</code>（1100循环），0.2的二进制是：<code>0.00110011001100...</code>（1100循环），这两个数的二进制都是无限循环的数。那JavaScript是如何处理无限循环的二进制小数呢？</p>
+<p>一般我们认为数字包括整数和小数，但是在 JavaScript 中只有一种数字类型：Number，它的实现遵循IEEE 754标准，使用64位固定长度来表示，也就是标准的double双精度浮点数。在二进制科学表示法中，双精度浮点数的小数部分最多只能保留52位，再加上前面的1，其实就是保留53位有效数字，剩余的需要舍去，遵从“0舍1入”的原则。</p>
+<p>根据这个原则，0.1和0.2的二进制数相加，再转化为十进制数就是：<code>0.30000000000000004</code>。</p>
+<p>下面看一下<strong>双精度数是如何保存</strong>的：</p>
+<ul>
+<li>第一部分：用来存储符号位（sign），用来区分正负数，0表示正数，占用1位</li>
+<li>第二部分：用来存储指数（exponent），占用11位</li>
+<li>第三部分：用来存储小数（fraction），占用52位</li>
+</ul>
+<p>对于0.1，它的二进制为：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">0.00011001100110011001100110011001100110011001100110011001</span> <span class="hljs-number">10011.</span>..<br></code></pre>
+
+<p>转为科学计数法（科学计数法的结果就是浮点数）：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1.1001100110011001100110011001100110011001100110011001</span>*<span class="hljs-number">2</span>^-<span class="hljs-number">4</span><br></code></pre>
+
+<p>可以看出0.1的符号位为0，指数位为-4，小数位为：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1001100110011001100110011001100110011001100110011001</span><br></code></pre>
+
+<p>那么问题又来了，<strong>指数位是负数，该如何保存</strong>呢？</p>
+<p>IEEE标准规定了一个偏移量，对于指数部分，每次都加这个偏移量进行保存，这样即使指数是负数，那么加上这个偏移量也就是正数了。由于JavaScript的数字是双精度数，这里就以双精度数为例，它的指数部分为11位，能表示的范围就是0~2047，IEEE固定<strong>双精度数的偏移量为1023</strong>。</p>
+<ul>
+<li>当指数位不全是0也不全是1时(规格化的数值)，IEEE规定，阶码计算公式为 e-Bias。 此时e最小值是1，则1-1023&#x3D; -1022，e最大值是2046，则2046-1023&#x3D;1023，可以看到，这种情况下取值范围是<code>-1022~1013</code>。</li>
+<li>当指数位全部是0的时候(非规格化的数值)，IEEE规定，阶码的计算公式为1-Bias，即1-1023&#x3D; -1022。</li>
+<li>当指数位全部是1的时候(特殊值)，IEEE规定这个浮点数可用来表示3个特殊值，分别是正无穷，负无穷，NaN。 具体的，小数位不为0的时候表示NaN；小数位为0时，当符号位s&#x3D;0时表示正无穷，s&#x3D;1时候表示负无穷。</li>
+</ul>
+<p>对于上面的0.1的指数位为-4，-4+1023 &#x3D; 1019 转化为二进制就是：<code>1111111011</code>.</p>
+<p>所以，0.1表示为：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">0</span> <span class="hljs-number">1111111011</span> <span class="hljs-number">1001100110011001100110011001100110011001100110011001</span><br></code></pre>
+
+<p>说了这么多，是时候该最开始的问题了，如何实现0.1+0.2&#x3D;0.3呢？</p>
+<p>对于这个问题，一个直接的解决方法就是设置一个误差范围，通常称为“机器精度”。对JavaScript来说，这个值通常为2-52，在ES6中，提供了<code>Number.EPSILON</code>属性，而它的值就是2-52，只要判断<code>0.1+0.2-0.3</code>是否小于<code>Number.EPSILON</code>，如果小于，就可以判断为0.1+0.2 &#x3D;&#x3D;&#x3D;0.3</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">function</span> <span class="hljs-title function_">numberepsilon</span>(<span class="hljs-params">arg1,arg2</span>)&#123;                   <br>  <span class="hljs-keyword">return</span> <span class="hljs-title class_">Math</span>.<span class="hljs-title function_">abs</span>(arg1 - arg2) &lt; <span class="hljs-title class_">Number</span>.<span class="hljs-property">EPSILON</span>;        <br>&#125;        <br><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-title function_">numberepsilon</span>(<span class="hljs-number">0.1</span> + <span class="hljs-number">0.2</span>, <span class="hljs-number">0.3</span>)); <span class="hljs-comment">// true</span><br></code></pre>
+
+<h2 id="如何获取安全的-undefined-值？"><a href="#如何获取安全的-undefined-值？" class="headerlink" title="如何获取安全的 undefined 值？"></a>如何获取安全的 undefined 值？</h2><p>因为 undefined 是一个标识符，所以可以被当作变量来使用和赋值，但是这样会影响 undefined 的正常判断。表达式 void ___ 没有返回值，因此返回结果是 undefined。void 并不改变表达式的结果，只是让表达式不返回值。因此可以用 void 0 来获得 undefined。</p>
+<h2 id="typeof-NaN-的结果是什么？"><a href="#typeof-NaN-的结果是什么？" class="headerlink" title="typeof NaN 的结果是什么？"></a>typeof NaN 的结果是什么？</h2><p>NaN 指“不是一个数字”（not a number），NaN 是一个“警戒值”（sentinel value，有特殊用途的常规值），用于指出数字类型中的错误情况，即“执行数学运算没有成功，这是失败后返回的结果”。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">typeof</span> <span class="hljs-title class_">NaN</span>; <span class="hljs-comment">// &quot;number&quot;</span><br></code></pre>
+
+<p>NaN 是一个特殊值，它和自身不相等，是唯一一个非自反（自反，reflexive，即 x &#x3D;&#x3D;&#x3D; x 不成立）的值。而 NaN !&#x3D;&#x3D; NaN 为 true。</p>
+<h2 id="isNaN-和-Number-isNaN-函数的区别？"><a href="#isNaN-和-Number-isNaN-函数的区别？" class="headerlink" title="isNaN 和 Number.isNaN 函数的区别？"></a>isNaN 和 Number.isNaN 函数的区别？</h2><ul>
+<li>函数 isNaN 接收参数后，会尝试将这个参数转换为数值，任何不能被转换为数值的的值都会返回 true，因此非数字值传入也会返回 true ，会影响 NaN 的判断。</li>
+<li>函数 Number.isNaN 会首先判断传入参数是否为数字，如果是数字再继续判断是否为 NaN ，不会进行数据类型的转换，这种方法对于 NaN 的判断更为准确。</li>
+</ul>
+<h2 id="x3D-x3D-操作符的强制类型转换规则？"><a href="#x3D-x3D-操作符的强制类型转换规则？" class="headerlink" title="&#x3D;&#x3D; 操作符的强制类型转换规则？"></a>&#x3D;&#x3D; 操作符的强制类型转换规则？</h2><p>对于 <code>==</code> 来说，如果对比双方的类型<strong>不一样</strong>，就会进行<strong>类型转换</strong>。假如对比 <code>x</code> 和 <code>y</code> 是否相同，就会进行如下判断流程：</p>
+<ol>
+<li>首先会判断两者类型是否相同，相同的话就比较两者的大小；</li>
+<li>类型不相同的话，就会进行类型转换；</li>
+<li>会先判断是否在对比 <code>null</code> 和 <code>undefined</code>，是的话就会返回 <code>true</code></li>
+<li>判断两者类型是否为 <code>string</code> 和 <code>number</code>，是的话就会将字符串转换为 <code>number</code></li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1</span> == <span class="hljs-string">&#x27;1&#x27;</span><br>      ↓<br><span class="hljs-number">1</span> ==  <span class="hljs-number">1</span><br></code></pre>
+
+<ol start="5">
+<li>判断其中一方是否为 <code>boolean</code>，是的话就会把 <code>boolean</code> 转为 <code>number</code> 再进行判断</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;1&#x27;</span> == <span class="hljs-literal">true</span><br>        ↓<br><span class="hljs-string">&#x27;1&#x27;</span> ==  <span class="hljs-number">1</span><br>        ↓<br> <span class="hljs-number">1</span>  ==  <span class="hljs-number">1</span><br></code></pre>
+
+<ol start="6">
+<li>判断其中一方是否为 <code>object</code> 且另一方为 <code>string</code>、<code>number</code> 或者 <code>symbol</code>，是的话就会把 <code>object</code> 转为原始类型再进行判断</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;1&#x27;</span> == &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&#x27;js&#x27;</span> &#125;        ↓<span class="hljs-string">&#x27;1&#x27;</span> == <span class="hljs-string">&#x27;[object Object]&#x27;</span><br></code></pre>
+
+<h2 id="其他值到字符串的转换规则？"><a href="#其他值到字符串的转换规则？" class="headerlink" title="其他值到字符串的转换规则？"></a>其他值到字符串的转换规则？</h2><ul>
+<li>Null 和 Undefined 类型 ，null 转换为 “null”，undefined 转换为 “undefined”，</li>
+<li>Boolean 类型，true 转换为 “true”，false 转换为 “false”。</li>
+<li>Number 类型的值直接转换，不过那些极小和极大的数字会使用指数形式。</li>
+<li>Symbol 类型的值直接转换，但是只允许显式强制类型转换，使用隐式强制类型转换会产生错误。</li>
+<li>对普通对象来说，除非自行定义 toString() 方法，否则会调用 toString()（Object.prototype.toString()）来返回内部属性 [[Class]] 的值，如”[object Object]”。如果对象有自己的 toString() 方法，字符串化时就会调用该方法并使用其返回值。</li>
+</ul>
+<h2 id="其他值到数字值的转换规则？"><a href="#其他值到数字值的转换规则？" class="headerlink" title="其他值到数字值的转换规则？"></a>其他值到数字值的转换规则？</h2><ul>
+<li>Undefined 类型的值转换为 NaN。</li>
+<li>Null 类型的值转换为 0。</li>
+<li>Boolean 类型的值，true 转换为 1，false 转换为 0。</li>
+<li>String 类型的值转换如同使用 Number() 函数进行转换，如果包含非数字值则转换为 NaN，空字符串为 0。</li>
+<li>Symbol 类型的值不能转换为数字，会报错。</li>
+<li>对象（包括数组）会首先被转换为相应的基本类型值，如果返回的是非数字的基本类型值，则再遵循以上规则将其强制转换为数字。</li>
+</ul>
+<p>为了将值转换为相应的基本类型值，抽象操作 ToPrimitive 会首先（通过内部操作 DefaultValue）检查该值是否有valueOf()方法。如果有并且返回基本类型值，就使用该值进行强制类型转换。如果没有就使用 toString() 的返回值（如果存在）来进行强制类型转换。</p>
+<p>如果 valueOf() 和 toString() 均不返回基本类型值，会产生 TypeError 错误。</p>
+<h2 id="其他值到布尔类型的值的转换规则？"><a href="#其他值到布尔类型的值的转换规则？" class="headerlink" title="其他值到布尔类型的值的转换规则？"></a>其他值到布尔类型的值的转换规则？</h2><p>以下这些是假值： • undefined • null • false • +0、-0 和 NaN • “”</p>
+<p>假值的布尔强制类型转换结果为 false。从逻辑上说，假值列表以外的都应该是真值。</p>
+<h2 id="和-amp-amp-操作符的返回值？"><a href="#和-amp-amp-操作符的返回值？" class="headerlink" title="|| 和 &amp;&amp; 操作符的返回值？"></a>|| 和 &amp;&amp; 操作符的返回值？</h2><p>|| 和 &amp;&amp; 首先会对第一个操作数执行条件判断，如果其不是布尔值就先强制转换为布尔类型，然后再执行条件判断。</p>
+<ul>
+<li>对于 || 来说，如果条件判断结果为 true 就返回第一个操作数的值，如果为 false 就返回第二个操作数的值。</li>
+<li>&amp;&amp; 则相反，如果条件判断结果为 true 就返回第二个操作数的值，如果为 false 就返回第一个操作数的值。</li>
+</ul>
+<p>|| 和 &amp;&amp; 返回它们其中一个操作数的值，而非条件判断的结果</p>
+<h2 id="Object-is-与比较操作符-、-的区别？"><a href="#Object-is-与比较操作符-、-的区别？" class="headerlink" title="Object.is() 与比较操作符 ===、== 的区别？"></a>Object.is() 与比较操作符 <code>===</code>、<code>==</code> 的区别？</h2><ul>
+<li>使用双等号（&#x3D;&#x3D;）进行相等判断时，如果两边的类型不一致，则会进行强制类型转化后再进行比较。</li>
+<li>使用三等号（&#x3D;&#x3D;&#x3D;）进行相等判断时，如果两边的类型不一致时，不会做强制类型准换，直接返回 false。</li>
+<li>使用 Object.is 来进行相等判断时，一般情况下和三等号的判断相同，它处理了一些特殊的情况，比如 -0 和 +0 不再相等，两个 NaN 是相等的。</li>
+</ul>
+<h2 id="什么是-JavaScript-中的包装类型？"><a href="#什么是-JavaScript-中的包装类型？" class="headerlink" title="什么是 JavaScript 中的包装类型？"></a>什么是 JavaScript 中的包装类型？</h2><p>在 JavaScript 中，基本类型是没有属性和方法的，但是为了便于操作基本类型的值，在调用基本类型的属性或方法时 JavaScript 会在后台隐式地将基本类型的值转换为对象，如：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> a = <span class="hljs-string">&quot;abc&quot;</span>;<br>a.<span class="hljs-property">length</span>; <span class="hljs-comment">// 3</span><br>a.<span class="hljs-title function_">toUpperCase</span>(); <span class="hljs-comment">// &quot;ABC&quot;</span><br></code></pre>
+
+<p>在访问<code>&#39;abc&#39;.length</code>时，JavaScript 将<code>&#39;abc&#39;</code>在后台转换成<code>String(&#39;abc&#39;)</code>，然后再访问其<code>length</code>属性。</p>
+<p>JavaScript也可以使用<code>Object</code>函数显式地将基本类型转换为包装类型：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-string">&#x27;abc&#x27;</span><br><span class="hljs-title class_">Object</span>(a) <span class="hljs-comment">// String &#123;&quot;abc&quot;&#125;</span><br></code></pre>
+
+<p>也可以使用<code>valueOf</code>方法将包装类型倒转成基本类型：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-string">&#x27;abc&#x27;</span><br><span class="hljs-keyword">var</span> b = <span class="hljs-title class_">Object</span>(a)<br><span class="hljs-keyword">var</span> c = b.<span class="hljs-title function_">valueOf</span>() <span class="hljs-comment">// &#x27;abc&#x27;</span><br></code></pre>
+
+<p>看看如下代码会打印出什么：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Boolean</span>( <span class="hljs-literal">false</span> );<br><span class="hljs-keyword">if</span> (!a) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>( <span class="hljs-string">&quot;Oops&quot;</span> ); <span class="hljs-comment">// never runs</span><br>&#125;<br></code></pre>
+
+<p>答案是什么都不会打印，因为虽然包裹的基本类型是<code>false</code>，但是<code>false</code>被包裹成包装类型后就成了对象，所以其非值为<code>false</code>，所以循环体中的内容不会运行。</p>
+<h2 id="JavaScript-中如何进行隐式类型转换？"><a href="#JavaScript-中如何进行隐式类型转换？" class="headerlink" title="JavaScript 中如何进行隐式类型转换？"></a>JavaScript 中如何进行隐式类型转换？</h2><p>首先要介绍<code>ToPrimitive</code>方法，这是 JavaScript 中每个值隐含的自带的方法，用来将值 （无论是基本类型值还是对象）转换为基本类型值。如果值为基本类型，则直接返回值本身；如果值为对象，其看起来大概是这样：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">/**</span><br><span class="hljs-comment">* <span class="hljs-doctag">@obj</span> 需要转换的对象</span><br><span class="hljs-comment">* <span class="hljs-doctag">@type</span> 期望的结果类型</span><br><span class="hljs-comment">*/</span><br><span class="hljs-title class_">ToPrimitive</span>(obj,type)<br></code></pre>
+
+<p><code>type</code>的值为<code>number</code>或者<code>string</code>。</p>
+<h3 id="当type为number时规则如下："><a href="#当type为number时规则如下：" class="headerlink" title="当type为number时规则如下："></a>当type为number时规则如下：</h3><ul>
+<li>调用<code>obj</code>的<code>valueOf</code>方法，如果为原始值，则返回，否则下一步；</li>
+<li>调用<code>obj</code>的<code>toString</code>方法，后续同上；</li>
+<li>抛出<code>TypeError</code> 异常。</li>
+</ul>
+<h3 id="当type为string时规则如下："><a href="#当type为string时规则如下：" class="headerlink" title="当type为string时规则如下："></a>当<code>type</code>为<code>string</code>时规则如下：</h3><ul>
+<li>调用<code>obj</code>的<code>toString</code>方法，如果为原始值，则返回，否则下一步；</li>
+<li>调用<code>obj</code>的<code>valueOf</code>方法，后续同上；</li>
+<li>抛出<code>TypeError</code> 异常。</li>
+</ul>
+<p>可以看出两者的主要区别在于调用<code>toString</code>和<code>valueOf</code>的先后顺序。默认情况下：</p>
+<ul>
+<li>如果对象为 Date 对象，则<code>type</code>默认为<code>string</code>；</li>
+<li>其他情况下，<code>type</code>默认为<code>number</code>。</li>
+</ul>
+<p>总结上面的规则，对于 Date 以外的对象，转换为基本类型的大概规则可以概括为一个函数：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> <span class="hljs-title function_">objToNumber</span> = value =&gt; <span class="hljs-title class_">Number</span>(value.<span class="hljs-title function_">valueOf</span>().<span class="hljs-title function_">toString</span>())<br><span class="hljs-title function_">objToNumber</span>([]) === <span class="hljs-number">0</span><br><span class="hljs-title function_">objToNumber</span>(&#123;&#125;) === <span class="hljs-title class_">NaN</span><br></code></pre>
+
+<p>而 JavaScript 中的隐式类型转换主要发生在<code>+、-、*、/</code>以及<code>==、&gt;、&lt;</code>这些运算符之间。而这些运算符只能操作基本类型值，所以在进行这些运算前的第一步就是将两边的值用<code>ToPrimitive</code>转换成基本类型，再进行操作。</p>
+<p>以下是基本类型的值在不同操作符的情况下隐式转换的规则 （对于对象，其会被<code>ToPrimitive</code>转换成基本类型，所以最终还是要应用基本类型转换规则）：</p>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="+操作符"></a>+操作符</h3><p><code>+</code>操作符的两边有至少一个<code>string</code>类型变量时，两边的变量都会被隐式转换为字符串；其他情况下两边的变量都会被转换为数字。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1</span> + <span class="hljs-string">&#x27;23&#x27;</span> <span class="hljs-comment">// &#x27;123&#x27;</span><br> <span class="hljs-number">1</span> + <span class="hljs-literal">false</span> <span class="hljs-comment">// 1 </span><br> <span class="hljs-number">1</span> + <span class="hljs-title class_">Symbol</span>() <span class="hljs-comment">// Uncaught TypeError: Cannot convert a Symbol value to a number</span><br> <span class="hljs-string">&#x27;1&#x27;</span> + <span class="hljs-literal">false</span> <span class="hljs-comment">// &#x27;1false&#x27;</span><br> <span class="hljs-literal">false</span> + <span class="hljs-literal">true</span> <span class="hljs-comment">// 1</span><br></code></pre>
+
+<h3 id="、-、-操作符"><a href="#、-、-操作符" class="headerlink" title="-、*、\操作符"></a><code>-</code>、<code>*</code>、<code>\</code>操作符</h3><p><code>NaN</code>也是一个数字</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">1</span> * <span class="hljs-string">&#x27;23&#x27;</span> <span class="hljs-comment">// 23</span><br> <span class="hljs-number">1</span> * <span class="hljs-literal">false</span> <span class="hljs-comment">// 0</span><br> <span class="hljs-number">1</span> / <span class="hljs-string">&#x27;aa&#x27;</span> <span class="hljs-comment">// NaN</span><br></code></pre>
+
+<h3 id="对于-操作符"><a href="#对于-操作符" class="headerlink" title="对于==操作符"></a>对于<code>==</code>操作符</h3><p>操作符两边的值都尽量转成<code>number</code>：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-number">3</span> == <span class="hljs-literal">true</span> <span class="hljs-comment">// false, 3 转为number为3，true转为number为1</span><br><span class="hljs-string">&#x27;0&#x27;</span> == <span class="hljs-literal">false</span> <span class="hljs-comment">//true, &#x27;0&#x27;转为number为0，false转为number为0</span><br><span class="hljs-string">&#x27;0&#x27;</span> == <span class="hljs-number">0</span> <span class="hljs-comment">// &#x27;0&#x27;转为number为0</span><br></code></pre>
+
+<h3 id="对于-lt-和-gt-比较符"><a href="#对于-lt-和-gt-比较符" class="headerlink" title="对于**&lt;和&gt;比较符"></a>对于**<code>&lt;</code>和<code>&gt;</code>比较符</h3><p>如果两边都是字符串，则比较字母表顺序：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;ca&#x27;</span> &lt; <span class="hljs-string">&#x27;bd&#x27;</span> <span class="hljs-comment">// false</span><br><span class="hljs-string">&#x27;a&#x27;</span> &lt; <span class="hljs-string">&#x27;b&#x27;</span> <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>其他情况下，转换为数字再比较：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-string">&#x27;12&#x27;</span> &lt; <span class="hljs-number">13</span> <span class="hljs-comment">// true</span><br><span class="hljs-literal">false</span> &gt; -<span class="hljs-number">1</span> <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>以上说的是基本类型的隐式转换，而对象会被<code>ToPrimitive</code>转换为基本类型再进行转换：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = &#123;&#125;<br>a &gt; <span class="hljs-number">2</span> <span class="hljs-comment">// false</span><br></code></pre>
+
+<p>其对比过程如下：</p>
+<pre class="highlight"><code class="hljs javascript">a.<span class="hljs-title function_">valueOf</span>() <span class="hljs-comment">// &#123;&#125;, 上面提到过，ToPrimitive默认type为number，所以先valueOf，结果还是个对象，下一步</span><br>a.<span class="hljs-title function_">toString</span>() <span class="hljs-comment">// &quot;[object Object]&quot;，现在是一个字符串了</span><br><span class="hljs-title class_">Number</span>(a.<span class="hljs-title function_">toString</span>()) <span class="hljs-comment">// NaN，根据上面 &lt; 和 &gt; 操作符的规则，要转换成数字</span><br><span class="hljs-title class_">NaN</span> &gt; <span class="hljs-number">2</span> <span class="hljs-comment">//false，得出比较结果</span><br></code></pre>
+
+<p>又比如：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> a = &#123;<span class="hljs-attr">name</span>:<span class="hljs-string">&#x27;Jack&#x27;</span>&#125;<br><span class="hljs-keyword">var</span> b = &#123;<span class="hljs-attr">age</span>: <span class="hljs-number">18</span>&#125;<br>a + b <span class="hljs-comment">// &quot;[object Object][object Object]&quot;</span><br></code></pre>
+
+<p>运算过程如下：</p>
+<pre class="highlight"><code class="hljs javascript">a.<span class="hljs-title function_">valueOf</span>() <span class="hljs-comment">// &#123;&#125;，上面提到过，ToPrimitive默认type为number，所以先valueOf，结果还是个对象，下一步</span><br>a.<span class="hljs-title function_">toString</span>() <span class="hljs-comment">// &quot;[object Object]&quot;</span><br>b.<span class="hljs-title function_">valueOf</span>() <span class="hljs-comment">// 同理</span><br>b.<span class="hljs-title function_">toString</span>() <span class="hljs-comment">// &quot;[object Object]&quot;</span><br>a + b <span class="hljs-comment">// &quot;[object Object][object Object]&quot;</span><br></code></pre>
+
+<h2 id="操作符什么时候用于字符串的拼接？"><a href="#操作符什么时候用于字符串的拼接？" class="headerlink" title="+ 操作符什么时候用于字符串的拼接？"></a>+ 操作符什么时候用于字符串的拼接？</h2><p>根据 ES5 规范，如果某个操作数是字符串或者能够通过以下步骤转换为字符串的话，+ 将进行拼接操作。如果其中一个操作数是对象（包括数组），则首先对其调用 ToPrimitive 抽象操作，该抽象操作再调用 [[DefaultValue]]，以数字作为上下文。如果不能转换为字符串，则会将其转换为数字类型来进行计算。</p>
+<p>简单来说就是，如果 + 的其中一个操作数是字符串（或者通过以上步骤最终得到字符串），则执行字符串拼接，否则执行数字加法。</p>
+<p>那么对于除了加法的运算符来说，只要其中一方是数字，那么另一方就会被转为数字。</p>
+<h2 id="为什么会有BigInt的提案？"><a href="#为什么会有BigInt的提案？" class="headerlink" title="为什么会有BigInt的提案？"></a>为什么会有BigInt的提案？</h2><p>JavaScript中Number.MAX_SAFE_INTEGER表示最⼤安全数字，计算结果是9007199254740991，即在这个数范围内不会出现精度丢失（⼩数除外）。但是⼀旦超过这个范围，js就会出现计算不准确的情况，这在⼤数计算的时候不得不依靠⼀些第三⽅库进⾏解决，因此官⽅提出了BigInt来解决此问题。</p>
+<h2 id="object-assign和扩展运算法是深拷贝还是浅拷贝，两者区别"><a href="#object-assign和扩展运算法是深拷贝还是浅拷贝，两者区别" class="headerlink" title="object.assign和扩展运算法是深拷贝还是浅拷贝，两者区别"></a>object.assign和扩展运算法是深拷贝还是浅拷贝，两者区别</h2><p>扩展运算符：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> outObj = &#123;<br>  <span class="hljs-attr">inObj</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span>&#125;<br>&#125;<br><span class="hljs-keyword">let</span> newObj = &#123;...outObj&#125;<br>newObj.<span class="hljs-property">inObj</span>.<span class="hljs-property">a</span> = <span class="hljs-number">2</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(outObj) <span class="hljs-comment">// &#123;inObj: &#123;a: 2, b: 2&#125;&#125;</span><br></code></pre>
+
+<p>Object.assign():</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> outObj = &#123;<br>  <span class="hljs-attr">inObj</span>: &#123;<span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">b</span>: <span class="hljs-number">2</span>&#125;<br>&#125;<br><span class="hljs-keyword">let</span> newObj = <span class="hljs-title class_">Object</span>.<span class="hljs-title function_">assign</span>(&#123;&#125;, outObj)<br>newObj.<span class="hljs-property">inObj</span>.<span class="hljs-property">a</span> = <span class="hljs-number">2</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(outObj) <span class="hljs-comment">// &#123;inObj: &#123;a: 2, b: 2&#125;&#125;</span><br></code></pre>
+
+<p>可以看到，两者都是浅拷贝。</p>
+<ul>
+<li>Object.assign()方法接收的第一个参数作为目标对象，后面的所有参数作为源对象。然后把所有的源对象合并到目标对象中。它会修改了一个对象，因此会触发 ES6 setter。</li>
+<li>扩展操作符（…）使用它时，数组或对象中的每一个值都会被拷贝到一个新的数组或对象中。它不复制继承的属性或类的属性，但是它会复制ES6的 symbols 属性。</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2024/12/15/24121500/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">用websocket实现一个聊天室 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2024/11/17/24111703/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">js 原型与原型链 面试题 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript%E6%9C%89%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">JavaScript有哪些数据类型，它们的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%B5%8B%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">数据类型检测的方式有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#typeof"><span class="toc-text">typeof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#instanceof"><span class="toc-text">instanceof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#constructor-NaN"><span class="toc-text">constructor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-prototype-toString-call"><span class="toc-text">Object.prototype.toString.call()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">判断数组的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null%E5%92%8Cundefined%E5%8C%BA%E5%88%AB"><span class="toc-text">null和undefined区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-null-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof null 的结果是什么，为什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intanceof-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0"><span class="toc-text">intanceof 操作符的实现原理及实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%880-1-0-2-x3D-x3D-0-3%EF%BC%8C%E5%A6%82%E4%BD%95%E8%AE%A9%E5%85%B6%E7%9B%B8%E7%AD%89"><span class="toc-text">为什么0.1+0.2 ! &#x3D;&#x3D; 0.3，如何让其相等</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%AE%89%E5%85%A8%E7%9A%84-undefined-%E5%80%BC%EF%BC%9F"><span class="toc-text">如何获取安全的 undefined 值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-NaN-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof NaN 的结果是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#isNaN-%E5%92%8C-Number-isNaN-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">isNaN 和 Number.isNaN 函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">&#x3D;&#x3D; 操作符的强制类型转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到字符串的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E6%95%B0%E5%AD%97%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到数字值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到布尔类型的值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C-amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%9F"><span class="toc-text">|| 和 &amp;&amp; 操作符的返回值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-is-%E4%B8%8E%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6-%E3%80%81-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Object.is() 与比较操作符 &#x3D;&#x3D;&#x3D;、&#x3D;&#x3D; 的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JavaScript-%E4%B8%AD%E7%9A%84%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">什么是 JavaScript 中的包装类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%EF%BC%9F"><span class="toc-text">JavaScript 中如何进行隐式类型转换？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAnumber%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为number时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAstring%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为string时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">+操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%81-%E3%80%81-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">-、*、\操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">对于&#x3D;&#x3D;操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-lt-%E5%92%8C-gt-%E6%AF%94%E8%BE%83%E7%AC%A6"><span class="toc-text">对于**&lt;和&gt;比较符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%94%A8%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%8B%BC%E6%8E%A5%EF%BC%9F"><span class="toc-text">+ 操作符什么时候用于字符串的拼接？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89BigInt%E7%9A%84%E6%8F%90%E6%A1%88%EF%BC%9F"><span class="toc-text">为什么会有BigInt的提案？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#object-assign%E5%92%8C%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E6%B3%95%E6%98%AF%E6%B7%B1%E6%8B%B7%E8%B4%9D%E8%BF%98%E6%98%AF%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%8C%E4%B8%A4%E8%80%85%E5%8C%BA%E5%88%AB"><span class="toc-text">object.assign和扩展运算法是深拷贝还是浅拷贝，两者区别</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript%E6%9C%89%E5%93%AA%E4%BA%9B%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%8C%E5%AE%83%E4%BB%AC%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">JavaScript有哪些数据类型，它们的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A3%80%E6%B5%8B%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">数据类型检测的方式有哪些</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#typeof"><span class="toc-text">typeof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#instanceof"><span class="toc-text">instanceof</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#constructor-NaN"><span class="toc-text">constructor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-prototype-toString-call"><span class="toc-text">Object.prototype.toString.call()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="toc-text">判断数组的方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null%E5%92%8Cundefined%E5%8C%BA%E5%88%AB"><span class="toc-text">null和undefined区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-null-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof null 的结果是什么，为什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#intanceof-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E5%AE%9E%E7%8E%B0"><span class="toc-text">intanceof 操作符的实现原理及实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%880-1-0-2-x3D-x3D-0-3%EF%BC%8C%E5%A6%82%E4%BD%95%E8%AE%A9%E5%85%B6%E7%9B%B8%E7%AD%89"><span class="toc-text">为什么0.1+0.2 ! &#x3D;&#x3D; 0.3，如何让其相等</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%AE%89%E5%85%A8%E7%9A%84-undefined-%E5%80%BC%EF%BC%9F"><span class="toc-text">如何获取安全的 undefined 值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#typeof-NaN-%E7%9A%84%E7%BB%93%E6%9E%9C%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">typeof NaN 的结果是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#isNaN-%E5%92%8C-Number-isNaN-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">isNaN 和 Number.isNaN 函数的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#x3D-x3D-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">&#x3D;&#x3D; 操作符的强制类型转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到字符串的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E6%95%B0%E5%AD%97%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到数字值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%80%BC%E5%88%B0%E5%B8%83%E5%B0%94%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%80%BC%E7%9A%84%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%9F"><span class="toc-text">其他值到布尔类型的值的转换规则？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C-amp-amp-%E6%93%8D%E4%BD%9C%E7%AC%A6%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%9F"><span class="toc-text">|| 和 &amp;&amp; 操作符的返回值？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-is-%E4%B8%8E%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6-%E3%80%81-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="toc-text">Object.is() 与比较操作符 &#x3D;&#x3D;&#x3D;、&#x3D;&#x3D; 的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-JavaScript-%E4%B8%AD%E7%9A%84%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="toc-text">什么是 JavaScript 中的包装类型？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JavaScript-%E4%B8%AD%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%EF%BC%9F"><span class="toc-text">JavaScript 中如何进行隐式类型转换？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAnumber%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为number时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%93type%E4%B8%BAstring%E6%97%B6%E8%A7%84%E5%88%99%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="toc-text">当type为string时规则如下：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">+操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%81-%E3%80%81-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">-、*、\操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">对于&#x3D;&#x3D;操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E4%BA%8E-lt-%E5%92%8C-gt-%E6%AF%94%E8%BE%83%E7%AC%A6"><span class="toc-text">对于**&lt;和&gt;比较符</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E7%94%A8%E4%BA%8E%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E6%8B%BC%E6%8E%A5%EF%BC%9F"><span class="toc-text">+ 操作符什么时候用于字符串的拼接？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89BigInt%E7%9A%84%E6%8F%90%E6%A1%88%EF%BC%9F"><span class="toc-text">为什么会有BigInt的提案？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#object-assign%E5%92%8C%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E6%B3%95%E6%98%AF%E6%B7%B1%E6%8B%B7%E8%B4%9D%E8%BF%98%E6%98%AF%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%8C%E4%B8%A4%E8%80%85%E5%8C%BA%E5%88%AB"><span class="toc-text">object.assign和扩展运算法是深拷贝还是浅拷贝，两者区别</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/"><div class="recent-posts-item-content">两个相同聊天标签页为什么会实时同步？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-scope-chapter-1/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第一章：作用域是什么</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-lexical-scope-chapter-2/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第二章：词法作用域</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-07</div>
+        <a href="/2026/08/07/you-dont-know-js-function-and-block-scope-chapter-3/"><div class="recent-posts-item-content">《你不知道的 JavaScript（上卷）》第三章：函数作用域与块作用域</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
