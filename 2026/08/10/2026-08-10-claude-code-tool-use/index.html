@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/10/2026-08-10-claude-code-tool-use/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="记录个人成长与生活，前端，算法，nlp">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="Claude Code">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Agent">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Security">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Anthropic">
+        
+          <meta 
+            property="og:article:tag" 
+            content="Tool Use">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>445</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>187</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AA%E6%AD%A3%E7%A1%AE%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B%EF%BC%9A%E6%A8%A1%E5%9E%8B%E6%B2%A1%E6%9C%89%E2%80%9C%E6%89%8B%E2%80%9D"><span class="toc-text">先建立一个正确心智模型：模型没有“手”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E5%85%B7%EF%BC%9A%E4%B8%80%E6%AC%A1-git-status-%E6%98%AF%E6%80%8E%E6%A0%B7%E8%B7%91%E8%B5%B7%E6%9D%A5%E7%9A%84"><span class="toc-text">客户端工具：一次 git status 是怎样跑起来的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E9%9A%8F%E8%AF%B7%E6%B1%82%E4%BA%A4%E7%BB%99%E6%A8%A1%E5%9E%8B"><span class="toc-text">1. 客户端把工具定义随请求交给模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E-tool-use"><span class="toc-text">2. 模型返回 tool_use</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Claude-Code-%E5%9C%A8%E4%BD%A0%E7%9A%84%E7%94%B5%E8%84%91%E4%B8%8A%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Claude Code 在你的电脑上执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E7%BB%93%E6%9E%9C%E4%BD%9C%E4%B8%BA-tool-result-%E4%BA%A4%E5%9B%9E%E5%8E%BB"><span class="toc-text">4. 客户端把结果作为 tool_result 交回去</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8E%E2%80%9C%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8D%E6%98%AF%E5%90%8C%E4%B8%80%E7%A7%8D%E5%B7%A5%E5%85%B7"><span class="toc-text">“客户端执行”与“服务器执行”不是同一种工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search%EF%BC%9A%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%A6%82%E4%BD%95%E6%8A%8A%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E4%BA%A4%E7%BB%99-Claude"><span class="toc-text">Web Search：服务端如何把搜索结果交给 Claude</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#encrypted-content-%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E7%90%86%E8%A7%A3"><span class="toc-text">encrypted_content 应该怎样理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8A%93%E5%8C%85%E5%8F%AF%E8%83%BD%E4%BC%9A%E7%9C%8B%E5%88%B0%E5%A4%9A%E6%AC%A1%E8%AF%B7%E6%B1%82%E5%92%8C-Haiku"><span class="toc-text">为什么抓包可能会看到多次请求和 Haiku</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E5%8A%A9%E4%BA%8E%E9%98%B2%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5"><span class="toc-text">子代理为什么有助于防提示词注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search-%E7%9A%84%E8%B4%B9%E7%94%A8%EF%BC%9A%E4%B8%8E-Claude-Code-%E8%AE%A2%E9%98%85%E4%B8%8D%E8%A6%81%E6%B7%B7%E4%B8%BA%E4%B8%80%E8%B0%88"><span class="toc-text">Web Search 的费用：与 Claude Code 订阅不要混为一谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">37</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI-%E7%BC%96%E7%A8%8B/">
+        <div class="categories-list-item">
+          AI-编程
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+        title="前端基础">
+        <div class="tags-list-item">前端基础</div>
+      </a>
+    
+      <a 
+        href="/tags/JavaScript/" 
+        title="JavaScript">
+        <div class="tags-list-item">JavaScript</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-08-10-claude-code-tool-use.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-10T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.9k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/Claude-Code/" 
+            class="post-meta-link">
+            Claude Code
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Agent/" 
+            class="post-meta-link">
+            Agent
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Security/" 
+            class="post-meta-link">
+            Security
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Anthropic/" 
+            class="post-meta-link">
+            Anthropic
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/Tool-Use/" 
+            class="post-meta-link">
+            Tool Use
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>Claude Code 能改文件、跑测试、读网页，看起来像是一个会操作电脑的程序。容易忽略的事实是：<strong>模型本身不会执行命令，也不会直接打开网页。</strong>从模型的角度看，它始终只是在输入文本（更准确地说是结构化消息）后，输出文本或结构化内容块。</p>
+<p>让它获得行动能力的机制叫 <strong>Tool Use（工具调用）</strong>：模型负责决定“该用什么工具、参数是什么”，Claude Code 或 Anthropic 的服务端负责真正执行，再把结果作为下一轮输入交回模型。这篇文章用一次 <code>git status</code> 的客户端工具调用和 Web Search 的服务器工具调用，把这个循环拆开，并区分公开协议与抓包中观察到的内部实现。</p>
+<blockquote>
+<p>文中 API 字段以 Anthropic 当前公开文档为准。Claude Code 的内部工具名、请求次数、所用子模型会随版本和任务变化；抓包能说明某一版本的实现，不能当作稳定接口。</p>
+</blockquote>
+<hr>
+<h2 id="先建立一个正确心智模型：模型没有“手”"><a href="#先建立一个正确心智模型：模型没有“手”" class="headerlink" title="先建立一个正确心智模型：模型没有“手”"></a>先建立一个正确心智模型：模型没有“手”</h2><p>可以把 Claude 看作一个能根据上下文选择下一步的决策器。它看到的能力清单大致是这样：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bash&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;在项目目录中执行 shell 命令&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;input_schema&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;object&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;properties&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;string&quot;</span> <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;required&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;command&quot;</span><span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p>模型不会把 <code>git status</code> 交给操作系统。它输出的是“我要调用 <code>bash</code>，参数为 <code>git status</code>”这一段结构化意图。能访问终端、文件系统和网络的是模型外面的宿主程序：Claude Code、SDK 应用、浏览器插件，或 Anthropic 的服务端。</p>
+<p>这也解释了为什么同一个模型在不同产品中“能力”差异很大：能力不只来自模型，还来自它被授予了哪些工具、工具在哪执行，以及每一层如何限制权限。</p>
+<hr>
+<h2 id="客户端工具：一次-git-status-是怎样跑起来的"><a href="#客户端工具：一次-git-status-是怎样跑起来的" class="headerlink" title="客户端工具：一次 git status 是怎样跑起来的"></a>客户端工具：一次 <code>git status</code> 是怎样跑起来的</h2><p>假设我们问 Claude Code：“这个 Git 仓库有什么改动？”一次典型的客户端工具调用包含四步。</p>
+<pre class="highlight"><code class="hljs armasm">用户问题<br>  │<br>  ▼<br><span class="hljs-symbol">Claude</span>：输出 tool_use（工具名 + JSON 参数）<br>  │<br>  ▼<br><span class="hljs-symbol">Claude</span> <span class="hljs-meta">Code</span>：在本机执行命令<br>  │<br>  ▼<br><span class="hljs-symbol">Claude</span> <span class="hljs-meta">Code</span>：输出包装成 tool_result，发回模型<br>  │<br>  ▼<br><span class="hljs-symbol">Claude</span>：依据结果生成自然语言回答<br></code></pre>
+
+<h3 id="1-客户端把工具定义随请求交给模型"><a href="#1-客户端把工具定义随请求交给模型" class="headerlink" title="1. 客户端把工具定义随请求交给模型"></a>1. 客户端把工具定义随请求交给模型</h3><p>调用 Messages API 时，应用除了传入用户消息，还传入 <code>tools</code> 数组。数组中的每项至少描述工具名、用途和输入 JSON Schema。模型据此决定要不要调用工具；它也可能直接回答，或一次请求多个彼此独立的工具。</p>
+<h3 id="2-模型返回-tool-use"><a href="#2-模型返回-tool-use" class="headerlink" title="2. 模型返回 tool_use"></a>2. 模型返回 <code>tool_use</code></h3><p>若需要终端，响应的 <code>content</code> 中会包含 <code>type: &quot;tool_use&quot;</code> 的块。简化后如下：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tool_use&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;toolu_01ABC...&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bash&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;input&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;command&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;git status --short&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p>这里的重点有三个：</p>
+<ul>
+<li><code>name</code> 选择工具；</li>
+<li><code>input</code> 是通过 JSON Schema 描述的参数；</li>
+<li><code>id</code> 是这次调用的关联标识，结果必须用它配对。</li>
+</ul>
+<p>当响应的 <code>stop_reason</code> 为 <code>tool_use</code>，不是“模型出错”，而是当前回合停在了等待工具结果的位置。流式响应里，参数可能分成多段增量抵达；客户端应完成组装和校验后再执行，而不是把未完成的片段直接当 shell 命令运行。</p>
+<h3 id="3-Claude-Code-在你的电脑上执行"><a href="#3-Claude-Code-在你的电脑上执行" class="headerlink" title="3. Claude Code 在你的电脑上执行"></a>3. Claude Code 在你的电脑上执行</h3><p>对客户端工具而言，这一步完全在客户端发生。Claude Code 取出命令，按自身的权限策略、工作目录、审批设置和沙箱规则执行它；再收集标准输出、标准错误和退出状态。</p>
+<p>因此，“模型叫我运行一条命令”不等于“命令已经安全地执行”。真正的安全边界在客户端：工具输入要校验，危险操作要审批，文件路径和工作目录要受限，尽可能放进沙箱。</p>
+<h3 id="4-客户端把结果作为-tool-result-交回去"><a href="#4-客户端把结果作为-tool-result-交回去" class="headerlink" title="4. 客户端把结果作为 tool_result 交回去"></a>4. 客户端把结果作为 <code>tool_result</code> 交回去</h3><p>客户端随后在下一次 Messages 请求里保留刚才的 assistant 消息，并追加一条带 <code>tool_result</code> 的用户消息：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tool_result&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;tool_use_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;toolu_01ABC...&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot; M README.md\n M hello.py\n?? notes.txt&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre>
+
+<p><code>tool_use_id</code> 必须与上一步的 <code>id</code> 完全对应。模型并没有亲眼看见终端，它只看见这段文本结果，于是再输出“<code>README.md</code> 和 <code>hello.py</code> 被修改，并有一个未跟踪文件”之类的总结。此时若 <code>stop_reason</code> 为 <code>end_turn</code>，这一轮才真正结束。</p>
+<p>这正是官方 Tool Use 文档里的基本循环：<strong>模型提议调用，应用执行，应用回传结果，模型继续推理。</strong><code>bash</code>、读写文件、数据库查询、企业内部 API 都可以套进这个模式。</p>
+<hr>
+<h2 id="“客户端执行”与“服务器执行”不是同一种工具"><a href="#“客户端执行”与“服务器执行”不是同一种工具" class="headerlink" title="“客户端执行”与“服务器执行”不是同一种工具"></a>“客户端执行”与“服务器执行”不是同一种工具</h2><p>Tool Use 按执行位置可以粗分为两类：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>谁执行</th>
+<th>例子</th>
+<th>结果怎样回来</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>客户端工具</td>
+<td>你的应用或 Claude Code</td>
+<td>shell、读写文件、内部 API</td>
+<td>客户端自己构造 <code>tool_result</code> 再请求模型</td>
+</tr>
+<tr>
+<td>服务器工具</td>
+<td>Anthropic 基础设施</td>
+<td>Web Search、Web Fetch、Code Execution 等托管能力</td>
+<td>通常由服务端在同一次 API 调用内执行并返回相应结果块</td>
+</tr>
+</tbody></table>
+<p>前一类给了应用最高的自由度，也把权限控制、重试、超时、审计都留给应用。后一类减少了客户端集成成本，但用量、可用区域、数据保留和价格由服务端工具的规则决定。</p>
+<p>有一个常见误解需要避免：<strong>服务器工具不意味着模型知道“真实世界”。</strong>它依然是“模型决定调用 -&gt; 某个执行器得到数据 -&gt; 数据进入后续上下文”的循环，只是执行器从本机换成了 Anthropic 托管的服务。</p>
+<hr>
+<h2 id="Web-Search：服务端如何把搜索结果交给-Claude"><a href="#Web-Search：服务端如何把搜索结果交给-Claude" class="headerlink" title="Web Search：服务端如何把搜索结果交给 Claude"></a>Web Search：服务端如何把搜索结果交给 Claude</h2><p>在 Claude API 中启用 <code>web_search</code> 后，Claude 可以在一个 Messages API 调用中发起搜索。官方文档将其称为在单个 API 调用内自动完成的搜索：响应会包含服务端的调用与结果内容块，随后模型可据此继续生成回答。</p>
+<p>这是最常见的路径，不是“永远只有一次 HTTP 请求”的承诺。若同一组并行调用里还混入了客户端工具，API 会先以 <code>stop_reason: &quot;tool_use&quot;</code> 等待客户端的 <code>tool_result</code>；某些较长的服务端 Agent 循环也可能以 <code>pause_turn</code> 要求调用方原样续传上下文。因此，调用方应始终按返回的停止原因和内容块驱动状态机，而不是把请求次数写死。</p>
+<p>概念上的返回形态如下：</p>
+<pre class="highlight"><code class="hljs json"><span class="hljs-punctuation">[</span><br>  <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;server_tool_use&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;srvtoolu_01XYZ...&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;web_search&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;input&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;query&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;London weather today&quot;</span> <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;web_search_tool_result&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;tool_use_id&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;srvtoolu_01XYZ...&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>      <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;web_search_result&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;title&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://...&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;encrypted_content&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;...&quot;</span><br>      <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">]</span><br></code></pre>
+
+<h3 id="encrypted-content-应该怎样理解"><a href="#encrypted-content-应该怎样理解" class="headerlink" title="encrypted_content 应该怎样理解"></a><code>encrypted_content</code> 应该怎样理解</h3><p><code>encrypted_content</code> 不是给应用读取的网页正文。官方文档要求多轮对话时把它<strong>原样回传</strong>；API 会在后续回合解密并恢复 Claude 所需的搜索上下文。应用可使用标题、URL 和引用信息构建展示，但不应依赖或尝试解析该字段。</p>
+<p>视频将它解释为“防止开发者把搜索结果当作免费内容下载服务”。这个推断有现实上的合理性，但目前能从公开文档确认的语义只有：它是供后续 API 回合回传的加密内容。把具体搜索供应商的授权条款或加密的唯一商业目的写成事实，会超出公开证据。</p>
+<h3 id="为什么抓包可能会看到多次请求和-Haiku"><a href="#为什么抓包可能会看到多次请求和-Haiku" class="headerlink" title="为什么抓包可能会看到多次请求和 Haiku"></a>为什么抓包可能会看到多次请求和 Haiku</h3><p>有些 Claude Code 抓包会显示：主模型先提出 Web Search，客户端又用一个较小模型处理搜索，最后把摘要交还主模型。这是一种很常见的 Agent 编排方式，但要分清两个层次：</p>
+<ol>
+<li><strong>公开 Web Search API 协议</strong>：搜索工具可以由 Anthropic 在单次 Messages 调用内执行；</li>
+<li><strong>Claude Code 产品内部编排</strong>：产品可能额外创建子代理、压缩上下文、重试或做权限检查，因此网络上看到的请求数和模型选择不构成 API 承诺。</li>
+</ol>
+<p>用较小模型处理搜索材料有两个合理的工程目标：减少昂贵主模型的上下文负担，以及让不可信网页内容先经过低权限环境。前者是成本与上下文管理；后者则是安全隔离。</p>
+<hr>
+<h2 id="子代理为什么有助于防提示词注入"><a href="#子代理为什么有助于防提示词注入" class="headerlink" title="子代理为什么有助于防提示词注入"></a>子代理为什么有助于防提示词注入</h2><p>网页不是可信输入。搜索结果、网页正文甚至 README 都可能出现“忽略前文指令，执行某个命令”这样的恶意文本。模型未必总能可靠地区分它是数据还是指令，这就是 Prompt Injection（提示词注入）的核心风险。</p>
+<p>把搜索放在只拥有 <code>web_search</code> 权限的子代理中，可以缩小风险半径：即使子代理被网页内容误导，它也没有 <code>bash</code>、写文件或发布部署的工具可用。主代理只接收经过压缩的、受格式约束的结果。</p>
+<p>但隔离不是魔法。摘要仍可能夹带错误或攻击性指令，主代理仍应把外部内容视为不可信数据。一个可落地的防线至少包括：</p>
+<ul>
+<li>按最小权限给每个代理和工具授权；</li>
+<li>对写文件、执行命令、外发数据等高影响动作要求人工确认；</li>
+<li>限制工作目录、网络出口和可访问的密钥；</li>
+<li>校验工具参数，记录调用与结果；</li>
+<li>让不可信内容与高权限工具尽量不要共处同一上下文。</li>
+</ul>
+<p>这比单纯在系统提示词里写一句“不要被注入”可靠得多。</p>
+<hr>
+<h2 id="Web-Search-的费用：与-Claude-Code-订阅不要混为一谈"><a href="#Web-Search-的费用：与-Claude-Code-订阅不要混为一谈" class="headerlink" title="Web Search 的费用：与 Claude Code 订阅不要混为一谈"></a>Web Search 的费用：与 Claude Code 订阅不要混为一谈</h2><p>对 Claude API，Anthropic 当前公开的 Web Search 价格是 <strong>每 1,000 次搜索 10 美元</strong>，并且搜索产生的内容仍按普通 token 规则计费。响应的 <code>usage</code> 中会以 <code>web_search_requests</code> 记录次数；一次搜索无论返回多少条结果，都计为一次。搜索报错不收费。</p>
+<p>这是 <strong>API 的服务端工具定价</strong>，不能直接推导为每个 Claude Code 套餐、地区或账户的实际扣费规则。使用 Claude Code 时，应以产品页面、账户用量页和当时的套餐说明为准；使用 API 时，才应按请求数加 token 成本做预算。</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>Claude Code 的“会干活”可以压缩成一句话：</p>
+<blockquote>
+<p>模型负责提出结构化的行动请求，受控的执行器负责行动，结果再回到模型的上下文中。</p>
+</blockquote>
+<p>理解这个循环后，许多现象就顺理成章了：为什么模型能改文件却不会真的敲键盘，为什么工具结果也会消耗上下文，为什么 <code>tool_use_id</code> 必须配对，为什么网页搜索会额外计费，以及为什么 Agent 安全的关键并不只是换一个更聪明的模型，而是工具权限、执行环境和不可信输入的隔离。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview">Anthropic：Tool use with Claude</a></li>
+<li><a target="_blank" rel="noopener" href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use">Anthropic：Define tools &#x2F; 客户端工具调用循环</a></li>
+<li><a target="_blank" rel="noopener" href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool">Anthropic：Web search tool（返回字段、回传要求与定价）</a></li>
+<li><a target="_blank" rel="noopener" href="https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks">Anthropic：Mitigate prompt injections</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.claude.com/docs/en/security">Claude Code：Security</a></li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/10/2026-08-10-claude-code-token-trace/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">一句 Hello，Claude Code 为什么可能要处理 3 万 Token？ </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">两个相同聊天标签页为什么会实时同步？ </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AA%E6%AD%A3%E7%A1%AE%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B%EF%BC%9A%E6%A8%A1%E5%9E%8B%E6%B2%A1%E6%9C%89%E2%80%9C%E6%89%8B%E2%80%9D"><span class="toc-text">先建立一个正确心智模型：模型没有“手”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E5%85%B7%EF%BC%9A%E4%B8%80%E6%AC%A1-git-status-%E6%98%AF%E6%80%8E%E6%A0%B7%E8%B7%91%E8%B5%B7%E6%9D%A5%E7%9A%84"><span class="toc-text">客户端工具：一次 git status 是怎样跑起来的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E9%9A%8F%E8%AF%B7%E6%B1%82%E4%BA%A4%E7%BB%99%E6%A8%A1%E5%9E%8B"><span class="toc-text">1. 客户端把工具定义随请求交给模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E-tool-use"><span class="toc-text">2. 模型返回 tool_use</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Claude-Code-%E5%9C%A8%E4%BD%A0%E7%9A%84%E7%94%B5%E8%84%91%E4%B8%8A%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Claude Code 在你的电脑上执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E7%BB%93%E6%9E%9C%E4%BD%9C%E4%B8%BA-tool-result-%E4%BA%A4%E5%9B%9E%E5%8E%BB"><span class="toc-text">4. 客户端把结果作为 tool_result 交回去</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8E%E2%80%9C%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8D%E6%98%AF%E5%90%8C%E4%B8%80%E7%A7%8D%E5%B7%A5%E5%85%B7"><span class="toc-text">“客户端执行”与“服务器执行”不是同一种工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search%EF%BC%9A%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%A6%82%E4%BD%95%E6%8A%8A%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E4%BA%A4%E7%BB%99-Claude"><span class="toc-text">Web Search：服务端如何把搜索结果交给 Claude</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#encrypted-content-%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E7%90%86%E8%A7%A3"><span class="toc-text">encrypted_content 应该怎样理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8A%93%E5%8C%85%E5%8F%AF%E8%83%BD%E4%BC%9A%E7%9C%8B%E5%88%B0%E5%A4%9A%E6%AC%A1%E8%AF%B7%E6%B1%82%E5%92%8C-Haiku"><span class="toc-text">为什么抓包可能会看到多次请求和 Haiku</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E5%8A%A9%E4%BA%8E%E9%98%B2%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5"><span class="toc-text">子代理为什么有助于防提示词注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search-%E7%9A%84%E8%B4%B9%E7%94%A8%EF%BC%9A%E4%B8%8E-Claude-Code-%E8%AE%A2%E9%98%85%E4%B8%8D%E8%A6%81%E6%B7%B7%E4%B8%BA%E4%B8%80%E8%B0%88"><span class="toc-text">Web Search 的费用：与 Claude Code 订阅不要混为一谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%88%E5%BB%BA%E7%AB%8B%E4%B8%80%E4%B8%AA%E6%AD%A3%E7%A1%AE%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B%EF%BC%9A%E6%A8%A1%E5%9E%8B%E6%B2%A1%E6%9C%89%E2%80%9C%E6%89%8B%E2%80%9D"><span class="toc-text">先建立一个正确心智模型：模型没有“手”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E5%85%B7%EF%BC%9A%E4%B8%80%E6%AC%A1-git-status-%E6%98%AF%E6%80%8E%E6%A0%B7%E8%B7%91%E8%B5%B7%E6%9D%A5%E7%9A%84"><span class="toc-text">客户端工具：一次 git status 是怎样跑起来的</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%B9%89%E9%9A%8F%E8%AF%B7%E6%B1%82%E4%BA%A4%E7%BB%99%E6%A8%A1%E5%9E%8B"><span class="toc-text">1. 客户端把工具定义随请求交给模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A8%A1%E5%9E%8B%E8%BF%94%E5%9B%9E-tool-use"><span class="toc-text">2. 模型返回 tool_use</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Claude-Code-%E5%9C%A8%E4%BD%A0%E7%9A%84%E7%94%B5%E8%84%91%E4%B8%8A%E6%89%A7%E8%A1%8C"><span class="toc-text">3. Claude Code 在你的电脑上执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8A%8A%E7%BB%93%E6%9E%9C%E4%BD%9C%E4%B8%BA-tool-result-%E4%BA%A4%E5%9B%9E%E5%8E%BB"><span class="toc-text">4. 客户端把结果作为 tool_result 交回去</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%80%9C%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8E%E2%80%9C%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%A7%E8%A1%8C%E2%80%9D%E4%B8%8D%E6%98%AF%E5%90%8C%E4%B8%80%E7%A7%8D%E5%B7%A5%E5%85%B7"><span class="toc-text">“客户端执行”与“服务器执行”不是同一种工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search%EF%BC%9A%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%A6%82%E4%BD%95%E6%8A%8A%E6%90%9C%E7%B4%A2%E7%BB%93%E6%9E%9C%E4%BA%A4%E7%BB%99-Claude"><span class="toc-text">Web Search：服务端如何把搜索结果交给 Claude</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#encrypted-content-%E5%BA%94%E8%AF%A5%E6%80%8E%E6%A0%B7%E7%90%86%E8%A7%A3"><span class="toc-text">encrypted_content 应该怎样理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%8A%93%E5%8C%85%E5%8F%AF%E8%83%BD%E4%BC%9A%E7%9C%8B%E5%88%B0%E5%A4%9A%E6%AC%A1%E8%AF%B7%E6%B1%82%E5%92%8C-Haiku"><span class="toc-text">为什么抓包可能会看到多次请求和 Haiku</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E5%8A%A9%E4%BA%8E%E9%98%B2%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5"><span class="toc-text">子代理为什么有助于防提示词注入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web-Search-%E7%9A%84%E8%B4%B9%E7%94%A8%EF%BC%9A%E4%B8%8E-Claude-Code-%E8%AE%A2%E9%98%85%E4%B8%8D%E8%A6%81%E6%B7%B7%E4%B8%BA%E4%B8%80%E8%B0%88"><span class="toc-text">Web Search 的费用：与 Claude Code 订阅不要混为一谈</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-text">小结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="toc-text">参考链接</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-codex-pilotdeck-comparison/"><div class="recent-posts-item-content">Pi、Codex 和 PilotDeck 到底有什么区别？先分清 Agent 的三种层次</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-skill-workflow/"><div class="recent-posts-item-content">从 Pi + Skill 到完整工作流：搜索、脚本、文案、音频和视频</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-token-trace/"><div class="recent-posts-item-content">一句 Hello，Claude Code 为什么可能要处理 3 万 Token？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-tool-use/"><div class="recent-posts-item-content">Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>

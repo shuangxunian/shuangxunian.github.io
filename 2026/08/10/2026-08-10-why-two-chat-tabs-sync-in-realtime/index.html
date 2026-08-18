@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>两个相同聊天标签页为什么会实时同步？</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="两个相同聊天标签页为什么会实时同步？">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/10/2026-08-10-why-two-chat-tabs-sync-in-realtime/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="打开同一聊天会话的两个标签页，只在其中一个页面发送消息，另一个页面也会自动更新。这能说明什么？又不能说明什么？">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-10">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="WebSocket">
+        
+          <meta 
+            property="og:article:tag" 
+            content="浏览器">
+        
+          <meta 
+            property="og:article:tag" 
+            content="实时通信">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>445</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>187</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E7%8E%B0%E8%B1%A1%E4%B8%AD%E8%83%BD%E7%A1%AE%E5%AE%9A%E4%BB%80%E4%B9%88"><span class="toc-text">从现象中能确定什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%83%E5%8F%AF%E8%83%BD%E6%80%8E%E6%A0%B7%E5%AE%9E%E7%8E%B0"><span class="toc-text">它可能怎样实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%9A%E6%8A%8A%E4%BC%9A%E8%AF%9D%E6%9B%B4%E6%96%B0%E9%80%81%E5%88%B0%E6%AF%8F%E4%B8%AA%E6%89%93%E5%BC%80%E7%9A%84%E9%A1%B5%E9%9D%A2"><span class="toc-text">服务端：把会话更新送到每个打开的页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%9A%E5%90%8C%E6%BA%90%E6%A0%87%E7%AD%BE%E9%A1%B5%E4%B9%8B%E9%97%B4%E5%8F%AF%E9%80%89%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8D%8F%E8%B0%83"><span class="toc-text">浏览器：同源标签页之间可选的本地协调</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%8F%AF%E9%9D%A0%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-text">一个更可靠的流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%AA%8C%E8%AF%81%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">如何验证，而不是猜测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">37</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI-%E7%BC%96%E7%A8%8B/">
+        <div class="categories-list-item">
+          AI-编程
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+        title="前端基础">
+        <div class="tags-list-item">前端基础</div>
+      </a>
+    
+      <a 
+        href="/tags/JavaScript/" 
+        title="JavaScript">
+        <div class="tags-list-item">JavaScript</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      两个相同聊天标签页为什么会实时同步？
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-08-10-why-two-chat-tabs-sync-in-realtime.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-10T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-10</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/%E5%89%8D%E7%AB%AF/" 
+          class="post-meta-link">
+          前端
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>1.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/WebSocket/" 
+            class="post-meta-link">
+            WebSocket
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+            class="post-meta-link">
+            浏览器
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%AE%9E%E6%97%B6%E9%80%9A%E4%BF%A1/" 
+            class="post-meta-link">
+            实时通信
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>我做了一个小实验：在浏览器中打开同一聊天会话的两个标签页，只在标签页 A 发送消息，完全不操作标签页 B。结果是，B 会自动出现新消息，以及后续的 AI 回复。</p>
+<p>第一反应很自然：这是 WebSocket 吗？</p>
+<p>简短答案是：<strong>它很可能使用了某种实时更新机制，但仅凭这个现象，不能确认具体就是 WebSocket，更不能确认页面一定使用了 <code>BroadcastChannel</code> 或 <code>localStorage</code>。</strong></p>
+<h2 id="从现象中能确定什么"><a href="#从现象中能确定什么" class="headerlink" title="从现象中能确定什么"></a>从现象中能确定什么</h2><p>两个标签页都能在不刷新的情况下看到同一会话的新增内容，至少说明了两件事：</p>
+<ol>
+<li>服务端保存了会话状态。消息并不只存在于发送消息的那个页面内存中。</li>
+<li>页面具备主动获得增量更新的能力。标签页 B 不需要重新加载页面，就能接收或拉取最新消息。</li>
+</ol>
+<p>如果同一个会话还能在另一台电脑或手机 App 上同步，那么服务端的消息分发就是必需的。浏览器内的跨标签通信只能覆盖同一浏览器、同一源下的页面，无法承担跨设备同步。</p>
+<h2 id="它可能怎样实现"><a href="#它可能怎样实现" class="headerlink" title="它可能怎样实现"></a>它可能怎样实现</h2><p>聊天产品通常由两层能力组成：服务端的会话同步，以及浏览器侧的状态协调。但具体产品采用哪些技术，需要证据确认。</p>
+<h3 id="服务端：把会话更新送到每个打开的页面"><a href="#服务端：把会话更新送到每个打开的页面" class="headerlink" title="服务端：把会话更新送到每个打开的页面"></a>服务端：把会话更新送到每个打开的页面</h3><p>标签页 A 发送消息后，服务端会写入会话记录，并将新消息和模型生成的增量内容发送给订阅该会话的客户端。常见的传输方式包括：</p>
+<ul>
+<li><strong>WebSocket</strong>：浏览器与服务端维持一条双向长连接，适合消息发送和流式回复。</li>
+<li><strong>SSE</strong>：服务端通过单向事件流持续推送，客户端仍可用普通 HTTP 请求发送消息。</li>
+<li><strong>HTTP 流式响应</strong>：发送消息的请求本身持续返回模型生成的文本片段。</li>
+<li><strong>轮询或长轮询</strong>：客户端定期或长期等待服务端返回新数据。实时感通常会略弱，但也能实现自动更新。</li>
+</ul>
+<p>因此，看到流式输出或另一个标签页自动更新，只能说明存在“增量更新通道”，不能单独证明它是 WebSocket。</p>
+<h3 id="浏览器：同源标签页之间可选的本地协调"><a href="#浏览器：同源标签页之间可选的本地协调" class="headerlink" title="浏览器：同源标签页之间可选的本地协调"></a>浏览器：同源标签页之间可选的本地协调</h3><p>同一浏览器、同一站点的多个标签页，也可以额外使用浏览器提供的本地通信机制：</p>
+<ul>
+<li>**<code>BroadcastChannel</code>**：一个标签页向同源的其他标签页发布事件，适合即时同步局部状态。</li>
+<li><strong><code>storage</code> 事件</strong>：一个页面写入 <code>localStorage</code> 后，其他同源页面会收到变化通知。</li>
+<li><strong>SharedWorker</strong>：多个标签页共享一个 Worker，由它统一管理连接或状态。</li>
+</ul>
+<p>这些机制可以减少重复请求、协调未读状态或让 UI 更快反映本地变化。不过，它们不是双标签同步的必要条件：两个标签页各自从服务端接收推送，已经足够让人感觉“实时”。</p>
+<h2 id="一个更可靠的流程图"><a href="#一个更可靠的流程图" class="headerlink" title="一个更可靠的流程图"></a>一个更可靠的流程图</h2><p>下面是与实验现象一致、但不预设具体协议的最小模型：</p>
+<pre class="highlight"><code class="hljs text">标签页 A 发送消息<br>        |<br>        v<br>服务端写入会话并生成增量更新<br>        |<br>        +-------------------+<br>        |                   |<br>        v                   v<br>标签页 A 的更新通道    标签页 B 的更新通道<br>        |                   |<br>        v                   v<br>两个页面分别更新 UI<br></code></pre>
+
+<p>如果站点额外使用了浏览器内广播，流程可能多出一条本地路径：</p>
+<pre class="highlight"><code class="hljs text">标签页 A 更新本地状态 -- BroadcastChannel / storage --&gt; 标签页 B<br></code></pre>
+
+<p>但这条路径应当被看作优化假设，而不是从页面现象直接得出的结论。</p>
+<h2 id="如何验证，而不是猜测"><a href="#如何验证，而不是猜测" class="headerlink" title="如何验证，而不是猜测"></a>如何验证，而不是猜测</h2><p>想确认某个具体网站的实现，可以打开浏览器开发者工具进行只读观察：</p>
+<ol>
+<li>在 <strong>Network</strong> 面板中筛选 <code>WS</code>，查看是否存在 WebSocket 连接及其 Frames。</li>
+<li>查找类型为 <code>event-stream</code> 的请求，判断是否使用 SSE。</li>
+<li>发送一条消息，观察是否存在长时间保持打开的 <code>fetch</code>&#x2F;XHR 请求，以及响应是否分块返回。</li>
+<li>在 <strong>Sources</strong> 中搜索 <code>BroadcastChannel</code>、<code>localStorage</code>、<code>SharedWorker</code> 和 <code>WebSocket</code>，寻找前端代码是否调用这些 API。</li>
+<li>分别在两个标签页打开 Network，观察标签页 B 是否独立收到服务端数据。若是，它本身的服务端连接就足以解释同步现象。</li>
+</ol>
+<p>调试时应避免公开会话链接、Cookie、请求头或 WebSocket 帧中的账号和会话数据。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>“两个相同聊天标签页实时同步”最稳妥的解释是：<strong>服务端维护会话状态，并向打开该会话的客户端提供增量更新。</strong></p>
+<p>WebSocket 是常见且合理的候选方案，但并非唯一答案；<code>BroadcastChannel</code>、<code>storage</code> 事件和 SharedWorker 也可能参与同浏览器标签页的状态协调，却不能仅从同步效果推断它们一定存在。要把“可能使用”写成“确定使用”，仍需要开发者工具中的网络或代码证据。</p>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+    <div class="nav-item-prev">
+      <a 
+        href="/2026/08/10/2026-08-10-claude-code-tool-use/" 
+        class="nav-link">
+        <i class="iconfont icon-left nav-prev-icon"></i>
+        <div>
+          <div class="nav-label">上一篇</div>
+          
+            <div class="nav-title">Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索 </div>
+          
+        </div>
+      </a>
+    </div>
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/07/you-dont-know-js-behavior-delegation-oloo-part-2-chapter-6/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">《你不知道的 JavaScript（上卷）》第二部分第六章：行为委托与 ES6 class </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E7%8E%B0%E8%B1%A1%E4%B8%AD%E8%83%BD%E7%A1%AE%E5%AE%9A%E4%BB%80%E4%B9%88"><span class="toc-text">从现象中能确定什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%83%E5%8F%AF%E8%83%BD%E6%80%8E%E6%A0%B7%E5%AE%9E%E7%8E%B0"><span class="toc-text">它可能怎样实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%9A%E6%8A%8A%E4%BC%9A%E8%AF%9D%E6%9B%B4%E6%96%B0%E9%80%81%E5%88%B0%E6%AF%8F%E4%B8%AA%E6%89%93%E5%BC%80%E7%9A%84%E9%A1%B5%E9%9D%A2"><span class="toc-text">服务端：把会话更新送到每个打开的页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%9A%E5%90%8C%E6%BA%90%E6%A0%87%E7%AD%BE%E9%A1%B5%E4%B9%8B%E9%97%B4%E5%8F%AF%E9%80%89%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8D%8F%E8%B0%83"><span class="toc-text">浏览器：同源标签页之间可选的本地协调</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%8F%AF%E9%9D%A0%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-text">一个更可靠的流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%AA%8C%E8%AF%81%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">如何验证，而不是猜测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E7%8E%B0%E8%B1%A1%E4%B8%AD%E8%83%BD%E7%A1%AE%E5%AE%9A%E4%BB%80%E4%B9%88"><span class="toc-text">从现象中能确定什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%83%E5%8F%AF%E8%83%BD%E6%80%8E%E6%A0%B7%E5%AE%9E%E7%8E%B0"><span class="toc-text">它可能怎样实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%9A%E6%8A%8A%E4%BC%9A%E8%AF%9D%E6%9B%B4%E6%96%B0%E9%80%81%E5%88%B0%E6%AF%8F%E4%B8%AA%E6%89%93%E5%BC%80%E7%9A%84%E9%A1%B5%E9%9D%A2"><span class="toc-text">服务端：把会话更新送到每个打开的页面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%9A%E5%90%8C%E6%BA%90%E6%A0%87%E7%AD%BE%E9%A1%B5%E4%B9%8B%E9%97%B4%E5%8F%AF%E9%80%89%E7%9A%84%E6%9C%AC%E5%9C%B0%E5%8D%8F%E8%B0%83"><span class="toc-text">浏览器：同源标签页之间可选的本地协调</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%9B%B4%E5%8F%AF%E9%9D%A0%E7%9A%84%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="toc-text">一个更可靠的流程图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%AA%8C%E8%AF%81%EF%BC%8C%E8%80%8C%E4%B8%8D%E6%98%AF%E7%8C%9C%E6%B5%8B"><span class="toc-text">如何验证，而不是猜测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-codex-pilotdeck-comparison/"><div class="recent-posts-item-content">Pi、Codex 和 PilotDeck 到底有什么区别？先分清 Agent 的三种层次</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-skill-workflow/"><div class="recent-posts-item-content">从 Pi + Skill 到完整工作流：搜索、脚本、文案、音频和视频</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-token-trace/"><div class="recent-posts-item-content">一句 Hello，Claude Code 为什么可能要处理 3 万 Token？</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-tool-use/"><div class="recent-posts-item-content">Claude Code 的 Tool Use：模型怎样调用终端、文件和网页搜索</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
