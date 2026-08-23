@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="google-site-verification" content="tBIjY7zs_3-lWkGQUkbuW-HFkObKV8YJbPG0rNq2rHk" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <meta name="theme-color" content="#fff" id="theme-color" />
+  <meta name="description" content="记录个人成长与生活，前端，算法，nlp" />
+  <link 
+    rel="icon" 
+    href="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+  <title>从 20 人制造企业到 AI 原生组织：一堂 AI 转型实战课的要点</title>
+  
+    
+      <meta 
+        property="og:title" 
+        content="从 20 人制造企业到 AI 原生组织：一堂 AI 转型实战课的要点">
+    
+    
+      <meta 
+        property="og:url" 
+        content="http://example.com/2026/08/23/2026-08-23-ai-native-manufacturing-workflow/index.html">
+    
+    
+      <meta 
+        property="og:img" 
+        content="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&amp;spec=5">
+    
+    
+      <meta 
+        property="og:img" 
+        content="一家电助力自行车创业公司如何把 AI 用进规格书、复盘、知识库、报价和组织协作，以及其中真正困难的部分。">
+    
+    
+      <meta 
+        property="og:type" 
+        content="article">
+      <meta 
+        property="og:article:published_time" 
+        content="2026-08-23">
+      <meta 
+        property="og:article:modified_time" 
+        content="2026-08-23">
+      <meta 
+        property="og:article:author" 
+        content="霜序廿">
+      
+        
+          <meta 
+            property="og:article:tag" 
+            content="AI">
+        
+          <meta 
+            property="og:article:tag" 
+            content="工作流">
+        
+          <meta 
+            property="og:article:tag" 
+            content="制造业">
+        
+          <meta 
+            property="og:article:tag" 
+            content="知识库">
+        
+          <meta 
+            property="og:article:tag" 
+            content="组织管理">
+        
+      
+    
+  
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  <link rel="preload" href="/css/main.css" as="style" >
+  
+  <link rel="modulepreload" href="//instant.page/5.1.0">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_i1kgafibvw.css">
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+  
+  
+  
+    <link rel="stylesheet" href="/js/lib/lightbox/baguetteBox.min.css">
+  
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    function loadCSS(href, data, attr) {
+      var sheet = document.createElement('link');
+      sheet.ref = 'stylesheet';
+      sheet.href = href;
+      sheet.dataset[data] = attr;
+      document.head.appendChild(sheet);
+    }
+    function changeCSS(cssFile, data, attr) {
+      var oldlink = document.querySelector(data);
+      var newlink = document.createElement("link");
+      newlink.setAttribute("rel", "stylesheet");
+      newlink.setAttribute("href", cssFile);
+      newlink.dataset.prism = attr;
+      document.head.replaceChild(newlink, oldlink);
+    }
+  </script>
+  
+    
+  
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+  </script>
+  
+    <script>
+      var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+        document.getElementById('theme-color').dataset.mode = setting;
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+        document.getElementById('theme-color').dataset.mode = getCssMediaQuery();
+      }
+    };
+    setDarkmode();
+    </script>
+  
+  
+  
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.js" as="script">
+    <link rel="preload" href="/js/lib/lightbox/baguetteBox.min.css" as="style" >
+  
+  
+    <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="wrapper">
+       
+      <nav class="navbar">
+  <div class="navbar-logo">
+    <a class="navbar-logo-main" href="/">
+      
+        <img 
+          class="navbar-logo-img"
+          width="32"
+          height="32"
+          src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+          alt="blog logo">
+      
+      <span class="navbar-logo-dsc">霜序廿的个人网站</span>
+      </a>
+  </div>
+  <div class="navbar-menu">
+    
+      <a 
+        href="/" 
+        class="navbar-menu-item">
+        
+          首页
+        
+      </a>
+    
+      <a 
+        href="/archives" 
+        class="navbar-menu-item">
+        
+          归档
+        
+      </a>
+    
+      <a 
+        href="/tags" 
+        class="navbar-menu-item">
+        
+          标签
+        
+      </a>
+    
+      <a 
+        href="/categories" 
+        class="navbar-menu-item">
+        
+          分类
+        
+      </a>
+    
+      <a 
+        href="/about" 
+        class="navbar-menu-item">
+        
+          关于
+        
+      </a>
+    
+      <a 
+        href="/links" 
+        class="navbar-menu-item">
+        
+          友链
+        
+      </a>
+    
+    <button 
+      class="navbar-menu-item darknavbar navbar-menu-btn" 
+      aria-label="Toggle dark mode"
+      id="dark">
+      <i class="iconfont icon-weather"></i>
+    </button>
+    <button 
+      class="navbar-menu-item searchnavbar navbar-menu-btn" 
+      aria-label="Toggle search"
+      id="search">
+      <!-- <i 
+        class="iconfont icon-search" 
+        style="font-size: 1.2rem; font-weight: 400;">
+      </i> -->
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img"
+        class="iconify iconify--ion" width="28" height="28" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512">
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M256 80a176 176 0 1 0 176 176A176 176 0 0 0 256 80Z"></path>
+        <path fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="28"
+          d="M232 160a72 72 0 1 0 72 72a72 72 0 0 0-72-72Z"></path>
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="28"
+          d="M283.64 283.64L336 336"></path>
+      </svg>
+    </button>
+  </div>
+</nav> 
+      
+      <div 
+        id="local-search" 
+        style="display: none">
+        <input
+          class="navbar-menu-item"
+          id="search-input"
+          placeholder="请输入搜索内容..." />
+        <div id="search-content"></div>
+      </div>
+      
+      <div class="section-wrap">
+        <div class="container">
+          <div class="columns">
+            <aside class="left-column">
+              
+              <div class="card card-author">
+                
+  <img 
+    src="https://q2.qlogo.cn/headimg_dl?dst_uin=2749909223&spec=5" 
+    class="author-img"
+    width="88"
+    height="88"
+    alt="author avatar">
+
+<p class="author-name">霜序廿</p>
+<p class="author-description">一个爱算法的小前端</p>
+<div class="author-message">
+  <a 
+    class="author-posts-count" 
+    href="/archives">
+    <span>446</span>
+    <span>文章</span>
+  </a>
+  <a 
+    class="author-categories-count" 
+    href="/categories">
+    <span>7</span>
+    <span>分类</span>
+  </a>
+  <a 
+    class="author-tags-count" 
+    href="/tags">
+    <span>190</span>
+    <span>标签</span>
+  </a>
+</div>
+
+  <div class="author-card-society">
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://github.com/shuangxunian">
+          <i class="iconfont icon-github society-icon"></i>
+        </a>
+      </div>
+    
+      <div class="author-card-society-icon">
+        <a target="_blank" rel="noopener" href="https://space.bilibili.com/391117803">
+          <i class="iconfont icon-bilibili society-icon"></i>
+        </a>
+      </div>
+    
+  </div>
+
+              </div>
+               <div class="sticky-tablet">
+  
+  
+    <article class="display-when-two-columns spacer">
+      <div class="card card-content toc-card">
+        <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%85%88%E8%BF%9B%E5%85%A5%E6%9C%80%E5%85%B7%E4%BD%93%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="toc-text">AI 先进入最具体的工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E4%BC%9A%E8%AE%AE%E4%BB%8E%E8%A1%A8%E8%BE%BE%E5%9C%BA%E5%8F%98%E6%88%90%E4%BF%A1%E6%81%AF%E7%B3%BB%E7%BB%9F"><span class="toc-text">把会议从表达场变成信息系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E5%BA%93%E4%B8%8D%E6%98%AF%E6%96%87%E4%BB%B6%E5%A0%86%EF%BC%8C%E8%80%8C%E6%98%AF%E7%BB%8F%E8%BF%87%E5%AE%A1%E6%A0%B8%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">知识库不是文件堆，而是经过审核的上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BC%9A%E8%AE%AE%E8%AE%B0%E5%BD%95%E5%88%B0%E6%8A%A5%E4%BB%B7%EF%BC%8C%E7%BC%A9%E7%9F%AD%E7%9A%84%E6%98%AF%E5%8F%8D%E9%A6%88%E5%9B%9E%E8%B7%AF"><span class="toc-text">从会议记录到报价，缩短的是反馈回路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%9E%8B%E6%9C%80%E9%9A%BE%E7%9A%84%E4%B8%8D%E6%98%AF%E5%AE%89%E8%A3%85%E5%B7%A5%E5%85%B7"><span class="toc-text">转型最难的不是安装工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%8E%9F%E7%94%9F%E4%B8%8D%E6%98%AF%E2%80%9C%E5%85%A8%E8%87%AA%E5%8A%A8%E2%80%9D%EF%BC%8C%E8%80%8C%E6%98%AF%E6%8C%81%E7%BB%AD%E8%BF%AD%E4%BB%A3"><span class="toc-text">AI 原生不是“全自动”，而是持续迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%86%E9%A2%91%E7%AB%A0%E8%8A%82"><span class="toc-text">视频章节</span></a></li></ol>
+      </div>
+    </article>
+  
+  
+  <article class="card card-content categories-widget">
+    <div class="categories-card">
+  <div class="categories-header">
+    <i 
+      class="iconfont icon-fenlei" 
+      style="padding-right: 2px;">
+    </i>分类
+  </div>
+  <div class="categories-list">
+    
+      <a href="/categories/%E5%BC%80%E5%8F%91%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          开发技术
+          <span class="categories-list-item-badge">355</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%85%B6%E5%AE%83/">
+        <div class="categories-list-item">
+          其它
+          <span class="categories-list-item-badge">25</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI%E6%8A%80%E6%9C%AF/">
+        <div class="categories-list-item">
+          AI技术
+          <span class="categories-list-item-badge">38</span>
+        </div>
+      </a>
+    
+      <a href="/categories/AI-%E7%BC%96%E7%A8%8B/">
+        <div class="categories-list-item">
+          AI-编程
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E5%89%8D%E7%AB%AF/">
+        <div class="categories-list-item">
+          前端
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E7%AE%97%E6%B3%95/">
+        <div class="categories-list-item">
+          算法
+          <span class="categories-list-item-badge">20</span>
+        </div>
+      </a>
+    
+      <a href="/categories/%E6%97%85%E6%B8%B8/">
+        <div class="categories-list-item">
+          旅游
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content tags-widget">
+    <div class="tags-card">
+  <div class="tags-header">
+    <i 
+      class="iconfont icon-biaoqian" 
+      style="padding-right: 2px;">
+    </i>热门标签
+  </div>
+  <div class="tags-list">
+    
+      <a 
+        href="/tags/js/" 
+        title="js">
+        <div class="tags-list-item">js</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95/" 
+        title="面试">
+        <div class="tags-list-item">面试</div>
+      </a>
+    
+      <a 
+        href="/tags/vue/" 
+        title="vue">
+        <div class="tags-list-item">vue</div>
+      </a>
+    
+      <a 
+        href="/tags/css/" 
+        title="css">
+        <div class="tags-list-item">css</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E7%B3%BB%E5%88%97%E8%AF%BE%E7%A8%8B%E6%96%87%E7%AB%A0/" 
+        title="前端系列课程文章">
+        <div class="tags-list-item">前端系列课程文章</div>
+      </a>
+    
+      <a 
+        href="/tags/html/" 
+        title="html">
+        <div class="tags-list-item">html</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C/" 
+        title="网络">
+        <div class="tags-list-item">网络</div>
+      </a>
+    
+      <a 
+        href="/tags/OpenClaw/" 
+        title="OpenClaw">
+        <div class="tags-list-item">OpenClaw</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%85%B6%E4%BB%96/" 
+        title="其他">
+        <div class="tags-list-item">其他</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" 
+        title="浏览器">
+        <div class="tags-list-item">浏览器</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%AE%97%E6%B3%95/" 
+        title="算法">
+        <div class="tags-list-item">算法</div>
+      </a>
+    
+      <a 
+        href="/tags/%E5%89%8D%E7%AB%AF%E5%9F%BA%E7%A1%80/" 
+        title="前端基础">
+        <div class="tags-list-item">前端基础</div>
+      </a>
+    
+      <a 
+        href="/tags/JavaScript/" 
+        title="JavaScript">
+        <div class="tags-list-item">JavaScript</div>
+      </a>
+    
+      <a 
+        href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" 
+        title="操作系统">
+        <div class="tags-list-item">操作系统</div>
+      </a>
+    
+      <a 
+        href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/" 
+        title="面试题">
+        <div class="tags-list-item">面试题</div>
+      </a>
+    
+      <a 
+        href="/tags/%E7%BD%91%E7%BB%9C%E5%8E%9F%E7%90%86/" 
+        title="网络原理">
+        <div class="tags-list-item">网络原理</div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+            </aside>
+            <main class="main-column">
+              
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      从 20 人制造企业到 AI 原生组织：一堂 AI 转型实战课的要点
+    </h1>
+  </header>
+  
+    <div class="post-meta post-show-meta">
+      <a href="https://github.com/shuangxunian/shuangxunian.github.io/edit/server/source/_posts/2026-08-23-ai-native-manufacturing-workflow.md" target="_blank">编辑原文</a>
+    </div>
+  
+  <div class="post-meta post-show-meta">
+    <time datetime="2026-08-23T00:00:00.000Z">
+      <i 
+        class="iconfont icon-calendar" 
+        style="margin-right: 2px;">
+      </i>
+      <span>2026-08-23</span>
+    </time>
+    
+      <span class="dot"></span>
+      
+        <a 
+          href="/categories/AI%E6%8A%80%E6%9C%AF/" 
+          class="post-meta-link">
+          AI技术
+        </a>
+      
+    
+    
+      <span class="dot"></span>
+      <span>2.3k 字</span>
+    
+  </div>
+  
+    <div 
+      class="post-meta post-show-meta" 
+      style="margin-top: -10px;">
+      <div style="display: flex; align-items: center;">
+        <i 
+          class="iconfont icon-biaoqian" 
+          style="margin-right: 2px; font-size: 1.15rem;">
+        </i>
+        
+          
+          <a 
+            href="/tags/AI/" 
+            class="post-meta-link">
+            AI
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%B7%A5%E4%BD%9C%E6%B5%81/" 
+            class="post-meta-link">
+            工作流
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E5%88%B6%E9%80%A0%E4%B8%9A/" 
+            class="post-meta-link">
+            制造业
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E7%9F%A5%E8%AF%86%E5%BA%93/" 
+            class="post-meta-link">
+            知识库
+          </a>
+        
+          
+            <span class="dot"></span>
+          
+          <a 
+            href="/tags/%E7%BB%84%E7%BB%87%E7%AE%A1%E7%90%86/" 
+            class="post-meta-link">
+            组织管理
+          </a>
+        
+      </div>
+    </div>
+  
+  </header>
+  <div 
+    id="section" 
+    class="post-content">
+    <p>来源视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1W6866AEMf">一家20人制造企业，如何走向全员AI化？｜滨江区长河干部课程实录</a></p>
+<blockquote>
+<p>本文根据该视频的 AI 字幕整理。自动字幕可能存在识别、断句或专有名词错误；文中案例和数字均为演讲者的经验陈述，不构成独立核验后的事实结论。</p>
+</blockquote>
+<p>这堂课最有价值的地方，不是罗列某个模型或某个 Agent 的操作方法，而是把一家二十人左右制造企业的 AI 转型拆成了一连串具体工作：做产品规格书、开复盘会、沉淀错误、和供应商沟通、生成报价，以及重新定义团队协作。</p>
+<p>演讲者给出的判断很激进：过去企业比的是组织能力，AI 时代比的是进化能力。即使不接受这个结论，也值得认真看一看它背后的问题：当个人产能被放大后，一家公司怎样把个人的临场发挥沉淀成组织能力？</p>
+<h2 id="AI-先进入最具体的工作"><a href="#AI-先进入最具体的工作" class="headerlink" title="AI 先进入最具体的工作"></a>AI 先进入最具体的工作</h2><p>课程开头是一个仪表开发的案例。传统做法里，产品、供应链、结构、电路、软件和 UI 等多人要反复对齐，最后形成规格书；而团队把既有资料、供应商样板和需求输入 AI，先生成可交互的仪表界面，再反向整理规格书。</p>
+<p>演讲者称，需求整理和第一版成果只用了一个下午，后续又花了两天检查；相比之下，传统流程中，仅规格书环节就可能拖一个月。这里更值得借鉴的不是“AI 能直接完成规格书”，而是顺序的变化：先把需求做成可讨论、可交互的原型，再让文档围绕已经被看见的问题展开。</p>
+<p>AI 可以加速信息拆解、界面草图和文档初稿，但涉及模具、生产和交付的决定仍需要人来核验。课程里也提到，团队把时间花在检查和修改上，而不是把生成结果直接当成最终答案。</p>
+<h2 id="把会议从表达场变成信息系统"><a href="#把会议从表达场变成信息系统" class="headerlink" title="把会议从表达场变成信息系统"></a>把会议从表达场变成信息系统</h2><p>另一个案例来自行业展会后的复盘。过去二十多人坐进会议室，依次发言很容易占掉半天，而且不少真实看法不会在公开场合说出来。新的做法是让每个人先用语音和一个 Agent 沟通，由 Agent 汇总共识、风险和待办事项，再由负责人审阅并在周会上同步。</p>
+<p>演讲者称，这把复盘从一个下午压缩到约一小时。更关键的是，项目经理与生产负责人对交付日期的不同判断被显性化，负责人能更早发现风险、决定是否介入。</p>
+<p>这类流程的边界也很清楚：Agent 适合收集、归纳和提示，不能替代项目负责人。它可以指出“某日期可能无法达成”，但是否改变排期、怎样与供应商协商、谁承担责任，仍是人的决策。</p>
+<h2 id="知识库不是文件堆，而是经过审核的上下文"><a href="#知识库不是文件堆，而是经过审核的上下文" class="headerlink" title="知识库不是文件堆，而是经过审核的上下文"></a>知识库不是文件堆，而是经过审核的上下文</h2><p>课程中反复出现的关键词是“知识库”。演讲者将其定义为经过审核的大量上下文，覆盖品牌、项目管理、生产、库存、供应链、销售、售后、财务和法务等信息。每次供应商会议、生产复盘和项目结论，都被整理回写到知识库中。</p>
+<p>最有启发性的部分，是他强调不要把所有历史文件一股脑塞给模型。价格、产品状态和公司策略会变化，旧资料里可能夹着过期或矛盾的信息。若没有取舍和归类，模型只会在混乱的信息上继续生成混乱的答案。</p>
+<p>因此，知识库的起点应当是当前的事实和未来的方向，而不是一次性的资料搬运。课程里给出的做法是：由最了解业务的负责人先回答一组问题，AI 根据回答继续追问，再逐步形成行业、产品、竞争、路线图和决策标准等结构化内容。语音输入在这里很实用，因为它降低了把经验说出来的门槛。</p>
+<p>对企业而言，真正重要的不是“有没有知识库”，而是三个问题：</p>
+<ol>
+<li>谁对内容的准确性负责？</li>
+<li>哪些信息应当被保留、更新或废弃？</li>
+<li>不同角色能够调用哪些上下文？</li>
+</ol>
+<p>尤其是最后一点。演讲者也坦言，AI 原生的知识库会把权限、信任和合规问题推到台前。信息越容易被调用，越不能靠“先全放进去，之后再想办法”来处理权限。</p>
+<h2 id="从会议记录到报价，缩短的是反馈回路"><a href="#从会议记录到报价，缩短的是反馈回路" class="headerlink" title="从会议记录到报价，缩短的是反馈回路"></a>从会议记录到报价，缩短的是反馈回路</h2><p>课程展示了一个 To B 场景：销售或方案沟通时，将会议中的需求、工时、模块和约束实时整理为页面化方案与可选报价。演讲者的经验是，过去要回去做 PPT 和报价单的工作，可以在十分钟到半小时内形成第一版，客户再选择模块、进入下一轮讨论。</p>
+<p>这个案例的重点不应是“十分钟生成百万报价”，而是缩短需求反馈回路。客户刚讲完需求时，信息最完整；如果团队能把需求、既有能力、成本假设和交付边界快速放在同一张可修改的页面上，沟通就不必卡在文档制作上。</p>
+<p>但报价不是文案生成。价格、工期、合同条款和承诺必须经过有授权的人确认。AI 在这里适合作为结构化助手，帮助把遗漏的问题问出来、把方案展示出来，而不是替企业作出商业承诺。</p>
+<h2 id="转型最难的不是安装工具"><a href="#转型最难的不是安装工具" class="headerlink" title="转型最难的不是安装工具"></a>转型最难的不是安装工具</h2><p>演讲者提到，公司曾经组织培训、准备提示词和演示案例，但真正愿意下载、安装并持续使用的人并不多。这是一个比模型能力更现实的问题：工具可复制，习惯、意愿和协作方式却不能靠一次培训解决。</p>
+<p>课程给出的推进路径大致是：先用低门槛工具让员工感受到收益，再找出接受度高的人，把专业工具与真实工作结合，最后将有效做法固化成工作流，交给更多人使用。这个路径看起来简单，落地时却会遇到三种张力：</p>
+<ul>
+<li>个体效率提升后，团队如何共享上下文，而不是各自和 AI 单打独斗；</li>
+<li>老员工的经验如何被尊重并转化为可复用标准，而不是被“新工具”粗暴否定；</li>
+<li>管理者如何为交付设定截止点，避免团队在 AI 的无限优化中迟迟不交付。</li>
+</ul>
+<p>视频中还提出了审美力、调度力、交付力和主动性等标准。它们未必是唯一的评价框架，但可以转成更可操作的问题：员工能否判断输出是否合格？能否把多个工具和人的工作组织起来？能否在有限时间内交付？能否主动发现值得用 AI 解决的问题？</p>
+<h2 id="AI-原生不是“全自动”，而是持续迭代"><a href="#AI-原生不是“全自动”，而是持续迭代" class="headerlink" title="AI 原生不是“全自动”，而是持续迭代"></a>AI 原生不是“全自动”，而是持续迭代</h2><p>演讲者最后提出了几个方向：容易被 AI 处理的文本、分析和文书工作会更快被重构；与真实生产、物流、产品和消费者场景紧密相连的能力仍然重要；小团队可以借助知识库和工作流获得更高杠杆；而真正稀缺的是愿意共享经验、维护上下文并持续改进流程的核心成员。</p>
+<p>这些判断带有鲜明的创业者视角，也不应该被照搬成裁员或全面自动化的理由。对大多数团队来说，更稳妥的起点是找一个高频、可检查、失败成本可控的流程，例如会议纪要、项目复盘、客服知识整理或方案初稿。先明确输入、输出、责任人和验收标准，再让 AI 加入其中。</p>
+<p>AI 的价值不在于替人制造更多文本，而在于让组织更快地学习：把一次项目里的判断、失误和改进留下来，让下一次工作不必从零开始。这也是这堂课中最值得带走的部分。</p>
+<h2 id="视频章节"><a href="#视频章节" class="headerlink" title="视频章节"></a>视频章节</h2><ul>
+<li>02:33 实习生用 AI 制作仪表规格书</li>
+<li>16:29 企业内部跑通 AI 工作流</li>
+<li>28:04 公开制造企业的 AI 知识库</li>
+<li>37:14 销售快速生成定制化方案与报价</li>
+<li>41:19 AI 时代的人才标准与转型挑战</li>
+<li>52:18 关于 AI 原生组织的五个判断</li>
+</ul>
+
+  </div>
+  <div>
+    
+  </div>
+</article>
+<div class="nav">
+  
+  
+    <div class="nav-item-next">
+      <a 
+        href="/2026/08/18/2026-08-18-pi-codex-pilotdeck-comparison/" 
+        class="nav-link">
+        <div>
+          <div class="nav-label">下一篇</div>
+          
+            <div class="nav-title">Pi、Codex 和 PilotDeck 到底有什么区别？先分清 Agent 的三种层次 </div>
+          
+        </div>
+        <i class="iconfont icon-right nav-next-icon"></i>
+      </a>
+    </div>
+  
+</div>
+
+<div 
+  class="card card-content toc-card" 
+  id="mobiletoc">
+  <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%85%88%E8%BF%9B%E5%85%A5%E6%9C%80%E5%85%B7%E4%BD%93%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="toc-text">AI 先进入最具体的工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E4%BC%9A%E8%AE%AE%E4%BB%8E%E8%A1%A8%E8%BE%BE%E5%9C%BA%E5%8F%98%E6%88%90%E4%BF%A1%E6%81%AF%E7%B3%BB%E7%BB%9F"><span class="toc-text">把会议从表达场变成信息系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E5%BA%93%E4%B8%8D%E6%98%AF%E6%96%87%E4%BB%B6%E5%A0%86%EF%BC%8C%E8%80%8C%E6%98%AF%E7%BB%8F%E8%BF%87%E5%AE%A1%E6%A0%B8%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">知识库不是文件堆，而是经过审核的上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BC%9A%E8%AE%AE%E8%AE%B0%E5%BD%95%E5%88%B0%E6%8A%A5%E4%BB%B7%EF%BC%8C%E7%BC%A9%E7%9F%AD%E7%9A%84%E6%98%AF%E5%8F%8D%E9%A6%88%E5%9B%9E%E8%B7%AF"><span class="toc-text">从会议记录到报价，缩短的是反馈回路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%9E%8B%E6%9C%80%E9%9A%BE%E7%9A%84%E4%B8%8D%E6%98%AF%E5%AE%89%E8%A3%85%E5%B7%A5%E5%85%B7"><span class="toc-text">转型最难的不是安装工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%8E%9F%E7%94%9F%E4%B8%8D%E6%98%AF%E2%80%9C%E5%85%A8%E8%87%AA%E5%8A%A8%E2%80%9D%EF%BC%8C%E8%80%8C%E6%98%AF%E6%8C%81%E7%BB%AD%E8%BF%AD%E4%BB%A3"><span class="toc-text">AI 原生不是“全自动”，而是持续迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%86%E9%A2%91%E7%AB%A0%E8%8A%82"><span class="toc-text">视频章节</span></a></li></ol>
+</div>
+
+            </main>
+            <aside class="right-column">
+              <div class="sticky-widescreen">
+  
+  
+    <article class="card card-content toc-card">
+      <div class="toc-header">
+  <i 
+    class="iconfont icon-menu" 
+    style="padding-right: 2px;">
+  </i>目录
+</div>
+<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%85%88%E8%BF%9B%E5%85%A5%E6%9C%80%E5%85%B7%E4%BD%93%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="toc-text">AI 先进入最具体的工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%8A%E4%BC%9A%E8%AE%AE%E4%BB%8E%E8%A1%A8%E8%BE%BE%E5%9C%BA%E5%8F%98%E6%88%90%E4%BF%A1%E6%81%AF%E7%B3%BB%E7%BB%9F"><span class="toc-text">把会议从表达场变成信息系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%AF%86%E5%BA%93%E4%B8%8D%E6%98%AF%E6%96%87%E4%BB%B6%E5%A0%86%EF%BC%8C%E8%80%8C%E6%98%AF%E7%BB%8F%E8%BF%87%E5%AE%A1%E6%A0%B8%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="toc-text">知识库不是文件堆，而是经过审核的上下文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BC%9A%E8%AE%AE%E8%AE%B0%E5%BD%95%E5%88%B0%E6%8A%A5%E4%BB%B7%EF%BC%8C%E7%BC%A9%E7%9F%AD%E7%9A%84%E6%98%AF%E5%8F%8D%E9%A6%88%E5%9B%9E%E8%B7%AF"><span class="toc-text">从会议记录到报价，缩短的是反馈回路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%9E%8B%E6%9C%80%E9%9A%BE%E7%9A%84%E4%B8%8D%E6%98%AF%E5%AE%89%E8%A3%85%E5%B7%A5%E5%85%B7"><span class="toc-text">转型最难的不是安装工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#AI-%E5%8E%9F%E7%94%9F%E4%B8%8D%E6%98%AF%E2%80%9C%E5%85%A8%E8%87%AA%E5%8A%A8%E2%80%9D%EF%BC%8C%E8%80%8C%E6%98%AF%E6%8C%81%E7%BB%AD%E8%BF%AD%E4%BB%A3"><span class="toc-text">AI 原生不是“全自动”，而是持续迭代</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%86%E9%A2%91%E7%AB%A0%E8%8A%82"><span class="toc-text">视频章节</span></a></li></ol>
+    </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header">
+    <i 
+      class="iconfont icon-wenzhang_huaban" 
+      style="padding-right: 2px;">
+    </i>最近文章
+  </div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-23</div>
+        <a href="/2026/08/23/2026-08-23-ai-native-manufacturing-workflow/"><div class="recent-posts-item-content">从 20 人制造企业到 AI 原生组织：一堂 AI 转型实战课的要点</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-codex-pilotdeck-comparison/"><div class="recent-posts-item-content">Pi、Codex 和 PilotDeck 到底有什么区别？先分清 Agent 的三种层次</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-18</div>
+        <a href="/2026/08/18/2026-08-18-pi-skill-workflow/"><div class="recent-posts-item-content">从 Pi + Skill 到完整工作流：搜索、脚本、文案、音频和视频</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2026-08-10</div>
+        <a href="/2026/08/10/2026-08-10-claude-code-token-trace/"><div class="recent-posts-item-content">一句 Hello，Claude Code 为什么可能要处理 3 万 Token？</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+  <!-- <article class="card card-content"></article> -->
+</div>
+
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+    <footer class="footer">
+  <div class="footer-container">
+    <div>
+      <div class="footer-dsc">
+        <span>
+          Copyright ©
+          
+            2020
+          
+          
+                - 
+                2026
+          
+        </span>
+        &nbsp;
+        <a 
+          href="/" 
+          class="footer-link">
+          霜序廿的个人网站
+        </a>
+      </div>
+    </div>
+
+    
+      <div class="footer-dsc">
+        
+          Powered by
+          <a 
+            href="https://hexo.io/" 
+            class="footer-link" 
+            target="_blank" 
+            rel="nofollow noopener noreferrer">
+            &nbsp;Hexo
+          </a>
+        
+        
+          <span>&nbsp;|&nbsp;</span>
+        
+        
+          Theme -
+          <a 
+            href="https://github.com/theme-kaze" 
+            class="footer-link" 
+            target="_blank"
+            rel="nofollow noopener noreferrer">
+            &nbsp;Kaze
+          </a>
+        
+      </div>
+    
+    
+    
+    
+</footer>
+ 
+    
+  <a 
+    role="button" 
+    id="scrollbutton" 
+    class="basebutton" 
+    aria-label="回到顶部">
+    <i class="iconfont icon-arrowleft button-icon"></i>
+  </a>
+
+<a 
+  role="button" 
+  id="menubutton"
+  aria-label="menu button"
+  class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="popbutton" 
+  class="basebutton" 
+  aria-label="控制中心">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="darkbutton" 
+  class="basebutton darkwidget" 
+  aria-label="夜色模式">
+  <i class="iconfont icon-weather button-icon"></i>
+</a>
+<a 
+  role="button" 
+  id="searchbutton" 
+  class="basebutton searchwidget" 
+  aria-label="搜索">
+  <i class="iconfont icon-search button-icon"></i>
+</a> 
+     
+     
+     
+      <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img')
+    var i
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a')
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'))
+      wrapper.setAttribute('aria-label', 'illustration')
+      wrapper.style.cssText =
+        'width: 100%; display: flex; justify-content: center;'
+      if (img[i].alt) wrapper.dataset.caption = img[i].alt
+      wrapper.dataset.nolink = true
+      img[i].before(wrapper)
+      wrapper.append(img[i])
+      var divWrap = document.createElement('div')
+      divWrap.classList.add('gallery')
+      wrapper.before(divWrap)
+      divWrap.append(wrapper)
+    }
+    baguetteBox.run('.gallery')
+  }
+</script>
+<script>
+  loadScript(
+    "/js/lib/lightbox/baguetteBox.min.js",
+    addImgLayout
+  )
+</script>
+ 
+     
+     
+    <script src="/js/main.js"></script> 
+     
+    
+      <script>
+        var addLazyload = function () {
+          var observer = lozad('.lozad', {
+            load: function (el) {
+              el.srcset = el.getAttribute('data-src')
+            },
+            loaded: function (el) {
+              el.classList.add('loaded')
+            },
+          })
+          observer.observe()
+        }
+      </script>
+      <script>
+        loadScript('/js/lib/lozad.min.js', addLazyload)
+      </script>
+    
+    <script src="//instant.page/5.1.0" type="module"
+      integrity="sha384-by67kQnR+pyfy8yWP4kPO12fHKRLHZPfEsiSXR8u2IKcTdxD805MGUXBzVPnkLHw"></script>
+    
+    
+  </body>
+</html>
